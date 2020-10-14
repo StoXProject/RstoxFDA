@@ -130,3 +130,35 @@ convertCodes <- function(code, conversionTable){
 
   return(as.character(conversionTable[code]))
 }
+
+#' Append area code
+#' @details
+#'  Appends a column with an area code to a table, based on positions.
+#' @param table data.table to be annotated.
+#' @param areaPolygons sp::SpatialPolygons with strata names in ID slot
+#' @param latName name of WGS84 lat column
+#' @param lonName name of WGS84 lon column
+#' @param colName name of column to be appended
+#' @export
+appendAreaCode <- function(table, areaPolygons, latName, lonName, colName){
+  if (colName %in% names(table)){
+    stop(paste("Column name", colName, "already exists."))
+  }
+
+  stratanames <- sapply(methods::slot(areaPolygons, "polygons"), function(x) methods::slot(x, "ID"))
+  stratanames.df <- data.frame( ID=1:length(areaPolygons), row.names = stratanames)
+  areaPolygons <- sp::SpatialPolygonsDataFrame(areaPolygons, stratanames.df)
+  pos <- as.data.frame(table[,c(latName, lonName), with=F])
+  names(pos) <- c("LAT", "LON")
+  sp::coordinates(pos) <- ~ LON + LAT
+  sp::proj4string(pos) <- sp::CRS("+proj=longlat +datum=WGS84")
+
+  if (!sp::identicalCRS(pos, areaPolygons)){
+    stop(paste("CRS:", sp::proj4string(areaPolygons), "not supported."))
+  }
+
+  location_codes <- sp::over(pos, areaPolygons)
+  table[[colName]] <- stratanames[location_codes$ID]
+
+  return(table)
+}
