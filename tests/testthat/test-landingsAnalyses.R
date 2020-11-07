@@ -4,3 +4,13 @@ ss <- tabulateFisheries(landings, cellCols = c("Area"))
 expect_equal(nrow(ss), 15)
 ss <- tabulateFisheries(landings)
 expect_equal(nrow(ss), 193)
+
+context("Test make trip IDs")
+land <- RstoxData::readLssFile(system.file("testresources","landings_trimmed_2018.lss", package="RstoxFDA"))
+tripIds <- makeTripIds(land)
+expect_equal(names(tripIds), c("vesselId", "time", "tripId"))
+expect_gt(nrow(tripIds),0)
+
+context("Test assign trip landings")
+landA <- assignTripIdLandings(land, tripIdCol = "tt")
+expect_true(all(!is.na(landA$tt)))
