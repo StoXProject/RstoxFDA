@@ -72,10 +72,10 @@ makeTripIds <- function(landings, vesselIdCol="Radiokallesignal (seddel)", lastC
 #' @details
 #'  if 'tripIds' is NULL, trip IDs will be constructed from landings using \code{\link[RstoxFDA]{makeTripIds}}
 #' @param landings \code{\link[data.table]{data.table}} containing landings records
-#' @param \code{\link[data.table]{data.table}} with columns 'vesselId', 'time' and 'tripId'
+#' @param tripIds \code{\link[data.table]{data.table}} with columns 'vesselId', 'time' and 'tripId'
 #' @param vesselIdCol character() that identifies a column in 'landings' that contain the vessel id (e.g. radio call signal) of the landing vessel. Default compatible with \code{\link[RstoxData]{readLssFile}}.
 #' @param lastCatchCol character() that identifies a POSIXct column in 'landings' that contain the time of last catch for each record. Default compatible with \code{\link[RstoxData]{readLssFile}}.
-#' @param tripIDcol character() that identifies the column name to append to 'landings'
+#' @param tripIdCol character() that identifies the column name to append to 'landings'
 #' @return \code{\link[data.table]{data.table}} with columns 'vesselId' and 'time'
 #' @examples
 #'  \dontrun{
@@ -89,7 +89,10 @@ makeTripIds <- function(landings, vesselIdCol="Radiokallesignal (seddel)", lastC
 #'    landingsWtripIds <- assignTripIdLandings(landings, tripIds)
 #'
 #'    firstCatch <- logbooksWtripIds[!duplicated(logbooksWtripIds$tripid),]
-#'    landingsWmeshSize <- merge(landingsWtripIds, firstCatch[,c("tripid", "MASKEVIDDE")], by="tripid", all.x=T)
+#'    landingsWmeshSize <- merge(landingsWtripIds,
+#'                               firstCatch[,c("tripid", "MASKEVIDDE")],
+#'                               by="tripid",
+#'                               all.x=T)
 #'  }
 #' @export
 assignTripIdLandings <- function(landings, tripIds=NULL, vesselIdCol="Radiokallesignal (seddel)", lastCatchCol="Siste fangstdato", tripIdCol="tripid"){

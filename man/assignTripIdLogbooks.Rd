@@ -18,13 +18,13 @@ assignTripIdLogbooks(
 
 \item{tripIds}{\code{\link[data.table]{data.table}} with columns 'vesselId', 'time' and 'tripId'}
 
+\item{timeCol}{character() that identifies a POSIXct column in 'logbooks' that contain the time of operation for each logbook record. Default compatible with \code{\link[RstoxData]{readErsFile}}.}
+
 \item{vesselIdCol}{character() that identifies a column in 'logbooks' that contain the vessel id (e.g. radio call signal) of the reporting vessel. Default compatible with \code{\link[RstoxData]{readErsFile}}.}
 
+\item{tripIdCol}{character() that identifies the column name to append to 'logbooks'}
+
 \item{verbose}{logical() wheter to message progress}
-
-\item{datecol}{character() that identifies a POSIXct column in 'logbooks' that contain the time of operation for each logbook record. Default compatible with \code{\link[RstoxData]{readErsFile}}.}
-
-\item{tripIDcol}{character() that identifies the column name to append to 'logbooks'}
 }
 \value{
 'logbooks' with the column identified by 'tripIDcol' added

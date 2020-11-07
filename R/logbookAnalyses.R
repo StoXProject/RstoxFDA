@@ -10,9 +10,9 @@
 #'  Runnning time is proportional to the number of trips in 'logbooks', so it is advantagous to annotate after other relevant filtering.
 #' @param logbooks \code{\link[data.table]{data.table}} containing logbook records
 #' @param tripIds \code{\link[data.table]{data.table}} with columns 'vesselId', 'time' and 'tripId'
-#' @param datecol character() that identifies a POSIXct column in 'logbooks' that contain the time of operation for each logbook record. Default compatible with \code{\link[RstoxData]{readErsFile}}.
+#' @param timeCol character() that identifies a POSIXct column in 'logbooks' that contain the time of operation for each logbook record. Default compatible with \code{\link[RstoxData]{readErsFile}}.
 #' @param vesselIdCol character() that identifies a column in 'logbooks' that contain the vessel id (e.g. radio call signal) of the reporting vessel. Default compatible with \code{\link[RstoxData]{readErsFile}}.
-#' @param tripIDcol character() that identifies the column name to append to 'logbooks'
+#' @param tripIdCol character() that identifies the column name to append to 'logbooks'
 #' @param verbose logical() wheter to message progress
 #' @return 'logbooks' with the column identified by 'tripIDcol' added
 #' @examples

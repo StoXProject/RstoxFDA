@@ -15,13 +15,13 @@ assignTripIdLandings(
 \arguments{
 \item{landings}{\code{\link[data.table]{data.table}} containing landings records}
 
+\item{tripIds}{\code{\link[data.table]{data.table}} with columns 'vesselId', 'time' and 'tripId'}
+
 \item{vesselIdCol}{character() that identifies a column in 'landings' that contain the vessel id (e.g. radio call signal) of the landing vessel. Default compatible with \code{\link[RstoxData]{readLssFile}}.}
 
 \item{lastCatchCol}{character() that identifies a POSIXct column in 'landings' that contain the time of last catch for each record. Default compatible with \code{\link[RstoxData]{readLssFile}}.}
 
-\item{\code{\link[data.table]{data.table}}}{with columns 'vesselId', 'time' and 'tripId'}
-
-\item{tripIDcol}{character() that identifies the column name to append to 'landings'}
+\item{tripIdCol}{character() that identifies the column name to append to 'landings'}
 }
 \value{
 \code{\link[data.table]{data.table}} with columns 'vesselId' and 'time'
@@ -44,6 +44,9 @@ if 'tripIds' is NULL, trip IDs will be constructed from landings using \code{\li
    landingsWtripIds <- assignTripIdLandings(landings, tripIds)
 
    firstCatch <- logbooksWtripIds[!duplicated(logbooksWtripIds$tripid),]
-   landingsWmeshSize <- merge(landingsWtripIds, firstCatch[,c("tripid", "MASKEVIDDE")], by="tripid", all.x=T)
+   landingsWmeshSize <- merge(landingsWtripIds,
+                              firstCatch[,c("tripid", "MASKEVIDDE")],
+                              by="tripid",
+                              all.x=T)
  }
 }
