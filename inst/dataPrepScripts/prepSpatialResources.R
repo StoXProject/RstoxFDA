@@ -11,7 +11,7 @@ if (is.na(sp::proj4string(mainareaFdir2018))){
   sp::proj4string(mainareaFdir2018) <- "+proj=longlat +datum=WGS84"
 }
 
-usethis::use_data(mainareaFdir2018, overwrite = T)
+usethis::use_data(mainareaFdir2018, overwrite = T, compress = "xz")
 
 #
 # prep main areas (Fdir) before 2018
@@ -32,7 +32,7 @@ slot(slot(mainareaFdir2017, "polygons")[[7]], "ID") <- "06"
 slot(slot(mainareaFdir2017, "polygons")[[8]], "ID") <- "07"
 slot(slot(mainareaFdir2017, "polygons")[[9]], "ID") <- "08"
 slot(slot(mainareaFdir2017, "polygons")[[10]], "ID") <- "09"
-usethis::use_data(mainareaFdir2017, overwrite = T)
+usethis::use_data(mainareaFdir2017, overwrite = T, compress = "xz")
 
 #
 # prep locations (Fdir) as of 2018
@@ -44,7 +44,7 @@ for (i in 1:nrow(locationsFdir2018)){
   slot(slot(locationsFdir2018, "polygons")[[i]], "ID") <- locationsFdir2018$LOKREF[i]
 }
 locationsFdir2018$polygonName <- locationsFdir2018$LOKREF
-usethis::use_data(locationsFdir2018, overwrite = T)
+usethis::use_data(locationsFdir2018, overwrite = T, compress = "xz")
 
 #
 # prep locations (Fdir) before 2018
@@ -55,7 +55,7 @@ for (i in 1:nrow(locationsFdir2017)){
   slot(slot(locationsFdir2017, "polygons")[[i]], "ID") <- locationsFdir2017$LOKREF[i]
 }
 locationsFdir2017$polygonName <- locationsFdir2017$LOKREF
-usethis::use_data(locationsFdir2017, overwrite = T)
+usethis::use_data(locationsFdir2017, overwrite = T, compress = "xz")
 
 
 #
@@ -70,7 +70,7 @@ NAFOareas$polygonName <- NAFOareas$homr
 NAFOareas$nafo_names <- NAFOareas$nafo_norsk
 NAFOareas$first_nafo <- NULL
 NAFOareas$nafo_norsk <- NULL
-usethis::use_data(NAFOareas, overwrite = T)
+usethis::use_data(NAFOareas, overwrite = T, compress = "xz")
 
 #
 # prep ICES areas
@@ -86,7 +86,7 @@ for (i in 1:nrow(ICESareas)){
 ICESareas$polygonName <- ICESareas$Area_Full
 ICESareas$OBJECTID_1 <- NULL
 ICESareas$OBJECTID <- NULL
-usethis::use_data(ICESareas, overwrite = T)
+usethis::use_data(ICESareas, overwrite = T, compress = "xz")
 
 #
 # prep ICES rectangles
@@ -95,6 +95,7 @@ ICESrectangles <- rgdal::readOGR("~/shapefiles/ICES_rectangles//", stringsAsFact
 for (i in 1:nrow(ICESrectangles)){
   slot(slot(ICESrectangles, "polygons")[[i]], "ID") <- ICESrectangles$ICESNAME[i]
 }
+ICESrectangles$polygonName <- ICESrectangles$ICESNAME
 ICESrectangles@data$OBJECTID <- NULL
 ICESrectangles@data$OBJECTID_1 <- NULL
 ICESrectangles@data$ICESNAME_2 <- NULL
@@ -103,7 +104,7 @@ ICESrectangles@data$Shape_STAr <- NULL
 ICESrectangles@data$Shape_STLe <- NULL
 ICESrectangles@data$AREA <- NULL #planarized area
 ICESrectangles@data$PERCENTAGE <- NULL #percentage of main ecoregion, based on planarized area.
-usethis::use_data(ICESrectangles, overwrite = T)
+usethis::use_data(ICESrectangles, overwrite = T, compress = "xz")
 
 
 

@@ -5,7 +5,7 @@
 \alias{ICESareas}
 \title{ICES areas}
 \format{
-\code{\link[sp]{SpatialPolygonsDataFrame}} with location names identified in the column 'polygonName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+\code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'polygonName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 }
 \usage{
 data(ICESareas)
@@ -21,7 +21,7 @@ Polygons are derived from shapefiles provided by ICES web-portals.
 Polygons are defined in WGS84 coordinates (unprojected).
 }
 \examples{
- # plot ICES areas alongside main areas
+ # plot ICES areas
  data(ICESareas)
  sp::plot(ICESareas)
 }

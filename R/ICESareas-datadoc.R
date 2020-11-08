@@ -12,12 +12,12 @@
 #'
 #' @usage data(ICESareas)
 #'
-#' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with location names identified in the column 'polygonName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+#' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'polygonName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 #'
 #' @keywords datasets
 #'
 #' @examples
-#'  # plot ICES areas alongside main areas
+#'  # plot ICES areas
 #'  data(ICESareas)
 #'  sp::plot(ICESareas)
 "ICESareas"
