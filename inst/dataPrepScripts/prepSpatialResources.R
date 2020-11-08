@@ -57,6 +57,11 @@ for (i in 1:nrow(locationsFdir2017)){
 locationsFdir2017$polygonName <- locationsFdir2017$LOKREF
 usethis::use_data(locationsFdir2017, overwrite = T)
 
+
+#
+# prep NAFO areas
+#
+
 NAFOareas <- rgdal::readOGR("~/shapefiles/NAFO_hovedomr_2017_WGS84/", stringsAsFactors = F)
 for (i in 1:nrow(NAFOareas)){
   slot(slot(NAFOareas, "polygons")[[i]], "ID") <- NAFOareas$homr[i]
@@ -66,3 +71,40 @@ NAFOareas$nafo_names <- NAFOareas$nafo_norsk
 NAFOareas$first_nafo <- NULL
 NAFOareas$nafo_norsk <- NULL
 usethis::use_data(NAFOareas, overwrite = T)
+
+#
+# prep ICES areas
+#
+
+# reduced detail with https://mapshaper.org
+
+ICESareas <- rgdal::readOGR("~/shapefiles/ICES_simlified/ICES_areas/", stringsAsFactors = F)
+ICESareas <- sp::spTransform(ICESareas, sp::CRS("+proj=longlat +datum=WGS84"))
+for (i in 1:nrow(ICESareas)){
+  slot(slot(ICESareas, "polygons")[[i]], "ID") <- ICESareas$Area_Full[i]
+}
+ICESareas$polygonName <- ICESareas$Area_Full
+ICESareas$OBJECTID_1 <- NULL
+ICESareas$OBJECTID <- NULL
+usethis::use_data(ICESareas, overwrite = T)
+
+#
+# prep ICES rectangles
+#
+ICESrectangles <- rgdal::readOGR("~/shapefiles/ICES_rectangles//", stringsAsFactors = F)
+for (i in 1:nrow(ICESrectangles)){
+  slot(slot(ICESrectangles, "polygons")[[i]], "ID") <- ICESrectangles$ICESNAME[i]
+}
+ICESrectangles@data$OBJECTID <- NULL
+ICESrectangles@data$OBJECTID_1 <- NULL
+ICESrectangles@data$ICESNAME_2 <- NULL
+ICESrectangles@data$ICESNAME_1 <- NULL
+ICESrectangles@data$Shape_STAr <- NULL
+ICESrectangles@data$Shape_STLe <- NULL
+ICESrectangles@data$AREA <- NULL #planarized area
+ICESrectangles@data$PERCENTAGE <- NULL #percentage of main ecoregion, based on planarized area.
+usethis::use_data(ICESrectangles, overwrite = T)
+
+
+
+

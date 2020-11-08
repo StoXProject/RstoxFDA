@@ -11,7 +11,7 @@
 data(NAFOareas)
 }
 \description{
-Definition for FAO Northwest Atlantic (Major Fishing Area 21) area coding system used in Norwegian fisheries reporting.
+Definition for FAO Northwest Atlantic (Major Fishing Area 21) area coding system. NAFO areas as used in Norwegian fisheries reporting.
 A coding convention for reporting these areas as an extention of the main areas defined by the Norwegian Directorate of Fisheries
 identifies the areas in the columns 'polygonName' and 'homr'. International convetion is identified in the column 'nafo_names'.
 }
