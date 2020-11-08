@@ -57,3 +57,12 @@ for (i in 1:nrow(locationsFdir2017)){
 locationsFdir2017$polygonName <- locationsFdir2017$LOKREF
 usethis::use_data(locationsFdir2017, overwrite = T)
 
+NAFOareas <- rgdal::readOGR("~/shapefiles/NAFO_hovedomr_2017_WGS84/", stringsAsFactors = F)
+for (i in 1:nrow(NAFOareas)){
+  slot(slot(NAFOareas, "polygons")[[i]], "ID") <- NAFOareas$homr[i]
+}
+NAFOareas$polygonName <- NAFOareas$homr
+NAFOareas$nafo_names <- NAFOareas$nafo_norsk
+NAFOareas$first_nafo <- NULL
+NAFOareas$nafo_norsk <- NULL
+usethis::use_data(NAFOareas, overwrite = T)
