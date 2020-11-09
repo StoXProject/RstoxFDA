@@ -8,7 +8,8 @@ plotArea(
   data = NULL,
   latCol = NULL,
   lonCol = NULL,
-  areaDef = RstoxData::mainareaFdir2018,
+  groupCol = NULL,
+  areaDef,
   areaNameCol = "polygonName",
   areaLabels = is.null(data),
   xlim = NULL,
@@ -27,6 +28,8 @@ plotArea(
 \item{latCol}{character() identifing column in 'data' that specify latitudes (WGS84)}
 
 \item{lonCol}{character() identifing column in 'data' that specify longitudes (WGS84)}
+
+\item{groupCol}{character() identifying column in 'daat' that specify grouping of points}
 
 \item{areaDef}{\code{\link[sp]{SpatialPolygonsDataFrame}}}
 

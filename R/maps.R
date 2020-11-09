@@ -3,6 +3,7 @@
 #' @param data data.frame with any points to be plotted
 #' @param latCol character() identifing column in 'data' that specify latitudes (WGS84)
 #' @param lonCol character() identifing column in 'data' that specify longitudes (WGS84)
+#' @param groupCol character() identifying column in 'daat' that specify grouping of points
 #' @param areaDef \code{\link[sp]{SpatialPolygonsDataFrame}}
 #' @param areaNameCol identifies column in 'areaDef' with label names for the areas
 #' @param areaLabels logical whether to plot area labels
@@ -27,7 +28,22 @@
 #'                   NAFOareas[,c("polygonName")]),
 #'           projection="+proj=merc +datum=WGS84")
 #' @export
-plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, areaDef=RstoxData::mainareaFdir2018, areaNameCol="polygonName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointcol="darkred", pointshape=23, pointsize=1, title="", projection=102014){
+plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="polygonName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointcol="darkred", pointshape=23, pointsize=1, title="", projection=102014){
+
+  if (!is.null(data)){
+    if (!(latCol %in% names(data))){
+      stop("'latCol' not found in 'data'")
+    }
+    if (!(lonCol %in% names(data))){
+      stop("'lonCol' not found in 'data'")
+    }
+    if (is.null(xlim)){
+      xlim <- c(min(data[[lonCol]], na.rm = T), max(data[[lonCol]], na.rm = T))
+    }
+    if (is.null(ylim)){
+      ylim <- c(min(data[[latCol]], na.rm = T), max(data[[latCol]], na.rm = T))
+    }
+  }
 
   newcrs <- sf::st_crs(projection)
 
@@ -47,8 +63,14 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, areaDef=RstoxData::mai
   pl <- pl + ggplot2::geom_sf(data=world)
 
   if (!is.null(data)){
-    pl <- pl + ggplot2::geom_sf(data=sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326)), size = pointsize,
-                                   shape = pointshape, fill = pointcol, color=pointcol)
+    if (is.null(groupCol)){
+      pl <- pl + ggplot2::geom_sf(data=sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326)), size = pointsize,
+                                  shape = pointshape, fill = pointcol, color=pointcol)
+    }
+    else{
+      pl <- pl + ggplot2::geom_sf(data=sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326)), size = pointsize,
+                                  shape = pointshape, ggplot2::aes_string(color=groupCol))
+    }
   }
 
   if (!is.null(areaDef)){
@@ -70,7 +92,7 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, areaDef=RstoxData::mai
               sf::st_point(x = c(mean(xlim), min(ylim))),
               sf::st_point(x = c(mean(xlim), max(ylim))),crs = sf::st_crs(4326)), newcrs))
 
-  pl <- pl + ggplot2::coord_sf(crs = newcrs, xlim = c(limboxP$xmin, limboxP$xmax), ylim = c(limboxP$ymin, limboxP$ymax), expand = F)
+  pl <- pl + ggplot2::coord_sf(crs = newcrs, xlim = c(limboxP$xmin, limboxP$xmax), ylim = c(limboxP$ymin, limboxP$ymax), expand = T)
   pl <- pl + ggplot2::xlab("Longitude")
   pl <- pl + ggplot2::ylab("Latitude")
   pl <- pl + ggplot2::theme_bw()

@@ -13,6 +13,6 @@
 #' @keywords datasets
 #'
 #' @examples
-#' data(mainareaFdir2018)
-#' sp::plot(mainareaFdir2018)
+#'  data(mainareaFdir2018)
+#'  sp::plot(mainareaFdir2018)
 "mainareaFdir2018"
