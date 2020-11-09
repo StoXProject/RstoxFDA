@@ -10,6 +10,7 @@ mainareaFdir2018 <- RstoxBase::DefineStratumPolygon(NULL, F, "ResourceFile", sys
 if (is.na(sp::proj4string(mainareaFdir2018))){
   sp::proj4string(mainareaFdir2018) <- "+proj=longlat +datum=WGS84"
 }
+commonCRS <- sp::CRS(sp::proj4string(mainareaFdir2018))
 
 usethis::use_data(mainareaFdir2018, overwrite = T, compress = "xz")
 
@@ -22,6 +23,7 @@ mainareaFdir2017 <- RstoxBase::DefineStratumPolygon(NULL, F, "ResourceFile", sys
 if (is.na(sp::proj4string(mainareaFdir2017))){
   sp::proj4string(mainareaFdir2017) <- "+proj=longlat +datum=WGS84"
 }
+mainareaFdir2017 <- sp::spTransform(mainareaFdir2017, commonCRS)
 slot(slot(mainareaFdir2017, "polygons")[[1]], "ID") <- "00"
 slot(slot(mainareaFdir2017, "polygons")[[2]], "ID") <- "01"
 slot(slot(mainareaFdir2017, "polygons")[[3]], "ID") <- "02"
@@ -44,6 +46,7 @@ for (i in 1:nrow(locationsFdir2018)){
   slot(slot(locationsFdir2018, "polygons")[[i]], "ID") <- locationsFdir2018$LOKREF[i]
 }
 locationsFdir2018$polygonName <- locationsFdir2018$LOKREF
+locationsFdir2018 <- sp::spTransform(locationsFdir2018, commonCRS)
 usethis::use_data(locationsFdir2018, overwrite = T, compress = "xz")
 
 #
@@ -55,6 +58,7 @@ for (i in 1:nrow(locationsFdir2017)){
   slot(slot(locationsFdir2017, "polygons")[[i]], "ID") <- locationsFdir2017$LOKREF[i]
 }
 locationsFdir2017$polygonName <- locationsFdir2017$LOKREF
+locationsFdir2017 <- sp::spTransform(locationsFdir2017, commonCRS)
 usethis::use_data(locationsFdir2017, overwrite = T, compress = "xz")
 
 
@@ -70,6 +74,7 @@ NAFOareas$polygonName <- NAFOareas$homr
 NAFOareas$nafo_names <- NAFOareas$nafo_norsk
 NAFOareas$first_nafo <- NULL
 NAFOareas$nafo_norsk <- NULL
+NAFOareas <- sp::spTransform(NAFOareas, commonCRS)
 usethis::use_data(NAFOareas, overwrite = T, compress = "xz")
 
 #
@@ -83,9 +88,10 @@ ICESareas <- sp::spTransform(ICESareas, sp::CRS("+proj=longlat +datum=WGS84"))
 for (i in 1:nrow(ICESareas)){
   slot(slot(ICESareas, "polygons")[[i]], "ID") <- ICESareas$Area_Full[i]
 }
-ICESareas$polygonName <- ICESareas$Area_Full
+ICESareas$polygonName <- ICESareas$Area_27
 ICESareas$OBJECTID_1 <- NULL
 ICESareas$OBJECTID <- NULL
+ICESareas <- sp::spTransform(ICESareas, commonCRS)
 usethis::use_data(ICESareas, overwrite = T, compress = "xz")
 
 #
@@ -104,6 +110,7 @@ ICESrectangles@data$Shape_STAr <- NULL
 ICESrectangles@data$Shape_STLe <- NULL
 ICESrectangles@data$AREA <- NULL #planarized area
 ICESrectangles@data$PERCENTAGE <- NULL #percentage of main ecoregion, based on planarized area.
+ICESrectangles <- sp::spTransform(ICESrectangles, commonCRS)
 usethis::use_data(ICESrectangles, overwrite = T, compress = "xz")
 
 
