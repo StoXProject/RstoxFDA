@@ -15,9 +15,9 @@ plotArea(
   xlim = NULL,
   ylim = NULL,
   areaLabelSize = 2,
-  pointcol = "darkred",
-  pointshape = 23,
-  pointsize = 1,
+  pointColor = "darkred",
+  pointShape = 23,
+  pointSize = 1,
   title = "",
   projection = 102014
 )
@@ -43,18 +43,24 @@ plotArea(
 
 \item{areaLabelSize}{size for any area labels}
 
-\item{pointcol}{color of any points to be plotted.}
+\item{pointColor}{color of any points to be plotted.}
 
-\item{pointshape}{ggplot2 shape for any points to be plotted}
+\item{pointShape}{ggplot2 shape for any points to be plotted}
 
-\item{pointsize}{size for any points to be plotted}
+\item{pointSize}{size for any points to be plotted}
 
 \item{title}{plot title}
 
 \item{projection}{proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}}
 }
 \description{
-Plot area definitions on a map
+Plots area polygons on a map, may point a set of positions as well.
+}
+\details{
+Map ranges to plot are specified by 'xlim' and 'ylim'. These should always be given in lon/lat.
+ if these are not given they will be derived in order to include all positions in 'data'.
+ if 'data is not given they will be derived from the bounding box of 'areaDef'.
+ To allow for flexible projection, some space will be added around 'xlim' and 'ylim'.
 }
 \examples{
  # plot ICES areas with default projection
