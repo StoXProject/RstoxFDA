@@ -21,7 +21,7 @@ calculateLogbookPartitionByTrip(
 
 \item{speciesCol}{character() identyfing the column in 'logbooks' that specify species.}
 
-\item{weigthCol}{character() identifying the column in 'logbboks' that specify the live weight of the species.}
+\item{weightCol}{character() identifying the column in 'logbboks' that specify the live weight of the species.}
 }
 \value{
 \code{\link[RstoxFDA]{TripPartition}}

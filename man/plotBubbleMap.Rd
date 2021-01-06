@@ -33,6 +33,8 @@ plotBubbleMap(
 
 \item{areaNameCol}{identifies column in 'areaDef' with label names for the areas, must correspond to 'areaCol'}
 
+\item{legendTitle}{title for the legend (explains what the quantities are)}
+
 \item{areaLabels}{logical whether to plot area labels}
 
 \item{xlim}{x axis limits in degrees longitude}
@@ -50,8 +52,6 @@ plotBubbleMap(
 \item{title}{plot title}
 
 \item{projection}{proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}}
-
-\item{legendtitle}{title for the legend (explains what the quantities are)}
 }
 \description{
 Plots scalar nonegative quantities associated with an area code, as bubbles on a map.
@@ -63,6 +63,7 @@ The quantities (quantityCol) is aggregated (summed, ignoring NAs) over combinati
 \examples{
  data(landings)
  data(ICESareas)
- plotBubbleMap(landings, "Area", "LiveWeightKG", areaDef = ICESareas, areaNameCol = "Area_Full", bubbleSize = 20, title="Landings on ICES areas")
- @export
+ plotBubbleMap(landings, "Area", "LiveWeightKG",
+       areaDef = ICESareas, areaNameCol = "Area_Full",
+       bubbleSize = 20, title="Landings on ICES areas")
 }

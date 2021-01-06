@@ -72,7 +72,7 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
   if (!is.null(data)){
     if (is.null(groupCol)){
       pl <- pl + ggplot2::geom_sf(data=sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326)), size = pointSize,
-                                  shape = pointShape, fill = pointcol, color=pointcol)
+                                  shape = pointShape, fill = pointColor, color=pointColor)
     }
     else{
       pl <- pl + ggplot2::geom_sf(data=sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326)), size = pointSize,
@@ -119,7 +119,7 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 #' @param quantityCol character() identifing column in 'data' that specify quantities to be plotted
 #' @param areaDef \code{\link[sp]{SpatialPolygonsDataFrame}}
 #' @param areaNameCol identifies column in 'areaDef' with label names for the areas, must correspond to 'areaCol'
-#' @param legendtitle title for the legend (explains what the quantities are)
+#' @param legendTitle title for the legend (explains what the quantities are)
 #' @param areaLabels logical whether to plot area labels
 #' @param xlim x axis limits in degrees longitude
 #' @param ylim y axis limits in degrees latitude
@@ -132,8 +132,10 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 #' @examples
 #'  data(landings)
 #'  data(ICESareas)
-#'  plotBubbleMap(landings, "Area", "LiveWeightKG", areaDef = ICESareas, areaNameCol = "Area_Full", bubbleSize = 20, title="Landings on ICES areas")
-#'  @export
+#'  plotBubbleMap(landings, "Area", "LiveWeightKG",
+#'        areaDef = ICESareas, areaNameCol = "Area_Full",
+#'        bubbleSize = 20, title="Landings on ICES areas")
+#' @export
 plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="polygonName", legendTitle=quantityCol, areaLabels=T, xlim=NULL, ylim=NULL, areaLabelSize=2, bubbleColor="darkred", bubbleSize=10, bubbleShape=21, title="", projection=102014){
 
   if (!(areaCol %in% names(data))){
@@ -164,7 +166,7 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="poly
 
   #aggregate data
 
-    plotdata <- aggregate(list(quant=data[[quantityCol]]), by=list(area=data[[areaCol]]), FUN=function(x){sum(x, na.rm=T)})
+    plotdata <- stats::aggregate(list(quant=data[[quantityCol]]), by=list(area=data[[areaCol]]), FUN=function(x){sum(x, na.rm=T)})
 
   # add positions from areaDef to data
   pos <- suppressWarnings(sf::st_centroid(areaDef))
@@ -173,7 +175,7 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="poly
   pos <- pos[!is.na(pos$quant),]
 
 
-    pl <- pl + ggplot2::geom_sf(data=pos, ggplot2::aes(size = quant), shape=bubbleShape, alpha = 0.7, colour = "black",fill=bubbleColor,stroke = .2) +
+    pl <- pl + ggplot2::geom_sf(data=pos, ggplot2::aes_string(size = "quant"), shape=bubbleShape, alpha = 0.7, colour = "black",fill=bubbleColor,stroke = .2) +
       ggplot2::scale_size_area(max_size=bubbleSize)
 
   pl <- pl +  ggplot2::labs(size=legendTitle)

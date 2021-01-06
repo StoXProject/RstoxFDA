@@ -95,12 +95,12 @@ NULL
 #' @details
 #'  Default parameters are compatible \code{\link[RstoxData]{readErsFile}} with tripids annotated by \code{\link[RstoxFDA]{assignTripIdLogbooks}}.
 #'
-#'  For other partitionings of logbooks, consider \code{\link[RstoxData]{tabulateFisheries}}.
+#'  For other partitionings of logbooks, consider \code{\link[RstoxFDA]{tabulateFisheries}}.
 #' @param logbooks \code{\link[data.table]{data.table}} with logbooks
 #' @param groupCols character() vector of names identifying the grouping columns in 'logbooks'
 #' @param tripCol character() identyfing the column in 'logbooks' that identify a trip
 #' @param speciesCol character() identyfing the column in 'logbooks' that specify species.
-#' @param weigthCol character() identifying the column in 'logbboks' that specify the live weight of the species.
+#' @param weightCol character() identifying the column in 'logbboks' that specify the live weight of the species.
 #' @return \code{\link[RstoxFDA]{TripPartition}}
 #' @examples
 #'  \dontrun{
@@ -143,14 +143,14 @@ calculateLogbookPartitionByTrip <- function(logbooks, groupCols, tripCol="tripid
     }
   }
 
-  totals <- aggregate(list(totalw=logbooks[[weightCol]]), by=list(tripid=logbooks[[tripCol]], species=logbooks[[speciesCol]]), FUN=function(x){sum(x, na.rm=T)})
+  totals <- stats::aggregate(list(totalw=logbooks[[weightCol]]), by=list(tripid=logbooks[[tripCol]], species=logbooks[[speciesCol]]), FUN=function(x){sum(x, na.rm=T)})
 
   logbooks$groupid <- ""
   for (co in groupCols){
     logbooks$groupid <- paste(logbooks$groupid, logbooks[[co]], sep="/")
   }
 
-  groupTotals <- aggregate(list(totalGroup=logbooks[[weightCol]]), by=list(tripid=logbooks[[tripCol]], species=logbooks[[speciesCol]], groupid=logbooks$groupid), FUN=function(x){sum(x, na.rm=T)})
+  groupTotals <- stats::aggregate(list(totalGroup=logbooks[[weightCol]]), by=list(tripid=logbooks[[tripCol]], species=logbooks[[speciesCol]], groupid=logbooks$groupid), FUN=function(x){sum(x, na.rm=T)})
 
   fractions <- merge(groupTotals, totals, all.x=T)
 

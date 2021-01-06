@@ -143,6 +143,9 @@ convertCodes <- function(code, conversionTable){
 #' @return 'table' with the area appended in the column 'colName'
 #' @export
 appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, polygonName="polygonName"){
+  if (!data.table::is.data.table(table)){
+    stop("Paramter 'table' must be a data.table")
+  }
   if (colName %in% names(table)){
     stop(paste("Column name", colName, "already exists."))
   }
@@ -151,6 +154,12 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, polyg
   }
   if (!(lonName %in% names(table)) | !is.numeric(table[[lonName]])){
     stop(paste(lonName, "(parameter 'lonName') must be provided as a numeric column."))
+  }
+  if (any(is.na(table[[latName]]))){
+    stop("Missing values in column: ", latName)
+  }
+  if (any(is.na(table[[lonName]]))){
+    stop("Missing values in column: ", lonName)
   }
 
   pos <- as.data.frame(table[,c(latName, lonName), with=F])

@@ -27,7 +27,7 @@ appendPosition(
 \item{polygonName}{name of the column in 'areaPolygons' that identifies the area.}
 }
 \value{
-'table' with the positions appended in the column 'latColName' and 'lonColName'.
+'table' with the positions appended in the columns 'latColName' and 'lonColName'.
 }
 \description{
 Appends columns with positions to a data table, based on an area code.
