@@ -4,18 +4,30 @@
 \alias{appendAreaCode}
 \title{Append area code}
 \usage{
-appendAreaCode(table, areaPolygons, latName, lonName, colName)
+appendAreaCode(
+  table,
+  areaPolygons,
+  latName,
+  lonName,
+  colName,
+  polygonName = "polygonName"
+)
 }
 \arguments{
 \item{table}{data.table to be annotated.}
 
-\item{areaPolygons}{sp::SpatialPolygons with strata names in ID slot}
+\item{areaPolygons}{\code{\link[sp]{SpatialPolygonsDataFrame}}}
 
-\item{latName}{name of WGS84 lat column}
+\item{latName}{name of WGS84 lat column in 'table'}
 
-\item{lonName}{name of WGS84 lon column}
+\item{lonName}{name of WGS84 lon column in 'table}
 
-\item{colName}{name of column to be appended}
+\item{colName}{name of column to be appended to 'table'}
+
+\item{polygonName}{name of column in 'areaPolygons' that identify the area name}
+}
+\value{
+'table' with the area appended in the column 'colName'
 }
 \description{
 Append area code

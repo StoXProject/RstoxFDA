@@ -135,19 +135,24 @@ convertCodes <- function(code, conversionTable){
 #' @details
 #'  Appends a column with an area code to a table, based on positions.
 #' @param table data.table to be annotated.
-#' @param areaPolygons sp::SpatialPolygons with strata names in ID slot
-#' @param latName name of WGS84 lat column
-#' @param lonName name of WGS84 lon column
-#' @param colName name of column to be appended
+#' @param areaPolygons \code{\link[sp]{SpatialPolygonsDataFrame}}
+#' @param latName name of WGS84 lat column in 'table'
+#' @param lonName name of WGS84 lon column in 'table
+#' @param colName name of column to be appended to 'table'
+#' @param polygonName name of column in 'areaPolygons' that identify the area name
+#' @return 'table' with the area appended in the column 'colName'
 #' @export
-appendAreaCode <- function(table, areaPolygons, latName, lonName, colName){
+appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, polygonName="polygonName"){
   if (colName %in% names(table)){
     stop(paste("Column name", colName, "already exists."))
   }
+  if (!(latName %in% names(table)) | !is.numeric(table[[latName]])){
+    stop(paste(latName, "(parameter 'latName') must be provided as a numeric column."))
+  }
+  if (!(lonName %in% names(table)) | !is.numeric(table[[lonName]])){
+    stop(paste(lonName, "(parameter 'lonName') must be provided as a numeric column."))
+  }
 
-  stratanames <- sapply(methods::slot(areaPolygons, "polygons"), function(x) methods::slot(x, "ID"))
-  stratanames.df <- data.frame( ID=1:length(areaPolygons), row.names = stratanames)
-  areaPolygons <- sp::SpatialPolygonsDataFrame(areaPolygons, stratanames.df)
   pos <- as.data.frame(table[,c(latName, lonName), with=F])
   names(pos) <- c("LAT", "LON")
   sp::coordinates(pos) <- ~ LON + LAT
@@ -158,7 +163,45 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName){
   }
 
   location_codes <- sp::over(pos, areaPolygons)
-  table[[colName]] <- stratanames[location_codes$ID]
+  table[[colName]] <- location_codes[[polygonName]]
 
   return(table)
+}
+
+#' Append positions
+#' @description
+#'  Appends columns with positions to a data table, based on an area code.
+#'
+#'  Coordinates are retrieved from a \code{\link[sp]{SpatialPolygonsDataFrame}} and not calculated
+#'  the exact defintion of the coordinates depend on how the polygons were constructed.
+#'
+#'  Datum and projection is not enforced, but a warning is issued if 'areaPolygons' does not pass some
+#'  checks to verify that it is not a planar projection.
+#'
+#' @param table data.table to be annotated.
+#' @param areaPolygons \code{\link[sp]{SpatialPolygonsDataFrame}}
+#' @param areaName name of column that identifies the area in 'table'
+#' @param latColName name of the latitdue column to be appended to 'table'
+#' @param lonColName name of the longitude column to be appended to 'table'
+#' @param polygonName name of the column in 'areaPolygons' that identifies the area.
+#' @return 'table' with the positions appended in the columns 'latColName' and 'lonColName'.
+#' @export
+appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName, polygonName="polygonName"){
+  if (latColName %in% names(table)){
+    stop(paste("Column name", latColName, "already exists."))
+  }
+  if (lonColName %in% names(table)){
+    stop(paste("Column name", lonColName, "already exists."))
+  }
+
+  if (length(grep("proj=longlat", sp::proj4string(areaPolygons)))==0){
+    warning("could not verify projection of 'areaPolygons'")
+  }
+
+  mapping <- cbind(data.table::as.data.table(sp::coordinates(areaPolygons)), areaPolygons[[polygonName]])
+  names(mapping) <- c(lonColName, latColName, areaName)
+
+  newTab <- merge(table, mapping, all.x=T)
+
+  return(newTab)
 }
