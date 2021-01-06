@@ -91,6 +91,7 @@ for (i in 1:nrow(ICESareas)){
 ICESareas$polygonName <- ICESareas$Area_27
 ICESareas$OBJECTID_1 <- NULL
 ICESareas$OBJECTID <- NULL
+names(ICESareas)[names(ICESareas) == "SubDivisio"] <- "SubDivision"
 ICESareas <- sp::spTransform(ICESareas, commonCRS)
 usethis::use_data(ICESareas, overwrite = T, compress = "xz")
 
