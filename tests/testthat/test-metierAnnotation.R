@@ -33,7 +33,7 @@ testdata <- data.table::data.table(id=seq(1,6), gear=as.character(c(51,51,22,22,
 regularfile <- system.file("testresources","metiermapping_example.txt", package="RstoxFDA")
 metiertable <- readMetierTable(regularfile)
 
-annotated <- assignMetier(testdata, metiertable, "gear", meshSizeColumn = "meshSize", selectivityDeviceColumn = "selDev", selectivityDeviceMeshSizeColumn = "selDevMS")
+annotated <- appendMetier(testdata, metiertable, "gear", meshSizeColumn = "meshSize", selectivityDeviceColumn = "selDev", selectivityDeviceMeshSizeColumn = "selDevMS")
 expect_equal(ncol(annotated), ncol(testdata) + 1)
 expect_equal(nrow(annotated), nrow(testdata))
 expect_true("metier" %in% names(annotated))
@@ -41,7 +41,7 @@ expect_equal(annotated$metier[1], "OTB_DEF_0_120_1_101-120")
 expect_equal(annotated$metier[2], "OTB_DEF_0_120_1_80-100")
 
 context("metier Annotation with filename definitions provided as filename")
-annotated <- assignMetier(testdata, regularfile, "gear", meshSizeColumn = "meshSize", selectivityDeviceColumn = "selDev", selectivityDeviceMeshSizeColumn = "selDevMS")
+annotated <- appendMetier(testdata, regularfile, "gear", meshSizeColumn = "meshSize", selectivityDeviceColumn = "selDev", selectivityDeviceMeshSizeColumn = "selDevMS")
 expect_equal(annotated$metier[1], "OTB_DEF_0_120_1_101-120")
 
 
@@ -54,13 +54,13 @@ testdata <- data.table::data.table(id=seq(1,6), gear=as.character(c(NA,51,22,22,
 regularfile <- system.file("testresources","metiermapping_example.txt", package="RstoxFDA")
 metiertable <- readMetierTable(regularfile)
 
-annotated <- assignMetier(testdata, metiertable, "gear", meshSizeColumn = "meshSize", selectivityDeviceColumn = "selDev", selectivityDeviceMeshSizeColumn = "selDevMS")
+annotated <- appendMetier(testdata, metiertable, "gear", meshSizeColumn = "meshSize", selectivityDeviceColumn = "selDev", selectivityDeviceMeshSizeColumn = "selDevMS")
 expect_equal(annotated$metier[1], "MIS_MIS")
 
 
 
 context("Annotation error checks")
-expect_error(assignMetier(testdata, metiertable, "gear"))
+expect_error(appendMetier(testdata, metiertable, "gear"))
 
 metiertableMissingConflict <- metiertable
 metiertableMissingConflict[1,] <-metiertableMissingConflict[2,]

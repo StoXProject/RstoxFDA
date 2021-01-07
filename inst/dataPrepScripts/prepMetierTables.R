@@ -4,8 +4,8 @@ library(data.table)
 # prepares example activity census for metier annotation based on logbooks
 #
 prepMetier4 <- function(){
-  metier4table <- data.table(metier=as.character( c("MIS","SX","PS","SB","PS","SB", "GN","GNS","GND", "LX","LLD","LL","LHM","LTL","LLS", "FIX","FYK","FPO","FYK","FPO","MIS", "TX","OTB","PTB","OTM","PTM","TBS","TBB","TBN","OTT","TX", "SSC", "HAR","HAR","HAR", "MIS","DRB","MIS", "MIS","MIS")),
-                            gearcode=as.character(c(NA,   "10","11","12","14","15", "20","22", "21",  "30", "31","32", "33", "34","35",  "40", "41","42",  "43", "44", "45",  "50", "51", "52", "53","54", "55", "56", "57", "58", "59", "61",  "70", "71", "72",  "80","81","82",   "90", "99")),
+  metier4table <- data.table(metier=as.character( c("MIS","SX","PS","SB","PS","SB", "GN","GNS","GND", "LX","LLD","LL","LHM","LTL","LLS", "FIX","FYK","FPO","FYK","FPO","MIS", "TX","OTB","PTB","OTM","PTM","TBS","TBB","TBN","OTT","TX", "SSC", "HAR","HAR","HAR", "MIS","DRB","MIS","MIS", "MIS","MIS")),
+                            gearcode=as.character(c(NA,   "10","11","12","14","15", "20","22", "21",  "30", "31","32", "33", "34","35",  "40", "41","42",  "43", "44", "45",  "50", "51", "52", "53","54", "55", "56", "57", "58", "59", "61",  "70", "71", "72",  "80","81","82","83",     "90", "99")),
                             target=as.character(NA),
                             meshedGear=as.logical(NA),
                             lowerMeshSize=as.numeric(NA),
