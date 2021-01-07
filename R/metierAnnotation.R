@@ -487,8 +487,7 @@ appendMetier <- function(data, metiertable, gearColumn, targetColumn=NULL, meshS
     stop("The parameter 'data' must be provided.")
   }
   if (!data.table::is.data.table(data)){
-    warning("Coercing 'data' to data.table")
-    data <- data.table::as.data.table(data)
+    stop("Parameter 'data' must be a data.table")
   }
 
   if (is.null(metiertable)){
