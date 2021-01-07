@@ -31,7 +31,7 @@ Partitions total catch of each species for each trip on provided grouping variab
  NAs in weights are ignored (treated as zero).
 }
 \details{
-Default parameters are compatible \code{\link[RstoxData]{readErsFile}} with tripids annotated by \code{\link[RstoxFDA]{assignTripIdLogbooks}}.
+Default parameters are compatible \code{\link[RstoxData]{readErsFile}} with tripids annotated by \code{\link[RstoxFDA]{appendTripIdLogbooks}}.
 
  For other partitionings of logbooks, consider \code{\link[RstoxFDA]{tabulateFisheries}}.
 }
@@ -43,7 +43,7 @@ Default parameters are compatible \code{\link[RstoxData]{readErsFile}} with trip
   landings <- RstoxData::readLssFile(lssfile)
   logbooks <- RstoxData::readErsFile(logbfile)
   tripIds <- makeTripIds(landings)
-  logbooksWtripIds <- assignTripIdLogbooks(logbooks, tripIds)
+  logbooksWtripIds <- appendTripIdLogbooks(logbooks, tripIds)
 
   logbooksWtripIds$mainArea <- substring(logbooksWtripIds$LOKASJON_START,1,2)
   fractions <- calculateLogbookPartitionByTrip(logbooksWtripIds, "mainArea")

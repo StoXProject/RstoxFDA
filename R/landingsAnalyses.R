@@ -85,8 +85,8 @@ makeTripIds <- function(landings, vesselIdCol="Radiokallesignal (seddel)", lastC
 #'    landings <- RstoxData::readLssFile(lssfile)
 #'    logbooks <- RstoxData::readErsFile(logbfile)
 #'    tripIds <- makeTripIds(landings)
-#'    logbooksWtripIds <- assignTripIdLogbooks(logbooks, tripIds)
-#'    landingsWtripIds <- assignTripIdLandings(landings, tripIds)
+#'    logbooksWtripIds <- appendTripIdLogbooks(logbooks, tripIds)
+#'    landingsWtripIds <- appendTripIdLandings(landings, tripIds)
 #'
 #'    firstCatch <- logbooksWtripIds[!duplicated(logbooksWtripIds$tripid),]
 #'    landingsWmeshSize <- merge(landingsWtripIds,
@@ -95,7 +95,7 @@ makeTripIds <- function(landings, vesselIdCol="Radiokallesignal (seddel)", lastC
 #'                               all.x=T)
 #'  }
 #' @export
-assignTripIdLandings <- function(landings, tripIds=NULL, vesselIdCol="Radiokallesignal (seddel)", lastCatchCol="Siste fangstdato", tripIdCol="tripid"){
+appendTripIdLandings <- function(landings, tripIds=NULL, vesselIdCol="Radiokallesignal (seddel)", lastCatchCol="Siste fangstdato", tripIdCol="tripid"){
 
   if (!all(c(vesselIdCol, lastCatchCol) %in% names(landings))){
     stop("Columns identified by 'vesselIdCol' or 'lastCatchCol' not found in 'landings.")

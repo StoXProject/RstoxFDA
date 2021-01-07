@@ -11,6 +11,6 @@ tripIds <- makeTripIds(land)
 expect_equal(names(tripIds), c("vesselId", "time", "tripId"))
 expect_gt(nrow(tripIds),0)
 
-context("Test assign trip landings")
-landA <- assignTripIdLandings(land, tripIdCol = "tt")
+context("Test append trip landings")
+landA <- appendTripIdLandings(land, tripIdCol = "tt")
 expect_true(all(!is.na(landA$tt)))
