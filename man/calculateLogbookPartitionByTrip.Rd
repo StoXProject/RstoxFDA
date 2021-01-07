@@ -33,7 +33,7 @@ Partitions total catch of each species for each trip on provided grouping variab
 \details{
 Default parameters are compatible \code{\link[RstoxData]{readErsFile}} with tripids annotated by \code{\link[RstoxFDA]{assignTripIdLogbooks}}.
 
- For other partitionings of logbooks, consider \code{\link[RstoxData]{tabulateFisheries}}.
+ For other partitionings of logbooks, consider \code{\link[RstoxFDA]{tabulateFisheries}}.
 }
 \examples{
  \dontrun{
