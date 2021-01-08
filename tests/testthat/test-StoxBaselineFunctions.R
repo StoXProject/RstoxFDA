@@ -304,28 +304,11 @@ expect_error(AppendPositionLanding(stoxLandingPre, areaPos, latColName = "CatchD
 
 
 
-context("test-StoxBaselineFunctions: appendAreaCode")
-strp <- RstoxBase::DefineStrata(NULL, "ResourceFile", system.file("testresources", "mainarea_fdir_fom2018_strata.txt", package="RstoxFDA"))
-sp::proj4string(strp) <- sp::CRS("+proj=longlat +datum=WGS84")
-
-areafile <- system.file("testresources","mainarea_fdir_from_2018_compl.txt", package="RstoxFDA")
-areaPos <- DefineAreaCodePosition(resourceFilePath = areafile)
-
-areaPosPost <- appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended")
-expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppended)))
-
-context("test-StoxBaselineFunctions: appendAreaCode wrong projection")
-strp <- sp::spTransform(strp, sp::CRS("+proj=longlat +datum=NAD83"))
-expect_error(appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended"))
-
-
-
-
 
 
 context("test-StoxBaselineFunctions: AppendStratumStoxLanding")
 
-strp <- RstoxBase::DefineStrata(NULL, "ResourceFile", system.file("testresources", "mainarea_fdir_fom2018_strata.txt", package="RstoxFDA"))
+strp <- RstoxBase::DefineStratumPolygon(NULL, F, "ResourceFile", system.file("testresources", "mainarea_fdir_fom2018_strata.txt", package="RstoxFDA"))
 sp::proj4string(strp) <- sp::CRS("+proj=longlat +datum=WGS84")
 
 areafile <- system.file("testresources","mainarea_fdir_from_2018_compl.txt", package="RstoxFDA")

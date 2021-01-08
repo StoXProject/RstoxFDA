@@ -36,3 +36,98 @@ tabulateFisheries <- function(data, weightCol="LiveWeightKG", cellCols=c("Metier
   return(data.table::as.data.table(tab))
 
 }
+
+#' Make trip IDs
+#' @description
+#'  Extracts trip IDs from landings.
+#' @param landings \code{\link[data.table]{data.table}} containing landings records
+#' @param vesselIdCol character() that identifies a column in 'landings' that contain the vessel id (e.g. radio call signal) of the landing vessel. Default compatible with \code{\link[RstoxData]{readLssFile}}.
+#' @param lastCatchCol character() that identifies a Date column in 'landings' that contain the date of last catch for each record. Default compatible with \code{\link[RstoxData]{readLssFile}}.
+#' @return \code{\link[data.table]{data.table}} with columns 'vesselId', 'time' and 'tripId'
+#' @examples
+#'  \dontrun{
+#'    #make trip ids for landings
+#'    lssfile <- "" #set appropriately
+#'    landings <- RstoxData::readLssFile(lssfile)
+#'    tripIds <- makeTripIds(landings)
+#'  }
+#' @export
+#' @export
+makeTripIds <- function(landings, vesselIdCol="Radiokallesignal (seddel)", lastCatchCol="Siste fangstdato"){
+
+  if (!data.table::is.data.table(landings)){
+    stop("Parameter 'landings' must be a data table")
+  }
+
+  if (!all(c(vesselIdCol, lastCatchCol) %in% names(landings))){
+    stop("Columns identified by 'vesselIdCol' or 'lastCatchCol' not found in 'landings.")
+  }
+
+  tripIds <- unique(landings[,.SD, .SDcols=c(vesselIdCol, lastCatchCol)])
+  names(tripIds) <- c("vesselId", "time")
+  tripIds$time <- as.Date(tripIds$time)
+  tripIds$tripId <- paste(tripIds$vesselId, tripIds$time, sep="/")
+  return(tripIds)
+}
+
+#' Assign trip IDs
+#' @description
+#'  Assigns trip IDs to landings based on vessel identifier and date of last catch.
+#' @details
+#'  if 'tripIds' is NULL, trip IDs will be constructed from landings using \code{\link[RstoxFDA]{makeTripIds}}
+#' @param landings \code{\link[data.table]{data.table}} containing landings records
+#' @param tripIds \code{\link[data.table]{data.table}} with columns 'vesselId', 'time' and 'tripId'
+#' @param vesselIdCol character() that identifies a column in 'landings' that contain the vessel id (e.g. radio call signal) of the landing vessel. Default compatible with \code{\link[RstoxData]{readLssFile}}.
+#' @param lastCatchCol character() that identifies a POSIXct column in 'landings' that contain the time of last catch for each record. Default compatible with \code{\link[RstoxData]{readLssFile}}.
+#' @param tripIdCol character() that identifies the column name to append to 'landings'
+#' @return \code{\link[data.table]{data.table}} with columns 'vesselId' and 'time'
+#' @examples
+#'  \dontrun{
+#'    #merge mesh size from first operation on a trip into landings
+#'    lssfile <- "" #set appropriately
+#'    logbfile <- "" #set appropriately
+#'    landings <- RstoxData::readLssFile(lssfile)
+#'    logbooks <- RstoxData::readErsFile(logbfile)
+#'    tripIds <- makeTripIds(landings)
+#'    logbooksWtripIds <- appendTripIdLogbooks(logbooks, tripIds)
+#'    landingsWtripIds <- appendTripIdLandings(landings, tripIds)
+#'
+#'    firstCatch <- logbooksWtripIds[!duplicated(logbooksWtripIds$tripid),]
+#'    landingsWmeshSize <- merge(landingsWtripIds,
+#'                               firstCatch[,c("tripid", "MASKEVIDDE")],
+#'                               by="tripid",
+#'                               all.x=T)
+#'  }
+#' @export
+appendTripIdLandings <- function(landings, tripIds=NULL, vesselIdCol="Radiokallesignal (seddel)", lastCatchCol="Siste fangstdato", tripIdCol="tripid"){
+
+  if (!data.table::is.data.table(landings)){
+    stop("Parameter 'landings' must be a data table")
+  }
+
+  if (!all(c(vesselIdCol, lastCatchCol) %in% names(landings))){
+    stop("Columns identified by 'vesselIdCol' or 'lastCatchCol' not found in 'landings.")
+  }
+
+  if (is.null(tripIds)){
+    tripIds <- makeTripIds(landings, vesselIdCol, lastCatchCol)
+  }
+
+  if (tripIdCol %in% names(landings)){
+    stop("The column", tripIdCol,"already exist in 'landings'.")
+  }
+  if (!all(c(lastCatchCol, vesselIdCol) %in% names(landings))){
+    stop("The columns identified by 'datecol' or 'vesselIdCol' are not found in 'landings'.")
+  }
+  if (!all(c("vesselId", "time", "tripId") %in% names(tripIds))){
+    stop("The columns 'vesselId', 'time' or 'tripId' are not found in 'tripIds'.")
+  }
+  names(tripIds)[names(tripIds)=="tripId"] <- tripIdCol
+
+  stopifnot(!any("dolcTemp" %in% names(landings)))
+  landings$dolcTemp <- as.Date(landings[[lastCatchCol]])
+  output <- merge(landings, tripIds, by.x=c(vesselIdCol, "dolcTemp"), by.y=c("vesselId", "time"), all.x=T)
+  output$dolcTemp <- NULL
+  return(output)
+
+}

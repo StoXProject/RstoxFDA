@@ -443,7 +443,7 @@ checkSelectivityDevice <- function(selectivityDeviceVector, metiertable){
 #'  data(activityCensus)
 #'
 #'  # annotate metier lvl 4 on the cencus based on gear, and compare with finer gear declaration.
-#'  annotated <- assignMetier(activityCensus,
+#'  annotated <- appendMetier(activityCensus,
 #'           metier4table,
 #'           "gearNS",
 #'           metierColName = "metier4")
@@ -452,7 +452,7 @@ checkSelectivityDevice <- function(selectivityDeviceVector, metiertable){
 #'  data(metier5table)
 #'  # annotate metier lvl 5 on COD-catches based on only gear,
 #'  # and compare with declarations for shrimp fisheries
-#'  annotated <- assignMetier(activityCensus[activityCensus$species=="COD"],
+#'  annotated <- appendMetier(activityCensus[activityCensus$species=="COD"],
 #'           metier5table,
 #'           "gearNS",
 #'           metierColName = "metier5")
@@ -463,12 +463,12 @@ checkSelectivityDevice <- function(selectivityDeviceVector, metiertable){
 #'  data(metier6table)
 #'  # annotate metier lvl 6 on COD-catches based on gear and mesh size,
 #'  # and compare with lvl 5 annotations from last example
-#'  annotated <- assignMetier(activityCensus[activityCensus$species=="COD"],
+#'  annotated <- appendMetier(activityCensus[activityCensus$species=="COD"],
 #'           metier6table,
 #'           "gearNS",
 #'           meshSizeColumn = "meshSize",
 #'           metierColName = "metier6")
-#'  annotated <- assignMetier(annotated,
+#'  annotated <- appendMetier(annotated,
 #'            metier5table,
 #'            "gearNS",
 #'            metierColName = "metier5")
@@ -477,7 +477,7 @@ checkSelectivityDevice <- function(selectivityDeviceVector, metiertable){
 #'
 #' @import data.table
 #' @export
-assignMetier <- function(data, metiertable, gearColumn, targetColumn=NULL, meshSizeColumn=NULL, selectivityDeviceColumn=NULL, selectivityDeviceMeshSizeColumn=NULL, metierColName="metier"){
+appendMetier <- function(data, metiertable, gearColumn, targetColumn=NULL, meshSizeColumn=NULL, selectivityDeviceColumn=NULL, selectivityDeviceMeshSizeColumn=NULL, metierColName="metier"){
 
   if (is.character(metiertable))(
     metiertable <- readMetierTable(metiertable)
@@ -487,8 +487,7 @@ assignMetier <- function(data, metiertable, gearColumn, targetColumn=NULL, meshS
     stop("The parameter 'data' must be provided.")
   }
   if (!data.table::is.data.table(data)){
-    warning("Coercing 'data' to data.table")
-    data <- data.table::as.data.table(data)
+    stop("Parameter 'data' must be a data.table")
   }
 
   if (is.null(metiertable)){

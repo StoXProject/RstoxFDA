@@ -53,3 +53,45 @@ gearConversion2["TBS"] <- 1
 gearConversion2["TBN"] <- 2
 gearConversion2["OTB"] <- 3
 expect_warning(convertCodes(c("TBS", "TBN", "OTB"), gearConversion2), "Coercing converted codes to character")
+
+
+context("test-DataPrep: append area code")
+strp <- RstoxBase::DefineStratumPolygon(NULL, F, "ResourceFile",system.file("testresources", "mainarea_fdir_fom2018_strata.txt", package="RstoxFDA"))
+sp::proj4string(strp) <- sp::CRS("+proj=longlat +datum=WGS84")
+
+areafile <- system.file("testresources","mainarea_fdir_from_2018_compl.txt", package="RstoxFDA")
+areaPos <- DefineAreaCodePosition(resourceFilePath = areafile)
+
+areaPosPost <- appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended")
+expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppended)))
+
+areaPosPost <- appendAreaCode(areaPos, mainareaFdir2017, "Latitude", "Longitude", "AreaAppended")
+expect_true(all(!is.na((areaPosPost$AreaAppended))))
+
+areaPosPost <- appendAreaCode(areaPos, mainareaFdir2018, "Latitude", "Longitude", "AreaAppended")
+expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppended)))
+
+
+context("test-StoxBaselineFunctions: appendAreaCode wrong projection")
+strp <- sp::spTransform(strp, sp::CRS("+proj=longlat +datum=NAD83"))
+expect_error(appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended"))
+
+context("test-StoxBaselineFunctions: appendAreaCode non-numeric lat")
+areaPos[["Latitude"]] <- as.character(areaPos[["Latitude"]])
+expect_error(appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended"))
+
+areaPos[["Latitude"]] <- NULL
+expect_error(appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended"))
+
+
+context("test-StoxBaselineFunctions: appendPosition")
+areaTab <- DefineAreaCodePosition(resourceFilePath = areafile)[,c("Area", "SubArea")]
+areaTabAppended <- appendPosition(areaTab, mainareaFdir2018, "Area", "lat", "lon")
+areaTabReAppended <- appendAreaCode(areaTabAppended, mainareaFdir2018, "lat", "lon", "Area2")
+expect_true(all(areaTabReAppended$Area == areaTabReAppended$Area2))
+
+context("test-StoxBaselineFunctions: appendPosition wrong projection")
+strp <- sp::spTransform(strp, sp::CRS("+proj=merc"))
+expect_warning(appendPosition(areaTab, strp, "Area", "lat", "lon"))
+
+

@@ -20,7 +20,7 @@
 #' @examples
 #' data(metier6table)
 #' data(activityCensus)
-#' annotated <- assignMetier(activityCensus[activityCensus$species=="COD"],
+#' annotated <- appendMetier(activityCensus[activityCensus$species=="COD"],
 #'         metier6table,
 #'         "gearNS",
 #'         meshSizeColumn = "meshSize",
