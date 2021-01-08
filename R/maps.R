@@ -29,7 +29,7 @@
 #'
 #'  data(mainareaFdir2018)
 #'  data(NAFOareas)
-#'  # plot mainarea and NAFO areas combined in mercator projection
+#'  # plot mainarea and NAFO areas combined in mercator projection.
 #'  plotArea(title="Main area + NAFO",
 #'           areaDef=rbind(mainareaFdir2018[,c("polygonName")],
 #'                   NAFOareas[,c("polygonName")]),
