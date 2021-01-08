@@ -26,7 +26,7 @@ The code example below annotates an activity census of COD-catches with FAO-gear
 \examples{
 data(metier5table)
 data(activityCensus)
-annotated <- assignMetier(activityCensus[activityCensus$species=="COD"],
+annotated <- appendMetier(activityCensus[activityCensus$species=="COD"],
          metier5table,
          "gearNS",
          metierColName = "metier5")

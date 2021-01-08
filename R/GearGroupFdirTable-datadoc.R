@@ -13,7 +13,7 @@
 #' @examples
 #' data(GearGroupFdirTable)
 #' data(activityCensus)
-#' annotated <- assignMetier(activityCensus,
+#' annotated <- appendMetier(activityCensus,
 #'                           GearGroupFdirTable,
 #'                           "gearNS",
 #'                           metierColName = "Hovedgruppe Redskap")

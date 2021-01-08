@@ -14,3 +14,6 @@ expect_gt(nrow(tripIds),0)
 context("Test append trip landings")
 landA <- appendTripIdLandings(land, tripIdCol = "tt")
 expect_true(all(!is.na(landA$tt)))
+
+context("Test append trip landings error: data frame")
+expect_error(appendTripIdLandings(as.data.frame(land), tripIdCol = "tt"), "Parameter 'landings' must be a data table")

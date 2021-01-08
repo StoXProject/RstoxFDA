@@ -55,6 +55,10 @@ tabulateFisheries <- function(data, weightCol="LiveWeightKG", cellCols=c("Metier
 #' @export
 makeTripIds <- function(landings, vesselIdCol="Radiokallesignal (seddel)", lastCatchCol="Siste fangstdato"){
 
+  if (!data.table::is.data.table(landings)){
+    stop("Parameter 'landings' must be a data table")
+  }
+
   if (!all(c(vesselIdCol, lastCatchCol) %in% names(landings))){
     stop("Columns identified by 'vesselIdCol' or 'lastCatchCol' not found in 'landings.")
   }
@@ -96,6 +100,10 @@ makeTripIds <- function(landings, vesselIdCol="Radiokallesignal (seddel)", lastC
 #'  }
 #' @export
 appendTripIdLandings <- function(landings, tripIds=NULL, vesselIdCol="Radiokallesignal (seddel)", lastCatchCol="Siste fangstdato", tripIdCol="tripid"){
+
+  if (!data.table::is.data.table(landings)){
+    stop("Parameter 'landings' must be a data table")
+  }
 
   if (!all(c(vesselIdCol, lastCatchCol) %in% names(landings))){
     stop("Columns identified by 'vesselIdCol' or 'lastCatchCol' not found in 'landings.")

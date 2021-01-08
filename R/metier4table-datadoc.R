@@ -15,6 +15,6 @@
 #' @examples
 #' data(metier4table)
 #' data(activityCensus)
-#' annotated <- assignMetier(activityCensus, metier4table, "gearNS", metierColName = "metier4")
+#' annotated <- appendMetier(activityCensus, metier4table, "gearNS", metierColName = "metier4")
 #' table(annotated$gearFAO, annotated$metier4)
 "metier4table"
