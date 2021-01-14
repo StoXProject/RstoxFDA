@@ -102,42 +102,42 @@ expect_false(any(is.na(temp$year)))
 
 
 
-context("test-StoxBaselineFunctions: DefineAreaCodePosition")
+context("test-StoxBaselineFunctions: DefineAreaPosition")
 regularfile <- system.file("testresources","mainarea_fdir_from_2018_incl.txt", package="RstoxFDA")
-areaPos <- DefineAreaCodePosition(resourceFilePath = regularfile)
+areaPos <- DefineAreaPosition(NULL, FileName = regularfile, StratumPolygon = NULL)
 expect_true(data.table::is.data.table(areaPos))
 expect_equal(nrow(areaPos), 21)
 expect_equal(ncol(areaPos), 4)
 
-context("test-StoxBaselineFunctions: DefineAreaCodePosition useProcessData")
-nullPos <- DefineAreaCodePosition(NULL, resourceFilePath = regularfile, useProcessData = T)
+context("test-StoxBaselineFunctions: DefineAreaPosition useProcessData")
+nullPos <- DefineAreaPosition(NULL, FileName = regularfile, UseProcessData = T)
 expect_true(is.null(nullPos))
 
-context("test-StoxBaselineFunctions: DefineAreaCodePosition malformed")
+context("test-StoxBaselineFunctions: DefineAreaPosition malformed")
 errorfile <- system.file("testresources","areaPosError.txt", package="RstoxFDA")
-expect_error(DefineAreaCodePosition(resourceFilePath = errorfile), "Malformed resource file. Some Area does not have coordinates defined for the case when location is missing.")
+expect_error(DefineAreaPosition(NULL, FileName = errorfile), "Malformed resource file. Some Area does not have coordinates defined for the case when location is missing.")
 
 
 
 
 context("test-StoxBaselineFunctions: DefineCarNeighbours")
 carfile <- system.file("testresources","mainarea_neighbour.txt", package="RstoxFDA")
-car <- DefineCarNeighbours(resourceFilePath = carfile)
+car <- DefineCarNeighbours(NULL, FileName = carfile)
 expect_true(data.table::is.data.table(car))
 expect_equal(nrow(car), 60)
 expect_equal(ncol(car), 2)
 
 context("test-StoxBaselineFunctions: DefineCarNeighbours useProcessData")
-nullCar <- DefineCarNeighbours(NULL, resourceFilePath = carfile, useProcessData = T)
+nullCar <- DefineCarNeighbours(NULL, FileName = carfile, UseProcessData = T)
 expect_true(is.null(nullCar))
 
 context("test-StoxBaselineFunctions: DefineCarNeighbours non-symmetric")
 errorfile <- system.file("testresources","mainarea_error.txt", package="RstoxFDA")
-expect_error(DefineCarNeighbours(resourceFilePath = errorfile), "Neighbour definition not symmetric. 1 is neighbour of 0 but not vice versa.")
+expect_error(DefineCarNeighbours(NULL, FileName = errorfile), "Neighbour definition not symmetric. 1 is neighbour of 0 but not vice versa.")
 
 context("test-StoxBaselineFunctions: DefineCarNeighbours repeated key")
 errorfile <- system.file("testresources","mainarea_error2.txt", package="RstoxFDA")
-expect_error(DefineCarNeighbours(resourceFilePath = errorfile), "Malformed resource file, Non-unique keys: repition in first column: 1")
+expect_error(DefineCarNeighbours(NULL, FileName = errorfile), "Malformed resource file, Non-unique keys: repition in first column: 1")
 
 
 
@@ -217,14 +217,14 @@ gearfile <- system.file("testresources","gearfactor.txt", package="RstoxFDA")
 stoxLandingXml <- system.file("testresources","landing.xml", package="RstoxFDA")
 
 gear <- DefineGear(NULL, resourceFilePath = gearfile)
-stoxLandingPre <- RstoxData::StoxLanding(RstoxData::readXmlFile(stoxLandingXml))
+stoxLandingPre <- RstoxData::StoxLanding(RstoxData::ReadLanding(stoxLandingXml))
 stoxLandingPost <- AppendGearStoxLanding(stoxLandingPre, gear)
-expect_true(data.table::is.data.table(stoxLandingPost))
-expect_equal(ncol(stoxLandingPost), ncol(stoxLandingPre) + 1)
+expect_true(RstoxData::is.StoxLandingData(stoxLandingPost))
+expect_equal(ncol(stoxLandingPost$landings), ncol(stoxLandingPre$landings) + 1)
 expect_false(any(is.na(stoxLandingPost$UnifiedGear)))
 
 #try on proper format as well.
-landingH <- RstoxData::readXmlFile(system.file("testresources","landing.xml", package="RstoxFDA"), stream = T)
+landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
 stoxLandingPre <- RstoxData:::StoxLanding(landingH)
 stoxLandingPost <- AppendGearStoxLanding(stoxLandingPre, gear)
 expect_false(any(is.na(stoxLandingPost$UnifiedGear)))
@@ -270,7 +270,7 @@ expect_error(appendTemporal(tabMultiYear, "period", my, datecolumns = c("stopD",
 
 context("test-StoxBaselineFunctions: AppendTemporalStoxLanding")
 temp <- DefineTemporalCategories(NULL, temporalCategory = "Quarter")
-landingH <- RstoxData::readXmlFile(system.file("testresources","landing.xml", package="RstoxFDA"), stream = T)
+landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
 stoxLandingPre <- RstoxData:::StoxLanding(landingH)
 stoxLandingPost <- AppendTemporalStoxLanding(stoxLandingPre, temp)
 expect_false(any(is.na(stoxLandingPost$TemporalCategory)))
@@ -281,26 +281,27 @@ expect_error(AppendTemporalStoxLanding(stoxLandingPre, temp, columnName = "Catch
 
 context("test-StoxBaselineFunctions: AppendPositionLanding missing")
 regularfile <- system.file("testresources","mainarea_fdir_from_2018_incl.txt", package="RstoxFDA")
-areaPos <- DefineAreaCodePosition(resourceFilePath = regularfile)
-landingH <- RstoxData::readXmlFile(system.file("testresources","landing.xml", package="RstoxFDA"), stream = T)
+areaPos <- DefineAreaPosition(NULL, FileName = regularfile, StratumPolygon = NULL)
+landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
 stoxLandingPre <- RstoxData:::StoxLanding(landingH)
-expect_error(AppendPositionLanding(stoxLandingPre, areaPos))
-expect_error(AppendPositionLanding(stoxLandingPre, areaPos, resolution = "Location"))
+expect_error(AddAreaPositionStoxLanding(stoxLandingPre, areaPos, resolution = "Location"))
+expect_error(AddAreaPositionStoxLanding(stoxLandingPre, areaPos))
 
 context("test-StoxBaselineFunctions: AppendPositionLanding regular run")
 regularfile <- system.file("testresources","mainarea_fdir_from_2018_compl.txt", package="RstoxFDA")
-areaPos <- DefineAreaCodePosition(resourceFilePath = regularfile)
-landingPost <- AppendPositionLanding(stoxLandingPre, areaPos)
-expect_true(all(c("Latitude", "Longitude") %in% names(landingPost)))
-expect_true(all(!is.na(landingPost$Latitude)))
-expect_true(all(!is.na(landingPost$Longitude)))
+areaPos <- DefineAreaPosition(NULL, FileName = regularfile, StratumPolygon = NULL)
+landingPost <- AddAreaPositionStoxLanding(stoxLandingPre, areaPos)
+expect_true(all(c("Latitude", "Longitude") %in% names(landingPost$landings)))
+expect_true(all(!is.na(landingPost$landings$Latitude)))
+expect_true(all(!is.na(landingPost$landings$Longitude)))
 
-lata <- min(landingPost$Latitude[1])
-landingPost <- AppendPositionLanding(stoxLandingPre, areaPos, resolution = "SubArea")
-expect_false(lata == min(landingPost$Latitude[1]))
+lata <- min(landingPost$landing$Latitude[1])
+landingPost <- AddAreaPositionStoxLanding(stoxLandingPre, areaPos, resolution = "Location")
+expect_false(lata == min(landingPost$landings$Latitude[1]))
 
 context("test-StoxBaselineFunctions: AppendPositionLanding used colName")
-expect_error(AppendPositionLanding(stoxLandingPre, areaPos, latColName = "CatchDate"), "Column CatchDate already exists.")
+stoxLandingPre <- AddAreaPositionStoxLanding(stoxLandingPre, areaPos)
+expect_error(AddAreaPositionStoxLanding(stoxLandingPre, areaPos), "Column Latitude already exists.")
 
 
 
@@ -312,11 +313,11 @@ strp <- RstoxBase::DefineStratumPolygon(NULL, F, "ResourceFile", system.file("te
 sp::proj4string(strp) <- sp::CRS("+proj=longlat +datum=WGS84")
 
 areafile <- system.file("testresources","mainarea_fdir_from_2018_compl.txt", package="RstoxFDA")
-areaPos <- DefineAreaCodePosition(resourceFilePath = areafile)
+areaPos <- DefineAreaPosition(NULL, FileName = areafile, StratumPolygon = NULL)
 
-landingH <- RstoxData::readXmlFile(system.file("testresources","landing.xml", package="RstoxFDA"), stream = T)
+landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
 stoxLandingPre <- RstoxData:::StoxLanding(landingH)
-landingWpos <- AppendPositionLanding(stoxLandingPre, areaPos)
+landingWpos <- AddAreaPositionStoxLanding(stoxLandingPre, areaPos)
 
-landingPost <- AppendStratumStoxLanding(landingWpos, strp)
+landingPost <- AddStratumStoxLanding(landingWpos, strp)
 expect_true(all(as.integer(landingPost$Stratum)==as.integer(landingPost$area)))

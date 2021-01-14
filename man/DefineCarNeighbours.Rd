@@ -6,19 +6,19 @@
 \usage{
 DefineCarNeighbours(
   processData,
-  resourceFilePath,
-  encoding = "UTF-8",
-  useProcessData = F
+  DefinitionMethod = c("ResourceFile"),
+  FileName,
+  UseProcessData = FALSE
 )
 }
 \arguments{
 \item{processData}{data.table() as returned from this function}
 
-\item{resourceFilePath}{path to resource file}
+\item{DefinitionMethod}{ResourceFile}
 
-\item{encoding}{encoding of resource file}
+\item{FileName}{path to file for resource}
 
-\item{useProcessData}{logical() Bypasses execution of function, and simply returns argument 'processData'}
+\item{useProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
 }
 \value{
 Area Neighbour Definition, see: \code{\link[RstoxFDA]{CarNeighbours}}.

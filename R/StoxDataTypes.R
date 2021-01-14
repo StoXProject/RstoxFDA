@@ -213,7 +213,7 @@ is.TemporalDefinition <- function(TemporalDefinition){
   return(TRUE)
 }
 
-#' Area Code Positions (AreaCodePosition)
+#' Area Code Positions (AreaPosition)
 #'
 #' Table (\code{\link[data.table]{data.table}}) defining a position for area codes.
 #'
@@ -226,21 +226,21 @@ is.TemporalDefinition <- function(TemporalDefinition){
 #'  }
 #'  If location is provided, the case for missing location is also encoded.
 #'
-#' @name AreaCodePosition
+#' @name AreaPosition
 #'
 NULL
 
-#' Check if argument is AreaCodePosition
+#' Check if argument is AreaPosition
 #' @description
-#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AreaCodePosition}}
-#' @param AreaCodePosition argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{AreaCodePosition}}
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AreaPosition}}
+#' @param AreaPosition argument to be checked for data conformity
+#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{AreaPosition}}
 #' @export
-is.AreaCodePosition <- function(AreaCodePosition){
-  if (!data.table::is.data.table(AreaCodePosition)){
+is.AreaPosition <- function(AreaPosition){
+  if (!data.table::is.data.table(AreaPosition)){
     return(FALSE)
   }
-  if (!all(c("Area", "SubArea", "Latitude", "Longitude") %in% names(AreaCodePosition))){
+  if (!all(c("Area", "Location", "Latitude", "Longitude") %in% names(AreaPosition))){
     return(FALSE)
   }
 
@@ -362,200 +362,224 @@ is.ClassificationError <- function(ClassificationError){
   return(TRUE)
 }
 
-#' Function specification for inclusion in StoX projects
+#' Function specification for inclusion in StoX UI
 #' @export
 stoxFunctionAttributes <- list(
 
-  DefineGear = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "UnifiedVariableDefinition",
-    functionParameterType = list(resourceFilePath = "character"),
-    functionParameterFormat = list(resourceFilePath = "filePaths"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  DefineTemporalCategories = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "TemporalDefinition",
-    functionParameterType = list(temporalCategory = "character",
-                                 customPeriods = "character",
-                                 seasonal = "logical",
-                                 years = "integer"),
-    functionParameterFormat = list(customPeriods = "vector",
-                                   years = "vector"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  DefineAreaCodePosition = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "AreaCodePosition",
-    functionParameterType = list(resourceFilePath = "character"),
-    functionParameterFormat = list(resourceFilePath = "filePaths"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  DefineCarNeighbours = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "CarNeighbours",
-    functionParameterType = list(resourceFilePath = "character"),
-    functionParameterFormat = list(resourceFilePath = "filePaths"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  DefineAgeErrorMatrix  = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "AgeErrorMatrix",
-    functionParameterType = list(resourceFilePath = "character"),
-    functionParameterFormat = list(resourceFilePath = "filePaths"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  DefineClassificationError  = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "ClassificationError",
-    functionParameterType = list(resourceFilePath = "character"),
-    functionParameterFormat = list(resourceFilePath = "filePaths"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  AppendGearStoxBiotic  = list(
-    functionType = "modelData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "StoxBioticData",
-    functionParameterType = list(StoxBioticData = "character",
-                                 UnifiedVariableDefinition = "character"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  AppendGearStoxLanding  = list(
-    functionType = "modelData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "StoxLandingData",
-    functionParameterType = list(StoxBioticData = "character",
-                                 UnifiedVariableDefinition = "character"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  AppendTemporalStoxLanding  = list(
-    functionType = "modelData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "StoxLandingData",
-    functionParameterType = list(StoxLandingData = "character",
-                                 TemporalDefinition = "character"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  AppendPositionLanding = list(
-    functionType = "modelData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "StoxLandingData",
-    functionParameterType = list(StoxLandingData = "character",
-                                 AreaCodePosition = "character",
-                                 resolution = "character"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  AppendStratumStoxLanding = list(
-    functionType = "modelData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "StoxLandingData",
-    functionParameterType = list(StoxLandingData = "character",
-                                 StratumPolygon = "character"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  PrepareRecaEstimate = list(
-    functionType = "modelData",
-    functionCategory = "Analysis",
-    functionOutputDataType = "RecaData",
-    functionParameterType = list(StoxBioticData = "character",
-                                 StoxLandingData = "character",
-                                 fixedEffects = "character",
-                                 randomEffects = "character",
-                                 continousEffects = "character",
-                                 carEffect = "character",
-                                 CarNeighbours = "character",
-                                 AgeErrorMatrix = "character",
-                                 stockSplitting = "logical",
-                                 ClassificationError = "character",
-                                 minAge = "integer",
-                                 maxAge = "integer",
-                                 maxLength = "numeric",
-                                 lengthResolution = "numeric",
-                                 temporalResolution = "character",
-                                 hatchDay = "integer"),
+  DefineAreaPosition = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AreaPosition", 
     functionParameterFormat = list(
-      fixedEffects = "vector",
-      randomEffects = "vector",
-      continousEffects = "vector"
-    ),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  RunRecaEstimate = list(
-    functionType = "modelData",
-    functionCategory = "Analysis",
-    functionOutputDataType = "RecaData",
-    functionParameterType = list(RecaData = "character",
-                                 nSamples = "integer",
-                                 burnin = "integer",
-                                 lgamodel = "character",
-                                 thin = "integer",
-                                 delta.age = "double",
-                                 seed = "integer",
-                                 caa.burnin = "integer"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
+      FileName = "filePath"
+    ), 
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      Translation = list(
+        DefinitionMethod = "StratumPolygon", 
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      FileName = list(
+        DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      )
+    )
   )
-
+  
 )
+
+#' Define the process property formats for inclusion in stox UI
+#' 
+#' @export
+#' 
+processPropertyFormats <- list(
+  filePath = list(
+    class = "single", 
+    title = "The path to a single file"
+  )
+)
+#   DefineTemporalCategories = list(
+#     functionType = "processData",
+#     functionCategory = "Baseline",
+#     functionOutputDataType = "TemporalDefinition",
+#     functionParameterType = list(temporalCategory = "character",
+#                                  customPeriods = "character",
+#                                  seasonal = "logical",
+#                                  years = "integer"),
+#     functionParameterFormat = list(customPeriods = "vector",
+#                                    years = "vector"),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   ),
+# 
+#   DefineAreaPosition = list(
+#     functionType = "processData",
+#     functionCategory = "Baseline",
+#     functionOutputDataType = "AreaPosition",
+#     functionParameterType = list(resourceFilePath = "character"),
+#     functionParameterFormat = list(resourceFilePath = "filePaths"),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   ),
+# 
+#   DefineCarNeighbours = list(
+#     functionType = "processData",
+#     functionCategory = "Baseline",
+#     functionOutputDataType = "CarNeighbours",
+#     functionParameterType = list(resourceFilePath = "character"),
+#     functionParameterFormat = list(resourceFilePath = "filePaths"),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   ),
+# 
+#   DefineAgeErrorMatrix  = list(
+#     functionType = "processData",
+#     functionCategory = "Baseline",
+#     functionOutputDataType = "AgeErrorMatrix",
+#     functionParameterType = list(resourceFilePath = "character"),
+#     functionParameterFormat = list(resourceFilePath = "filePaths"),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   ),
+# 
+#   DefineClassificationError  = list(
+#     functionType = "processData",
+#     functionCategory = "Baseline",
+#     functionOutputDataType = "ClassificationError",
+#     functionParameterType = list(resourceFilePath = "character"),
+#     functionParameterFormat = list(resourceFilePath = "filePaths"),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   ),
+# 
+#   AppendGearStoxBiotic  = list(
+#     functionType = "modelData",
+#     functionCategory = "Baseline",
+#     functionOutputDataType = "StoxBioticData",
+#     functionParameterType = list(StoxBioticData = "character",
+#                                  UnifiedVariableDefinition = "character"),
+#     functionParameterFormat = list(),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   ),
+# 
+#   AppendGearStoxLanding  = list(
+#     functionType = "modelData",
+#     functionCategory = "Baseline",
+#     functionOutputDataType = "StoxLandingData",
+#     functionParameterType = list(StoxBioticData = "character",
+#                                  UnifiedVariableDefinition = "character"),
+#     functionParameterFormat = list(),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   ),
+# 
+#   AppendTemporalStoxLanding  = list(
+#     functionType = "modelData",
+#     functionCategory = "Baseline",
+#     functionOutputDataType = "StoxLandingData",
+#     functionParameterType = list(StoxLandingData = "character",
+#                                  TemporalDefinition = "character"),
+#     functionParameterFormat = list(),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   ),
+# 
+#   AppendPositionLanding = list(
+#     functionType = "modelData",
+#     functionCategory = "Baseline",
+#     functionOutputDataType = "StoxLandingData",
+#     functionParameterType = list(StoxLandingData = "character",
+#                                  AreaPosition = "character",
+#                                  resolution = "character"),
+#     functionParameterFormat = list(),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   ),
+# 
+#   AppendStratumStoxLanding = list(
+#     functionType = "modelData",
+#     functionCategory = "Baseline",
+#     functionOutputDataType = "StoxLandingData",
+#     functionParameterType = list(StoxLandingData = "character",
+#                                  StratumPolygon = "character"),
+#     functionParameterFormat = list(),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   ),
+# 
+#   PrepareRecaEstimate = list(
+#     functionType = "modelData",
+#     functionCategory = "Analysis",
+#     functionOutputDataType = "RecaData",
+#     functionParameterType = list(StoxBioticData = "character",
+#                                  StoxLandingData = "character",
+#                                  fixedEffects = "character",
+#                                  randomEffects = "character",
+#                                  continousEffects = "character",
+#                                  carEffect = "character",
+#                                  CarNeighbours = "character",
+#                                  AgeErrorMatrix = "character",
+#                                  stockSplitting = "logical",
+#                                  ClassificationError = "character",
+#                                  minAge = "integer",
+#                                  maxAge = "integer",
+#                                  maxLength = "numeric",
+#                                  lengthResolution = "numeric",
+#                                  temporalResolution = "character",
+#                                  hatchDay = "integer"),
+#     functionParameterFormat = list(
+#       fixedEffects = "vector",
+#       randomEffects = "vector",
+#       continousEffects = "vector"
+#     ),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   ),
+# 
+#   RunRecaEstimate = list(
+#     functionType = "modelData",
+#     functionCategory = "Analysis",
+#     functionOutputDataType = "RecaData",
+#     functionParameterType = list(RecaData = "character",
+#                                  nSamples = "integer",
+#                                  burnin = "integer",
+#                                  lgamodel = "character",
+#                                  thin = "integer",
+#                                  delta.age = "double",
+#                                  seed = "integer",
+#                                  caa.burnin = "integer"),
+#     functionParameterFormat = list(),
+#     functionArgumentHierarchy = list(),
+#     functionAlias = list(),
+#     functionParameterAlias = list(),
+#     functionParameterValueAilas = list()
+#   )
+# 
+# )

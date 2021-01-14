@@ -74,13 +74,6 @@ makeUnifiedDefinitionLookupList <- function(tab, formats=NULL){
   return(mappings)
 }
 
-ConvertLengthBiotic <- function(BioticData){
-  stop("Not implemented")
-}
-
-ConvertWeightsBiotic <- function(BioticData){
-  stop("Not implemented")
-}
 
 RedefinePositionStoxBiotic <- function(StoxBioticData){
   stop("Not implemented")
@@ -89,51 +82,63 @@ RedefinePositionStoxBiotic <- function(StoxBioticData){
 #' Append position to landings data
 #' @description
 #'  StoX function
-#'  Appends a position to landings data, based on Area and SubArea codes.
+#'  Appends a position to landings data, based on Area and Location codes.
 #' @details
-#'  When 'resolution' is specified as 'Area' the midpoint of the Area will be assigned to the landings.
-#'  When 'resolution' is specified as 'SubArea' the midpoint of the SubArea will be assigned to the landings.
+#'  When 'resolution' is specified as 'Area' Area is looked up from 'AreaPosition', using the row where 'Location' is missing.
+#'  When 'resolution' is specified as 'Location', 'Area' and 'Location' is looked up 'AreaPosition'.
 #' @param StoxLandingData landing data, see \code{\link[RstoxData]{StoxLandingData}}
-#' @param AreaCodePosition coordinates for Area and SubArea codes, see \code{\link[RstoxFDA]{AreaCodePosition}}
-#' @param resolution character(), defaults to Area, specify what resolution to use: 'Area' or 'SubArea'. See details.
-#' @param latColName character(), defaults to Latitude, name of the latitude column that will be appended.
-#' @param lonColName character(), defaults to Longitude, name of the longitude column that will be appended.
+#' @param AreaPosition coordinates for Area and SubArea codes, see \code{\link[RstoxFDA]{AreaPosition}}
+#' @param resolution character(), defaults to Area, specify what resolution to use: 'Area' or 'Location'. See details.
 #' @return \code{\link[RstoxData]{StoxLandingData}} with columns for latitude and longitude appended.
 #' @export
-AppendPositionLanding <- function(StoxLandingData, AreaCodePosition, resolution = c("Area", "SubArea"), latColName="Latitude", lonColName="Longitude"){
+AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, resolution = c("Area", "Location")){
+  
+  latColName="Latitude"
+  lonColName="Longitude"
 
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
-  stopifnot(is.AreaCodePosition(AreaCodePosition))
+  stopifnot(is.AreaPosition(AreaPosition))
 
-  if (latColName %in% names(StoxLandingData)){
+  if (latColName %in% names(StoxLandingData$landings)){
     stop(paste("Column", latColName, "already exists."))
   }
-  if (lonColName %in% names(StoxLandingData)){
+  if (lonColName %in% names(StoxLandingData$landings)){
     stop(paste("Column", lonColName, "already exists."))
   }
 
   resolution <- match.arg(resolution, resolution)
 
-  AreaCodePosition[[latColName]] <- AreaCodePosition$Latitude
-  AreaCodePosition[[lonColName]] <- AreaCodePosition$Longitude
+  AreaPosition[[latColName]] <- AreaPosition$Latitude
+  AreaPosition[[lonColName]] <- AreaPosition$Longitude
 
   if (resolution == "Area"){
-    if (!all(StoxLandingData$Area %in% AreaCodePosition$Area)){
-      missing <- StoxLandingData$Area[!(StoxLandingData$Area %in% AreaCodePosition$Area)]
-      stop(paste("Positions not provided for all Areas. Missing: ", paste(missing, collapse=",")))
+    
+    if (!all(StoxLandingData$landings$Area %in% AreaPosition$Area)){
+      missing <- StoxLandingData$landings$Area[!(StoxLandingData$landings$Area %in% AreaPosition$Area)]
+      stop(paste("Positions not provided for all Areas in StoxLandingData. Missing: ", paste(missing, collapse=",")))
     }
-    AreaCodePosition <- AreaCodePosition[,c("Area", latColName, lonColName), with=F]
-    return(data.table::as.data.table(merge(StoxLandingData, AreaCodePosition, by.x="Area", by.y="Area", all.x=T)))
+    if (!all(StoxLandingData$landings$Area %in% AreaPosition$Area[is.na(AreaPosition$Location)])){
+      missing <- StoxLandingData$landings$Area[!(StoxLandingData$landings$Area %in% AreaPosition$Area[is.na(AreaPosition$Location)])]
+      stop(paste("Positions is not provided for the case of missing Location for some Areas in StoxLandingData: ", paste(missing, collapse=",")))
+    }
+    AreaPosition <- AreaPosition[is.na(AreaPosition$Location),c("Area", latColName, lonColName), with=F]
+    stopifnot(!any(duplicated(AreaPosition$Area)))
+    
+    StoxLandingData$landings <- data.table::as.data.table(merge(StoxLandingData$landings, AreaPosition, by.x="Area", by.y="Area", all.x=T))
+    return(StoxLandingData)
   }
-  else if (resolution == "SubArea"){
-    arealocdata <- paste(StoxLandingData$Area, StoxLandingData$SubArea, sep="-")
-    arealocresource <- paste(AreaCodePosition$Area, AreaCodePosition$SubArea, sep="-")
+  else if (resolution == "Location"){
+    
+    arealocdata <- paste(StoxLandingData$landings$Area, StoxLandingData$landings$Location, sep="-")
+    arealocresource <- paste(AreaPosition$Area, AreaPosition$Location, sep="-")
     if (!all(arealocdata %in% arealocresource)){
       missing <- arealocdata[!(arealocdata %in% arealocresource)]
-      stop(paste("Positions not provided for all Areas and SubArea Missing: ", paste(missing, collapse=",")))
+      stop(paste("Positions not provided for all Areas and Locations in StoxLandingData Missing: ", paste(missing, collapse=",")))
     }
-    AreaCodePosition <- AreaCodePosition[,c("Area", "SubArea", latColName, lonColName), with=F]
-    return(data.table::as.data.table(merge(StoxLandingData, AreaCodePosition, by.x=c("Area", "SubArea"), by.y=c("Area", "SubArea"), all.x=T)))
+    AreaPosition <- AreaPosition[,c("Area", "Location", latColName, lonColName), with=F]
+    stopifnot(!any(duplicated(paste(AreaPosition$Area, AreaPosition$Location))))
+    StoxLandingData$landings <- data.table::as.data.table(merge(StoxLandingData$landings, AreaPosition, by.x=c("Area", "Location"), by.y=c("Area", "Location"), all.x=T))
+    return(StoxLandingData)
   }
   else{
     stop(paste("Resolution", resolution, "not supported"))
@@ -228,7 +233,7 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 AppendTemporalStoxLanding <- function(StoxLandingData, TemporalDefinition, columnName="TemporalCategory"){
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   stopifnot(is.TemporalDefinition(TemporalDefinition))
-  return(appendTemporal(StoxLandingData, columnName, TemporalDefinition, "CatchDate"))
+  return(appendTemporal(StoxLandingData$landings, columnName, TemporalDefinition, "CatchDate"))
 }
 
 
@@ -260,8 +265,8 @@ AppendStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, columnName="
 #' @details
 #'  \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
 #'  these need to be appended before calling this function, and identified with the parameters 'latColumn' and 'lonColumn'.
-#'  \code{\link[RstoxFDA]{AppendPositionLanding}} may be used to append positions.
-#' @seealso \code{\link[RstoxFDA]{AppendPositionLanding}} for appending positions to \code{\link[RstoxData]{StoxLandingData}}.
+#'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions.
+#' @seealso \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for appending positions to \code{\link[RstoxData]{StoxLandingData}}.
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
 #' @param columnName character(), defaults to 'Stratum', name of the appended column.
@@ -269,16 +274,16 @@ AppendStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, columnName="
 #' @param lonColumn character(), defaults to 'Longitude', identifies the column in StoxLandingData with longitudes.
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @export
-AppendStratumStoxLanding <- function(StoxLandingData, StratumPolygon, columnName="Stratum", latColumn="Latitude", lonColumn="Longitude"){
+AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, columnName="Stratum", latColumn="Latitude", lonColumn="Longitude"){
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
-  if (!(all(c(latColumn, lonColumn) %in% names(StoxLandingData)))){
+  if (!(all(c(latColumn, lonColumn) %in% names(StoxLandingData$landings)))){
     stop(paste("Could not find appended columns:", latColumn, "and", lonColumn, "on StoxLandingData"))
   }
-  if (columnName %in% names(StoxLandingData)){
+  if (columnName %in% names(StoxLandingData$landings)){
     stop(paste("Column name", columnName, "already exists."))
   }
-
-  return(appendAreaCode(StoxLandingData, StratumPolygon, latColumn, lonColumn, columnName))
+  StoxLandingData$landings <- appendAreaCode(StoxLandingData$landings, StratumPolygon, latColumn, lonColumn, columnName)
+  return(StoxLandingData)
 }
 
 #' append gear
@@ -333,7 +338,8 @@ AppendGearStoxLanding <- function(StoxLandingData, UnifiedVariableDefinition, co
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   stopifnot(is.UnifiedVariableDefinition(UnifiedVariableDefinition))
   geardef <- UnifiedVariableDefinition[UnifiedVariableDefinition$Source == "StoxLandingData",]
-  return(appendGear(StoxLandingData, "Gear", geardef, columnName))
+  StoxLandingData$landings<-appendGear(StoxLandingData$landings, "Gear", geardef, columnName)
+  return(StoxLandingData)
 }
 
 ###
@@ -502,36 +508,54 @@ DefineTemporalCategories <- function(processData, temporalCategory=c("Quarter", 
 #' @description
 #'  StoX function
 #'  Define positions for areas of a spatial coding system.
-#'  Definitions are read from a resource file.
 #' @details
+#'  For DefinitionMethod ResourceFile:
 #'  Definitions are read from a tab separated file with headers. Columns defined as:
 #'  \describe{
 #'  \item{Column 1: 'Area'}{Area code (key)}
-#'  \item{Column 2: 'Location'}{optional subdivision of area. If provided, encode the case for missing location should be encoded as well.}
-#'  \item{Column 3: 'Latitude'}{WGS84 Latitude, decimal degress}
-#'  \item{Column 4: 'Longitude'}{WGS84 Longitude, decimal degress}
+#'  \item{Column 2: 'Location'}{optional subdivision of area. If provided, positions for missing locations should be encoded as well.}
+#'  \item{Column 3: 'Latitude'}{WGS84 Latitude, decimal degrees}
+#'  \item{Column 4: 'Longitude'}{WGS84 Longitude, decimal degrees}
 #'  }
+#'  
+#'  For DefinitionMethod StratumPolygon:
+#'  Definitions are extracted from a \code{\link[RstoxBase]{StratumPolygon}}:
+#'  Area is derived from the column 'polygonName' in 'StratumPolygon'.
+#'  Location is encoded as missing.
+#'  Latitude and Longitude are the coordinates set for each polygon in 'StratumPolygon'.
+#'  
 #' @param processData data.table() as returned from this function
-#' @param resourceFilePath path to resource file
-#' @param encoding encoding of resource file
-#' @param useProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
-#' @return \code{\link[RstoxFDA]{AreaCodePosition}}.
+#' @param FileName path to resource file
+#' @param DefinitionMethod 'ResourceFile' or 'StratumPolygon', see details.
+#' @param UseProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
+#' @return \code{\link[RstoxFDA]{AreaPosition}}.
 #' @export
-DefineAreaCodePosition <- function(processData, resourceFilePath, encoding="UTF-8", useProcessData=F){
+DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "StratumPolygon"), FileName=NULL, StratumPolygon=NULL, UseProcessData=F){
 
-  if (useProcessData){
+  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
+  encoding="UTF-8"
+  
+  if (UseProcessData){
     return(processData)
   }
 
-  tab <- readTabSepFile(resourceFilePath, col_types = "ccdd", col_names = c("Area", "SubArea",	"Latitude",	"Longitude"), encoding = encoding)
-
-  missingLoc <- tab[is.na(tab[["SubArea"]]),]
-
-  if (length(unique(missingLoc[["Area"]])) != length(unique(tab[["Area"]]))){
-    stop("Malformed resource file. Some Area does not have coordinates defined for the case when location is missing.")
+  if (DefinitionMethod == "ResourceFile"){
+    tab <- readTabSepFile(FileName, col_types = "ccdd", col_names = c("Area", "Location",	"Latitude",	"Longitude"), encoding = encoding)
+    
+    missingLoc <- tab[is.na(tab[["Location"]]),]
+    
+    if (length(unique(missingLoc[["Area"]])) != length(unique(tab[["Area"]]))){
+      stop("Malformed resource file. Some Area does not have coordinates defined for the case when location is missing.")
+    }
+    
+    return(tab)
   }
-
-  return(tab)
+  
+  if (DefinitionMethod == "StratumPolygon"){
+    stop("Not implemented")
+  }
+  
+  stop(paste("DefinitionMethod", DefinitionMethod, "not supported."))
 
 }
 
@@ -549,17 +573,20 @@ DefineAreaCodePosition <- function(processData, resourceFilePath, encoding="UTF-
 #'  The neighbour definition must be symmetric.
 #'  If a is among the neighbours of b, b must also be among the neighbours of a.
 #' @param processData data.table() as returned from this function
-#' @param resourceFilePath path to resource file
-#' @param encoding encoding of resource file
-#' @param useProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
+#' @param DefinitionMethod ResourceFile
+#' @param FileName path to file for resource 
+#' @param useProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Area Neighbour Definition, see: \code{\link[RstoxFDA]{CarNeighbours}}.
 #' @export
-DefineCarNeighbours <- function(processData, resourceFilePath, encoding="UTF-8", useProcessData=F){
-  if (useProcessData){
+DefineCarNeighbours <- function(processData,
+                                DefinitionMethod = c("ResourceFile"), 
+                                FileName, UseProcessData = FALSE){
+  encoding = "UTF-8"
+  if (UseProcessData){
     return(processData)
   }
 
-  tab <- readTabSepFile(resourceFilePath, col_types = "cc", col_names = c("CarValue", "Neighbours"), encoding = encoding)
+  tab <- readTabSepFile(FileName, col_types = "cc", col_names = c("CarValue", "Neighbours"), encoding = encoding)
 
   checkSymmetry(tab)
 
@@ -583,7 +610,7 @@ DefineCarNeighbours <- function(processData, resourceFilePath, encoding="UTF-8",
 #' @param processData data.table() as returned from this function
 #' @param resourceFilePath path to resource file
 #' @param encoding encoding of resource file
-#' @param useProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
+#' @param useProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.
 #' @export
 DefineAgeErrorMatrix <- function(processData, resourceFilePath, encoding="UTF-8", useProcessData=F){

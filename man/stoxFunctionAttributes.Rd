@@ -3,14 +3,14 @@
 \docType{data}
 \name{stoxFunctionAttributes}
 \alias{stoxFunctionAttributes}
-\title{Function specification for inclusion in StoX projects}
+\title{Function specification for inclusion in StoX UI}
 \format{
-An object of class \code{list} of length 13.
+An object of class \code{list} of length 1.
 }
 \usage{
 stoxFunctionAttributes
 }
 \description{
-Function specification for inclusion in StoX projects
+Function specification for inclusion in StoX UI
 }
 \keyword{datasets}
