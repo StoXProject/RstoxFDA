@@ -378,7 +378,7 @@ stoxFunctionAttributes <- list(
         UseProcessData = FALSE
       ), 
       # These two are joined with AND, and must both be fulfilled:
-      Translation = list(
+      StratumPolygon = list(
         DefinitionMethod = "StratumPolygon", 
         UseProcessData = FALSE
       ), 
@@ -388,6 +388,12 @@ stoxFunctionAttributes <- list(
         UseProcessData = FALSE
       )
     )
+  ),
+  
+  AddAreaPositionStoxLanding = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxLandingData"
   )
   
 )

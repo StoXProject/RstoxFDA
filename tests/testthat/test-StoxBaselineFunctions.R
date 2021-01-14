@@ -118,6 +118,9 @@ errorfile <- system.file("testresources","areaPosError.txt", package="RstoxFDA")
 expect_error(DefineAreaPosition(NULL, FileName = errorfile), "Malformed resource file. Some Area does not have coordinates defined for the case when location is missing.")
 
 
+context("test-StoxBaselineFunctions: DefineAreaPosition stratumPolygon")
+areaPos <- DefineAreaPosition(NULL, StratumPolygon = mainareaFdir2018, DefinitionMethod = "StratumPolygon")
+expect_true(is.AreaPosition(areaPos))
 
 
 context("test-StoxBaselineFunctions: DefineCarNeighbours")
@@ -321,3 +324,4 @@ landingWpos <- AddAreaPositionStoxLanding(stoxLandingPre, areaPos)
 
 landingPost <- AddStratumStoxLanding(landingWpos, strp)
 expect_true(all(as.integer(landingPost$Stratum)==as.integer(landingPost$area)))
+

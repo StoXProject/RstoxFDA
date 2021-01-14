@@ -552,7 +552,18 @@ DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "
   }
   
   if (DefinitionMethod == "StratumPolygon"){
-    stop("Not implemented")
+    if (!("polygonName" %in% names(StratumPolygon))){
+      stop("'StratumPolygon' must be an RstoxBase::StratumPolygon object.")
+    }
+    pos <- data.table::data.table(sp::coordinates(StratumPolygon))
+    names(pos) <- c("Longitude", "Latitude")
+    
+    stopifnot(nrow(pos)==nrow(StratumPolygon))
+    
+    pos$Area <- StratumPolygon$polygonName
+    pos$Location <- as.character(NA)
+    return(pos)
+    
   }
   
   stop(paste("DefinitionMethod", DefinitionMethod, "not supported."))
