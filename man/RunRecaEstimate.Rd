@@ -8,14 +8,12 @@ RunRecaEstimate(
   RecaData,
   nSamples,
   burnin,
+  thin,
   lgamodel = c("log-linear", "non-linear"),
-  fitfile = "fit",
-  predictfile = "pred",
   resultdir = NULL,
-  thin = 10,
-  delta.age = 0.001,
+  delta.age = NULL,
   seed = NULL,
-  caa.burnin = 0
+  caa.burnin = NULL
 )
 }
 \arguments{
@@ -25,21 +23,17 @@ RunRecaEstimate(
 
 \item{burnin}{number of MCMC samples run and discarded by \code{\link[Reca]{eca.estimate}} before any samples are saved. See documentation for \code{\link[Reca]{eca.estimate}}.}
 
-\item{lgamodel}{The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}.}
-
-\item{fitfile}{name of output files in resultdir. See documentation for \code{\link[Reca]{eca.estimate}}.}
-
-\item{predictfile}{name of output files in resultdir. See documentation for \code{\link[Reca]{eca.predict}}.}
-
-\item{resultdir}{a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. . If NULL, a temporary directory will be created. See documentation for \code{\link[Reca]{eca.estimate}}.}
-
 \item{thin}{controls how many iterations are run between each samples saved. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}}
 
-\item{delta.age}{see documentation for \code{\link[Reca]{eca.estimate}}}
+\item{lgamodel}{The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}.}
 
-\item{seed}{see documentation for \code{\link[Reca]{eca.estimate}}}
+\item{resultdir}{a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. . If not given a temporary directory will be created. See documentation for \code{\link[Reca]{eca.estimate}}.}
 
-\item{caa.burnin}{see documentation for \code{\link[Reca]{eca.predict}}}
+\item{delta.age}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.}
+
+\item{seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.}
+
+\item{caa.burnin}{see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.}
 }
 \value{
 \code{\link[RstoxFDA]{RecaResult}} results from Reca run.

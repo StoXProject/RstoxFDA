@@ -7,7 +7,9 @@
 AddAreaPositionStoxLanding(
   StoxLandingData,
   AreaPosition,
-  resolution = c("Area", "Location")
+  resolution = c("Area", "Location"),
+  latColName = NULL,
+  lonColName = NULL
 )
 }
 \arguments{
@@ -16,6 +18,10 @@ AddAreaPositionStoxLanding(
 \item{AreaPosition}{coordinates for Area and SubArea codes, see \code{\link[RstoxFDA]{AreaPosition}}}
 
 \item{resolution}{character(), defaults to Area, specify what resolution to use: 'Area' or 'Location'. See details.}
+
+\item{latColName}{name of the column which should be appended for latitudes. Defaults to "Latitude".}
+
+\item{lonColName}{name of the column which should be appended for longitudes. Defaults to "Longitude".}
 }
 \value{
 \code{\link[RstoxData]{StoxLandingData}} with columns for latitude and longitude appended.

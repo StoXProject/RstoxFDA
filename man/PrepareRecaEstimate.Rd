@@ -9,18 +9,17 @@ PrepareRecaEstimate(
   StoxLandingData,
   fixedEffects,
   randomEffects,
-  continousEffects = NULL,
   carEffect = NULL,
   CarNeighbours = NULL,
   AgeErrorMatrix = NULL,
-  stockSplitting = F,
+  stockSplitting = FALSE,
   ClassificationError = NULL,
   minAge = NULL,
   maxAge = NULL,
   maxLength = NULL,
   lengthResolution = NULL,
   temporalResolution = c("Quarter", "Month"),
-  hatchDay = 1
+  hatchDay = NULL
 )
 }
 \arguments{
@@ -34,8 +33,6 @@ and approriate columns appended for identifying corresponding samples}
 
 \item{randomEffects}{character() vector identifying column names that should be treated as random effects}
 
-\item{continousEffects}{character() vector identifying column names that should be treated as continous effect}
-
 \item{carEffect}{character(), optional, identifying the column name that should be treated as CAR-effect
 (conditional autoregressive effect)}
 
@@ -43,31 +40,33 @@ and approriate columns appended for identifying corresponding samples}
 Identifies which values of the carEffect are to be considered as neighbours.}
 
 \item{AgeErrorMatrix}{\code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
-If not provided age errors will not be modelled.}
+If not provided age reading errors will not be modelled.}
 
-\item{stockSplitting}{logical(), default FALSE, whether to run estimates for separate stocks in the data (coastal cod-analysis)}
+\item{stockSplitting}{default FALSE, whether to run estimates for separate stocks in the data (coastal cod-analysis)}
 
 \item{ClassificationError}{\code{\link[RstoxFDA]{ClassificationError}}, optional,
 specifies the probability of misclassifying stock for an individual Used in conjunction with 'stockSplitting'. If not provided classification errors will not be modelled.}
 
-\item{minAge}{integer(), optional, must match dimensions of any 'AgeErrorMatrix'.
+\item{minAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
 If not provided it will be derived from data.}
 
-\item{maxAge}{integer(), optional, must match dimensions of any 'AgeErrorMatrix'.
+\item{maxAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
 If not provided it will be derived from data.}
 
-\item{maxLength}{numeric(), optional, maximal fish length in data in cm.
+\item{maxLength}{optional, maximal fish length in data in cm.
 If not provided it will be derived from data.}
 
-\item{lengthResolution}{numeric(), optional, resolution for length measurements in cm.
+\item{lengthResolution}{optional, resolution for length measurements in cm.
 If not provided modal value from data is used.}
 
-\item{temporalResolution}{character(), default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
+\item{temporalResolution}{default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
 Regulates temporal resolution for calculating fractional ages of fish.
 Not to be confused with any temporal covariate.}
 
-\item{hatchDay}{integer(), defaults to 1 representing Jan 1st.
+\item{hatchDay}{defaults to 1 representing Jan 1st.
 encoding the day of the year when fish is consider to transition from one age to the next.}
+
+\item{continousEffects}{character() vector identifying column names that should be treated as continous effect}
 }
 \value{
 \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.

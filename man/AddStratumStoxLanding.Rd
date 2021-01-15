@@ -7,21 +7,21 @@
 AddStratumStoxLanding(
   StoxLandingData,
   StratumPolygon,
-  columnName = "Stratum",
-  latColumn = "Latitude",
-  lonColumn = "Longitude"
+  columnName = NULL,
+  latColumn = NULL,
+  lonColumn = NULL
 )
 }
 \arguments{
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.}
 
-\item{StratumPolygon}{definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}}
+\item{StratumPolygon}{Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}}
 
-\item{columnName}{character(), defaults to 'Stratum', name of the appended column.}
+\item{columnName}{Name of the column that will be appended. Defaults to 'Stratum'.}
 
-\item{latColumn}{character(), defaults to 'Latitdue', identifies the column in StoxLandingData with latitudes.}
+\item{latColumn}{Name of the column in parameter 'StoxLandingData' that latitudes should be read from. See details. Defaults to "Latitude".}
 
-\item{lonColumn}{character(), defaults to 'Longitude', identifies the column in StoxLandingData with longitudes.}
+\item{lonColumn}{Name of the column in parameter 'StoxLandingData' that longitudes should be read from. See details. Defaults to "Longitude".}
 }
 \value{
 StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
@@ -33,7 +33,7 @@ StoX function
 \details{
 \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
  these need to be appended before calling this function, and identified with the parameters 'latColumn' and 'lonColumn'.
- \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions.
+ \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions, based on area codes.
 }
 \seealso{
 \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for appending positions to \code{\link[RstoxData]{StoxLandingData}}.

@@ -394,6 +394,12 @@ stoxFunctionAttributes <- list(
     functionType = "modelData", 
     functionCategory = "baseline", 
     functionOutputDataType = "StoxLandingData"
+  ),
+  
+  AddStratumStoxLanding = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxLandingData"
   )
   
 )

@@ -1,4 +1,16 @@
 
+#' Check if parameter is given
+#' @noRd
+isGiven <- function(value){
+  if (is.null(value)){
+    return(FALSE)
+  }
+  if (value == ""){
+    return(FALSE)
+  }
+  
+  return(TRUE)
+}
 
 #' Checks symmetry of Car table
 #' @noRd
@@ -89,12 +101,19 @@ RedefinePositionStoxBiotic <- function(StoxBioticData){
 #' @param StoxLandingData landing data, see \code{\link[RstoxData]{StoxLandingData}}
 #' @param AreaPosition coordinates for Area and SubArea codes, see \code{\link[RstoxFDA]{AreaPosition}}
 #' @param resolution character(), defaults to Area, specify what resolution to use: 'Area' or 'Location'. See details.
+#' @param latColName name of the column which should be appended for latitudes. Defaults to "Latitude".
+#' @param lonColName name of the column which should be appended for longitudes. Defaults to "Longitude".
 #' @return \code{\link[RstoxData]{StoxLandingData}} with columns for latitude and longitude appended.
 #' @export
-AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, resolution = c("Area", "Location")){
+AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, resolution = c("Area", "Location"), latColName=NULL, lonColName=NULL){
   
-  latColName="Latitude"
-  lonColName="Longitude"
+  if (!isGiven(latColName)){
+    latColName="Latitude"    
+  }
+  if (!isGiven(lonColName)){
+    lonColName="Longitude"
+  }
+  
 
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   stopifnot(is.AreaPosition(AreaPosition))
@@ -265,19 +284,33 @@ AppendStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, columnName="
 #' @details
 #'  \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
 #'  these need to be appended before calling this function, and identified with the parameters 'latColumn' and 'lonColumn'.
-#'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions.
+#'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions, based on area codes.
 #' @seealso \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for appending positions to \code{\link[RstoxData]{StoxLandingData}}.
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.
-#' @param StratumPolygon definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
-#' @param columnName character(), defaults to 'Stratum', name of the appended column.
-#' @param latColumn character(), defaults to 'Latitdue', identifies the column in StoxLandingData with latitudes.
-#' @param lonColumn character(), defaults to 'Longitude', identifies the column in StoxLandingData with longitudes.
+#' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
+#' @param columnName Name of the column that will be appended. Defaults to 'Stratum'.
+#' @param latColumn Name of the column in parameter 'StoxLandingData' that latitudes should be read from. See details. Defaults to "Latitude".
+#' @param lonColumn Name of the column in parameter 'StoxLandingData' that longitudes should be read from. See details. Defaults to "Longitude".
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @export
-AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, columnName="Stratum", latColumn="Latitude", lonColumn="Longitude"){
+AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, columnName=NULL, latColumn = NULL, lonColumn = NULL){
+  
+  if (!isGiven(columnName)){
+    columnName <- "Stratum"    
+  }
+
+  if (!isGiven(latColumn)){
+    latColumn <- "Latitude"    
+  }
+  
+  if (!isGiven(lonColumn)){
+    lonColumn <- "Longitude"  
+  }
+  
+  
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   if (!(all(c(latColumn, lonColumn) %in% names(StoxLandingData$landings)))){
-    stop(paste("Could not find appended columns:", latColumn, "and", lonColumn, "on StoxLandingData"))
+    stop(paste("Could not find columns:", latColumn, "and", lonColumn, "that should be added to StoxLandingData"))
   }
   if (columnName %in% names(StoxLandingData$landings)){
     stop(paste("Column name", columnName, "already exists."))
@@ -510,7 +543,7 @@ DefineTemporalCategories <- function(processData, temporalCategory=c("Quarter", 
 #'  Define positions for areas of a spatial coding system.
 #' @details
 #'  For DefinitionMethod ResourceFile:
-#'  Definitions are read from a tab separated file with headers. Columns defined as:
+#'  Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
 #'  \describe{
 #'  \item{Column 1: 'Area'}{Area code (key)}
 #'  \item{Column 2: 'Location'}{optional subdivision of area. If provided, positions for missing locations should be encoded as well.}

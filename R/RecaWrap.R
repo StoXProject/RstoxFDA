@@ -234,7 +234,7 @@ getDataMatrixAgeLength <- function(samples, nFish=NULL, hatchday=1){
   DataMatrix$otolithtype <- as.integer(DataMatrix$otolithtype)
   DataMatrix <- DataMatrix [,c("age",  "part.year", "lengthCM", "samplingID", "partnumber", "otolithtype", "partcount")]
 
-  if (any(DataMatrix$age) < 0){
+  if (any(!is.na(DataMatrix$age) & DataMatrix$age < 0)){
     stop("Negative age for fish. Consider parameter hatchDay.")
   }
 
@@ -554,13 +554,20 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
     stop("Column LiveWeightKG is mandatory in landings")
   }
   if (!(all(c("catchId", "sampleId", "date", "Age", "Length", "Weight") %in% names(samples)))){
-    stop("Columns, catchId, sampleId, Age, Length, and Weight are mandatory in samples")
+    missing <- c("catchId", "sampleId", "date", "Age", "Length", "Weight")[!(c("catchId", "sampleId", "date", "Age", "Length", "Weight") %in% names(samples))]
+    stop(paste("Columns, catchId, sampleId, date, Age, Length, and Weight are mandatory in samples. Missing: ", paste(missing, collapse=",")))
   }
 
   # check for NAs
   ins <- c(fixedEffects, randomEffects, carEffect, "Length")
   if (!all(!is.na(samples[, ins, with=F]))){
-    stop("NAs are only allowed for weight and age in samples")
+    nas <- c()
+    for (var in ins){
+      if (any(is.na(samples[[var]]))){
+        nas <- c(nas, var)
+      }
+    }
+    stop("NAs are only allowed for weight and age in samples, not for covariates or length. Found NA for:", paste(nas, collapse=","))
   }
   inl <- c(fixedEffects, randomEffects, carEffect, "LiveWeightKG")[c(fixedEffects, randomEffects, carEffect, "LiveWeightKG") %in% names(landings)]
   if(!all(!is.na(landings[, inl, with=F]))){

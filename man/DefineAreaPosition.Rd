@@ -30,7 +30,7 @@ StoX function
 }
 \details{
 For DefinitionMethod ResourceFile:
- Definitions are read from a tab separated file with headers. Columns defined as:
+ Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
  \describe{
  \item{Column 1: 'Area'}{Area code (key)}
  \item{Column 2: 'Location'}{optional subdivision of area. If provided, positions for missing locations should be encoded as well.}
