@@ -202,15 +202,17 @@ appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName
   if (lonColName %in% names(table)){
     stop(paste("Column name", lonColName, "already exists."))
   }
+  if (!(areaName %in% names(table))){
+    stop(paste("Column name", areaName, "not found in 'table'."))
+  }
 
   if (length(grep("proj=longlat", sp::proj4string(areaPolygons)))==0){
     warning("could not verify projection of 'areaPolygons'")
   }
-
   mapping <- cbind(data.table::as.data.table(sp::coordinates(areaPolygons)), areaPolygons[[polygonName]])
   names(mapping) <- c(lonColName, latColName, areaName)
 
-  newTab <- merge(table, mapping, all.x=T)
+  newTab <- merge(table, mapping, by=areaName, all.x=T)
 
   return(newTab)
 }
