@@ -61,3 +61,12 @@ gr2t6 <- makeAgeTracesRECA(mockset$prediction, plusGroup=6)
 expect_equal(ncol(gr2t6), 5)
 expect_equal(names(gr2t6)[1], "2")
 expect_equal(names(gr2t6)[5], "6+")
+
+
+context("test plot Agetraces")
+data(recaPrediction)
+plotAgeTraces(recaPrediction, plusGroup=13, nclust = 6)
+
+context("test plot Catch At age")
+data(recaPrediction)
+plotCatchAtAge(recaPrediction)

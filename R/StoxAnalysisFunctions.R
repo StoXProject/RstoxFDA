@@ -16,8 +16,6 @@
 #'  character() vector identifying column names that should be treated as fixed effects
 #' @param randomEffects
 #'  character() vector identifying column names that should be treated as random effects
-#' @param continousEffects
-#'  character() vector identifying column names that should be treated as continous effect
 #' @param carEffect
 #'  character(), optional, identifying the column name that should be treated as CAR-effect
 #'  (conditional autoregressive effect)

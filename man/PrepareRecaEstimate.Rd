@@ -65,8 +65,6 @@ Not to be confused with any temporal covariate.}
 
 \item{hatchDay}{defaults to 1 representing Jan 1st.
 encoding the day of the year when fish is consider to transition from one age to the next.}
-
-\item{continousEffects}{character() vector identifying column names that should be treated as continous effect}
 }
 \value{
 \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.

@@ -18,7 +18,7 @@ DefineCarNeighbours(
 
 \item{FileName}{path to file for resource}
 
-\item{useProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
+\item{UseProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
 }
 \value{
 Area Neighbour Definition, see: \code{\link[RstoxFDA]{CarNeighbours}}.

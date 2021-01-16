@@ -581,8 +581,9 @@ DefineTemporalCategories <- function(processData, temporalCategory=c("Quarter", 
 #'  Latitude and Longitude are the coordinates set for each polygon in 'StratumPolygon'.
 #'  
 #' @param processData data.table() as returned from this function
-#' @param FileName path to resource file
 #' @param DefinitionMethod 'ResourceFile' or 'StratumPolygon', see details.
+#' @param FileName path to resource file
+#' @param StratumPolygon \code{\link[RstoxBase]{StratumPolygon}} to extract area positions from
 #' @param UseProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
 #' @return \code{\link[RstoxFDA]{AreaPosition}}.
 #' @export
@@ -642,7 +643,7 @@ DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "
 #' @param processData data.table() as returned from this function
 #' @param DefinitionMethod ResourceFile
 #' @param FileName path to file for resource 
-#' @param useProcessData If TRUE, bypasses execution of function and returns existing 'processData'
+#' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Area Neighbour Definition, see: \code{\link[RstoxFDA]{CarNeighbours}}.
 #' @export
 DefineCarNeighbours <- function(processData,

@@ -19,6 +19,8 @@ DefineAreaPosition(
 
 \item{FileName}{path to resource file}
 
+\item{StratumPolygon}{\code{\link[RstoxBase]{StratumPolygon}} to extract area positions from}
+
 \item{UseProcessData}{logical() Bypasses execution of function, and simply returns argument 'processData'}
 }
 \value{
