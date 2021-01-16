@@ -68,9 +68,18 @@ expect_equal(names(gr2t6)[3], "6+")
 
 context("test plot Agetraces")
 data(recaPrediction)
-plotAgeTraces(recaPrediction, plusGroup=12, nclust = 6)
+plotAgeTraces(recaPrediction, plusGroup=6, nclust = 2)
+
+context("test plot Agetraces, thosuands")
+plotAgeTraces(recaPrediction, plusGroup=6, nclust = 2, unit="thousands")
+
+context("test plot Agetraces, weightunit")
+plotAgeTraces(recaPrediction, plusGroup=6, nclust = 2, unit="kT")
 
 context("test plot Catch At age")
 data(recaPrediction)
 plotCatchAtAge(recaPrediction)
+
+context("test plot Catch At age, wiehgtUnit")
+plotCatchAtAge(recaPrediction, unit="kg")
 
