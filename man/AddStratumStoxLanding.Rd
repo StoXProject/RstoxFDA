@@ -2,7 +2,7 @@
 % Please edit documentation in R/StoxBaselineFunctions.R
 \name{AddStratumStoxLanding}
 \alias{AddStratumStoxLanding}
-\title{Appends Stratum to StoxLandingData}
+\title{Adds Stratum to StoxLandingData}
 \usage{
 AddStratumStoxLanding(
   StoxLandingData,
@@ -28,7 +28,7 @@ StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData
 }
 \description{
 StoX function
- Appends a column to StoxLandingData with the spatial strata each row belongs to.
+ Adds a column to StoxLandingData with the spatial strata each row belongs to.
 }
 \details{
 \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
