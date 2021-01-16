@@ -113,8 +113,9 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects, r
 
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData, TargetTable = "Individual")
   flatbiotic <- flatbiotic[!is.na(flatbiotic$IndividualKey),]
-  flatbiotic$catchId <- flatbiotic$HaulKey
-  flatbiotic$sampleId <- flatbiotic$SampleKey
+  flatbiotic$catchId <- paste(flatbiotic$CruiseKey, flatbiotic$StationKey, flatbiotic$HaulKey, sep="_")
+  flatbiotic$sampleId <- paste(flatbiotic$catchId, flatbiotic$SampleKey, sep="_")
+  
   flatbiotic$Age <- flatbiotic$IndividualAge
   flatbiotic$Length <- flatbiotic$IndividualTotalLength
   flatbiotic$Weight <- flatbiotic$IndividualRoundWeight

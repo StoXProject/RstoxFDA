@@ -11,13 +11,11 @@ StoxLandingData <- readRDS(StoxLandingFile)
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, fixedEffects = c(), randomEffects = c())
 checkEcaObj(prep)
 expect_equal(length(prep$CovariateMaps$randomEffects$AgeLength$CatchId), length(unique(StoxBioticData$Individual$HaulKey)))
-#example contains only one station with lengthmeas
-expect_equal(prep$CovariateMaps$randomEffects$AgeLength$CatchId[[1]]$catchId, StoxBioticData$Individual$HaulKey[[1]])
 
 context("test-StoxAnalysisFunctions: RunRecaEstimate simple case")
-result <- RunRecaEstimate(prep, 100, 100, thin=1)
+result <- RunRecaEstimate(prep, 10, 50, thin=1)
 expect_true(all(c("input", "fit", "prediction", "covariateMaps") %in% names(result)))
-expect_equal(dim(result$prediction$TotalCount)[3], 100)
+expect_equal(dim(result$prediction$TotalCount)[3], 10)
 
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate, missing sample dates")
@@ -37,6 +35,6 @@ prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, fixedEffects = c(),
 expect_true("Area" %in% names(prep$Landings$AgeLengthCov))
 
 context("test-StoxAnalysisFunctions: RunRecaEstimate with random effect Area")
-est <- RunRecaEstimate(prep, 100, 100, 0)
+est <- RunRecaEstimate(prep, 10, 50, 0)
 expect_true("Area" %in% names(est$fit$ProportionAtAge$Intercept$cov))
 
