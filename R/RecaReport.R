@@ -259,6 +259,7 @@ plotCatchAtAge <- function(prediction, unit="millions", plusGroup=NULL, credibil
 plotAgeTraces <- function(prediction, unit="millions", plusGroup=NULL, nclust=4, iter.max=20, nstart=10, agecolors=NULL, lowerquant=.05, upperquant=.95, catlimit=8, title=""){
 
   traces <- makeAgeTracesRECA(prediction, unit, plusGroup)
+  traces <- rbind(traces)
   ages <- names(traces)
   sortcol <- 1:length(ages)
   traces <- t(traces)
@@ -283,7 +284,12 @@ plotAgeTraces <- function(prediction, unit="millions", plusGroup=NULL, nclust=4,
   #clustering ages in plots. kemans on log(means) seems to work well, but sometimes failes due to 0 means, which is avoided by adding lowest non-zero mean
   llo <- min(means[means>0])
   clust <- stats::kmeans(log(means+llo), nclust, iter.max = iter.max, nstart = nstart)
-  m <- data.table::melt(traces, c("age", "iteration"), value.name=unit)
+  
+  traces <- data.table::data.table(traces)
+  names(traces) <- as.character(1:ncol(traces))
+  traces$age <- ages
+  
+  m <- data.table::melt(traces, id.vars="age", variable.name="iteration", value.name=unit)
   m <- merge(m, data.frame(age=names(lq), lq=lq))
   m <- merge(m, data.frame(age=names(uq), uq=uq))
 
@@ -291,15 +297,15 @@ plotAgeTraces <- function(prediction, unit="millions", plusGroup=NULL, nclust=4,
   plotnr <- 1
   for (i in seq(1,nclust)[order(clust$centers, decreasing = T)]){
     mcp <- m[m$age %in% ages[clust$cluster==i],]
-    maxy <- max(mcp[unit]) + max(mcp[unit])*.1
+    maxy <- max(mcp[[unit]]) + max(mcp[[unit]])*.1
     if (sum(clust$cluster==i)<=catlimit){
       mcp$age <- as.factor(mcp$age)
-      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes_string(x="iteration", y=unit, group="age"))+ggplot2::geom_line(data=mcp, ggplot2::aes_(color=~age)) + ggplot2::geom_point(data=mcp[mcp[unit] > mcp$uq | mcp[unit] < mcp$lq,], ggplot2::aes_(color=~age)) + ggplot2::scale_color_manual(values = agecolors) + ggplot2::ylim(0,maxy)
+      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes_string(x="iteration", y=unit, group="age"))+ggplot2::geom_line(data=mcp, ggplot2::aes_(color=~age)) + ggplot2::geom_point(data=mcp[mcp[[unit]] > mcp$uq | mcp[[unit]] < mcp$lq,], ggplot2::aes_(color=~age)) + ggplot2::scale_color_manual(values = agecolors) + ggplot2::ylim(0,maxy)
     }
     else{
-      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes_string(x="iteration", y=unit, group="age"))+ggplot2::geom_line(data=mcp, ggplot2::aes_(color=~age)) + ggplot2::geom_point(data=mcp[mcp[unit] > mcp$uq | mcp[unit] < mcp$lq,], ggplot2::aes_(color=~age)) + ggplot2::ylim(0,maxy)
+      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes_string(x="iteration", y=unit, group="age"))+ggplot2::geom_line(data=mcp, ggplot2::aes_(color=~age)) + ggplot2::geom_point(data=mcp[mcp[[unit]] > mcp$uq | mcp[[unit]] < mcp$lq,], ggplot2::aes_(color=~age)) + ggplot2::ylim(0,maxy)
     }
-
+    plots[[plotnr]] <- plots[[plotnr]] + ggplot2::theme(axis.ticks.x=ggplot2::element_blank(), axis.text.x=ggplot2::element_blank())
     plotnr <- plotnr+1
   }
   gridExtra::grid.arrange(grobs=plots, top=grid::textGrob(title,gp=grid::gpar(fontsize=20,font=1)), ncol=2)
