@@ -559,7 +559,7 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   }
 
   # check for NAs
-  ins <- c(fixedEffects, randomEffects, carEffect, "Length")
+  ins <- c(fixedEffects, randomEffects, carEffect, "date", "Length")
   if (!all(!is.na(samples[, ins, with=F]))){
     nas <- c()
     for (var in ins){
@@ -567,7 +567,7 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
         nas <- c(nas, var)
       }
     }
-    stop("NAs are only allowed for weight and age in samples, not for covariates or length. Found NA for:", paste(nas, collapse=","))
+    stop("NAs are only allowed for weight and age in samples, not for covariates, date or length. Found NA for:", paste(nas, collapse=","))
   }
   inl <- c(fixedEffects, randomEffects, carEffect, "LiveWeightKG")[c(fixedEffects, randomEffects, carEffect, "LiveWeightKG") %in% names(landings)]
   if(!all(!is.na(landings[, inl, with=F]))){

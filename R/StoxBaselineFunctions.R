@@ -96,16 +96,19 @@ RedefinePositionStoxBiotic <- function(StoxBioticData){
 #'  StoX function
 #'  Appends a position to landings data, based on Area and Location codes.
 #' @details
-#'  When 'resolution' is specified as 'Area' Area is looked up from 'AreaPosition', using the row where 'Location' is missing.
-#'  When 'resolution' is specified as 'Location', 'Area' and 'Location' is looked up 'AreaPosition'.
+#'  When 'LocationCol' is specified as 'None' Area is looked up from 'AreaPosition', using the row where 'Location' is missing.
+#'  When 'LocationCol' is specified as 'Location', 'Area' and 'Location' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
+#'  When 'LocationCol' is specified as 'Coastal', 'Area' and 'Costal' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 #' @param StoxLandingData landing data, see \code{\link[RstoxData]{StoxLandingData}}
 #' @param AreaPosition coordinates for Area and SubArea codes, see \code{\link[RstoxFDA]{AreaPosition}}
-#' @param resolution character(), defaults to Area, specify what resolution to use: 'Area' or 'Location'. See details.
+#' @param LocationCol Specify which column in 'StoxLandingsData' should are represented by 'Location' in 'AreaPosition'. See details.
 #' @param latColName name of the column which should be appended for latitudes. Defaults to "Latitude".
 #' @param lonColName name of the column which should be appended for longitudes. Defaults to "Longitude".
 #' @return \code{\link[RstoxData]{StoxLandingData}} with columns for latitude and longitude appended.
 #' @export
-AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, resolution = c("Area", "Location"), latColName=NULL, lonColName=NULL){
+AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationCol = c("None", "Location", "Coastal"), latColName=NULL, lonColName=NULL){
+  
+  LocationCol <- match.arg(LocationCol)
   
   if (!isGiven(latColName)){
     latColName="Latitude"    
@@ -113,7 +116,6 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, resolution
   if (!isGiven(lonColName)){
     lonColName="Longitude"
   }
-  
 
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   stopifnot(is.AreaPosition(AreaPosition))
@@ -125,12 +127,10 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, resolution
     stop(paste("Column", lonColName, "already exists."))
   }
 
-  resolution <- match.arg(resolution, resolution)
-
   AreaPosition[[latColName]] <- AreaPosition$Latitude
   AreaPosition[[lonColName]] <- AreaPosition$Longitude
 
-  if (resolution == "Area"){
+  if (LocationCol == "None"){
     
     if (!all(StoxLandingData$landings$Area %in% AreaPosition$Area)){
       missing <- StoxLandingData$landings$Area[!(StoxLandingData$landings$Area %in% AreaPosition$Area)]
@@ -146,9 +146,9 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, resolution
     StoxLandingData$landings <- data.table::as.data.table(merge(StoxLandingData$landings, AreaPosition, by.x="Area", by.y="Area", all.x=T))
     return(StoxLandingData)
   }
-  else if (resolution == "Location"){
+  else if (LocationCol %in% c("Location", "Coastal")){
     
-    arealocdata <- paste(StoxLandingData$landings$Area, StoxLandingData$landings$Location, sep="-")
+    arealocdata <- paste(StoxLandingData$landings$Area, StoxLandingData$landings[[LocationCol]], sep="-")
     arealocresource <- paste(AreaPosition$Area, AreaPosition$Location, sep="-")
     if (!all(arealocdata %in% arealocresource)){
       missing <- arealocdata[!(arealocdata %in% arealocresource)]
@@ -156,11 +156,11 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, resolution
     }
     AreaPosition <- AreaPosition[,c("Area", "Location", latColName, lonColName), with=F]
     stopifnot(!any(duplicated(paste(AreaPosition$Area, AreaPosition$Location))))
-    StoxLandingData$landings <- data.table::as.data.table(merge(StoxLandingData$landings, AreaPosition, by.x=c("Area", "Location"), by.y=c("Area", "Location"), all.x=T))
+    StoxLandingData$landings <- data.table::as.data.table(merge(StoxLandingData$landings, AreaPosition, by.x=c("Area", LocationCol), by.y=c("Area", "Location"), all.x=T))
     return(StoxLandingData)
   }
   else{
-    stop(paste("Resolution", resolution, "not supported"))
+    stop(paste("Parameter", LocationCol, "is not supported for 'LocationCol'."))
   }
 
 }
@@ -277,10 +277,10 @@ AppendStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, columnName="
   stop("Not implemented. Remember to export when implemented")
 }
 
-#' Appends Stratum to StoxLandingData
+#' Adds Stratum to StoxLandingData
 #' @description
 #'  StoX function
-#'  Appends a column to StoxLandingData with the spatial strata each row belongs to.
+#'  Adds a column to StoxLandingData with the spatial strata each row belongs to.
 #' @details
 #'  \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
 #'  these need to be appended before calling this function, and identified with the parameters 'latColumn' and 'lonColumn'.
@@ -317,6 +317,29 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, columnName=NU
   }
   StoxLandingData$landings <- appendAreaCode(StoxLandingData$landings, StratumPolygon, latColumn, lonColumn, columnName)
   return(StoxLandingData)
+}
+
+#' Adds Stratum to StoxBioticData
+#' @description
+#'  Adds a column to StoxBioticData with the spatial strata each row belongs to.
+#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated. Needs postions appended. See details.
+#' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
+#' @param columnName Name of the column that will be appended. Defaults to 'Stratum'.
+#' @return StoxBioticData with column appended to data.table 'Station'. See \code{\link[RstoxData]{StoxBioticData}}.
+#' @export
+AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, columnName=NULL){
+  
+  if (!isGiven(columnName)){
+    columnName <- "Stratum"    
+  }
+  
+  stopifnot("Station" %in% names(StoxBioticData))
+  
+  if (columnName %in% names(StoxBioticData$Station)){
+    stop(paste("Column name", columnName, "already exists."))
+  }
+  StoxBioticData$Station <- appendAreaCode(StoxBioticData$Station, StratumPolygon, "Latitude", "Longitude", columnName)
+  return(StoxBioticData)
 }
 
 #' append gear
