@@ -66,6 +66,11 @@ expect_equal(names(gr2t6)[1], "4")
 expect_equal(names(gr2t6)[3], "6+")
 
 
+#
+# PLot tests (actual plot on NULL-device)
+#
+
+pdf(file=NULL)
 context("test plot Agetraces")
 data(recaPrediction)
 plotAgeTraces(recaPrediction, plusGroup=6, nclust = 2)
@@ -82,4 +87,4 @@ plotCatchAtAge(recaPrediction)
 
 context("test plot Catch At age, wiehgtUnit")
 plotCatchAtAge(recaPrediction, unit="kg")
-
+dev.off()
