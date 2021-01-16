@@ -298,7 +298,7 @@ expect_true(all(c("Latitude", "Longitude") %in% names(landingPost$landings)))
 expect_true(all(!is.na(landingPost$landings$Latitude)))
 expect_true(all(!is.na(landingPost$landings$Longitude)))
 
-lata <- min(landingPost$landing$Latitude[1])
+lata <- min(landingPost$landings$Latitude[1])
 landingPost <- AddAreaPositionStoxLanding(stoxLandingPre, areaPos, LocationCol = "Location")
 expect_false(lata == min(landingPost$landings$Latitude[1]))
 
