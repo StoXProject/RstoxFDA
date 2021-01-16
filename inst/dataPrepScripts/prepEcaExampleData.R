@@ -30,3 +30,9 @@ StoxLandingData <- RstoxData::StoxLanding(RstoxData::ReadLanding(landingfile))
 
 saveRDS(StoxBioticData, "inst/testresources/StoxBioticData.rds")
 saveRDS(StoxLandingData, "inst/testresources/StoxLandingData.rds")
+
+recaDataExample <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, fixedEffects = c(), randomEffects = c())
+recaPrediction <- RunRecaEstimate(prep, 50, 5000, 10)$prediction
+
+usethis::use_data(recaPrediction, overwrite = T)
+usethis::use_data(recaDataExample, overwrite = T)
