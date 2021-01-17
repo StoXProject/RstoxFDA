@@ -13,23 +13,20 @@
 #'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 #'  and approriate columns appended for identifying corresponding samples
 #' @param fixedEffects
-#'  character() vector identifying column names that should be treated as fixed effects
+#'  optional, vector identifying column names that should be treated as fixed effects. Defaults to no fixed effects.
 #' @param randomEffects
-#'  character() vector identifying column names that should be treated as random effects
+#'  optional, vector identifying column names that should be treated as random effects. Defaults to no random effects.
 #' @param carEffect
-#'  character(), optional, identifying the column name that should be treated as CAR-effect
-#'  (conditional autoregressive effect)
+#'  optional, charcter identifying the column name that should be treated as CAR-effect
+#'  (conditional autoregressive effect). Defaults to np CAR-eggect.
 #' @param CarNeighbours
 #'  \code{\link[RstoxFDA]{CarNeighbours}}, mandatory if 'carEffect' is given.
 #'  Identifies which values of the carEffect are to be considered as neighbours.
+#' @param UseAgingError 
+#'  logical identifying if error-aging parameters should be incorporated in the model
 #' @param AgeErrorMatrix
 #'  \code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
-#'  If not provided age reading errors will not be modelled.
-#' @param stockSplitting
-#'  default FALSE, whether to run estimates for separate stocks in the data (coastal cod-analysis)
-#' @param ClassificationError
-#'  \code{\link[RstoxFDA]{ClassificationError}}, optional,
-#'  specifies the probability of misclassifying stock for an individual Used in conjunction with 'stockSplitting'. If not provided classification errors will not be modelled.
+#'  mandatory if UseAgingError is TRUE.
 #' @param minAge
 #'  optional, must match dimensions of any 'AgeErrorMatrix'.
 #'  If not provided it will be derived from data.
@@ -51,12 +48,22 @@
 #'  encoding the day of the year when fish is consider to transition from one age to the next.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects, randomEffects, carEffect=NULL, CarNeighbours=NULL, AgeErrorMatrix=NULL, stockSplitting=FALSE, ClassificationError=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, temporalResolution=c("Quarter", "Month"), hatchDay=NULL){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NULL, randomEffects=NULL, carEffect=NULL, CarNeighbours=NULL, AgeErrorMatrix=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, temporalResolution=c("Quarter", "Month"), hatchDay=NULL){
   
   #expose as parameter when implemented
+  ClassificationError=NULL
+  stockSplitting=FALSE
   continousEffects<-NULL
+  warning("Stox splitting and continous effect not implemented")
   
   temporalResolution <- match.arg(temporalResolution)
+  
+  if (is.null(fixedEffects)){
+    fixedEffects <- c()
+  }
+  if (is.null(randomEffects)){
+    randomEffects <- c()
+  }
   
   if (!isGiven(hatchDay)){
     hatchDay <- 1
