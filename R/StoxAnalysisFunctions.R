@@ -105,9 +105,6 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects, r
     stop(paste("Temporal resolution", temporalResolution, "not supported"))
   }
 
-  warning("Get nFish for each sample with delprove.")
-  nFish = NULL
-  
   flatlandings <- StoxLandingData$landings
   flatlandings$LiveWeightKG <- flatlandings$RoundWeightKilogram
 
@@ -115,11 +112,34 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects, r
   flatbiotic <- flatbiotic[!is.na(flatbiotic$IndividualKey),]
   flatbiotic$catchId <- paste(flatbiotic$CruiseKey, flatbiotic$StationKey, flatbiotic$HaulKey, sep="_")
   flatbiotic$sampleId <- paste(flatbiotic$catchId, flatbiotic$SampleKey, sep="_")
-  
   flatbiotic$Age <- flatbiotic$IndividualAge
   flatbiotic$Length <- flatbiotic$IndividualTotalLength
   flatbiotic$Weight <- flatbiotic$IndividualRoundWeight
   flatbiotic$date <- as.Date(flatbiotic$DateTime)
+  
+  
+  nFish = NULL
+  #
+  # set the nFish table for any catches where several fractions have been sampled (delprøve)
+  #
+  if (length(unique(flatbiotic$catchId)) != length(unique(flatbiotic$sampleId))){
+    allSamples <- unique(flatbiotic[,c("catchId", "sampleId")])
+    stratifiedCatchIds <- allSamples$catchId[duplicated(allSamples$catchId)]
+    nFish <- flatbiotic[flatbiotic$catchId %in% stratifiedCatchIds,c("sampleId", "CatchFractionCount", "HaulKey", "SampleKey")]
+    nFish <- nFish[!duplicated(nFish$sampleId),]
+    if (any(is.na(nFish$CatchFractionCount))){
+      missing <- nFish[is.na(nFish$CatchFractionCount),]
+      for (i in 1:nrow(missing)){
+        HaulKey <- missing$HaulKey[i]
+        SampleKey <- missing$SampleKey[i]
+        message(paste("'CatchFractionCount' missing from Sample", SampleKey, "from Haul", HaulKey, "which have several catch fractions sampled."))
+      }
+      stop("'StoxBioticData' have 'CatchFractionCount' missing from the 'Sample' table for Hauls with several fractions sampled.")
+    }
+    nFish <- nFish[,c("sampleId", "CatchFractionCount")]
+    names(nFish) <- c("sampleId", "count")
+  }
+    
   
   recaObject <- prepRECA(flatbiotic, 
                          flatlandings, 

@@ -99,7 +99,7 @@ The cell definition is specified by 'landings'.
  neighbours must be symetric, so that b \%in\% neighbours[a], implies a \%in\% neighbours[b]
 
  nfish is only needed when several samples may be taken from the same catch.
- If these are stratified in any way (e.g. pre-sorting by size or sex), an estimate of strata sizes must be given (column count), for each sample (column sampleId).
+ If these are stratified in any way (e.g. pre-sorting by size or sex), an estimate of strata sizes must be given (column 'count'), for each sample (column 'sampleId').
  If these are replicate samples from the same selection frame, an estimate of the total catch may be given.
 
  output GlobalParameters: While outputs AgeLength, WeightLength and Landings are complete and ready for R-ECA runs.

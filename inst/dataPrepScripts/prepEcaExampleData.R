@@ -2,8 +2,8 @@
 # obtain example files for testing Reca
 #
 
-bioticfile <- "~/unmanaged_installs/stoxAlpha/TestProjects/exampledataEca/biotic_kolmule_2018.xml"
-landingfile <- "~/unmanaged_installs/stoxAlpha/TestProjects/exampledataEca/landing_excerpt_kolmule_2018.xml"
+bioticfile <- "../resource_raw_data/biotic_kolmule_2018.xml"
+landingfile <- "../resource_raw_data/landing_excerpt_kolmule_2018.xml"
 
 library(RstoxData)
 library(RstoxFDA)
@@ -31,8 +31,22 @@ StoxLandingData <- RstoxData::StoxLanding(RstoxData::ReadLanding(landingfile))
 saveRDS(StoxBioticData, "inst/testresources/StoxBioticData.rds")
 saveRDS(StoxLandingData, "inst/testresources/StoxLandingData.rds")
 
+#
+# run eca and export as example data
+#
 recaDataExample <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, fixedEffects = c(), randomEffects = c())
 recaPrediction <- RunRecaEstimate(prep, 50, 5000, 10)$prediction
 
 usethis::use_data(recaPrediction, overwrite = T)
 usethis::use_data(recaDataExample, overwrite = T)
+
+
+#
+# make test data with delprøve
+#
+bioticfile <- "../resource_raw_data/testdelp.xml"
+BioticData <- RstoxData::ReadBiotic(bioticfile)
+BioticData$testdelp.xml$fishstation$stationstarttime <- "12:00:00.000Z"
+StoxBioticDataDelpr <- RstoxData::StoxBiotic(BioticData)
+saveRDS(StoxBioticDataDelpr, "inst/testresources/StoxBioticDelpr.rds")
+
