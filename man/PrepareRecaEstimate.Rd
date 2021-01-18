@@ -7,13 +7,13 @@
 PrepareRecaEstimate(
   StoxBioticData,
   StoxLandingData,
-  fixedEffects,
-  randomEffects,
+  fixedEffects = NULL,
+  randomEffects = NULL,
+  UseCarEffect = F,
   carEffect = NULL,
   CarNeighbours = NULL,
+  UseAgingError = F,
   AgeErrorMatrix = NULL,
-  stockSplitting = FALSE,
-  ClassificationError = NULL,
   minAge = NULL,
   maxAge = NULL,
   maxLength = NULL,
@@ -29,23 +29,23 @@ and approriate columns appended for identifying corresponding landings.}
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 and approriate columns appended for identifying corresponding samples}
 
-\item{fixedEffects}{character() vector identifying column names that should be treated as fixed effects}
+\item{fixedEffects}{optional, vector identifying column names that should be treated as fixed effects. Defaults to no fixed effects.}
 
-\item{randomEffects}{character() vector identifying column names that should be treated as random effects}
+\item{randomEffects}{optional, vector identifying column names that should be treated as random effects. Defaults to no random effects.}
 
-\item{carEffect}{character(), optional, identifying the column name that should be treated as CAR-effect
-(conditional autoregressive effect)}
+\item{UseCarEffect}{logical indicating whether CAR-effect (conditional autoregressive effect) should be used.}
+
+\item{carEffect}{optional, character identifying the column name that should be treated as CAR-effect.
+Mandatory if CAR-effect is TRUE
+(conditional autoregressive effect).}
 
 \item{CarNeighbours}{\code{\link[RstoxFDA]{CarNeighbours}}, mandatory if 'carEffect' is given.
 Identifies which values of the carEffect are to be considered as neighbours.}
 
+\item{UseAgingError}{logical identifying if error-aging parameters should be incorporated in the model}
+
 \item{AgeErrorMatrix}{\code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
-If not provided age reading errors will not be modelled.}
-
-\item{stockSplitting}{default FALSE, whether to run estimates for separate stocks in the data (coastal cod-analysis)}
-
-\item{ClassificationError}{\code{\link[RstoxFDA]{ClassificationError}}, optional,
-specifies the probability of misclassifying stock for an individual Used in conjunction with 'stockSplitting'. If not provided classification errors will not be modelled.}
+mandatory if UseAgingError is TRUE.}
 
 \item{minAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
 If not provided it will be derived from data.}

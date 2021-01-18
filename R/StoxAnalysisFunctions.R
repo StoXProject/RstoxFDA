@@ -16,9 +16,12 @@
 #'  optional, vector identifying column names that should be treated as fixed effects. Defaults to no fixed effects.
 #' @param randomEffects
 #'  optional, vector identifying column names that should be treated as random effects. Defaults to no random effects.
+#' @param UseCarEffect
+#'  logical indicating whether CAR-effect (conditional autoregressive effect) should be used.
 #' @param carEffect
-#'  optional, charcter identifying the column name that should be treated as CAR-effect
-#'  (conditional autoregressive effect). Defaults to np CAR-eggect.
+#'  optional, character identifying the column name that should be treated as CAR-effect.
+#'  Mandatory if CAR-effect is TRUE
+#'  (conditional autoregressive effect).
 #' @param CarNeighbours
 #'  \code{\link[RstoxFDA]{CarNeighbours}}, mandatory if 'carEffect' is given.
 #'  Identifies which values of the carEffect are to be considered as neighbours.
@@ -48,7 +51,7 @@
 #'  encoding the day of the year when fish is consider to transition from one age to the next.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NULL, randomEffects=NULL, carEffect=NULL, CarNeighbours=NULL, AgeErrorMatrix=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, temporalResolution=c("Quarter", "Month"), hatchDay=NULL){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NULL, randomEffects=NULL, UseCarEffect=F, carEffect=NULL, CarNeighbours=NULL, UseAgingError=F, AgeErrorMatrix=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, temporalResolution=c("Quarter", "Month"), hatchDay=NULL){
   
   #expose as parameter when implemented
   ClassificationError=NULL
@@ -57,6 +60,28 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
   warning("Stox splitting and continous effect not implemented")
   
   temporalResolution <- match.arg(temporalResolution)
+  
+  if (!UseAgingError){
+    AgeErrorMatrix = NULL
+  }
+  if (UseAgingError){
+    if (is.null(AgeErrorMatrix)){
+      stop("'AgeErrorMatrix' must be provided when UseAgingError is TRUE.")
+    }
+  }
+  if (!UseCarEffect){
+    CarNeighbours = NULL
+    carEffect = c()
+  }
+  if (UseCarEffect){
+    if (is.null(CarNeighbours)){
+      stop("'CarNeighbours' must be provided when UseCarEffect is TRUE.")
+    }
+    if (is.null(carEffect) | length(carEffect) == 0){
+      stop("'carEffect' must be provided when UseCarEffect is TRUE.")
+    }
+
+  }
   
   if (is.null(fixedEffects)){
     fixedEffects <- c()
@@ -91,14 +116,9 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
     stop(paste("Temporal resolution", temporalResolution, "not supported"))
   }
 
-  if (length(continousEffects) != 0){
-    stop("Data preparation for continous effect is not yet implemented.")
-  }
-
-  if (stockSplitting){
-    stop("Data preparation for stock splitting is not yet implemented.")
-  }
-
+  #
+  # Set temporal resolution
+  #
   quarter=NULL
   month=NULL
 

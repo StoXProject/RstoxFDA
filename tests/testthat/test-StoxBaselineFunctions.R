@@ -147,28 +147,28 @@ expect_error(DefineCarNeighbours(NULL, FileName = errorfile), "Malformed resourc
 
 context("test-StoxBaselineFunctions: DefineAgeErrorMatrix")
 ageerorfile <- system.file("testresources","AgeErrorHirstEtAl2012.txt", package="RstoxFDA")
-ageerror <- DefineAgeErrorMatrix(resourceFilePath = ageerorfile)
+ageerror <- DefineAgeErrorMatrix(FileName = ageerorfile)
 expect_true(data.table::is.data.table(ageerror))
 expect_equal(nrow(ageerror), 15)
 expect_equal(ncol(ageerror), 16)
 
 context("test-StoxBaselineFunctions: DefineAgeErrorMatrix useProcessData")
-nullAE <- DefineAgeErrorMatrix(NULL, resourceFilePath = ageerorfile, useProcessData = T)
+nullAE <- DefineAgeErrorMatrix(NULL, FileName = ageerorfile, UseProcessData = T)
 expect_true(is.null(nullAE))
 
 context("test-StoxBaselineFunctions: DefineAgeErrorMatrix non-symmetric")
 ageerorfile <- system.file("testresources","AgeNonSym.txt", package="RstoxFDA")
-ageerror <- DefineAgeErrorMatrix(resourceFilePath = ageerorfile)
+ageerror <- DefineAgeErrorMatrix(FileName = ageerorfile)
 expect_true(data.table::is.data.table(ageerror))
 expect_equal(nrow(ageerror), 14)
 expect_equal(ncol(ageerror), 16)
 
 context("test-StoxBaselineFunctions: DefineAgeErrorMatrix malformed")
 ageerorfile <- system.file("testresources","AgeMalformed.txt", package="RstoxFDA")
-expect_error(DefineAgeErrorMatrix(resourceFilePath = ageerorfile),"Malformed resource file. All probabilities must be in >=0 and <=1.")
+expect_error(DefineAgeErrorMatrix(FileName = ageerorfile),"Malformed resource file. All probabilities must be in >=0 and <=1.")
 
 ageerorfile <- system.file("testresources","AgeMalformed2.txt", package="RstoxFDA")
-expect_error(DefineAgeErrorMatrix(resourceFilePath = ageerorfile),"Malformed resource file. Columns must sum to 1.")
+expect_error(DefineAgeErrorMatrix(FileName = ageerorfile),"Malformed resource file. Columns must sum to 1.")
 
 
 

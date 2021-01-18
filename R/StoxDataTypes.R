@@ -389,7 +389,20 @@ stoxFunctionAttributes <- list(
       )
     )
   ),
+
+  DefineCarNeighbours = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "CarNeighbours"
+  ),
   
+  DefineAgeErrorMatrix = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AgeErrorMatrix"
+  ),
+  
+      
   AddAreaPositionStoxLanding = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
@@ -400,6 +413,23 @@ stoxFunctionAttributes <- list(
     functionType = "modelData", 
     functionCategory = "baseline", 
     functionOutputDataType = "StoxLandingData"
+  ),
+  
+  PrepareRecaEstimate = list(
+    functionType = "modelData",
+    functionCategory = "analysis",
+    functionOutputDataType = "RecaData",
+    functionArgumentHierarchy = list(
+      AgeErrorMatrix = list(
+        UseAgingError = TRUE
+      ),
+      CarNeighbours = list(
+        UseCarEffect = TRUE
+      ),
+      carEffect = list(
+        UseCarEffect = TRUE
+      )
+    )
   )
   
 )

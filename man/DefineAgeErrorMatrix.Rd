@@ -6,15 +6,15 @@
 \usage{
 DefineAgeErrorMatrix(
   processData,
-  resourceFilePath,
-  encoding = "UTF-8",
-  useProcessData = F
+  DefinitionMethod = c("ResourceFile"),
+  FileName,
+  UseProcessData = F
 )
 }
 \arguments{
 \item{processData}{data.table() as returned from this function}
 
-\item{resourceFilePath}{path to resource file}
+\item{FileName}{path to resource file}
 
 \item{encoding}{encoding of resource file}
 

@@ -676,22 +676,24 @@ DefineCarNeighbours <- function(processData,
 #'  The matrix encodes the probability of observing an age (rows), given true age (columns).
 #'  Columns must sum to 1.
 #' @param processData data.table() as returned from this function
-#' @param resourceFilePath path to resource file
+#' @param FileName path to resource file
 #' @param encoding encoding of resource file
 #' @param useProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.
 #' @export
-DefineAgeErrorMatrix <- function(processData, resourceFilePath, encoding="UTF-8", useProcessData=F){
+DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile"), FileName, UseProcessData=F){
+  
+  encoding="UTF-8"
 
-  if (useProcessData){
+  if (UseProcessData){
     return(processData)
   }
 
-  stream <- file(resourceFilePath, open="r")
+  stream <- file(FileName, open="r")
   matrixNoHeader <- utils::read.delim(stream, sep="\t", header=F, encoding = encoding)
   close(stream)
 
-  stream <- file(resourceFilePath, open="r")
+  stream <- file(FileName, open="r")
   matrix <- utils::read.delim(stream, sep="\t", header=T, row.names = 1, encoding = encoding)
   close(stream)
 
