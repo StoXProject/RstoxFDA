@@ -76,3 +76,6 @@ StoX-function.
  \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}
  via \code{\link[RstoxFDA]{RunRecaEstimate}}.
 }
+\details{
+A covariate indentifying haul is always included in Reca. Do not add haul-identifiers as covariates.
+}

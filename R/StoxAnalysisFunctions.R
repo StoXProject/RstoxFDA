@@ -5,6 +5,8 @@
 #'  and stores some data-related parameters in preparation for running
 #'  \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}
 #'  via \code{\link[RstoxFDA]{RunRecaEstimate}}.
+#' @details 
+#'  A covariate indentifying haul is always included in Reca. Do not add haul-identifiers as covariates.
 #'
 #' @param StoxBioticData
 #'  \code{\link[RstoxData]{StoxBioticData}} data with samples from fisheries
@@ -57,7 +59,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
   ClassificationError=NULL
   stockSplitting=FALSE
   continousEffects<-NULL
-  warning("Stox splitting and continous effect not implemented")
+  warning("Stox splitting, continous effect, and configuration of interaction is not implemented")
   
   temporalResolution <- match.arg(temporalResolution)
   
