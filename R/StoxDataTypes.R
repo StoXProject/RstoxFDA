@@ -428,13 +428,7 @@ stoxFunctionAttributes <- list(
     functionParameterFormat = list(
       randomEffects = "randomcovariates",
       fixedEffects = "fixedcovariates",
-      carEffect = "carcovariate",
-      minAge = "integer",
-      maxAge = "integer",
-      maxLength = "numeric",
-      lengthResolution = "numeric",
-      hatcday = "integer"
-    ),
+      carEffect = "carcovariate"),
     functionArgumentHierarchy = list(
       AgeErrorMatrix = list(
         UseAgingError = TRUE
@@ -450,15 +444,7 @@ stoxFunctionAttributes <- list(
   RunRecaEstimate = list(
     functionType = "modelData",
     functionCategory = "analysis",
-    functionOutputDataType = "RecaResult",
-    functionParameterFormat = list(
-      nSamples = "integer",
-      burnin = "integer",
-      thin = "integer",
-      delta.age = "numeric",
-      seed = "numeric",
-      caa.burning = "integer"
-    )
+    functionOutputDataType = "RecaResult"
   )
   
   

@@ -677,11 +677,11 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   }
   if (any(!is.na(samples$Age) & samples$Age < minAge)){
     minSampleAge <- min(samples$Age, na.rm=T)
-    stop(paste("Samples contains ages (", minSampleAge, ") smaller than minAge (", minAge,")", sep=""))
+    stop(paste("Samples contains ages (", minSampleAge, ") smaller than minAge (", minAge,"(",class(minAge),"))", sep=""))
   }
   if (any(!is.na(samples$Age) & samples$Age > maxAge)){
     maxSampleAge <- max(samples$Age, na.rm=T)
-    stop(paste("Samples contains ages (", maxSampleAge, ") larger than maxAge (", maxAge, ")", sep=""))
+    stop(paste("Samples contains ages (", maxSampleAge, ") larger than maxAge (", maxAge, "(",class(maxAge),"))", sep=""))
   }
   if (any(samples$Length > maxLength)){
     stop("Samples contains lengths longer than maxLength")

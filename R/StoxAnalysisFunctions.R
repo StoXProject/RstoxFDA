@@ -95,20 +95,35 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
   if (!isGiven(hatchDay)){
     hatchDay <- 1
   }
+  else{
+    hatchDay <- as.integer(hatchDay)
+  }
   if (!isGiven(carEffect)){
     carEffect <- NULL
   }
   if (!isGiven(minAge)){
     minAge <- NULL
   }
+  else{
+    minAge <- as.integer(minAge)
+  }
   if (!isGiven(maxAge)){
     maxAge <- NULL
+  }
+  else{
+    maxAge <- as.integer(maxAge)
   }
   if (!isGiven(maxLength)){
     maxLength <- NULL
   }
+  else{
+    maxLength <- as.double(maxLength)
+  }
   if (!isGiven(lengthResolution)){
     lengthResolution <- NULL
+  }
+  else{
+    lengthResolution <- as.double(lengthResolution)
   }
   
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
@@ -221,6 +236,10 @@ RunRecaEstimate <- function(RecaData, nSamples, burnin, thin, lgamodel=c("log-li
   fitfile="fit"
   predictfile="pred"
   
+  nSamples <- as.integer(nSamples)
+  burnin <- as.integer(burnin)
+  thin <- as.integer(thin)
+  
   if (!isGiven(resultdir)){
     resultdir <- NULL
   }
@@ -230,8 +249,14 @@ RunRecaEstimate <- function(RecaData, nSamples, burnin, thin, lgamodel=c("log-li
   if (!isGiven(delta.age)){
     delta.age <- 0.001
   }
+  else{
+    as.double(delta.age)
+  }
   if (!isGiven(caa.burnin)){
     caa.burnin <- 0
+  }
+  else{
+    as.integer(caa.burnin)
   }
   
   stopifnot(is.RecaData(RecaData))
