@@ -1,0 +1,23 @@
+{
+      "AreaPosition": {
+  		"$schema": "http://json-schema.org/draft-04/schema#",
+  		"type": "array",
+  		"items": [
+  			{
+  				"type": "object",
+  				"properties": {
+  					"Area": { "type": "string"},
+  					"Location": { "type": "string"},
+  					"Latitude": { "type": "number"},
+  					"Longitude": { "type": "number"}
+  				},
+  				"required": [
+  					"Area",
+  					"Location",
+  					"Latitude",
+  					"Longitude"
+  				]
+  			}
+  		]
+  	}
+}
