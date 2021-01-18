@@ -5,6 +5,9 @@ isGiven <- function(value){
   if (is.null(value)){
     return(FALSE)
   }
+  if (length(value) == 0){
+    return(FALSE)
+  }
   if (value == ""){
     return(FALSE)
   }

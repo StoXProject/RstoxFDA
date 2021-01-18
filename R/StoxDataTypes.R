@@ -365,7 +365,25 @@ is.ClassificationError <- function(ClassificationError){
 #' Function specification for inclusion in StoX UI
 #' @export
 stoxFunctionAttributes <- list(
-
+  
+  DefineCarNeighbours = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "CarNeighbours",
+    functionParameterFormat = list(
+      FileName = "filePath"
+    )
+  ),
+  
+  DefineAgeErrorMatrix = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AgeErrorMatrix",
+    functionParameterFormat = list(
+      FileName = "filePath"
+    )
+  ),
+  
   DefineAreaPosition = list(
     functionType = "processData", 
     functionCategory = "baseline", 
@@ -389,25 +407,6 @@ stoxFunctionAttributes <- list(
       )
     )
   ),
-
-  DefineCarNeighbours = list(
-    functionType = "modelData", 
-    functionCategory = "baseline", 
-    functionOutputDataType = "CarNeighbours",
-    functionParameterFormat = list(
-      FileName = "filePath"
-    )
-  ),
-  
-  DefineAgeErrorMatrix = list(
-    functionType = "modelData", 
-    functionCategory = "baseline", 
-    functionOutputDataType = "AgeErrorMatrix",
-    functionParameterFormat = list(
-      FileName = "filePath"
-    )
-  ),
-  
       
   AddAreaPositionStoxLanding = list(
     functionType = "modelData", 

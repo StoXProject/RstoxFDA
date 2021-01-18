@@ -53,7 +53,7 @@
 #'  encoding the day of the year when fish is consider to transition from one age to the next.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NULL, randomEffects=NULL, UseCarEffect=F, carEffect=NULL, CarNeighbours=NULL, UseAgingError=F, AgeErrorMatrix=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, temporalResolution=c("Quarter", "Month"), hatchDay=NULL){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NULL, randomEffects=NULL, UseCarEffect=F, carEffect=NULL, CarNeighbours=NULL, UseAgingError=F, AgeErrorMatrix=NULL, minAge=integer(), maxAge=integer(), maxLength=numeric(), lengthResolution=numeric(), temporalResolution=c("Quarter", "Month"), hatchDay=integer()){
   
   #expose as parameter when implemented
   ClassificationError=NULL
@@ -95,37 +95,22 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
   if (!isGiven(hatchDay)){
     hatchDay <- 1
   }
-  else{
-    hatchDay <- as.integer(hatchDay)
-  }
   if (!isGiven(carEffect)){
     carEffect <- NULL
   }
   if (!isGiven(minAge)){
     minAge <- NULL
   }
-  else{
-    minAge <- as.integer(minAge)
-  }
   if (!isGiven(maxAge)){
     maxAge <- NULL
-  }
-  else{
-    maxAge <- as.integer(maxAge)
   }
   if (!isGiven(maxLength)){
     maxLength <- NULL
   }
-  else{
-    maxLength <- as.double(maxLength)
-  }
   if (!isGiven(lengthResolution)){
     lengthResolution <- NULL
   }
-  else{
-    lengthResolution <- as.double(lengthResolution)
-  }
-  
+
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
 
   temporalResolution <- match.arg(temporalResolution, temporalResolution)
@@ -183,7 +168,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
     nFish <- nFish[,c("sampleId", "CatchFractionCount")]
     names(nFish) <- c("sampleId", "count")
   }
-    
+  
   
   recaObject <- prepRECA(flatbiotic, 
                          flatlandings, 
@@ -231,7 +216,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
 #' @param caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
 #' @return \code{\link[RstoxFDA]{RecaResult}} results from Reca run.
 #' @export
-RunRecaEstimate <- function(RecaData, nSamples, burnin, thin, lgamodel=c("log-linear", "non-linear"), resultdir=NULL, delta.age=NULL, seed=NULL, caa.burnin=NULL){
+RunRecaEstimate <- function(RecaData, nSamples, burnin, thin, lgamodel=c("log-linear", "non-linear"), resultdir=NULL, delta.age=numeric(), seed=numeric(), caa.burnin=numeric()){
 
   fitfile="fit"
   predictfile="pred"
@@ -249,16 +234,10 @@ RunRecaEstimate <- function(RecaData, nSamples, burnin, thin, lgamodel=c("log-li
   if (!isGiven(delta.age)){
     delta.age <- 0.001
   }
-  else{
-    as.double(delta.age)
-  }
   if (!isGiven(caa.burnin)){
     caa.burnin <- 0
   }
-  else{
-    as.integer(caa.burnin)
-  }
-  
+
   stopifnot(is.RecaData(RecaData))
 
   lgamodel <- match.arg(lgamodel)
