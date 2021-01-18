@@ -567,7 +567,7 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
         nas <- c(nas, var)
       }
     }
-    stop("NAs are only allowed for weight and age in samples, not for covariates, date or length. Found NA for:", paste(nas, collapse=","))
+    stop("NAs are only allowed for weight and age in samples, not for covariates, date or length. Found NA for: ", paste(nas, collapse=","))
   }
   inl <- c(fixedEffects, randomEffects, carEffect, "LiveWeightKG")[c(fixedEffects, randomEffects, carEffect, "LiveWeightKG") %in% names(landings)]
   if(!all(!is.na(landings[, inl, with=F]))){
@@ -676,10 +676,12 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
     maxAge <- max(samples$Age, na.rm=T)
   }
   if (any(!is.na(samples$Age) & samples$Age < minAge)){
-    stop("Samples contains ages smaller than minAge")
+    minSampleAge <- min(samples$Age, na.rm=T)
+    stop(paste("Samples contains ages (", minSampleAge, ") smaller than minAge (", minAge,")", sep=""))
   }
   if (any(!is.na(samples$Age) & samples$Age > maxAge)){
-    stop("Samples contains ages larger than maxAge")
+    maxSampleAge <- max(samples$Age, na.rm=T)
+    stop(paste("Samples contains ages (", maxSampleAge, ") larger than maxAge (", maxAge, ")", sep=""))
   }
   if (any(samples$Length > maxLength)){
     stop("Samples contains lengths longer than maxLength")

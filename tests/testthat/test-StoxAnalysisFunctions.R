@@ -12,6 +12,9 @@ prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, fixedEffects = c(),
 checkEcaObj(prep)
 expect_equal(length(prep$CovariateMaps$randomEffects$AgeLength$CatchId), length(unique(StoxBioticData$Individual$HaulKey)))
 
+
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, fixedEffects = c(), randomEffects = c(), minAge=1, maxAge=30)
+
 context("test-StoxAnalysisFunctions: RunRecaEstimate simple case")
 result <- RunRecaEstimate(prep, 10, 50, thin=1)
 expect_true(all(c("input", "fit", "prediction", "covariateMaps") %in% names(result)))
