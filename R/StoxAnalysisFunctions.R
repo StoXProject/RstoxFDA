@@ -14,13 +14,13 @@
 #' @param StoxLandingData
 #'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 #'  and approriate columns appended for identifying corresponding samples
-#' @param fixedEffects
+#' @param FixedEffects
 #'  optional, vector identifying column names that should be treated as fixed effects. Defaults to no fixed effects.
-#' @param randomEffects
+#' @param RandomEffects
 #'  optional, vector identifying column names that should be treated as random effects. Defaults to no random effects.
 #' @param UseCarEffect
 #'  logical indicating whether CAR-effect (conditional autoregressive effect) should be used.
-#' @param carEffect
+#' @param CarEffect
 #'  optional, character identifying the column name that should be treated as CAR-effect.
 #'  Mandatory if CAR-effect is TRUE
 #'  (conditional autoregressive effect).
@@ -32,36 +32,35 @@
 #' @param AgeErrorMatrix
 #'  \code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
 #'  mandatory if UseAgingError is TRUE.
-#' @param minAge
+#' @param MinAge
 #'  optional, must match dimensions of any 'AgeErrorMatrix'.
 #'  If not provided it will be derived from data.
-#' @param maxAge
+#' @param MaxAge
 #'  optional, must match dimensions of any 'AgeErrorMatrix'.
 #'  If not provided it will be derived from data.
-#' @param maxLength
+#' @param MaxLength
 #'  optional, maximal fish length in data in cm.
 #'  If not provided it will be derived from data.
-#' @param lengthResolution
+#' @param LengthResolution
 #'  optional, resolution for length measurements in cm.
 #'  If not provided modal value from data is used.
-#' @param temporalResolution
+#' @param TemporalResolution
 #'  default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
 #'  Regulates temporal resolution for calculating fractional ages of fish.
 #'  Not to be confused with any temporal covariate.
-#' @param hatchDay
+#' @param HatchDay
 #'  defaults to 1 representing Jan 1st.
 #'  encoding the day of the year when fish is consider to transition from one age to the next.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NULL, randomEffects=NULL, UseCarEffect=F, carEffect=NULL, CarNeighbours=NULL, UseAgingError=F, AgeErrorMatrix=NULL, minAge=integer(), maxAge=integer(), maxLength=numeric(), lengthResolution=numeric(), temporalResolution=c("Quarter", "Month"), hatchDay=integer()){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NULL, RandomEffects=NULL, UseCarEffect=F, CarEffect=NULL, CarNeighbours=NULL, UseAgingError=F, AgeErrorMatrix=NULL, MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), TemporalResolution=c("Quarter", "Month"), HatchDay=integer()){
   
   #expose as parameter when implemented
   ClassificationError=NULL
-  stockSplitting=FALSE
-  continousEffects<-NULL
+  StockSplitting=FALSE
+  ContinousEffect<-NULL
   warning("Stox splitting, continous effect, and configuration of interaction is not implemented")
   
-  temporalResolution <- match.arg(temporalResolution)
   
   if (!UseAgingError){
     AgeErrorMatrix = NULL
@@ -73,49 +72,49 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
   }
   if (!UseCarEffect){
     CarNeighbours = NULL
-    carEffect = c()
+    CarEffect = c()
   }
   if (UseCarEffect){
     if (is.null(CarNeighbours)){
       stop("'CarNeighbours' must be provided when UseCarEffect is TRUE.")
     }
-    if (is.null(carEffect) | length(carEffect) == 0){
-      stop("'carEffect' must be provided when UseCarEffect is TRUE.")
+    if (is.null(CarEffect) | length(CarEffect) == 0){
+      stop("'CarEffect' must be provided when UseCarEffect is TRUE.")
     }
 
   }
   
-  if (is.null(fixedEffects)){
-    fixedEffects <- c()
+  if (is.null(FixedEffects)){
+    FixedEffects <- c()
   }
-  if (is.null(randomEffects)){
-    randomEffects <- c()
+  if (is.null(RandomEffects)){
+    RandomEffects <- c()
   }
   
-  if (!isGiven(hatchDay)){
-    hatchDay <- 1
+  if (!isGiven(HatchDay)){
+    HatchDay <- 1
   }
-  if (!isGiven(carEffect)){
-    carEffect <- NULL
+  if (!isGiven(CarEffect)){
+    CarEffect <- c()
   }
-  if (!isGiven(minAge)){
-    minAge <- NULL
+  if (!isGiven(MinAge)){
+    MinAge <- NULL
   }
-  if (!isGiven(maxAge)){
-    maxAge <- NULL
+  if (!isGiven(MaxAge)){
+    MaxAge <- NULL
   }
-  if (!isGiven(maxLength)){
-    maxLength <- NULL
+  if (!isGiven(MaxLength)){
+    MaxLength <- NULL
   }
-  if (!isGiven(lengthResolution)){
-    lengthResolution <- NULL
+  if (!isGiven(LengthResolution)){
+    LengthResolution <- NULL
   }
 
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
 
-  temporalResolution <- match.arg(temporalResolution, temporalResolution)
-  if (!(temporalResolution %in% c("Quarter", "Month", "Week"))){
-    stop(paste("Temporal resolution", temporalResolution, "not supported"))
+  TemporalResolution <- match.arg(TemporalResolution, TemporalResolution)
+  if (!(TemporalResolution %in% c("Quarter", "Month", "Week"))){
+    stop(paste("Temporal resolution", TemporalResolution, "not supported"))
   }
 
   #
@@ -124,14 +123,14 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
   quarter=NULL
   month=NULL
 
-  if (temporalResolution == "Quarter"){
+  if (TemporalResolution == "Quarter"){
     quarter <- quarter(StoxLandingData$landings$CatchDate)
   }
-  else if (temporalResolution == "Month"){
+  else if (TemporalResolution == "Month"){
     month <- month(StoxLandingData$landings$CatchDate)
   }
   else{
-    stop(paste("Temporal resolution", temporalResolution, "not supported"))
+    stop(paste("Temporal resolution", TemporalResolution, "not supported"))
   }
 
   flatlandings <- StoxLandingData$landings
@@ -169,23 +168,22 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
     names(nFish) <- c("sampleId", "count")
   }
   
-  
   recaObject <- prepRECA(flatbiotic, 
                          flatlandings, 
-                         fixedEffects, 
-                         randomEffects, 
-                         carEffect, 
+                         FixedEffects, 
+                         RandomEffects, 
+                         CarEffect, 
                          neighbours=CarNeighbours, 
                          nFish=nFish, 
                          ageError=AgeErrorMatrix, 
-                         minAge=minAge, 
-                         maxAge=maxAge, 
-                         maxLength=maxLength, 
-                         lengthResolution=lengthResolution, 
+                         minAge=MinAge, 
+                         maxAge=MaxAge, 
+                         maxLength=MaxLength, 
+                         lengthResolution=LengthResolution, 
                          date=NULL, 
                          month=month, 
                          quarter=quarter, 
-                         hatchDay=hatchDay)
+                         hatchDay=HatchDay)
   return(recaObject)
 }
 
@@ -206,43 +204,48 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
 #'  If removal is not successful a warning will be issued which includes the path to the temporary directory.
 #'
 #' @param RecaData \code{\link[RstoxFDA]{RecaData}} as returned from \code{\link[RstoxFDA]{PrepareRecaEstimate}}
-#' @param nSamples number of MCMC samples that will be made available for \code{\link[Reca]{eca.predict}}. See documentation for \code{\link[Reca]{eca.estimate}},
-#' @param burnin number of MCMC samples run and discarded by \code{\link[Reca]{eca.estimate}} before any samples are saved. See documentation for \code{\link[Reca]{eca.estimate}}.
-#' @param lgamodel The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}.
-#' @param resultdir a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. . If not given a temporary directory will be created. See documentation for \code{\link[Reca]{eca.estimate}}.
-#' @param thin controls how many iterations are run between each samples saved. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
-#' @param delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.
-#' @param seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
-#' @param caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
+#' @param Nsamples number of MCMC samples that will be made available for \code{\link[Reca]{eca.predict}}. See documentation for \code{\link[Reca]{eca.estimate}},
+#' @param Burnin number of MCMC samples run and discarded by \code{\link[Reca]{eca.estimate}} before any samples are saved. See documentation for \code{\link[Reca]{eca.estimate}}.
+#' @param Lgamodel The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}.
+#' @param Resultdir a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. . If not given a temporary directory will be created. See documentation for \code{\link[Reca]{eca.estimate}}.
+#' @param Thin controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
+#' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.
+#' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
+#' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
 #' @return \code{\link[RstoxFDA]{RecaResult}} results from Reca run.
 #' @export
-RunRecaEstimate <- function(RecaData, nSamples, burnin, thin, lgamodel=c("log-linear", "non-linear"), resultdir=NULL, delta.age=numeric(), seed=numeric(), caa.burnin=numeric()){
+RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), Lgamodel=c("log-linear", "non-linear"), Resultdir=NULL, Delta.age=numeric(), Seed=numeric(), Caa.burnin=numeric()){
 
   fitfile="fit"
   predictfile="pred"
   
-  nSamples <- as.integer(nSamples)
-  burnin <- as.integer(burnin)
-  thin <- as.integer(thin)
-  
-  if (!isGiven(resultdir)){
-    resultdir <- NULL
+  if (!isGiven(Nsamples)){
+    stop("Parameter 'Nsamples' must be provided.")
   }
-  if (!isGiven(seed)){
-    seed <- NULL
+  if (!isGiven(Burnin)){
+    stop("Parameter 'Burnin' must be provided.")
   }
-  if (!isGiven(delta.age)){
-    delta.age <- 0.001
+  if (!isGiven(Thin)){
+    Thin <- 0
   }
-  if (!isGiven(caa.burnin)){
-    caa.burnin <- 0
+  if (!isGiven(Resultdir)){
+    Resultdir <- NULL
+  }
+  if (!isGiven(Seed)){
+    Seed <- NULL
+  }
+  if (!isGiven(Delta.age)){
+    Delta.age <- 0.001
+  }
+  if (!isGiven(Caa.burnin)){
+    Caa.burnin <- 0
   }
 
   stopifnot(is.RecaData(RecaData))
 
-  lgamodel <- match.arg(lgamodel)
+  Lgamodel <- match.arg(Lgamodel, Lgamodel)
 
-  recaResult <- runRECA(RecaData, nSamples = nSamples, burnin=burnin, lgamodel=lgamodel, fitfile=fitfile, predictfile = predictfile, resultdir = resultdir, thin=thin, delta.age = delta.age, seed = seed, caa.burnin = caa.burnin)
+  recaResult <- runRECA(RecaData, nSamples = Nsamples, burnin=Burnin, lgamodel=Lgamodel, fitfile=fitfile, predictfile = predictfile, resultdir = Resultdir, thin=Thin, delta.age = Delta.age, seed = Seed, caa.burnin = Caa.burnin)
 
   return(recaResult)
 }

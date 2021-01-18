@@ -7,19 +7,19 @@
 PrepareRecaEstimate(
   StoxBioticData,
   StoxLandingData,
-  fixedEffects = NULL,
-  randomEffects = NULL,
+  FixedEffects = NULL,
+  RandomEffects = NULL,
   UseCarEffect = F,
-  carEffect = NULL,
+  CarEffect = NULL,
   CarNeighbours = NULL,
   UseAgingError = F,
   AgeErrorMatrix = NULL,
-  minAge = integer(),
-  maxAge = integer(),
-  maxLength = numeric(),
-  lengthResolution = numeric(),
-  temporalResolution = c("Quarter", "Month"),
-  hatchDay = integer()
+  MinAge = integer(),
+  MaxAge = integer(),
+  MaxLength = numeric(),
+  LengthResolution = numeric(),
+  TemporalResolution = c("Quarter", "Month"),
+  HatchDay = integer()
 )
 }
 \arguments{
@@ -29,13 +29,13 @@ and approriate columns appended for identifying corresponding landings.}
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 and approriate columns appended for identifying corresponding samples}
 
-\item{fixedEffects}{optional, vector identifying column names that should be treated as fixed effects. Defaults to no fixed effects.}
+\item{FixedEffects}{optional, vector identifying column names that should be treated as fixed effects. Defaults to no fixed effects.}
 
-\item{randomEffects}{optional, vector identifying column names that should be treated as random effects. Defaults to no random effects.}
+\item{RandomEffects}{optional, vector identifying column names that should be treated as random effects. Defaults to no random effects.}
 
 \item{UseCarEffect}{logical indicating whether CAR-effect (conditional autoregressive effect) should be used.}
 
-\item{carEffect}{optional, character identifying the column name that should be treated as CAR-effect.
+\item{CarEffect}{optional, character identifying the column name that should be treated as CAR-effect.
 Mandatory if CAR-effect is TRUE
 (conditional autoregressive effect).}
 
@@ -47,23 +47,23 @@ Identifies which values of the carEffect are to be considered as neighbours.}
 \item{AgeErrorMatrix}{\code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
 mandatory if UseAgingError is TRUE.}
 
-\item{minAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
+\item{MinAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
 If not provided it will be derived from data.}
 
-\item{maxAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
+\item{MaxAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
 If not provided it will be derived from data.}
 
-\item{maxLength}{optional, maximal fish length in data in cm.
+\item{MaxLength}{optional, maximal fish length in data in cm.
 If not provided it will be derived from data.}
 
-\item{lengthResolution}{optional, resolution for length measurements in cm.
+\item{LengthResolution}{optional, resolution for length measurements in cm.
 If not provided modal value from data is used.}
 
-\item{temporalResolution}{default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
+\item{TemporalResolution}{default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
 Regulates temporal resolution for calculating fractional ages of fish.
 Not to be confused with any temporal covariate.}
 
-\item{hatchDay}{defaults to 1 representing Jan 1st.
+\item{HatchDay}{defaults to 1 representing Jan 1st.
 encoding the day of the year when fish is consider to transition from one age to the next.}
 }
 \value{

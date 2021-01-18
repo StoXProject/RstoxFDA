@@ -425,9 +425,9 @@ stoxFunctionAttributes <- list(
     functionCategory = "analysis",
     functionOutputDataType = "RecaData",
     functionParameterFormat = list(
-      randomEffects = "randomcovariates",
-      fixedEffects = "fixedcovariates",
-      carEffect = "carcovariate"),
+      RandomEffects = "randomcovariates",
+      FixedEffects = "fixedcovariates",
+      CarEffect = "carcovariate"),
     functionArgumentHierarchy = list(
       AgeErrorMatrix = list(
         UseAgingError = TRUE
@@ -435,7 +435,7 @@ stoxFunctionAttributes <- list(
       CarNeighbours = list(
         UseCarEffect = TRUE
       ),
-      carEffect = list(
+      CarEffect = list(
         UseCarEffect = TRUE
       )
     )
