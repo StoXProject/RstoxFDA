@@ -54,3 +54,5 @@ expect_true("Stratum" %in% names(est$fit$ProportionAtAge$Intercept$cov))
 
 context("RunRecaEstimate not providing thin")
 expect_error(RunRecaEstimate(prep, 10))
+
+

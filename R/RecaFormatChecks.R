@@ -134,7 +134,7 @@ check_covariates <- function(modelobject){
 #' @noRd
 checkAgeLength<-function(agelength, num_tolerance = 1e-10){
   check_columns_present(agelength$DataMatrix, c("age", "part.year", "lengthCM", "samplingID", "partnumber", "partcount"))
-  check_none_missing(agelength$DataMatrix, c("lengthCM", "samplingID", "partnumber"))
+  check_none_missing(agelength$DataMatrix, c("lengthCM", "samplingID", "partnumber")) #Seems to need at least some partnumbers, clear up doc for Reca::eca.estimate
 
   samplesPrCatch <- stats::aggregate(list(partCount=agelength$DataMatrix$partnumber), by=list(samplingID=agelength$DataMatrix$samplingID), FUN=function(x){length(unique(x))})
   samplesPrCatchLT1 <- samplesPrCatch[samplesPrCatch$partCount > 1,]

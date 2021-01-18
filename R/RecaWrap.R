@@ -169,6 +169,7 @@ addPartCount <- function(DataMatrix, nFish){
 
   if (nrow(partsamples) == 0){
     DataMatrix$partcount <- NA
+    DataMatrix$partnumber <- 1
     return(DataMatrix)
   }
   else if (nrow(partsamples) > 0){
@@ -177,6 +178,7 @@ addPartCount <- function(DataMatrix, nFish){
     }
     else if (is.null(nFish) & all(partsamples$nSampleId == 1)){
       DataMatrix$partcount <- NA
+      DataMatrix$partnumber <- 1
       return(DataMatrix)
     }
     if (!all(partsamples[partsamples$nSampleId > 1,]$sampleId %in% nFish$sampleId)){
@@ -186,6 +188,19 @@ addPartCount <- function(DataMatrix, nFish){
     nFish$partcount <- as.integer(round(nFish$count))
     nFish$count <- NULL
     DataMatrix <- merge(DataMatrix, nFish, by="sampleId", all.x=T)
+    
+    #convert sampleId to partnumber
+    DataMatrix$partnumber <- 1
+    ccount <- 1
+    for (cId in unique(DataMatrix$catchId[!is.na(DataMatrix$partcount)])){
+      scount <- 1
+      for (sId in unique(DataMatrix$sampleId[DataMatrix$catchId == cId])){
+        DataMatrix$partnumber[DataMatrix$catchId == cId & DataMatrix$sampleId == sId] <- scount
+        scount <- scount + 1
+      }
+      ccount <- ccount + 1
+    }
+    
     return(DataMatrix)
   }
 
@@ -223,7 +238,7 @@ getDataMatrixAgeLength <- function(samples, nFish=NULL, hatchday=1){
 
   DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "sampleId")]
   DataMatrix <- addPartCount(DataMatrix, nFish)
-  DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "sampleId", "partcount")]
+  DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "partnumber", "partcount")]
   names(DataMatrix) <- c("age", "part.year", "lengthCM", "catchId", "partnumber", "partcount")
   DataMatrix <- addSamplingId(DataMatrix)
   DataMatrix <- DataMatrix[order(DataMatrix$catchId),]
@@ -761,7 +776,7 @@ checkEcaObj <- function(RECAobj){
   obj$Landings$AgeLengthCov <- as.data.frame(obj$Landings$AgeLengthCov)
   obj$Landings$WeightLengthCov <- as.data.frame(obj$Landings$WeightLengthCov)
 
-  checkWeightLength(obj$WeightLength)
+  checkWeightLength(obj$WeightLength, obj$Landings)
   checkAgeLength(obj$AgeLength)
   checkCovariateConsistency(obj$AgeLength, obj$Landings$AgeLengthCov)
   checkCovariateConsistency(obj$WeightLength, obj$Landings$WeightLengthCov)
