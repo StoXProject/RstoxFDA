@@ -39,15 +39,16 @@ est <- RunRecaEstimate(prep, 10, 50, 0)
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate with  with random effect Area")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
-StoxBioticData <- AddStratumStoxBiotic(StoxBioticData, StratumPolygon = mainareaFdir2018, columnName = "Area")
+StoxBioticData <- AddStratumStoxBiotic(StoxBioticData, StratumPolygon = mainareaFdir2018)
 
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
+StoxLandingData$landings$Stratum <- StoxLandingData$landings$Area
 
-prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, fixedEffects = c(), randomEffects = c("Area"))
-expect_true("Area" %in% names(prep$Landings$AgeLengthCov))
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, fixedEffects = c(), randomEffects = c("Stratum"))
+expect_true("Stratum" %in% names(prep$Landings$AgeLengthCov))
 
 context("test-StoxAnalysisFunctions: RunRecaEstimate with random effect Area")
 est <- RunRecaEstimate(prep, 10, 50, 0)
-expect_true("Area" %in% names(est$fit$ProportionAtAge$Intercept$cov))
+expect_true("Stratum" %in% names(est$fit$ProportionAtAge$Intercept$cov))
 

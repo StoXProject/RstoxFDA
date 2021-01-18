@@ -7,9 +7,7 @@
 AddAreaPositionStoxLanding(
   StoxLandingData,
   AreaPosition,
-  LocationCol = c("None", "Location", "Coastal"),
-  latColName = NULL,
-  lonColName = NULL
+  LocationCol = c("None", "Location", "Coastal")
 )
 }
 \arguments{
@@ -18,10 +16,6 @@ AddAreaPositionStoxLanding(
 \item{AreaPosition}{coordinates for Area and SubArea codes, see \code{\link[RstoxFDA]{AreaPosition}}}
 
 \item{LocationCol}{Specify which column in 'StoxLandingsData' should are represented by 'Location' in 'AreaPosition'. See details.}
-
-\item{latColName}{name of the column which should be appended for latitudes. Defaults to "Latitude".}
-
-\item{lonColName}{name of the column which should be appended for longitudes. Defaults to "Longitude".}
 }
 \value{
 \code{\link[RstoxData]{StoxLandingData}} with columns for latitude and longitude appended.
@@ -31,7 +25,8 @@ StoX function
  Appends a position to landings data, based on Area and Location codes.
 }
 \details{
-When 'LocationCol' is specified as 'None' Area is looked up from 'AreaPosition', using the row where 'Location' is missing.
+Positions are appended in the new columns 'Latitude' and 'Longitude'
+ When 'LocationCol' is specified as 'None' Area is looked up from 'AreaPosition', using the row where 'Location' is missing.
  When 'LocationCol' is specified as 'Location', 'Area' and 'Location' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
  When 'LocationCol' is specified as 'Coastal', 'Area' and 'Costal' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 }

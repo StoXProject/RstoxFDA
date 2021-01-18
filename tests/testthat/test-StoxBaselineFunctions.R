@@ -1,56 +1,4 @@
 
-context("test-StoxBaselineFunctions: makeUnifiedDefinitionLookupList")
-regularfile <- system.file("testresources","gearfactor.txt", package="RstoxFDA")
-
-parsedfile <- DefineGear(resourceFilePath = regularfile)
-
-mappings <- makeUnifiedDefinitionLookupList(parsedfile)
-expect_true("StoxLandingData" %in% names(mappings))
-expect_equal(length(mappings), 2)
-expect_equal(length(unique(mappings$StoxLandingData)), 7)
-expect_equal(length(unique(mappings$StoxBioticData)), 7)
-
-context("test-StoxBaselineFunctions: makeUnifiedDefinitionLookupList one format only")
-mappings <- makeUnifiedDefinitionLookupList(parsedfile, formats = c("StoxBioticData"))
-expect_equal(length(mappings), 1)
-expect_equal(length(unique(mappings$StoxBioticData)), 7)
-expect_false("StoxLandingData" %in% names(mappings))
-
-context("test-StoxBaselineFunctions: makeUnifiedDefinitionLookupList missing formats")
-expect_error(makeUnifiedDefinitionLookupList(parsedfile, formats = c("StoxBioticData", "ICESbiotic")), "Not all formats found in resource. Missing: ICESbiotic")
-
-context("test-StoxBaselineFunctions: makeUnifiedDefinitionLookupList redefined codes")
-errorfile <- system.file("testresources","gearfactor_error.txt", package="RstoxFDA")
-parsedfile <- DefineGear(resourceFilePath = errorfile)
-expect_error(makeUnifiedDefinitionLookupList(parsedfile), "Codes redefined: 3714")
-
-context("test-StoxBaselineFunctions: makeUnifiedDefinitionLookupList repeated keys")
-errorfile <- system.file("testresources","gearfactor_errorkeys.txt", package="RstoxFDA")
-expect_error(DefineGear(resourceFilePath = errorfile), "Malformed resource file. Non-unique keys: repition in first two columns.")
-
-
-
-
-
-context("test-StoxBaselineFunctions: DefineGear")
-regularfile <- system.file("testresources","gearfactor.txt", package="RstoxFDA")
-gear <- DefineGear(resourceFilePath = regularfile)
-expect_true(data.table::is.data.table(gear))
-expect_equal(nrow(gear), 14)
-expect_equal(ncol(gear), 3)
-
-context("test-StoxBaselineFunctions: DefineGear useProcessData")
-nullgear <- DefineGear(NULL, resourceFilePath = regularfile, useProcessData = T)
-expect_true(is.null(nullgear))
-errorfile <- system.file("testresources","gearfactor_error.txt", package="RstoxFDA")
-gg <- DefineGear(gear, resourceFilePath = errorfile, useProcessData = T)
-expect_equal(nrow(gear), 14)
-expect_equal(ncol(gear), 3)
-gg <- DefineGear(gear, resourceFilePath = NULL, useProcessData = T)
-expect_equal(nrow(gear), 14)
-expect_equal(ncol(gear), 3)
-
-
 
 
 context("test-StoxBaselineFunctions: DefineTemporalCategories")
@@ -183,54 +131,6 @@ expect_equal(ncol(classerror), 8)
 context("test-StoxBaselineFunctions: DefineClassificationError useProcessdata")
 classNULL <- DefineClassificationError(NULL, resourceFilePath = classerorfile, useProcessData = T)
 expect_true(is.null(classNULL))
-
-
-
-
-context("test-StoxBaselineFunctions: AppendGearStoxBiotic")
-gearfile <- system.file("testresources","gearfactor.txt", package="RstoxFDA")
-stoxBioticMock <- system.file("testresources","StoxBioticDataMock.txt", package="RstoxFDA")
-
-gear <- DefineGear(NULL, resourceFilePath = gearfile)
-stoxBioticPre <- readTabSepFile(stoxBioticMock, col_types = "cccc")
-
-stoxBioticPost <- AppendGearStoxBiotic(stoxBioticPre, gear)
-expect_true(data.table::is.data.table(stoxBioticPost))
-expect_equal(ncol(stoxBioticPost), ncol(stoxBioticPre) + 1)
-expect_false(any(is.na(stoxBioticPost$UnifiedGear)))
-
-context("test-StoxBaselineFunctions: AppendGearStoxBiotic NA in gear")
-sbError <- stoxBioticPre
-sbError$gear[1] <- NA
-expect_error(AppendGearStoxBiotic(sbError, gear))
-
-context("test-StoxBaselineFunctions: AppendGearStoxBiotic unkown gear")
-sbError <- stoxBioticPre
-sbError$gear[1] <- "9999"
-expect_error(AppendGearStoxBiotic(sbError, gear), "Conversion not defined for all codes. Missing for: 9999")
-
-context("test-StoxBaselineFunctions: AppendGearStoxBiotic existing gear column")
-expect_error(AppendGearStoxBiotic(stoxBioticPre, gear, "gear"), "Column with name 'gear' already exists.")
-
-
-
-
-context("test-StoxBaselineFunctions: AppendGearStoxLanding")
-gearfile <- system.file("testresources","gearfactor.txt", package="RstoxFDA")
-stoxLandingXml <- system.file("testresources","landing.xml", package="RstoxFDA")
-
-gear <- DefineGear(NULL, resourceFilePath = gearfile)
-stoxLandingPre <- RstoxData::StoxLanding(RstoxData::ReadLanding(stoxLandingXml))
-stoxLandingPost <- AppendGearStoxLanding(stoxLandingPre, gear)
-expect_true(RstoxData::is.StoxLandingData(stoxLandingPost))
-expect_equal(ncol(stoxLandingPost$landings), ncol(stoxLandingPre$landings) + 1)
-expect_false(any(is.na(stoxLandingPost$UnifiedGear)))
-
-#try on proper format as well.
-landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
-stoxLandingPre <- RstoxData:::StoxLanding(landingH)
-stoxLandingPost <- AppendGearStoxLanding(stoxLandingPre, gear)
-expect_false(any(is.na(stoxLandingPost$UnifiedGear)))
 
 
 context("test-StoxBaselineFunctions: appendTemporal")

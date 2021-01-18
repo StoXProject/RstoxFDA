@@ -38,87 +38,28 @@ checkSymmetry <- function(tab){
   }
 }
 
-#' Get lookup list for unified categorical definition
-#' @description
-#'  StoX function
-#'  From a resource file, read a definition for a categorical variable that can unify coding systems
-#'  between formats such as NMDlanding and NMDbiotic.
-#' @details
-#'  When different data formats encode similar information in with different coding systems
-#'  a unified value can be defined and set in correspondance with one or more codes in the different formats.
-#'  this is done in order to convert coding systems to the unified coding system.
-#'
-#'  Definitions are stored with in a tab separated file with headers. Columns defined as:
-#'  \describe{
-#'  \item{Column 1: <name not constrained>}{Unified value (key)}
-#'  \item{Column 2: <name not constrained>}{The format (key)}
-#'  \item{Column 3: <name not constrained>}{A comma separated list of values, any of which will be defined as the unified value in the format.}
-#'  }
-#' @param tab parsed tab separated file
-#' @param formats the formats to extract definitions for, if NULL all formats will be extracted.
-#' @return list() with one member for each format, each a list mapping codes in that format to the unified variable.
-#' @noRd
-makeUnifiedDefinitionLookupList <- function(tab, formats=NULL){
-
-  if (is.null(formats)){
-    formats <- unique(unlist(tab[,2]))
-  }
-
-  if (!all(formats %in% unlist(tab[,2]))){
-    missing <- formats[!(formats %in% unlist(tab[,2]))]
-    stop(paste("Not all formats found in resource. Missing:", paste(missing, collapse=", ")))
-  }
-
-  mappings <- list()
-  for (f in formats){
-    mappings[[f]] <- list()
-    ftab <- tab[tab$Source == f,]
-    for (i in 1:nrow(ftab)){
-      u <- ftab[[i,1]]
-      codes <- trimws(unique(unlist(strsplit(ftab[[i,3]], ","))))
-      if (any(codes %in% unlist(names(mappings[[f]])))){
-        redefined <- codes[codes %in% unlist(names(mappings[[f]]))]
-        stop(paste("Codes redefined:", paste(redefined, sep=", ")))
-      }
-      for (code in codes){
-        mappings[[f]][code] <- u
-      }
-    }
-  }
-
-  return(mappings)
-}
-
-
-RedefinePositionStoxBiotic <- function(StoxBioticData){
-  stop("Not implemented")
-}
 
 #' Append position to landings data
 #' @description
 #'  StoX function
 #'  Appends a position to landings data, based on Area and Location codes.
 #' @details
+#'  Positions are appended in the new columns 'Latitude' and 'Longitude'
 #'  When 'LocationCol' is specified as 'None' Area is looked up from 'AreaPosition', using the row where 'Location' is missing.
 #'  When 'LocationCol' is specified as 'Location', 'Area' and 'Location' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 #'  When 'LocationCol' is specified as 'Coastal', 'Area' and 'Costal' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 #' @param StoxLandingData landing data, see \code{\link[RstoxData]{StoxLandingData}}
 #' @param AreaPosition coordinates for Area and SubArea codes, see \code{\link[RstoxFDA]{AreaPosition}}
 #' @param LocationCol Specify which column in 'StoxLandingsData' should are represented by 'Location' in 'AreaPosition'. See details.
-#' @param latColName name of the column which should be appended for latitudes. Defaults to "Latitude".
-#' @param lonColName name of the column which should be appended for longitudes. Defaults to "Longitude".
 #' @return \code{\link[RstoxData]{StoxLandingData}} with columns for latitude and longitude appended.
 #' @export
-AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationCol = c("None", "Location", "Coastal"), latColName=NULL, lonColName=NULL){
+AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationCol = c("None", "Location", "Coastal")){
   
   LocationCol <- match.arg(LocationCol)
   
-  if (!isGiven(latColName)){
-    latColName="Latitude"    
-  }
-  if (!isGiven(lonColName)){
-    lonColName="Longitude"
-  }
+  latColName="Latitude"    
+  lonColName="Longitude"
+  
 
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   stopifnot(is.AreaPosition(AreaPosition))
@@ -264,52 +205,26 @@ AppendTemporalStoxBiotic <- function(StoxBioticData, TemporalDefinition, columnN
 }
 
 
-
-#' Appends Stratum to StoxBioticData
-#' @description
-#'  StoX function
-#'  Appends a column to StoxBioticData with the spatial strata each row belongs to
-#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated.
-#' @param StratumPolygon definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
-#' @param columnName character(), defaults to 'Stratum', name of the appended column
-#' @return StoxBioticData with column appended. See \code{\link[RstoxData]{StoxBioticData}}.
-AppendStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, columnName="Stratum"){
-  if (columnName %in% names(StoxBioticData)){
-    stop(paste("Column with name '", columnName, "' already exists.", sep=""))
-  }
-  stop("Not implemented. Remember to export when implemented")
-}
-
 #' Adds Stratum to StoxLandingData
 #' @description
 #'  StoX function
 #'  Adds a column to StoxLandingData with the spatial strata each row belongs to.
 #' @details
+#'  The strata are added to the new column 'Stratum'.
 #'  \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
-#'  these need to be appended before calling this function, and identified with the parameters 'latColumn' and 'lonColumn'.
+#'  these need to be added as columns 'Latitude' and 'Longitude' before calling this function.
 #'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions, based on area codes.
 #' @seealso \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for appending positions to \code{\link[RstoxData]{StoxLandingData}}.
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
 #' @param columnName Name of the column that will be appended. Defaults to 'Stratum'.
-#' @param latColumn Name of the column in parameter 'StoxLandingData' that latitudes should be read from. See details. Defaults to "Latitude".
-#' @param lonColumn Name of the column in parameter 'StoxLandingData' that longitudes should be read from. See details. Defaults to "Longitude".
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @export
-AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, columnName=NULL, latColumn = NULL, lonColumn = NULL){
+AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon){
   
-  if (!isGiven(columnName)){
-    columnName <- "Stratum"    
-  }
-
-  if (!isGiven(latColumn)){
-    latColumn <- "Latitude"    
-  }
-  
-  if (!isGiven(lonColumn)){
-    lonColumn <- "Longitude"  
-  }
-  
+  columnName <- "Stratum"    
+  latColumn <- "Latitude"    
+  lonColumn <- "Longitude"  
   
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   if (!(all(c(latColumn, lonColumn) %in% names(StoxLandingData$landings)))){
@@ -325,17 +240,17 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, columnName=NU
 #' Adds Stratum to StoxBioticData
 #' @description
 #'  Adds a column to StoxBioticData with the spatial strata each row belongs to.
+#' @details 
+#'  The strata are added to the new column 'Stratum'.
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
 #' @param columnName Name of the column that will be appended. Defaults to 'Stratum'.
 #' @return StoxBioticData with column appended to data.table 'Station'. See \code{\link[RstoxData]{StoxBioticData}}.
 #' @export
-AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, columnName=NULL){
+AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
   
-  if (!isGiven(columnName)){
-    columnName <- "Stratum"    
-  }
-  
+  columnName <- "Stratum"    
+
   stopifnot("Station" %in% names(StoxBioticData))
   
   if (columnName %in% names(StoxBioticData$Station)){
@@ -406,39 +321,6 @@ AppendGearStoxLanding <- function(StoxLandingData, UnifiedVariableDefinition, co
 #
 
 
-#' Define gear
-#' @description
-#'  StoX function
-#'  Define a unified categorical variable 'Gear', and its correspondance to gear codes in
-#'  data formats \code{\link[RstoxData]{StoxBioticData}} and \code{\link[RstoxData]{StoxLandingData}}.
-#'  Definitions are read from a resource file.
-#' @details
-#'  Definitions are read from a tab separated file with headers. Columns defined as:
-#'  \describe{
-#'  \item{Column 1: 'UnifiedVariable'}{Unified value (key)}
-#'  \item{Column 2: 'Source'}{The format for which the unified value is defined(key)}
-#'  \item{Column 3: 'Definition'}{A comma separated list of values, any of which will be defined as the unified value in the format.}
-#'  }
-#' @param processData data.table() as returned from this function
-#' @param resourceFilePath path to resource file
-#' @param encoding encoding of resource file
-#' @param useProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
-#' @return Unified variable definition, see: \code{\link[RstoxFDA]{UnifiedVariableDefinition}}.
-#' @export
-DefineGear <- function(processData, resourceFilePath, encoding="UTF-8", useProcessData=F){
-
-  if (useProcessData){
-    return(processData)
-  }
-
-  tab <- readTabSepFile(resourceFilePath, col_types = "ccc", col_names = c("UnifiedVariable", "Source", "Definition"), encoding = encoding)
-
-  if (!nrow(unique(tab[,1:2])) == nrow(tab)){
-    stop("Malformed resource file. Non-unique keys: repition in first two columns.")
-  }
-
-  return(tab)
-}
 
 #' Define Temporal Categories
 #' @description

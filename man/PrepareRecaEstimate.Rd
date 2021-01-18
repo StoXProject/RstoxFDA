@@ -14,12 +14,12 @@ PrepareRecaEstimate(
   CarNeighbours = NULL,
   UseAgingError = F,
   AgeErrorMatrix = NULL,
-  minAge = NULL,
-  maxAge = NULL,
-  maxLength = NULL,
-  lengthResolution = NULL,
+  minAge = integer(),
+  maxAge = integer(),
+  maxLength = numeric(),
+  lengthResolution = numeric(),
   temporalResolution = c("Quarter", "Month"),
-  hatchDay = NULL
+  hatchDay = integer()
 )
 }
 \arguments{

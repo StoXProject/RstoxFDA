@@ -11,9 +11,9 @@ RunRecaEstimate(
   thin,
   lgamodel = c("log-linear", "non-linear"),
   resultdir = NULL,
-  delta.age = NULL,
-  seed = NULL,
-  caa.burnin = NULL
+  delta.age = numeric(),
+  seed = numeric(),
+  caa.burnin = numeric()
 )
 }
 \arguments{

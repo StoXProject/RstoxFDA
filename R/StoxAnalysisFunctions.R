@@ -135,7 +135,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, fixedEffects=NU
   }
 
   flatlandings <- StoxLandingData$landings
-  flatlandings$LiveWeightKG <- flatlandings$RoundWeightKilogram
+  flatlandings$LiveWeightKG <- flatlandings$RoundWeight
 
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData, TargetTable = "Individual")
   flatbiotic <- flatbiotic[!is.na(flatbiotic$IndividualKey),]

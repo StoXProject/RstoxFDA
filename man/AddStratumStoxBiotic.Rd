@@ -4,7 +4,7 @@
 \alias{AddStratumStoxBiotic}
 \title{Adds Stratum to StoxBioticData}
 \usage{
-AddStratumStoxBiotic(StoxBioticData, StratumPolygon, columnName = NULL)
+AddStratumStoxBiotic(StoxBioticData, StratumPolygon)
 }
 \arguments{
 \item{StoxBioticData}{\code{\link[RstoxData]{StoxBioticData}} data which will be annotated. Needs postions appended. See details.}
@@ -18,4 +18,7 @@ StoxBioticData with column appended to data.table 'Station'. See \code{\link[Rst
 }
 \description{
 Adds a column to StoxBioticData with the spatial strata each row belongs to.
+}
+\details{
+The strata are added to the new column 'Stratum'.
 }
