@@ -34,8 +34,8 @@ saveRDS(StoxLandingData, "inst/testresources/StoxLandingData.rds")
 #
 # run eca and export as example data
 #
-recaDataExample <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, fixedEffects = c(), randomEffects = c())
-recaPrediction <- RunRecaEstimate(prep, 50, 5000, 10)$prediction
+recaDataExample <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
+recaPrediction <- RunRecaEstimate(recaDataExample, 50, 5000, 10)$prediction
 
 usethis::use_data(recaPrediction, overwrite = T)
 usethis::use_data(recaDataExample, overwrite = T)
@@ -49,4 +49,26 @@ BioticData <- RstoxData::ReadBiotic(bioticfile)
 BioticData$testdelp.xml$fishstation$stationstarttime <- "12:00:00.000Z"
 StoxBioticDataDelpr <- RstoxData::StoxBiotic(BioticData)
 saveRDS(StoxBioticDataDelpr, "inst/testresources/StoxBioticDelpr.rds")
+
+
+#
+# prep example for result conversion
+#
+
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+StoxBioticData <- AddStratumStoxBiotic(StoxBioticData, StratumPolygon = mainareaFdir2018)
+StoxBioticData$Station$Stratum[StoxBioticData$Station$Stratum !="43"] <- "4"
+StoxBioticData$Station$Stratum[StoxBioticData$Station$Stratum !="4"] <- "3"
+StoxBioticData$Station$Quarter <- quarters(StoxBioticData$Station$DateTime)
+
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+StoxLandingData$landings$Stratum <- substr(StoxLandingData$landings$Area,1,1)
+StoxLandingData$landings$Stratum[!(StoxLandingData$landings$Stratum %in% c("3","4"))] <- "4"
+StoxLandingData$landings$Quarter <- quarters(StoxLandingData$landings$CatchDate)
+
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Stratum", "Quarter"))
+est <- RunRecaEstimate(prep, 10, 5000, 1)
+saveRDS(est, "inst/testresources/ecaResult.rds")
 
