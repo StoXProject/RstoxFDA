@@ -1,4 +1,3 @@
-context("test-StoxAnalysisFunctions: RunRecaEstimate")
 
 library(RstoxData)
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate simple case")
@@ -52,7 +51,7 @@ context("test-StoxAnalysisFunctions: RunRecaEstimate with random effect Area")
 est <- RunRecaEstimate(prep, 10, 50, 0)
 expect_true("Stratum" %in% names(est$fit$ProportionAtAge$Intercept$cov))
 
-context("RunRecaEstimate not providing thin")
+context("RunRecaEstimate not providing burnin")
 expect_error(RunRecaEstimate(prep, 10))
 
 

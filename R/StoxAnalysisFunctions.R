@@ -1,3 +1,4 @@
+
 #' Prepare data for Reca.
 #' @description
 #'  StoX-function.
