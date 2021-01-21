@@ -584,10 +584,22 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
     }
     stop("NAs are only allowed for weight and age in samples, not for covariates, date or length. Found NA for: ", paste(nas, collapse=","))
   }
+  
+  if (is.null(maxLength)){
+    maxLength <- max(samples$Length)
+  }
+  if (is.null(minAge)){
+    minAge <- min(samples$Age, na.rm=T)
+  }
+  if (is.null(maxAge)){
+    maxAge <- max(samples$Age, na.rm=T)
+  }
+  
   inl <- c(fixedEffects, randomEffects, carEffect, "LiveWeightKG")[c(fixedEffects, randomEffects, carEffect, "LiveWeightKG") %in% names(landings)]
   if(!all(!is.na(landings[, inl, with=F]))){
     stop("NAs in landings")
   }
+  
 
   #check different effect types
   if (!is.null(fixedEffects) & length(fixedEffects) > 0){
@@ -660,6 +672,7 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   }
 
   covariateMaps <- list()
+  covariateMaps$AgeCategories <- minAge:maxAge
 
   #covariateMaps common between models (effects in landings)
   covariateMaps$inLandings <- list()
@@ -681,15 +694,7 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
     lengthResolution <- min(lengthDiffs[lengthDiffs != 0])
   }
 
-  if (is.null(maxLength)){
-    maxLength <- max(samples$Length)
-  }
-  if (is.null(minAge)){
-    minAge <- min(samples$Age, na.rm=T)
-  }
-  if (is.null(maxAge)){
-    maxAge <- max(samples$Age, na.rm=T)
-  }
+  
   if (any(!is.na(samples$Age) & samples$Age < minAge)){
     minSampleAge <- min(samples$Age, na.rm=T)
     stop(paste("Samples contains ages (", minSampleAge, ") smaller than minAge (", minAge,"(",class(minAge),"))", sep=""))
