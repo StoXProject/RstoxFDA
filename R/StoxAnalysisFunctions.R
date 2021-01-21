@@ -250,3 +250,86 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 
   return(recaResult)
 }
+
+
+ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=NULL, Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric()){
+
+  Lgamodel <- match.arg(Lgamodel, Lgamodel)
+  
+  if (!isGiven(Seed)){
+    Seed <- sample.int(.Machine$integer.max, 1)
+  }
+  if (!isGiven(ResultDirectory)){
+    stop("Parameter 'ResultDirectory' must be provided.")
+  }
+  
+  ResultDirectory <- path.expand(ResultDirectory)
+  
+  if (!file.exists(ResultDirectory)){
+    stop(paste("Could not find the directory", ResultDirectory))
+  }
+  
+  if (grepl(" ", ResultDirectory)) {
+    stop(paste(
+      "Please make temporary directory for Reca contain no spaces",
+      "(current:",
+      ResultDirectory,
+      ") ."
+    ))
+  }
+  fitfile="fit"
+  predictfile="pred"
+  
+  if (!isGiven(Nsamples)){
+    stop("Parameter 'Nsamples' must be provided.")
+  }
+  if (!isGiven(Burnin)){
+    stop("Parameter 'Burnin' must be provided.")
+  }
+  if (!isGiven(Thin)){
+    Thin <- 0
+  }
+  if (!isGiven(Delta.age)){
+    Delta.age <- 0.001
+  }
+
+  stopifnot(is.RecaData(RecaData))
+  
+  GlobalParameters <- RecaData$GlobalParameters
+  GlobalParameters$nSamples <- Nsamples
+  GlobalParameters$burnin <- Burnin
+  GlobalParameters$lgamodel <- Lgamodel
+  GlobalParameters$resultdir <- ResultDirectory
+  GlobalParameters$fitfile <- fitfile
+  GlobalParameters$predictfile <- predictfile
+  GlobalParameters$thin <- Thin
+  GlobalParameters$delta.age <- Delta.age
+  GlobalParameters$seed <- Seed
+  
+  RecaData$GlobalParameters <- GlobalParameters
+  RecaData <- checkEcaObj(RecaData)
+  
+  fit <- Reca::eca.estimate(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters)
+
+  out <- recaFit2Stox(fit, RecaData$CovariateMaps)
+  for (n in names(RecaData)){
+    out[[n]] <- RecaData[[n]]
+  }
+  
+  return(out)
+}
+
+RunRecaModels <- function(RecaParamData, Caa.burnin=numeric(), Seed=numeric()){
+  
+  if (!isGiven(Caa.burnin)){
+    Caa.burnin <- 0
+  }
+  if (!isGiven(Seed)){
+    RecaParamData$GlobalParameters$Seed <- sample.int(.Machine$integer.max, 1)
+  }
+  
+  RecaParamData$GlobalParameters$caa.burnin <- Caa.burnin
+  
+  results <- Reca::eca.predict(RecaParamData$AgeLength, RecaParamData$WeightLength, RecaParamData$Landings, RecaParamData$GlobalParameters)
+  return(ecaResult2Stox(results))
+}

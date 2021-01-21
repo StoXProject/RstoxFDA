@@ -1,5 +1,24 @@
 
 library(RstoxData)
+context("ParameterizeRecaModels: simple case")
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
+checkEcaObj(prep)
+
+paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, "~/temp/ecatest")
+expect_true(c("FitLengthGivenAge") %in% names(paramOut))
+expect_equal(length(paramOut$FitLengthGivenAge), 4)
+
+results <- RunRecaModels(paramOut)
+expect_true("Age" %in% names(results$CatchAtAge))
+
+
+
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate simple case")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
@@ -53,5 +72,7 @@ expect_true("Stratum" %in% names(est$fit$ProportionAtAge$Intercept$cov))
 
 context("RunRecaEstimate not providing burnin")
 expect_error(RunRecaEstimate(prep, 10))
+
+
 
 

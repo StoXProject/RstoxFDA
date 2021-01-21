@@ -29,7 +29,9 @@ convertModelFit2Stox <- function(paramfit, paramtype, covariate, covariateMaps){
 convertModelFit <- function(modelfit, covariateMaps){
   output <- list()
   
-  output$LogLikelihood <- modelfit$LogLikelihood
+  output$LogLikelihood <- as.data.table(modelfit$LogLikelihood)
+  names(output$LogLikelihood) <- "LogLikelihood"
+  output$LogLikelihood$Iteration <- 1:nrow(output$LogLikelihood)
   
   covariates <- names(modelfit$Intercept$cov)
   for (co in covariates){
@@ -191,9 +193,9 @@ convertModelFit2eca <- function(stoxfit, propatage=F){
 recaFit2Stox <- function(fit, covariateMaps){
   
   output <- list()
-  for (model in names(fit)){
-    output[[model]] <- convertModelFit(fit[[model]], covariateMaps)
-  }
+  output$FitProportionAtAge <- convertModelFit(fit$ProportionAtAge, covariateMaps)
+  output$FitLengthGivenAge <- convertModelFit(fit$LengthGivenAge, covariateMaps)
+  output$FitWeightGivenLength <- convertModelFit(fit$WeightGivenLength, covariateMaps)
   return(output)
 }
 
@@ -203,14 +205,14 @@ stox2recaFit <- function(stoxFit){
   
   fits <- list()
   
-  fits$ProportionAtAge <- convertModelFit2eca(stoxFit$ProportionAtAge, propatage=T)
-  fits$ProportionAtAge$LogLikelihood <- stoxFit$ProportionAtAge$LogLikelihood
+  fits$ProportionAtAge <- convertModelFit2eca(stoxFit$FitProportionAtAge, propatage=T)
+  fits$ProportionAtAge$LogLikelihood <- stoxFit$FitProportionAtAge$LogLikelihood$LogLikelihood
   
-  fits$LengthGivenAge <- convertModelFit2eca(stoxFit$LengthGivenAge)
-  fits$LengthGivenAge$LogLikelihood <- stoxFit$LengthGivenAge$LogLikelihood
+  fits$LengthGivenAge <- convertModelFit2eca(stoxFit$FitLengthGivenAge)
+  fits$LengthGivenAge$LogLikelihood <- stoxFit$FitLengthGivenAge$LogLikelihood$LogLikelihood
   
-  fits$WeightGivenLength <- convertModelFit2eca(stoxFit$WeightGivenLength)
-  fits$WeightGivenLength$LogLikelihood <- stoxFit$WeightGivenLength$LogLikelihood
+  fits$WeightGivenLength <- convertModelFit2eca(stoxFit$FitWeightGivenLength)
+  fits$WeightGivenLength$LogLikelihood <- stoxFit$FitWeightGivenLength$LogLikelihood$LogLikelihood
   
   # remove slope from proportionatage
   fits$ProportionAtAge$Slope <- NULL
@@ -218,3 +220,35 @@ stox2recaFit <- function(stoxFit){
   return(fits)
   
 }
+
+#' Converst ecaResults to stox-formatted output
+#' @noRd
+ecaResult2Stox <- function(ecaPrediction){
+  
+  CatchAtAge <- data.table::as.data.table(ecaPrediction$TotalCount)
+  names(CatchAtAge) <- c("Length", "Age", "Iteration","CatchAtAge")
+  
+  out <- list()
+  
+  len <- round(exp(ecaPrediction$LengthIntervalsLog), digits=2)
+  CatchAtAge$Length <- len[CatchAtAge$Length]
+  CatchAtAge$Age <- ecaPrediction$AgeCategories[CatchAtAge$Age]
+  out$CatchAtAge <- CatchAtAge
+  
+  MeanLength <- data.table::as.data.table(t(ecaPrediction$MeanLength))
+  names(MeanLength) <- as.character(ecaPrediction$AgeCategories)
+  MeanLength$Iteration <- 1:nrow(MeanLength)
+  MeanLength <- data.table::melt(MeanLength, measure.vars=c(as.character(ecaPrediction$AgeCategories)), variable.name="Age", variable.factor=F)
+  MeanLength$Age <- as.integer(MeanLength$Age)
+  out$MeanLength <- MeanLength
+  
+  MeanWeight <- data.table::as.data.table(t(ecaPrediction$MeanWeight))
+  names(MeanWeight) <- as.character(ecaPrediction$AgeCategories)
+  MeanWeight$Iteration <- 1:nrow(MeanWeight)
+  MeanWeight <- data.table::melt(MeanWeight, measure.vars=c(as.character(ecaPrediction$AgeCategories)), variable.name="Age", variable.factor=F)
+  MeanWeight$Age <- as.integer(MeanWeight$Age)
+  out$MeanWeight <- MeanWeight  
+  
+  return(out)
+}
+
