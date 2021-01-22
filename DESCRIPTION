@@ -29,6 +29,6 @@ Imports:
     gridExtra (>= 2.3),
     sp (>= 1.3.2)
 Suggests: 
-    testthat,
+    testthat (>= 2.1.0),
     Reca
 RoxygenNote: 7.1.1

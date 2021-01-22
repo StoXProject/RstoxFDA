@@ -6,7 +6,7 @@ is.POSIXct <- function(date){
   if (length(date) == 1 & class(date) == "POSIXct"){
     return(TRUE)
   }
-
+  
   return(FALSE)
 }
 
@@ -18,9 +18,31 @@ is.Date <- function(date){
   if (length(date) == 1 & class(date) == "Date"){
     return(TRUE)
   }
-
+  
   return(FALSE)
 }
+
+#' Sampling Report data (ReportFdaSamplingData)
+#' 
+#' @description 
+#'  Report of sampling against total landings for partitions of a fishery.
+#'  A \code{\link[data.table]{data.table}} with columns:
+#'  \describe{
+#'   \item{...}{A column for each of the provided Aggregation variables}
+#'   \item{LandedRoundWeight}{Total landings in kg}
+#'   \item{Catches}{Number of catches sampled}
+#'   \item{Vessels}{Number of vessels sampled}
+#'   \item{WeightMeasurments}{Number of fished measured for weight}
+#'   \item{LengthMeasurments}{Number of fished measured for length}
+#'   \item{AgeReadings}{Number of fished with age determined}
+#'   \item{WeightOfSampledCatches}{Total weight of the sampled catches}
+#'  }
+#' 
+#' @name ReportFdaSamplingData
+#' 
+NULL
+
+
 #' Reca Data (RecaData)
 #'
 #' Data and some data parameters prepared for running
@@ -68,7 +90,7 @@ is.RecaData <- function(RecaData){
   if (!is.list(RecaData$CovariateMaps)){
     return(FALSE)
   }
-
+  
   if (!all(c("DataMatrix", "CovariateMatrix", "info") %in% names(RecaData$AgeLength))){
     return(FALSE)
   }
@@ -78,7 +100,7 @@ is.RecaData <- function(RecaData){
   if (!all(c("AgeLengthCov", "WeightLengthCov", "LiveWeightKG") %in% names(RecaData$Landings))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -254,7 +276,7 @@ is.RecaCatchAtAge <- function(RecaCatchAtAge){
   
   return(TRUE)
 }
-  
+
 #' Reca Results (RecaResult)
 #'
 #' Results from running
@@ -313,7 +335,7 @@ is.RecaResult <- function(RecaResult){
   if (!is.RecaPrediction(RecaResult$prediction)){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -345,7 +367,7 @@ is.UnifiedVariableDefinition <- function(UnifiedVariableDefinition){
   if (!all(c("UnifiedVariable", "Source", "Definition") %in% names(UnifiedVariableDefinition))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -382,7 +404,7 @@ is.TemporalDefinition <- function(TemporalDefinition){
   if (!all(c("temporalCategory", "startDay", "startMonth") %in% names(TemporalDefinition))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -416,7 +438,7 @@ is.AreaPosition <- function(AreaPosition){
   if (!all(c("Area", "Location", "Latitude", "Longitude") %in% names(AreaPosition))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -450,7 +472,7 @@ is.CarNeighbours <- function(CarNeighbours){
   if (!all(c("CarVariable", "Neighbours") %in% names(CarNeighbours))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -484,7 +506,7 @@ is.AgeErrorMatrix <- function(AgeErrorMatrix){
   if (!("ReadAge" %in% names(AgeErrorMatrix))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -531,7 +553,7 @@ is.ClassificationError <- function(ClassificationError){
   if (!all(c("ptype1.CC", "ptype1.S", "ptype2.CC", "ptype2.S", "ptype4.CC", "ptype4.S", "ptype5.CC", "ptype5.S") %in% names(ClassificationError))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -580,7 +602,7 @@ stoxFunctionAttributes <- list(
       )
     )
   ),
-      
+  
   AddAreaPositionStoxLanding = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
@@ -621,9 +643,15 @@ stoxFunctionAttributes <- list(
     #functionParameterFormat = list(
     #  ResultDirectory = "filePath"
     #)
+  ),
+  ReportFdaSampling = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaSamplingData",
+    functionParameterFormat = list(
+      AggregationVariables = "randomcovariates"
+    )
   )
-  
-  
 )
 
 #' Define the process property formats for inclusion in stox UI
@@ -653,11 +681,29 @@ processPropertyFormats <- list(
     }, 
     variableTypes <- "character"
   ),
+  samplereportvariables = list(
+    class = "vector", 
+    title = "One or more variables to use as aggregation variables.", 
+    possibleValues = function(StoxLandingData, StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Station", "Haul", "SpeciesCategory", "Sample")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$landings)]
+      return(c(possibleValues))
+    }, 
+    variableTypes <- "character"
+  ),
   fixedcovariates = list(
     class = "vector", 
     title = "One or more variables to use as covariates in Reca", 
     possibleValues = function(StoxLandingData, StoxBioticData) {
-       possibleValues <- c()
+      possibleValues <- c()
       for (n in c("Station", "Haul", "SpeciesCategory", "Sample")){
         for (nn in names(StoxBioticData[[n]])){
           if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){

@@ -8,10 +8,12 @@ isGiven <- function(value){
   if (length(value) == 0){
     return(FALSE)
   }
-  if (value == ""){
-    return(FALSE)
+  if (length(value) == 1){
+    
+    if (value == ""){
+      return(FALSE)
+    }
   }
-  
   return(TRUE)
 }
 
