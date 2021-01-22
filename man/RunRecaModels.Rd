@@ -4,19 +4,39 @@
 \alias{RunRecaModels}
 \title{Run Reca Models}
 \usage{
-RunRecaModels(RecaParameterData, Caa.burnin = numeric(), Seed = numeric())
+RunRecaModels(
+  RecaParameterData,
+  StoxLandingData,
+  AggregationVariables = character(),
+  TemporalResolution = c("Quarter", "Month"),
+  Caa.burnin = numeric(),
+  Seed = numeric()
+)
 }
 \arguments{
+\item{RecaParameterData}{Parameters for Reca models.}
+
+\item{StoxLandingData}{Landings data (\code{\link[RstoxData]{StoxLandingData}}).}
+
+\item{AggregationVariables}{character vector identifying columns in 'StoxLandingData' that results should be provided for.}
+
+\item{TemporalResolution}{default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
+Regulates temporal resolution for calculating fractional ages of fish.
+Not to be confused with any temporal covariate.}
+
 \item{Caa.burnin}{see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.}
 
-\item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.}
+\item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to seed stored in 'RecaParameterData'.}
 }
 \value{
-RecaCatchAtAge
+\code{\link[RstoxFDA]{RecaCatchAtAge}}
 }
 \description{
-Run Reca Models
+Runs prediction (catch-at-age estimate) for parameterized Reca models.
 }
 \details{
-Runs prediction for parameterized Reca models
+Parameters may be obtained with \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
+ If the function-paramter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
+ The parameter 'StoxLandingData' may differ from the landings used in parameterisation, 
+ as long as all not additional level for the model covariates are introduced.
 }

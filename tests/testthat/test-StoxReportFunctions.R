@@ -17,3 +17,4 @@ expect_true(is.vector(unlanded$AggregationVariables))
 expect_true("Gear" %in% unlanded$AggregationVariables)
 expect_true(any(is.na(unlanded$FisheriesSampling$LandedRoundWeight)))
 expect_error(ReportFdaSampling(StoxBioticData, StoxLandingData, AggregationVariables = c("Quarter", "Nonesene")), "All 'AggregationVariables' must be present in 'StoxLandingData'. Missing: Nonesene")
+

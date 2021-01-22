@@ -44,16 +44,12 @@
 #' @param LengthResolution
 #'  optional, resolution for length measurements in cm.
 #'  If not provided modal value from data is used.
-#' @param TemporalResolution
-#'  default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
-#'  Regulates temporal resolution for calculating fractional ages of fish.
-#'  Not to be confused with any temporal covariate.
 #' @param HatchDay
 #'  defaults to 1 representing Jan 1st.
 #'  encoding the day of the year when fish is consider to transition from one age to the next.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NULL, RandomEffects=NULL, UseCarEffect=F, CarEffect=NULL, CarNeighbours=NULL, UseAgingError=F, AgeErrorMatrix=NULL, MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), TemporalResolution=c("Quarter", "Month"), HatchDay=integer()){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NULL, RandomEffects=NULL, UseCarEffect=F, CarEffect=NULL, CarNeighbours=NULL, UseAgingError=F, AgeErrorMatrix=NULL, MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
   
   #expose as parameter when implemented
   ClassificationError=NULL
@@ -112,26 +108,15 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NU
 
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
 
-  TemporalResolution <- match.arg(TemporalResolution, TemporalResolution)
-  if (!(TemporalResolution %in% c("Quarter", "Month", "Week"))){
-    stop(paste("Temporal resolution", TemporalResolution, "not supported"))
-  }
 
   #
-  # Set temporal resolution
+  # Set temporal resolution.
+  # Landings compilation are only done to ensure coding consistency.
+  # The temporal resolution doesnt matter.
   #
-  quarter=NULL
-  month=NULL
-
-  if (TemporalResolution == "Quarter"){
-    quarter <- quarter(StoxLandingData$landings$CatchDate)
-  }
-  else if (TemporalResolution == "Month"){
-    month <- month(StoxLandingData$landings$CatchDate)
-  }
-  else{
-    stop(paste("Temporal resolution", TemporalResolution, "not supported"))
-  }
+  quarter <- quarter(StoxLandingData$landings$CatchDate)
+  data <- NULL
+  month <- NULL
 
   flatlandings <- StoxLandingData$landings
   flatlandings$LiveWeightKG <- flatlandings$RoundWeight
@@ -199,7 +184,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NU
 #'  in order to obtain proportinos of catches and fish parameters.
 #'  Using these parameters and the given total landings, predictions of distribution of catch-parameter distributions will be calculated.
 #'
-#'  If resultdir is NULL,  atemporary directory will be created for its purpose.
+#'  If resultdir is NULL,  a temporary directory will be created for its purpose.
 #'  This will be attempted removed after execution.
 #'  If removal is not successful a warning will be issued which includes the path to the temporary directory.
 #'
@@ -342,14 +327,56 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
   return(out)
 }
 
-#' Run Reca Models
-#' @details 
-#'  Runs prediction for parameterized Reca models
-#' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
-#' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
-#' @return RecaCatchAtAge
-RunRecaModels <- function(RecaParameterData, Caa.burnin=numeric(), Seed=numeric()){
+
+#' @noRd
+getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, TemporalResolution){
+  StoxLandingData$landings$LiveWeightKG <- StoxLandingData$landings$RoundWeight
+  quarter <- NULL
+  month <- NULL
+  date <- NULL
+  if (TemporalResolution == "Quarter"){
+    quarter <- quarter(StoxLandingData$landings$CatchDate)
+  }
+  else if (TemporalResolution == "Month"){
+    month <- month(StoxLandingData$landings$CatchDate)
+  }
+  else if (TemporalResolution == "Day"){
+    date <- StoxLandingData$landings$CatchDate
+  }
+  else{
+    stop(paste("Temporal resolution", TemporalResolution, "not supported"))
+  }
   
+  l <- getLandings(StoxLandingData$landings, covariates = names(RecaParameterData$CovariateMaps$inLandings), covariateMaps = RecaParameterData$CovariateMaps$inLandings, month = month, quarter = quarter, date = date)
+  return(l)
+}
+
+#' Run Reca Models
+#' @description
+#'  Runs prediction (catch-at-age estimate) for parameterized Reca models.
+#' @details
+#'  Parameters may be obtained with \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
+#'  If the function-paramter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
+#'  The parameter 'StoxLandingData' may differ from the landings used in parameterisation, 
+#'  as long as all not additional level for the model covariates are introduced.
+#' @param RecaParameterData Parameters for Reca models.
+#' @param StoxLandingData Landings data (\code{\link[RstoxData]{StoxLandingData}}).
+#' @param AggregationVariables character vector identifying columns in 'StoxLandingData' that results should be provided for.
+#' @param TemporalResolution
+#'  default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
+#'  Regulates temporal resolution for calculating fractional ages of fish.
+#'  Not to be confused with any temporal covariate.
+#' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
+#' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to seed stored in 'RecaParameterData'.
+#' @return \code{\link[RstoxFDA]{RecaCatchAtAge}}
+#' @export
+RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric()){
+  
+  TemporalResolution <- match.arg(TemporalResolution, TemporalResolution)
+  
+  if (!isGiven(TemporalResolution)){
+    stop("The parameter 'TemporalResolution' must be provided.")
+  }
   if (!isGiven(Caa.burnin)){
     Caa.burnin <- 0
   }
@@ -359,6 +386,52 @@ RunRecaModels <- function(RecaParameterData, Caa.burnin=numeric(), Seed=numeric(
   
   RecaParameterData$GlobalParameters$caa.burnin <- Caa.burnin
   
-  results <- Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters)
-  return(ecaResult2Stox(results))
+  if (!isGiven(AggregationVariables)){
+    landings <- getLandingsFromStoxLandings(RecaParameterData, StoxLandingData, TemporalResolution)
+    RecaParameterData$Landings <- landings
+    results <- Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters)
+    results <- ecaResult2Stox(results)
+    results$AggregationVariables <- AggregationVariables
+    return(results)
+    
+  }
+  else{
+    if (!all(AggregationVariables %in% names(StoxLandingData$landings))){
+      missing <- AggregationVariables[!(AggregationVariables %in% names(StoxLandingData$landings))]
+      stop(paste("Parameter 'AggregationVariables' contain some variables not found as columns in 'StoxLandingData':", paste(missing, collapse=",")))
+    }
+    
+    result <- NULL
+    frame <- unique(StoxLandingData$landings[,AggregationVariables, with=F])
+    frame$aggregationId <- 1:nrow(frame)
+    
+    l <- merge(StoxLandingData$landings, frame, by=names(frame)[names(frame) %in% names(StoxLandingData$landings)])
+    for (id in frame$aggregationId){
+      partition <- l[l$aggregationId==id,]
+      Sl <- StoxLandingData
+      Sl$landings <- partition
+      landings <- getLandingsFromStoxLandings(RecaParameterData, Sl, TemporalResolution)
+      RecaParameterData$Landings <- landings
+      partitionresults <- ecaResult2Stox(Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters))
+      
+      for (a in AggregationVariables){
+        stopifnot(length(unique(partition[[a]]))==1) # ensured by frame <- unique(StoxLandingData$landings[,AggregationVariables, with=F])
+        partitionresults$CatchAtAge[[a]] <- partition[[a]][1]
+        partitionresults$MeanLength[[a]] <- partition[[a]][1]
+        partitionresults$MeanWeight[[a]] <- partition[[a]][1]
+      }
+      
+      if (is.null(result)){
+        result <- partitionresults
+      }
+      else{
+        result$CatchAtAge <- rbind(result$CatchAtAge, partitionresults$CatchAtAge)
+        result$MeanLength <- rbind(result$MeanLength, partitionresults$MeanLength)
+        result$MeanWeight <- rbind(result$MeanWeight, partitionresults$MeanWeight)
+      }
+    }
+    result$AggregationVariables <- AggregationVariables
+    return(result)
+  }
+  
 }

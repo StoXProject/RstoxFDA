@@ -4,13 +4,23 @@
 \alias{RecaCatchAtAge}
 \title{Reca Results (RecaCatchAtAge)}
 \description{
-Reca Results (RecaCatchAtAge)
+Posterior distribution of total catch at age and weight and length parameters.
 }
 \details{
 a list of data tables:
 \describe{
- \item{CatchAtAge}{Tabulating the predicted catch at age by length group for each Reca iteration (MCMC sample)}
- \item{MeanLength}{Tabulating the mean length in cm by age for each Reca iteration (MCMC sample)}
- \item{MeanWeight}{Tabulating the mean weight in g by age for each Reca iteration (MCMC sample)}
+ \item{CatchAtAge}{\code{\link[data.table]{data.table}} tabulating the estimated catch-at-age by length group for each Reca iteration (MCMC sample)}
+ \item{MeanLength}{\code{\link[data.table]{data.table}} tabulating the mean length in cm by age for each Reca iteration (MCMC sample)}
+ \item{MeanWeight}{\code{\link[data.table]{data.table}} tabulating the mean weight in g by age for each Reca iteration (MCMC sample)}
+ \item{AggregationVariables}{character vector identifying any variables that catch-at-age estimates are partitioned on.}
+}
+In addition to columns for the variables in 'AggregationVariables', column names in the data tables should be interpreted as:
+\describe{
+ \item{Length}{Upper limit of length group in cm}
+ \item{Age}{Age in number of years}
+ \item{Iteration}{The Reca iteration (MCMC sample) that estimates are calculated for}
+ \item{CatchAtAge}{The total catch at age in numbers}
+ \item{MeanIndividualLength}{Mean Length at age in cm}
+ \item{MeanIndividualWeight}{Mean weight at age in g}
 }
 }

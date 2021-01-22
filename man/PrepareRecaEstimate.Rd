@@ -18,7 +18,6 @@ PrepareRecaEstimate(
   MaxAge = integer(),
   MaxLength = numeric(),
   LengthResolution = numeric(),
-  TemporalResolution = c("Quarter", "Month"),
   HatchDay = integer()
 )
 }
@@ -58,10 +57,6 @@ If not provided it will be derived from data.}
 
 \item{LengthResolution}{optional, resolution for length measurements in cm.
 If not provided modal value from data is used.}
-
-\item{TemporalResolution}{default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
-Regulates temporal resolution for calculating fractional ages of fish.
-Not to be confused with any temporal covariate.}
 
 \item{HatchDay}{defaults to 1 representing Jan 1st.
 encoding the day of the year when fish is consider to transition from one age to the next.}

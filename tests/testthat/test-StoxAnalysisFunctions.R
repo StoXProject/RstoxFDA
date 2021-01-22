@@ -10,14 +10,22 @@ StoxLandingData <- readRDS(StoxLandingFile)
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
 checkEcaObj(prep)
 
-paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, "~/temp/ecatest")
+fpath <- makeTempDirReca()
+paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, fpath)
 expect_true(c("FitLengthGivenAge") %in% names(paramOut))
 expect_equal(length(paramOut$FitLengthGivenAge), 4)
 expect_true(is.RecaParameterData((paramOut)))
 
-results <- RunRecaModels(paramOut)
+context("test-StoxAnalysisFunctions: RunRecaModels")
+results <- RunRecaModels(paramOut, StoxLandingData)
 expect_true("Age" %in% names(results$CatchAtAge))
 expect_true(is.RecaCatchAtAge(results))
+
+context("test-StoxAnalysisFunctions: RunRecaModels with AggregationVariables")
+results <- RunRecaModels(paramOut, StoxLandingData, AggregationVariables = c("Gear"))
+
+expect_true(is.RecaCatchAtAge(results))
+removeTempDirReca(fpath)
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate missing arguments")
 expect_error(ParameterizeRecaModels(prep, 10, 50, 1, "~/temp/ecatest", Lgamodel = NULL), "Parameter 'Lgamodel' must be provided.")
