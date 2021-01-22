@@ -27,7 +27,7 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, AggregationVariab
   }
   
   if (length(AggregationVariables) == 0){
-    stop("No variables to aggregate and compare. Provide parameter 'AggregationVariables'")
+    stop("No variables to stats::aggregate and compare. Provide parameter 'AggregationVariables'")
   }
   
   if (!all(AggregationVariables %in% names(flatlandings))){
@@ -46,16 +46,16 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, AggregationVariab
   }
 
   samples <- flatbiotic[,c(AggregationVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "StationKey", "IndividualKey"), with=F]
-  sampledTab <- aggregate(list(Catches=samples$StationKey), by=bioticAggList, FUN=function(x){length(unique(x))})
-  vessels <- aggregate(list(Vessels=samples$CatchPlatform), by=bioticAggList, FUN=function(x){length(unique(x))})
+  sampledTab <- data.table::data.table(stats::aggregate(list(Catches=samples$StationKey), by=bioticAggList, FUN=function(x){length(unique(x))}))
+  vessels <- data.table::data.table(stats::aggregate(list(Vessels=samples$CatchPlatform), by=bioticAggList, FUN=function(x){length(unique(x))}))
   sampledTab <- merge(sampledTab, vessels, by=AggregationVariables)
-  weights <- aggregate(list(WeightMeasurments=samples$IndividualRoundWeight), by=bioticAggList, FUN=function(x){sum(!is.na(x))})
+  weights <- data.table::data.table(stats::aggregate(list(WeightMeasurments=samples$IndividualRoundWeight), by=bioticAggList, FUN=function(x){sum(!is.na(x))}))
   sampledTab <- merge(sampledTab, weights, by=AggregationVariables)
-  lengths <- aggregate(list(LengthMeasurments=samples$IndividualTotalLength), by=bioticAggList, FUN=function(x){sum(!is.na(x))})
+  lengths <- data.table::data.table(stats::aggregate(list(LengthMeasurments=samples$IndividualTotalLength), by=bioticAggList, FUN=function(x){sum(!is.na(x))}))
   sampledTab <- merge(sampledTab, lengths, by=AggregationVariables)
-  ages <- aggregate(list(AgeReadings=samples$IndividualAge), by=bioticAggList, FUN=function(x){sum(!is.na(x))})
+  ages <- data.table::data.table(stats::aggregate(list(AgeReadings=samples$IndividualAge), by=bioticAggList, FUN=function(x){sum(!is.na(x))}))
   sampledTab <- merge(sampledTab, ages, by=AggregationVariables)
-  sampledWeights <- aggregate(list(WeightOfSampledCatches=samples$CatchFractionWeight), by=bioticAggList, FUN=function(x){sum(x, na.rm=T)})
+  sampledWeights <- data.table::data.table(stats::aggregate(list(WeightOfSampledCatches=samples$CatchFractionWeight), by=bioticAggList, FUN=function(x){sum(x, na.rm=T)}))
   sampledTab <- merge(sampledTab, sampledWeights, by=AggregationVariables)
   
   landingsAggList <- list()
@@ -63,10 +63,14 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, AggregationVariab
     landingsAggList[[v]] <- flatlandings[[v]]
   }
   landings <- flatlandings[,c(AggregationVariables, "RoundWeight"), with=F]
-  landingsTab <- aggregate(list(LandedRoundWeight=landings$RoundWeight), by=landingsAggList, FUN=function(x){sum(x, na.rm=T)})
+  landingsTab <- data.table::data.table(stats::aggregate(list(LandedRoundWeight=landings$RoundWeight), by=landingsAggList, FUN=function(x){sum(x, na.rm=T)}))
   
   tab <- merge(landingsTab, sampledTab, by=AggregationVariables, all=T)
   tab <- tab[order(tab$LandedRoundWeight),]
   
-  return(tab)
+  output <- list()
+  output$FisheriesSampling <- tab
+  output$AggregationVariables <- AggregationVariables
+  
+  return(output)
 }

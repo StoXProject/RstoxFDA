@@ -4,8 +4,14 @@
 \alias{ReportFdaSamplingData}
 \title{Sampling Report data (ReportFdaSamplingData)}
 \description{
-Report of sampling against total landings for partitions of a fishery.
- A \code{\link[data.table]{data.table}} with columns:
+list with tow members:
+ \describe{
+  \item{AggregationVariables}{a character vector with the variables used for aggregation in 'FishereisSampling'}
+  \item{FisheriesSampling}{a \code{\link[data.table]{data.table}} described below.}
+ }
+ 
+ FisheriesSampling is a report of sampling against total landings for partitions of a fishery.
+ The report is a \code{\link[data.table]{data.table}} with columns:
  \describe{
   \item{...}{A column for each of the provided Aggregation variables}
   \item{LandedRoundWeight}{Total landings in kg}

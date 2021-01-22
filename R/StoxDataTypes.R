@@ -25,8 +25,14 @@ is.Date <- function(date){
 #' Sampling Report data (ReportFdaSamplingData)
 #' 
 #' @description 
-#'  Report of sampling against total landings for partitions of a fishery.
-#'  A \code{\link[data.table]{data.table}} with columns:
+#'  list with tow members:
+#'  \describe{
+#'   \item{AggregationVariables}{a character vector with the variables used for aggregation in 'FishereisSampling'}
+#'   \item{FisheriesSampling}{a \code{\link[data.table]{data.table}} described below.}
+#'  }
+#'  
+#'  FisheriesSampling is a report of sampling against total landings for partitions of a fishery.
+#'  The report is a \code{\link[data.table]{data.table}} with columns:
 #'  \describe{
 #'   \item{...}{A column for each of the provided Aggregation variables}
 #'   \item{LandedRoundWeight}{Total landings in kg}
@@ -42,6 +48,30 @@ is.Date <- function(date){
 #' 
 NULL
 
+#' Check if argument is ReportFdaSamplingData
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
+#' @param ReportFdaSamplingData argument to be checked for data conformity
+#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
+#' @export
+is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
+  if (!is.list(ReportFdaSamplingData)){
+    return(FALSE)
+  }
+  if (!all(c("AggregationVariables", "FisheriesSampling") %in% names(ReportFdaSamplingData))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(ReportFdaSamplingData$FisheriesSampling)){
+    return(FALSE)
+  }
+  
+  if (!all(c("LandedRoundWeight", "Catches", "Vessels", "WeightMeasurments", "LengthMeasurments", "AgeReadings", "WeightOfSampledCatches") %in% names(ReportFdaSamplingData$FisheriesSampling))){
+    return(FALSE)
+  }
+  
+  return(TRUE)
+  
+}
 
 #' Reca Data (RecaData)
 #'
@@ -695,7 +725,7 @@ processPropertyFormats <- list(
       }
       possibleValues <- unique(possibleValues)
       possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$landings)]
-      return(c(possibleValues))
+      return(sort(c(possibleValues)))
     }, 
     variableTypes <- "character"
   ),
