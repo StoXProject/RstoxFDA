@@ -342,6 +342,12 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
   return(out)
 }
 
+#' Run Reca Models
+#' @details 
+#'  Runs prediction for parameterized Reca models
+#' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
+#' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
+#' @return RecaCatchAtAge
 RunRecaModels <- function(RecaParameterData, Caa.burnin=numeric(), Seed=numeric()){
   
   if (!isGiven(Caa.burnin)){

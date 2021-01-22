@@ -206,6 +206,21 @@ is.RecaParameterData <- function(RecaParameterData){
   return(TRUE)
 }
 
+#' Reca Results (RecaCatchAtAge)
+#'
+#' @details
+#' a list of data tables:
+#' \describe{
+#'  \item{CatchAtAge}{Tabulating the predicted catch at age by length group for each Reca iteration (MCMC sample)}
+#'  \item{MeanLength}{Tabulating the mean length in cm by age for each Reca iteration (MCMC sample)}
+#'  \item{MeanWeight}{Tabulating the mean weight in g by age for each Reca iteration (MCMC sample)}
+#' }
+#'
+#' @name RecaCatchAtAge
+#'
+NULL
+
+
 #' Reca Results (RecaResult)
 #'
 #' Results from running
