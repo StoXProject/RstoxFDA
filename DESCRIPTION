@@ -1,6 +1,6 @@
 Package: RstoxFDA
 Version: 1.0.1
-Date: 2021-01-18
+Date: 2021-01-22
 Title: Fisheries Dependent Analysis with RstoX
 Authors@R: c(
   person(given = "Arne Johannes", 
@@ -29,6 +29,6 @@ Imports:
     gridExtra (>= 2.3),
     sp (>= 1.3.2)
 Suggests: 
-    testthat (>= 2.1.0),
+    testthat,
     Reca
 RoxygenNote: 7.1.1

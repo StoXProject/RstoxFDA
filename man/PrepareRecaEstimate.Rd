@@ -70,12 +70,11 @@ encoding the day of the year when fish is consider to transition from one age to
 \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 }
 \description{
-StoX-function.
- Performs data checks and data conversions,
+Performs data checks and data conversions,
  and stores some data-related parameters in preparation for running
- \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}
- via \code{\link[RstoxFDA]{RunRecaEstimate}}.
+ \code{\link[Reca]{eca.estimate}}
+ via \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
 }
 \details{
-A covariate indentifying haul is always included in Reca. Do not add haul-identifiers as covariates.
+A covariate indentifying haul or landing is always included in Reca. Do not add haul-identifiers as covariates.
 }

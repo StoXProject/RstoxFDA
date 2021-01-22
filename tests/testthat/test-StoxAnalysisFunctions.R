@@ -13,10 +13,13 @@ checkEcaObj(prep)
 paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, "~/temp/ecatest")
 expect_true(c("FitLengthGivenAge") %in% names(paramOut))
 expect_equal(length(paramOut$FitLengthGivenAge), 4)
+expect_true(is.RecaParameterData((paramOut)))
 
 results <- RunRecaModels(paramOut)
 expect_true("Age" %in% names(results$CatchAtAge))
 
+context("test-StoxAnalysisFunctions: PrepareRecaEstimate missing arguments")
+expect_error(ParameterizeRecaModels(prep, 10, 50, 1, "~/temp/ecatest", Lgamodel = NULL), "Parameter 'Lgamodel' must be provided.")
 
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate simple case")

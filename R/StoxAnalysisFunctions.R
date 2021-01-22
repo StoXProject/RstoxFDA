@@ -1,13 +1,12 @@
 
 #' Prepare data for Reca.
 #' @description
-#'  StoX-function.
 #'  Performs data checks and data conversions,
 #'  and stores some data-related parameters in preparation for running
-#'  \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}
-#'  via \code{\link[RstoxFDA]{RunRecaEstimate}}.
+#'  \code{\link[Reca]{eca.estimate}}
+#'  via \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
 #' @details 
-#'  A covariate indentifying haul is always included in Reca. Do not add haul-identifiers as covariates.
+#'  A covariate indentifying haul or landing is always included in Reca. Do not add haul-identifiers as covariates.
 #'
 #' @param StoxBioticData
 #'  \code{\link[RstoxData]{StoxBioticData}} data with samples from fisheries
@@ -189,7 +188,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NU
 }
 
 
-#' Run Reca
+#' Run Reca. Being kept for testing purposes. Is replaced by \code{\link[RstoxFDA]{ParameterizeRecaModels}} and reporting functions
 #' @description
 #'  StoX-function.
 #'  Runs \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
@@ -214,7 +213,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NU
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
 #' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
 #' @return \code{\link[RstoxFDA]{RecaResult}} results from Reca run.
-#' @export
+#' @noRd
 RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), Lgamodel=c("log-linear", "non-linear"), Resultdir=NULL, Delta.age=numeric(), Seed=numeric(), Caa.burnin=numeric()){
 
   fitfile="fit"
@@ -251,10 +250,34 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
   return(recaResult)
 }
 
-
+#' Parameterize Reca.
+#' @description
+#'  Runs estimation of parameters for Reca models. Invokes \code{\link[Reca]{eca.estimate}}.
+#' @details
+#'  \code{\link[Reca]{eca.estimate}} performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
+#'  This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.
+#'
+#' @section temporary files:
+#'  Various report functions may use output of this function with the function \code{\link[Reca]{eca.predict}} which samples the posterior distributions of parameters.
+#'  Communication between \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}} is managed by writing and reading files, 
+#'  and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
+#'
+#' @param RecaData \code{\link[RstoxFDA]{RecaData}} as returned from \code{\link[RstoxFDA]{PrepareRecaEstimate}}
+#' @param Nsamples number of MCMC samples that will be made available for \code{\link[Reca]{eca.predict}}. See documentation for \code{\link[Reca]{eca.estimate}},
+#' @param Burnin number of MCMC samples run and discarded by \code{\link[Reca]{eca.estimate}} before any samples are saved. See documentation for \code{\link[Reca]{eca.estimate}}.
+#' @param Lgamodel The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}.
+#' @param Resultdir a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
+#' @param Thin controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
+#' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.
+#' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
+#' @return \code{\link[RstoxFDA]{RecaParameterData}} results from Reca Model Parameterization.
+#' @export
 ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=NULL, Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric()){
 
   Lgamodel <- match.arg(Lgamodel, Lgamodel)
+  if (!isGiven(Lgamodel)){
+    stop("Parameter 'Lgamodel' must be provided.")
+  }
   
   if (!isGiven(Seed)){
     Seed <- sample.int(.Machine$integer.max, 1)
@@ -319,17 +342,17 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
   return(out)
 }
 
-RunRecaModels <- function(RecaParamData, Caa.burnin=numeric(), Seed=numeric()){
+RunRecaModels <- function(RecaParameterData, Caa.burnin=numeric(), Seed=numeric()){
   
   if (!isGiven(Caa.burnin)){
     Caa.burnin <- 0
   }
   if (!isGiven(Seed)){
-    RecaParamData$GlobalParameters$Seed <- sample.int(.Machine$integer.max, 1)
+    RecaParameterData$GlobalParameters$Seed <- sample.int(.Machine$integer.max, 1)
   }
   
-  RecaParamData$GlobalParameters$caa.burnin <- Caa.burnin
+  RecaParameterData$GlobalParameters$caa.burnin <- Caa.burnin
   
-  results <- Reca::eca.predict(RecaParamData$AgeLength, RecaParamData$WeightLength, RecaParamData$Landings, RecaParamData$GlobalParameters)
+  results <- Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters)
   return(ecaResult2Stox(results))
 }

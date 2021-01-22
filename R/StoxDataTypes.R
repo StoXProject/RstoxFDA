@@ -82,6 +82,99 @@ is.RecaData <- function(RecaData){
   return(TRUE)
 }
 
+
+#' Reca Parameter Data (RecaParameterData)
+#'
+#' @description 
+#' Data and some data parameters prepared for running
+#' various report functions that invoke \code{\link[Reca]{eca.predict}}
+#'
+#' @details
+#' \describe{
+#'  \item{FitProportionAtAge}{list of data tables with parameters for for the Proportion-at-age model}
+#'  \item{FitLengthGivenAge}{list of data tables with parameters for for the Length-given-age model}
+#'  \item{FitWeightGivenLength}{list of data tables with parameters for for the Weight-given-length model}
+#'  \item{AgeLength}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}}
+#'  \item{WeightLength}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}}
+#'  \item{Landings}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}}
+#'  \item{GlobalParameters}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. see details}
+#'  \item{CovariateMaps}{Mapping of values for each covariate in landings and samples (including non-configurable catchId) to integer value used in R-ECA.}
+#' }
+#'
+#' @name RecaParameterData
+#'
+NULL
+
+#' Check if argument is RecaParameterData
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
+#' @param RecaData argument to be checked for data conformity
+#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaParameterData}}
+#' @export
+is.RecaParameterData <- function(RecaParameterData){
+  
+  if (!is.list(RecaParameterData)){
+    return(FALSE)
+  }
+  if (!all(c("FitProportionAtAge", "FitLengthGivenAge", "FitWeightGivenLength", "AgeLength", "WeightLength", "Landings", "GlobalParameters", "CovariateMaps") %in% names(RecaParameterData))){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$AgeLength)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$WeightLength)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$Landings)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$GlobalParameters)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$CovariateMaps)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$FitProportionAtAge)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$FitLengthGivenAge)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$FitWeightGivenLength)){
+    return(FALSE)
+  }
+  
+  if (!all(c("DataMatrix", "CovariateMatrix", "info") %in% names(RecaParameterData$AgeLength))){
+    return(FALSE)
+  }
+  if (!all(c("DataMatrix", "CovariateMatrix", "info") %in% names(RecaParameterData$WeightLength))){
+    return(FALSE)
+  }
+  if (!all(c("AgeLengthCov", "WeightLengthCov", "LiveWeightKG") %in% names(RecaParameterData$Landings))){
+    return(FALSE)
+  }
+  if (!all(c("LogLikelihood") %in% names(RecaParameterData$FitProportionAtAge))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaParameterData$FitProportionAtAge$LogLikelihood)){
+    return(FALSE)
+  }
+  if (!all(c("LogLikelihood") %in% names(RecaParameterData$FitLengthGivenAge))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaParameterData$FitLengthGivenAge$LogLikelihood)){
+    return(FALSE)
+  }
+  if (!all(c("LogLikelihood") %in% names(RecaParameterData$FitWeightGivenLength))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaParameterData$FitWeightGivenLength$LogLikelihood)){
+    return(FALSE)
+  }
+  
+  return(TRUE)
+}
+
 #' Reca Results (RecaResult)
 #'
 #' Results from running
@@ -440,10 +533,14 @@ stoxFunctionAttributes <- list(
       )
     )
   ),
-  RunRecaEstimate = list(
+  ParameterizeRecaModels = list(
     functionType = "modelData",
     functionCategory = "analysis",
-    functionOutputDataType = "RecaResult"
+    functionOutputDataType = "RecaParameterData"
+    #doesnt work for directory
+    #functionParameterFormat = list(
+    #  ResultDirectory = "filePath"
+    #)
   )
   
   
