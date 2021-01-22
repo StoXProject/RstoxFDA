@@ -761,7 +761,7 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   AgeLength$CARNeighbours <- getNeighbours(neighbours, covariateMaps$inLandings[[carEffect]])
   AgeLength$AgeErrorMatrix <- ageError
   AgeLength$CCerrorList <- NULL # CC (stock splitting) not supported
-  covariateMaps$randomEffects$AgeLength$CatchId <- ret$catchIdMap
+  covariateMaps$randomEffects$AgeLength$catchSample <- ret$catchIdMap
 
   WeightLength <- list()
   ret <- getDataMatrixWeightLength(samples[!is.na(samples$Weight),], nFish)
@@ -769,7 +769,7 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   WeightLength$CovariateMatrix <- getCovariateMatrix(samples[!is.na(samples$Weight),], c(fixedEffects, randomEffects, carEffect), covariateMaps$inLandings, covariateMaps$randomEffects$WeightLength)
   WeightLength$info <- getInfoMatrix(samples[!is.na(samples$Weight),], landings, fixedEffects, randomEffects, carEffect)
   WeightLength$CARNeighbours <- getNeighbours(neighbours, covariateMaps$inLandings[[carEffect]])
-  covariateMaps$randomEffects$WeightLength$CatchId <- ret$catchIdMap
+  covariateMaps$randomEffects$WeightLength$catchSample <- ret$catchIdMap
 
   Landings <- getLandings(landings, c(fixedEffects, randomEffects, carEffect), covariateMaps$inLandings, date, month, quarter)
 

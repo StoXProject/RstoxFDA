@@ -40,7 +40,7 @@ StoxLandingData <- readRDS(StoxLandingFile)
 
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
 checkEcaObj(prep)
-expect_equal(length(prep$CovariateMaps$randomEffects$AgeLength$CatchId), length(unique(StoxBioticData$Individual$HaulKey)))
+expect_equal(length(prep$CovariateMaps$randomEffects$AgeLength$catchSample), length(unique(StoxBioticData$Individual$HaulKey)))
 
 
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), MinAge=1, MaxAge=30)

@@ -26,7 +26,7 @@ convertModelFit2Stox <- function(paramfit, paramtype, covariate, covariateMaps){
 }
 
 #' @noRd
-convertModelFit <- function(modelfit, covariateMaps){
+convertModelFit <- function(modelfit, covariateMaps, model){
   output <- list()
   
   output$LogLikelihood <- as.data.table(modelfit$LogLikelihood)
@@ -50,8 +50,11 @@ convertModelFit <- function(modelfit, covariateMaps){
     if (co %in% names(covariateMaps$inLandings)){
       fit$Level <- covariateMaps$inLandings[[co]][fit$LevelIndex]
     }
-    else if (co %in% names(covariateMaps$randomEffects)){
-      fit$Level <- covariateMaps$randomEffects[[co]][fit$LevelIndex]
+    else if (co %in% names(covariateMaps$randomEffects$AgeLength) & model == "LengthGivenAge"){
+      fit$Level <- unlist(covariateMaps$randomEffects$AgeLength[[co]])[fit$LevelIndex]
+    }
+    else if (co %in% names(covariateMaps$randomEffects$WeightLength) & model == "WeightGivenLength"){
+      fit$Level <- unlist(covariateMaps$randomEffects$WeightLength[[co]])[fit$LevelIndex]
     }
     else{
       fit$Level <- c(NA)[fit$LevelIndex]
@@ -193,9 +196,9 @@ convertModelFit2eca <- function(stoxfit, propatage=F){
 recaFit2Stox <- function(fit, covariateMaps){
   
   output <- list()
-  output$FitProportionAtAge <- convertModelFit(fit$ProportionAtAge, covariateMaps)
-  output$FitLengthGivenAge <- convertModelFit(fit$LengthGivenAge, covariateMaps)
-  output$FitWeightGivenLength <- convertModelFit(fit$WeightGivenLength, covariateMaps)
+  output$FitProportionAtAge <- convertModelFit(fit$ProportionAtAge, covariateMaps, "ProportionAtAge")
+  output$FitLengthGivenAge <- convertModelFit(fit$LengthGivenAge, covariateMaps, "LengthGivenAge")
+  output$FitWeightGivenLength <- convertModelFit(fit$WeightGivenLength, covariateMaps, "WeightGivenLength")
   return(output)
 }
 

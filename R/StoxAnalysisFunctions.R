@@ -55,7 +55,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NU
   ClassificationError=NULL
   StockSplitting=FALSE
   ContinousEffect<-NULL
-  warning("Stox splitting, continous effect, and configuration of interaction is not implemented. Renaming and translation of catchSample effect and naming/translation of cell-levels")
+  warning("Stox splitting, continous effect, and configuration of interaction is not implemented. Renaming of cell-levels")
   
   
   if (!UseAgingError){
