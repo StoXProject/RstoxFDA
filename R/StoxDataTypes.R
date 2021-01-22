@@ -659,6 +659,12 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "StoxLandingData"
   ),
   
+  AddStratumStoxBiotic = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxBioticData"
+  ),
+  
   PrepareRecaEstimate = list(
     functionType = "modelData",
     functionCategory = "analysis",
@@ -738,7 +744,7 @@ processPropertyFormats <- list(
     title = "One or more variables to use as aggregation variables.", 
     possibleValues = function(StoxLandingData) {
       possibleValues <- names(StoxLandingData$landings)[!(names(StoxLandingData$landings) %in% c("RoundWeight"))]
-      return(sort(c(possibleValues)))
+      return(sort(possibleValues))
     }, 
     variableTypes <- "character"
   ),
@@ -756,7 +762,7 @@ processPropertyFormats <- list(
       }
       possibleValues <- unique(possibleValues)
       possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$landings)]
-      return(sort(c(possibleValues)))
+      return(sort(possibleValues))
     }, 
     variableTypes <- "character"
   ),
@@ -774,7 +780,7 @@ processPropertyFormats <- list(
       }
       possibleValues <- unique(possibleValues)
       possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$landings)]
-      return(c(possibleValues))
+      return(sort(possibleValues))
     }, 
     variableTypes <- "character"
   ),
