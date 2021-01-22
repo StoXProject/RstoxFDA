@@ -238,7 +238,7 @@ ecaResult2Stox <- function(ecaPrediction){
   MeanLength <- data.table::as.data.table(t(ecaPrediction$MeanLength))
   names(MeanLength) <- as.character(ecaPrediction$AgeCategories)
   MeanLength$Iteration <- 1:nrow(MeanLength)
-  MeanLength <- data.table::melt(MeanLength, measure.vars=c(as.character(ecaPrediction$AgeCategories)), variable.name="Age",value.name="MeanIndivudalLength", variable.factor=F)
+  MeanLength <- data.table::melt(MeanLength, measure.vars=c(as.character(ecaPrediction$AgeCategories)), variable.name="Age",value.name="MeanIndividualLength", variable.factor=F)
   MeanLength$Age <- as.integer(MeanLength$Age)
   out$MeanLength <- MeanLength
   

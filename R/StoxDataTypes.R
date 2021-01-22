@@ -220,7 +220,41 @@ is.RecaParameterData <- function(RecaParameterData){
 #'
 NULL
 
-
+#' Check if argument is RecaCatchAtAge
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
+#' @param RecaCatchAtAge argument to be checked for data conformity
+#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
+#' @export
+is.RecaCatchAtAge <- function(RecaCatchAtAge){
+  if (!is.list(RecaCatchAtAge)){
+    return(FALSE)
+  }
+  if (!all(c("CatchAtAge", "MeanLength", "MeanWeight") %in% names(RecaCatchAtAge))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaCatchAtAge$CatchAtAge)){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaCatchAtAge$MeanLength)){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaCatchAtAge$MeanWeight)){
+    return(FALSE)
+  }
+  if (!all(c("Length", "Age", "Iteration", "CatchAtAge") %in% names(RecaCatchAtAge$CatchAtAge))){
+    return(FALSE)
+  }
+  if (!all(c("MeanIndividualLength", "Age", "Iteration") %in% names(RecaCatchAtAge$MeanLength))){
+    return(FALSE)
+  }
+  if (!all(c("MeanIndividualWeight", "Age", "Iteration") %in% names(RecaCatchAtAge$MeanWeight))){
+    return(FALSE)
+  }
+  
+  return(TRUE)
+}
+  
 #' Reca Results (RecaResult)
 #'
 #' Results from running
