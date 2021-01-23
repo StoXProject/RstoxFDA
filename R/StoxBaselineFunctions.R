@@ -262,6 +262,7 @@ AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
   return(StoxBioticData)
 }
 
+
 #' append gear
 #' @noRd
 appendGear <- function(table, gearcolumn, gearDefinition, colName){
