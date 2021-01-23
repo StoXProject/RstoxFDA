@@ -21,7 +21,8 @@ prepRECA(
   date = NULL,
   month = NULL,
   quarter = NULL,
-  hatchDay = 1
+  hatchDay = 1,
+  interaction = NULL
 )
 }
 \arguments{
@@ -70,7 +71,9 @@ prepRECA(
 
 \item{quarter}{integer() vector, vector, matching the number of rows in 'landings', quarter of catch (1 for Q1, etc.), see details.}
 
-\item{hatchDay}{integer(), encoding the day of the year when fish is consider to transition from one age to the next.
+\item{hatchDay}{integer(), encoding the day of the year when fish is consider to transition from one age to the next.}
+
+\item{interaction}{character vector specifying effects that should be included in interaction term. Must correspond to effects specified in parameters 'fixedEffects', 'randomEffects', or 'carEffect'
 \describe{
  \item{sampleID}{Column idenitfying the sample, defined as for 'samples'}
  \item{count}{Estimated number of fish in the part of the catch the sample was taken from}

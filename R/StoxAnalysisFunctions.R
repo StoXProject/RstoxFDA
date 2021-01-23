@@ -27,8 +27,10 @@
 #' @param CarNeighbours
 #'  \code{\link[RstoxFDA]{CarNeighbours}}, mandatory if 'carEffect' is given.
 #'  Identifies which values of the carEffect are to be considered as neighbours.
+#' @param CellEffect
+#'  If true, an interaction term will be added with all covariates that exist in landings (whether they are fixed or random effects)
 #' @param UseAgingError 
-#'  logical identifying if error-aging parameters should be incorporated in the model
+#'  If true error-aging parameters will be incorporated in the model
 #' @param AgeErrorMatrix
 #'  \code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
 #'  mandatory if UseAgingError is TRUE.
@@ -49,13 +51,13 @@
 #'  encoding the day of the year when fish is consider to transition from one age to the next.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NULL, RandomEffects=NULL, UseCarEffect=F, CarEffect=NULL, CarNeighbours=NULL, UseAgingError=F, AgeErrorMatrix=NULL, MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NULL, RandomEffects=NULL, UseCarEffect=F, CarEffect=character(), CarNeighbours=NULL, UseAgingError=F, AgeErrorMatrix=NULL, CellEffect=F, MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
   
   #expose as parameter when implemented
   ClassificationError=NULL
   StockSplitting=FALSE
   ContinousEffect<-NULL
-  warning("Stox splitting, continous effect, and configuration of interaction is not implemented. Renaming of cell-levels")
+  warning("Stox splitting, continous effect.")
   
   
   if (!UseAgingError){
@@ -85,6 +87,12 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NU
   }
   if (is.null(RandomEffects)){
     RandomEffects <- c()
+  }
+  
+  interaction <- c()
+  if (CellEffect){
+    interaction <- c(RandomEffects, FixedEffects, CarEffect)
+    interaction <- interaction[interaction %in% names(StoxLandingData$landings)]
   }
   
   if (!isGiven(HatchDay)){
@@ -168,7 +176,8 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NU
                          date=NULL, 
                          month=month, 
                          quarter=quarter, 
-                         hatchDay=HatchDay)
+                         hatchDay=HatchDay,
+                         interaction = interaction)
   return(recaObject)
 }
 

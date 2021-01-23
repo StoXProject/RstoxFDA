@@ -123,7 +123,18 @@ getCovariateMap <- function(covariate, samples, landings){
 
 #' order columns by constant, inlandings, notinlandings (inlandings and notinalndings sorted alphabetically)
 #' @noRd
-getInfoMatrix <- function(samples, landings, fixedEffects, randomEffects, carEffect){
+getInfoMatrix <- function(samples, landings, fixedEffects, randomEffects, carEffect, interaction=NULL){
+  
+  if (any(duplicated(c(fixedEffects, randomEffects, carEffect)))){
+    stop("some effects are specified more than once")
+  }
+  
+  if (is.null(interaction)){
+    interaction <- c()
+  }
+  if (!all(interaction %in% c(fixedEffects, randomEffects, carEffect))){
+    stop("The effects specified in 'interaction' must be provided as either fixedEffects, randomEffects, or carEffect")
+  }
 
   info <- matrix(ncol=7, nrow=length(c(fixedEffects, randomEffects, carEffect))+1)
   colnames(info) <- c("random", "CAR", "continuous", "in.landings", "nlev", "interaction", "in.slopeModel")
@@ -133,22 +144,39 @@ getInfoMatrix <- function(samples, landings, fixedEffects, randomEffects, carEff
   if (!is.null(fixedEffects) & length(fixedEffects) > 0){
     for (e in fixedEffects){
       inl <- 0
+      int <- 0
       if (e %in% names(landings)){
         inl <- 1
+        if (e %in% interaction){
+          int <- 1
+        }
       }
-      info[i,] <- c(0,0,0,inl,length(unique(c(samples[[e]], landings[[e]]))), inl, 0)
+      else{
+        if (e %in% interaction){
+          stop(paste("Effect", e, "is specified in interaction, but is not found in landings"))
+        }
+      }
+      info[i,] <- c(0,0,0,inl,length(unique(c(samples[[e]], landings[[e]]))), int, 0)
       i <- i+1
     }
   }
   if (!is.null(randomEffects) & length(randomEffects) > 0){
     for (e in randomEffects){
       inl <- 0
+      int <- 0
       if (e %in% names(landings)){
+        if (e %in% interaction){
+          int <- 1
+        }
         inl <- 1
-        info[i,] <- c(1,0,0,inl,length(unique(c(samples[[e]], landings[[e]]))), inl, 0)
+        info[i,] <- c(1,0,0,inl,length(unique(c(samples[[e]], landings[[e]]))), int, 0)
       }
       else{
-        info[i,] <- c(1,0,0,inl,length(unique(samples[[e]])), inl, 0)
+          if (e %in% interaction){
+            stop(paste("Effect", e, "is specified in interaction, but is not found in landings"))
+          }
+        
+        info[i,] <- c(1,0,0,inl,length(unique(samples[[e]])), int, 0)
       }
 
       i <- i+1
@@ -524,6 +552,7 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #' @param month integer() vector, matching the number of rows in 'landings', month of catch (1 for January, etc.), see details.
 #' @param quarter integer() vector, vector, matching the number of rows in 'landings', quarter of catch (1 for Q1, etc.), see details.
 #' @param hatchDay integer(), encoding the day of the year when fish is consider to transition from one age to the next.
+#' @param interaction character vector specifying effects that should be included in interaction term. Must correspond to effects specified in parameters 'fixedEffects', 'randomEffects', or 'carEffect'
 #' \describe{
 #'  \item{sampleID}{Column idenitfying the sample, defined as for 'samples'}
 #'  \item{count}{Estimated number of fish in the part of the catch the sample was taken from}
@@ -583,10 +612,17 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #'    nFish = nFish,
 #'    quarter = landings$Quarter)
 #' @export
-prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=NULL, neighbours=NULL, nFish=NULL, ageError=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, testMax=1000, date=NULL, month=NULL, quarter=NULL, hatchDay=1){
+prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=NULL, neighbours=NULL, nFish=NULL, ageError=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, testMax=1000, date=NULL, month=NULL, quarter=NULL, hatchDay=1, interaction=NULL){
   samples <- data.table::as.data.table(samples)
   landings <- data.table::as.data.table(landings)
 
+  # check interaction
+  if (!all(interaction %in% c(fixedEffects, randomEffects, carEffect))){
+    missing <- interaction[!(interaction %in% c(fixedEffects, randomEffects, carEffect))]
+    stop(paste("The effects specified in 'interaction' must be provided as either fixedEffects, randomEffects, or carEffect. Missing:", paste(missing, collapse=",")))
+  }
+  
+  
   # check mandatory columns
   if (!(all(c("LiveWeightKG") %in% names(landings)))){
     stop("Column LiveWeightKG is mandatory in landings")
@@ -757,7 +793,7 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   ret <- getDataMatrixAgeLength(samples, nFish, hatchDay)
   AgeLength$DataMatrix <- ret$DataMatrix
   AgeLength$CovariateMatrix <- getCovariateMatrix(samples, c(fixedEffects, randomEffects, carEffect), covariateMaps$inLandings, covariateMaps$randomEffects$AgeLength)
-  AgeLength$info <- getInfoMatrix(samples, landings, fixedEffects, randomEffects, carEffect)
+  AgeLength$info <- getInfoMatrix(samples, landings, fixedEffects, randomEffects, carEffect, interaction)
   AgeLength$CARNeighbours <- getNeighbours(neighbours, covariateMaps$inLandings[[carEffect]])
   AgeLength$AgeErrorMatrix <- ageError
   AgeLength$CCerrorList <- NULL # CC (stock splitting) not supported
@@ -767,7 +803,7 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   ret <- getDataMatrixWeightLength(samples[!is.na(samples$Weight),], nFish)
   WeightLength$DataMatrix <- ret$DataMatrix
   WeightLength$CovariateMatrix <- getCovariateMatrix(samples[!is.na(samples$Weight),], c(fixedEffects, randomEffects, carEffect), covariateMaps$inLandings, covariateMaps$randomEffects$WeightLength)
-  WeightLength$info <- getInfoMatrix(samples[!is.na(samples$Weight),], landings, fixedEffects, randomEffects, carEffect)
+  WeightLength$info <- getInfoMatrix(samples[!is.na(samples$Weight),], landings, fixedEffects, randomEffects, carEffect, interaction)
   WeightLength$CARNeighbours <- getNeighbours(neighbours, covariateMaps$inLandings[[carEffect]])
   covariateMaps$randomEffects$WeightLength$catchSample <- ret$catchIdMap
 

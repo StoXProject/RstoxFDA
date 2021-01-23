@@ -78,6 +78,11 @@ StoxLandingData$landings$Stratum <- StoxLandingData$landings$Area
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Stratum"))
 expect_true("Stratum" %in% names(prep$Landings$AgeLengthCov))
 
+context("test-StoxAnalysisFunctions: PrepareRecaEstimate cellEffect")
+prepCell <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Stratum"), CellEffect = T)
+expect_equal(prepCell$AgeLength$info["Stratum", "interaction"], 1)
+
+
 context("test-StoxAnalysisFunctions: RunRecaEstimate with random effect Area")
 est <- RunRecaEstimate(prep, 10, 50, 0)
 expect_true("Stratum" %in% names(est$fit$ProportionAtAge$Intercept$cov))
