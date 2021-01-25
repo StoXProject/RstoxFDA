@@ -434,11 +434,6 @@ getNeighbours <- function(neighbours, covariateMap){
 #'  getLandings(landings, c("Metier5"), covMap, month=landings$Month)
 #' @export
 getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NULL, quarter=NULL){
-
-  if (!all(covariates %in% names(landings))){
-    missing <- covariates[!(covariates %in% names(landings))]
-    stop(paste("Error: requested covariates not in landings object:", paste(missing, collapse=",")))
-  }
   
   #consider redesigning, using info matrix for ordering
 
