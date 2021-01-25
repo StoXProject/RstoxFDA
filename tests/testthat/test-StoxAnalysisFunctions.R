@@ -8,7 +8,6 @@ StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="R
 StoxLandingData <- readRDS(StoxLandingFile)
 
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
-checkEcaObj(prep)
 
 fpath <- makeTempDirReca()
 paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, fpath)
@@ -67,7 +66,6 @@ StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="R
 StoxLandingData <- readRDS(StoxLandingFile)
 
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
-checkEcaObj(prep)
 expect_equal(length(prep$CovariateMaps$randomEffects$AgeLength$catchSample), length(unique(StoxBioticData$Individual$HaulKey)))
 
 
@@ -108,7 +106,7 @@ expect_true("Stratum" %in% names(prep$Landings$AgeLengthCov))
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate cellEffect")
 prepCell <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Stratum"), CellEffect = T)
-expect_equal(prepCell$AgeLength$info["Stratum", "interaction"], 1)
+expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covariate=="Stratum"], 1)
 
 context("test-StoxAnalysisFunctions: RunRecaEstimate with random effect Area")
 est <- RunRecaEstimate(prep, 10, 50, 0)

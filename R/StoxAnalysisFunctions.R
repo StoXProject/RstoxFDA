@@ -238,7 +238,7 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
   stopifnot(is.RecaData(RecaData))
 
   Lgamodel <- match.arg(Lgamodel, Lgamodel)
-
+  RecaData <- convertStox2PrepReca(RecaData)
   recaResult <- runRECA(RecaData, nSamples = Nsamples, burnin=Burnin, lgamodel=Lgamodel, fitfile=fitfile, predictfile = predictfile, resultdir = Resultdir, thin=Thin, delta.age = Delta.age, seed = Seed, caa.burnin = Caa.burnin)
 
   return(recaResult)
@@ -267,8 +267,8 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @return \code{\link[RstoxFDA]{RecaParameterData}} results from Reca Model Parameterization.
 #' @export
 ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=NULL, Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric()){
-
-  convertStox2PrepReca(RecaData)
+  
+  RecaData <- convertStox2PrepReca(RecaData)
   
   Lgamodel <- match.arg(Lgamodel, Lgamodel)
   if (!isGiven(Lgamodel)){
@@ -326,6 +326,7 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
   GlobalParameters$seed <- Seed
   
   RecaData$GlobalParameters <- GlobalParameters
+  
   RecaData <- checkEcaObj(RecaData)
   
   fit <- Reca::eca.estimate(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters)
@@ -387,7 +388,6 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #' @export
 RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric()){
   TemporalResolution <- match.arg(TemporalResolution, TemporalResolution)
-  
   if (!isGiven(TemporalResolution)){
     stop("The parameter 'TemporalResolution' must be provided.")
   }

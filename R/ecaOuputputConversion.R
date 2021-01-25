@@ -257,22 +257,44 @@ ecaResult2Stox <- function(ecaPrediction){
 
 
 #' reformats data.frames
+#' @noRd
 convertPrepReca2stox <- function(prepRecaOutput){
+  
   prepRecaOutput$AgeLength$DataMatrix <- data.table::as.data.table(prepRecaOutput$AgeLength$DataMatrix)
   prepRecaOutput$AgeLength$CovariateMatrix <- data.table::as.data.table(prepRecaOutput$AgeLength$CovariateMatrix)
+  
+  effectnames <- rownames(prepRecaOutput$AgeLength$info)
+  prepRecaOutput$AgeLength$info <- cbind(data.table::data.table(covariate=effectnames),data.table::as.data.table(prepRecaOutput$AgeLength$info))
+  
   prepRecaOutput$WeightLength$DataMatrix <- data.table::as.data.table(prepRecaOutput$WeightLength$DataMatrix)
   prepRecaOutput$WeightLength$CovariateMatrix <- data.table::as.data.table(prepRecaOutput$WeightLength$CovariateMatrix)
+  
+  effectnames <- rownames(prepRecaOutput$WeightLength$info)
+  prepRecaOutput$WeightLength$info <- cbind(data.table::data.table(covariate=effectnames),data.table::as.data.table(prepRecaOutput$WeightLength$info))
+  
   prepRecaOutput$Landings$AgeLengthCov <- data.table::as.data.table(prepRecaOutput$Landings$AgeLengthCov)
   prepRecaOutput$Landings$WeightLengthCov <- data.table::as.data.table(prepRecaOutput$Landings$WeightLengthCov)
   return(prepRecaOutput)
 }
 
 #' reformats data.tables
+#' @noRd
 convertStox2PrepReca <- function(stoxPrep){
+  
   stoxPrep$AgeLength$DataMatrix <- as.data.frame(stoxPrep$AgeLength$DataMatrix)
   stoxPrep$AgeLength$CovariateMatrix <- as.data.frame(stoxPrep$AgeLength$CovariateMatrix)
+  
+  rn <- stoxPrep$AgeLength$info$covariate
+  stoxPrep$AgeLength$info <- as.matrix(stoxPrep$AgeLength$info[,names(stoxPrep$AgeLength$info) != "covariate", with=F])
+  rownames(stoxPrep$AgeLength$info) <- rn
+  
   stoxPrep$WeightLength$DataMatrix <- as.data.frame(stoxPrep$WeightLength$DataMatrix)
   stoxPrep$WeightLength$CovariateMatrix <- as.data.frame(stoxPrep$WeightLength$CovariateMatrix)
+  
+  rn <- stoxPrep$WeightLength$info$covariate
+  stoxPrep$WeightLength$info <- as.matrix(stoxPrep$WeightLength$info[,names(stoxPrep$WeightLength$info) != "covariate", with=F])
+  rownames(stoxPrep$WeightLength$info) <- rn
+  
   stoxPrep$Landings$AgeLengthCov <- as.data.frame(stoxPrep$Landings$AgeLengthCov)
   stoxPrep$Landings$WeightLengthCov <- as.data.frame(stoxPrep$Landings$WeightLengthCov)
   return(stoxPrep)
