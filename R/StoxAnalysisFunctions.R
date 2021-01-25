@@ -178,7 +178,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NU
                          quarter=quarter, 
                          hatchDay=HatchDay,
                          interaction = interaction)
-  return(recaObject)
+  return(convertPrepReca2stox(recaObject))
 }
 
 
@@ -268,6 +268,8 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @export
 ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=NULL, Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric()){
 
+  convertStox2PrepReca(RecaData)
+  
   Lgamodel <- match.arg(Lgamodel, Lgamodel)
   if (!isGiven(Lgamodel)){
     stop("Parameter 'Lgamodel' must be provided.")
@@ -329,6 +331,9 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
   fit <- Reca::eca.estimate(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters)
 
   out <- recaFit2Stox(fit, RecaData$CovariateMaps)
+  
+  RecaData <- convertPrepReca2stox(RecaData)
+  
   for (n in names(RecaData)){
     out[[n]] <- RecaData[[n]]
   }
@@ -339,6 +344,7 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
 
 #' @noRd
 getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, TemporalResolution){
+  
   StoxLandingData$landings$LiveWeightKG <- StoxLandingData$landings$RoundWeight
   quarter <- NULL
   month <- NULL
@@ -380,7 +386,6 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #' @return \code{\link[RstoxFDA]{RecaCatchAtAge}}
 #' @export
 RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric()){
-  
   TemporalResolution <- match.arg(TemporalResolution, TemporalResolution)
   
   if (!isGiven(TemporalResolution)){

@@ -255,3 +255,25 @@ ecaResult2Stox <- function(ecaPrediction){
   return(out)
 }
 
+
+#' reformats data.frames
+convertPrepReca2stox <- function(prepRecaOutput){
+  prepRecaOutput$AgeLength$DataMatrix <- data.table::as.data.table(prepRecaOutput$AgeLength$DataMatrix)
+  prepRecaOutput$AgeLength$CovariateMatrix <- data.table::as.data.table(prepRecaOutput$AgeLength$CovariateMatrix)
+  prepRecaOutput$WeightLength$DataMatrix <- data.table::as.data.table(prepRecaOutput$WeightLength$DataMatrix)
+  prepRecaOutput$WeightLength$CovariateMatrix <- data.table::as.data.table(prepRecaOutput$WeightLength$CovariateMatrix)
+  prepRecaOutput$Landings$AgeLengthCov <- data.table::as.data.table(prepRecaOutput$Landings$AgeLengthCov)
+  prepRecaOutput$Landings$WeightLengthCov <- data.table::as.data.table(prepRecaOutput$Landings$WeightLengthCov)
+  return(prepRecaOutput)
+}
+
+#' reformats data.tables
+convertStox2PrepReca <- function(stoxPrep){
+  stoxPrep$AgeLength$DataMatrix <- as.data.frame(stoxPrep$AgeLength$DataMatrix)
+  stoxPrep$AgeLength$CovariateMatrix <- as.data.frame(stoxPrep$AgeLength$CovariateMatrix)
+  stoxPrep$WeightLength$DataMatrix <- as.data.frame(stoxPrep$WeightLength$DataMatrix)
+  stoxPrep$WeightLength$CovariateMatrix <- as.data.frame(stoxPrep$WeightLength$CovariateMatrix)
+  stoxPrep$Landings$AgeLengthCov <- as.data.frame(stoxPrep$Landings$AgeLengthCov)
+  stoxPrep$Landings$WeightLengthCov <- as.data.frame(stoxPrep$Landings$WeightLengthCov)
+  return(stoxPrep)
+}

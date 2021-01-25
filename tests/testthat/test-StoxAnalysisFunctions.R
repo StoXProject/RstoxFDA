@@ -12,6 +12,7 @@ checkEcaObj(prep)
 
 fpath <- makeTempDirReca()
 paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, fpath)
+
 expect_true(c("FitLengthGivenAge") %in% names(paramOut))
 expect_equal(length(paramOut$FitLengthGivenAge), 4)
 expect_true(is.RecaParameterData((paramOut)))
@@ -25,6 +26,26 @@ context("test-StoxAnalysisFunctions: RunRecaModels with AggregationVariables")
 results <- RunRecaModels(paramOut, StoxLandingData, AggregationVariables = c("Gear"))
 
 expect_true(is.RecaCatchAtAge(results))
+removeTempDirReca(fpath)
+
+context("test-StoxAnalysisFunctions: RunRecaModels wirh random effects in landings")
+
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+StoxBioticData$Haul$Gear <- StoxLandingData$landings$Gear[sample.int(20,45, replace=T)]
+
+fpath <- makeTempDirReca()
+
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Gear"))
+paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, fpath)
+results <- RunRecaModels(paramOut, StoxLandingData)
+expect_true("Gear" %in% names(paramOut$Landings$AgeLengthCov))
+expect_true("Age" %in% names(results$CatchAtAge))
+expect_true(is.RecaCatchAtAge(results))
+
 removeTempDirReca(fpath)
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate missing arguments")
@@ -81,7 +102,6 @@ expect_true("Stratum" %in% names(prep$Landings$AgeLengthCov))
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate cellEffect")
 prepCell <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Stratum"), CellEffect = T)
 expect_equal(prepCell$AgeLength$info["Stratum", "interaction"], 1)
-
 
 context("test-StoxAnalysisFunctions: RunRecaEstimate with random effect Area")
 est <- RunRecaEstimate(prep, 10, 50, 0)
