@@ -35,7 +35,7 @@ saveRDS(StoxLandingData, "inst/testresources/StoxLandingData.rds")
 # run eca and export as example data
 #
 recaDataExample <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
-recaPrediction <- RunRecaEstimate(recaDataExample, 50, 5000, 10)$prediction
+recaPrediction <- RstoxFDA:::RunRecaEstimate(recaDataExample, 50, 5000, 10)$prediction
 
 usethis::use_data(recaPrediction, overwrite = T)
 usethis::use_data(recaDataExample, overwrite = T)
@@ -69,6 +69,6 @@ StoxLandingData$landings$Stratum[!(StoxLandingData$landings$Stratum %in% c("3","
 StoxLandingData$landings$Quarter <- quarters(StoxLandingData$landings$CatchDate)
 
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Stratum", "Quarter"))
-est <- RunRecaEstimate(prep, 10, 5000, 1)
+est <- RstoxFDA:::RunRecaEstimate(prep, 10, 5000, 1)
 saveRDS(est, "inst/testresources/ecaResult.rds")
 
