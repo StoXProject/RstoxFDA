@@ -315,26 +315,28 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
 
 #' Set time Biotic
 #' @description 
-#'  Set the column 'stationstarttime' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to a fixed time
+#'  Set start time to a fixed time for all stations.
 #' @details 
+#'  Set the column 'stationstarttime' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to a fixed time
 #'  'stationstarttime' is on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
 #'  For bioticdata that does not conform to this, no modifications are done.
-#'  Detting a fixed time to stationstarttime facilitates conversion to \code{\link[RstoxData]{StoxBioticData}} 
+#'  Setting a fixed time to stationstarttime facilitates conversion to \code{\link[RstoxData]{StoxBioticData}} 
 #'  using \code{\link[RstoxData]{StoxBiotic}}, and is applicable if hourly resolution of date and time is not necessary
 #'  for subsequent analysis.
 #' @param BioticData \code{\link[RstoxData]{BioticData}} data for which time should be set
-#' @param Time character encoding time: format as \code{\link[base]{strptime}}-string: \%H:\%M:\%S, e.g. 12:00:00
+#' @param Time character encoding time. Defaults to 12:00:00Z if not given, otherwise provide 
+#'   UTC-time formatted as \code{\link[base]{strptime}}-string: \%H:\%M:\%SZ, e.g. 12:00:00Z
 #' @param Overwrite if True any existing values in stationstarttime will be overwritten.
-#' @return BioticData \code{\link[RstoxData]{BioticData}}
+#' @return \code{\link[RstoxData]{BioticData}}
 #' @export
 SetTimeBiotic <- function(BioticData, Time=character(), OverWrite=F){
   if (!isGiven(Time)){
     Time="12:00:00Z"
   }
   
-  timeobj <- as.POSIXlt(Time, format="%H:%M:%S")
+  timeobj <- as.POSIXlt(Time, format="%H:%M:%SZ")
   if (is.na(timeobj)){
-    stop(paste("Invalid time specification: ", Time, ". Provide as %H:%M:%S, e.g: 12:00:00", sep=""))
+    stop(paste("Invalid time specification: ", Time, ". Provide as %H:%M:%SZ, e.g: 12:00:00Z", sep=""))
   }
   
   for (file in names(BioticData)){
@@ -352,11 +354,39 @@ SetTimeBiotic <- function(BioticData, Time=character(), OverWrite=F){
   return(BioticData)
 }
 
-###
-# Functions for defining resources, typically processData
-#
-
-
+#' Set startdate Biotic
+#' @description 
+#'  Set start date from stop date. 
+#' @details
+#'  Set the column 'stationstartdate' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}}
+#'  to the value of 'stationstopdate'.
+#'  These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
+#'  For bioticdata that does not conform to this, no modifications are done.
+#'  Setting stationstartdate facilitates conversion to \code{\link[RstoxData]{StoxBioticData}} 
+#'  using \code{\link[RstoxData]{StoxBiotic}}, and is applicable if daily resolution of date and time is not critical
+#'  for subsequent analysis.
+#' @param BioticData \code{\link[RstoxData]{BioticData}} data for which time should be set
+#' @param Overwrite if True any existing values in stationstartdate will be overwritten.
+#' @return \code{\link[RstoxData]{BioticData}}
+#' @export
+SetStartDateBiotic <- function(BioticData, OverWrite=F){
+ 
+  for (file in names(BioticData)){
+    if ("fishstation" %in% names(BioticData[[file]]) & 
+        "stationstartdate" %in% names(BioticData[[file]]$fishstation) &
+        "stationstopdate" %in% names(BioticData[[file]]$fishstation)){
+      dates <- BioticData[[file]]$fishstation$stationstartdate
+      if (!OverWrite){
+        dates[is.na(dates)] <- BioticData[[file]]$fishstation$stationstopdate[is.na(dates)]
+        BioticData[[file]]$fishstation$stationstartdate <- dates
+      }
+      else{
+        BioticData[[file]]$fishstation$stationstartdate <- BioticData[[file]]$fishstation$stationstopdate
+      }
+    }
+  }
+  return(BioticData) 
+}
 
 #' Define Temporal Categories
 #' @description

@@ -9,20 +9,22 @@ SetTimeBiotic(BioticData, Time = character(), OverWrite = F)
 \arguments{
 \item{BioticData}{\code{\link[RstoxData]{BioticData}} data for which time should be set}
 
-\item{Time}{character encoding time: format as \code{\link[base]{strptime}}-string: \%H:\%M:\%S, e.g. 12:00:00}
+\item{Time}{character encoding time. Defaults to 12:00:00Z if not given, otherwise provide 
+UTC-time formatted as \code{\link[base]{strptime}}-string: \%H:\%M:\%SZ, e.g. 12:00:00Z}
 
 \item{Overwrite}{if True any existing values in stationstarttime will be overwritten.}
 }
 \value{
-BioticData \code{\link[RstoxData]{BioticData}}
+\code{\link[RstoxData]{BioticData}}
 }
 \description{
-Set the column 'stationstarttime' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to a fixed time
+Set start time to a fixed time for all stations.
 }
 \details{
-'stationstarttime' is on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
+Set the column 'stationstarttime' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to a fixed time
+ 'stationstarttime' is on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
  For bioticdata that does not conform to this, no modifications are done.
- Detting a fixed time to stationstarttime facilitates conversion to \code{\link[RstoxData]{StoxBioticData}} 
+ Setting a fixed time to stationstarttime facilitates conversion to \code{\link[RstoxData]{StoxBioticData}} 
  using \code{\link[RstoxData]{StoxBiotic}}, and is applicable if hourly resolution of date and time is not necessary
  for subsequent analysis.
 }

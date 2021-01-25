@@ -13,13 +13,29 @@ BioticDataPost <- SetTimeBiotic(BioticData, Time="21:00:01Z")
 StoxBioticPost <- RstoxData::StoxBiotic(BioticDataPost)
 expect_true(all(grepl("21:00:01", as.character(StoxBioticPost$Station$DateTime))))
 
+#test missing Z
+expect_error(SetTimeBiotic(BioticData, Time="21:00:01"), "Invalid time specification: 21:00:01. Provide as %H:%M:%SZ, e.g: 12:00:00Z")
+
 #test wrong time format
-expect_error(SetTimeBiotic(BioticData, Time="32:00:01Z"), "Invalid time specification: 32:00:01Z. Provide as %H:%M:%S, e.g: 12:00:00")
+expect_error(SetTimeBiotic(BioticData, Time="32:00:01Z"), "Invalid time specification: 32:00:01Z. Provide as %H:%M:%SZ, e.g: 12:00:00Z")
 BioticData$biotic_v3_example.xml$fishstation$stationstarttime[1] <- "21:00:02"
 
 #test overwrite
 expect_equal(SetTimeBiotic(BioticData, Time="21:00:01Z")$biotic_v3_example.xml$fishstation$stationstarttime[1], "21:00:02")
 expect_equal(SetTimeBiotic(BioticData, Time="21:00:01Z", OverWrite = T)$biotic_v3_example.xml$fishstation$stationstarttime[1], "21:00:01Z")
+
+context("test-StoxBaselineFunctions: SetStartDateBiotic")
+bioticfiles <- system.file("testresources","biotic_v3_example.xml", package="RstoxFDA")
+BioticData <- RstoxData::ReadBiotic(bioticfiles)
+StoxBioticPre <- RstoxData::StoxBiotic(BioticData)
+BioticDataPost <- SetStartDateBiotic(BioticData)
+expect_true(all(!is.na(BioticDataPost$biotic_v3_example.xml$fishstation$stationstartdate)))
+expect_lt(sum(is.na(StoxBioticPost$Station$DateTime)), sum(is.na(StoxBioticPre$Station$DateTime)))
+
+#test overwrite
+BioticData$biotic_v3_example.xml$fishstation$stationstartdate <- "1982-09-15Z"
+expect_equal(SetStartDateBiotic(BioticData)$biotic_v3_example.xml$fishstation$stationstartdate[1], "1982-09-15Z")
+expect_equal(SetStartDateBiotic(BioticData, OverWrite = T)$biotic_v3_example.xml$fishstation$stationstartdate[1], "2018-04-04Z")
 
 context("test-StoxBaselineFunctions: AddGearGroupStoxLanding")
 gearDef <- RstoxData::DefineTranslation(NULL, F, "ResourceFile", NULL, system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))
