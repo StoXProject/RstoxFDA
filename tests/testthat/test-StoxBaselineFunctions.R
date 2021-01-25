@@ -1,5 +1,27 @@
+context("test-StoxBaselineFunctions: SetTimeBiotic")
+bioticfiles <- c(f1=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"), f2=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"))
+BioticData <- RstoxData::ReadBiotic(bioticfiles)
+BioticData$biotic_v3_example.xml$fishstation$stationstartdate <- BioticData$biotic_v3_example.xml$fishstation$stationstopdate
+StoxBioticPre <- RstoxData::StoxBiotic(BioticData)
+BioticDataPost <- SetTimeBiotic(BioticData)
+expect_true(all(!is.na(BioticDataPost$biotic_v3_example.xml$fishstation$stationstarttime)))
+StoxBioticPost <- RstoxData::StoxBiotic(BioticDataPost)
+expect_lt(sum(is.na(StoxBioticPost$Station$DateTime)), sum(is.na(StoxBioticPre$Station$DateTime)))
 
-context("teadt-StoxBaselineFunctions: AddGearGroupStoxLanding")
+#test other time format
+BioticDataPost <- SetTimeBiotic(BioticData, Time="21:00:01Z")
+StoxBioticPost <- RstoxData::StoxBiotic(BioticDataPost)
+expect_true(all(grepl("21:00:01", as.character(StoxBioticPost$Station$DateTime))))
+
+#test wrong time format
+expect_error(SetTimeBiotic(BioticData, Time="32:00:01Z"), "Invalid time specification: 32:00:01Z. Provide as %H:%M:%S, e.g: 12:00:00")
+BioticData$biotic_v3_example.xml$fishstation$stationstarttime[1] <- "21:00:02"
+
+#test overwrite
+expect_equal(SetTimeBiotic(BioticData, Time="21:00:01Z")$biotic_v3_example.xml$fishstation$stationstarttime[1], "21:00:02")
+expect_equal(SetTimeBiotic(BioticData, Time="21:00:01Z", OverWrite = T)$biotic_v3_example.xml$fishstation$stationstarttime[1], "21:00:01Z")
+
+context("test-StoxBaselineFunctions: AddGearGroupStoxLanding")
 gearDef <- RstoxData::DefineTranslation(NULL, F, "ResourceFile", NULL, system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))
 landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
 stoxLandingPre <- RstoxData:::StoxLanding(landingH)
