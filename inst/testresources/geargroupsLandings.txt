@@ -1,0 +1,7 @@
+NS9400	GearGroup
+11	Seine
+12	Seine
+14	Seine
+10	Seine
+15	Seine
+53	PelTrawl

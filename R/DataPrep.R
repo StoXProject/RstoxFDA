@@ -124,7 +124,7 @@ convertCodes <- function(code, conversionTable){
   }
 
   if (!all(code %in% names(conversionTable))){
-    missing <- code[!(code %in% names(conversionTable))]
+    missing <- unique(code[!(code %in% names(conversionTable))])
     stop(paste("Conversion not defined for all codes. Missing for:", paste(missing, collapse=", ")))
   }
 

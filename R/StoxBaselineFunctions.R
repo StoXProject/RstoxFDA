@@ -274,10 +274,11 @@ appendGear <- function(table, gearcolumn, gearDefinition, colName){
   if (colName %in% names(table)){
     stop(paste("Column with name '", colName, "' already exists.", sep=""))
   }
-
-  conversionTable <- makeUnifiedDefinitionLookupList(gearDefinition)[[1]]
-  table[,colName] <- convertCodes(unlist(table[,gearcolumn,with=F]), conversionTable)
-
+  conversionTable <- as.list(gearDefinition[[2]])
+  names(conversionTable) <- gearDefinition[[1]]
+  
+  table[[colName]] <- convertCodes(unlist(table[,gearcolumn,with=F]), conversionTable)
+  
   return(table)
 }
 
@@ -285,38 +286,31 @@ appendGear <- function(table, gearcolumn, gearDefinition, colName){
 # Functions for appending columns to data
 #
 
-#' Append Gear to StoxBioticData
+#' Add Gear group to StoxLandingData
 #' @description
-#'  StoX function
-#'  Appends a column to StoxBioticData with a unified gear definition
-#'  that are also defined for for other formats, such as StoxLandingData.
-#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated.
-#' @param UnifiedVariableDefinition \code{\link[RstoxFDA]{UnifiedVariableDefinition}} unified gear definition.
-#' @param columnName character(), defaults to 'UnifiedGear', name of the appended column.
-#' @return StoxBioticData with column appended. See \code{\link[RstoxData]{StoxBioticData}}.
+#'  Adds a column to StoxLandingData with gear groups
+#' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated.
+#' @param Translation Translation table (\code{\link[RstoxData]{Translation}}) that maps the column 'Gear' in 'StoxLandingData' to a gear group.
+#' @return StoxLandingData with column 'GearGroup' appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @export
-AppendGearStoxBiotic <- function(StoxBioticData, UnifiedVariableDefinition, columnName="UnifiedGear"){
-  stopifnot(is.UnifiedVariableDefinition(UnifiedVariableDefinition))
-  geardef <- UnifiedVariableDefinition[UnifiedVariableDefinition$Source == "StoxBioticData",]
-  return(appendGear(StoxBioticData, "gear", geardef, columnName))
+AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
+  stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
+  geardef <- Translation
+  StoxLandingData$landings<-appendGear(StoxLandingData$landings, "Gear", geardef, "GearGroup")
+  return(StoxLandingData)
 }
 
-#' Append Gear to StoxLandingData
+#' Add Gear group to StoxBioticData
 #' @description
-#'  StoX function
-#'  Appends a column to StoxLandingData with a unified gear definition
-#'  that are also defined for for other formats, such as StoxBioticData.
-#' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated.
-#' @param UnifiedVariableDefinition \code{\link[RstoxFDA]{UnifiedVariableDefinition}} unified gear definition.
-#' @param columnName character(), defaults to 'UnifiedGear', name of the appended column.
-#' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
+#'  Adds a column to StoxBioticData with gear groups
+#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated.
+#' @param Translation Translation table (\code{\link[RstoxData]{Translation}}) that maps the column 'Gear' in 'StoxLandingData' to a gear group.
+#' @return StoxBioticData with column 'GearGroup' appended. See \code{\link[RstoxData]{StoxBioticData}}.
 #' @export
-AppendGearStoxLanding <- function(StoxLandingData, UnifiedVariableDefinition, columnName="UnifiedGear"){
-  stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
-  stopifnot(is.UnifiedVariableDefinition(UnifiedVariableDefinition))
-  geardef <- UnifiedVariableDefinition[UnifiedVariableDefinition$Source == "StoxLandingData",]
-  StoxLandingData$landings<-appendGear(StoxLandingData$landings, "Gear", geardef, columnName)
-  return(StoxLandingData)
+AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
+  geardef <- Translation
+  StoxBioticData$Haul<-appendGear(StoxBioticData$Haul, "Gear", geardef, "GearGroup")
+  return(StoxBioticData)
 }
 
 ###

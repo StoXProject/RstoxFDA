@@ -1,5 +1,18 @@
 
+context("teadt-StoxBaselineFunctions: AddGearGroupStoxLanding")
+gearDef <- RstoxData::DefineTranslation(NULL, F, "ResourceFile", NULL, system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))
+landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
+stoxLandingPre <- RstoxData:::StoxLanding(landingH)
+stoxLandingPost <- AddGearGroupStoxLanding(stoxLandingPre, gearDef)
+expect_true("GearGroup" %in% names(stoxLandingPost$landings))
+expect_true(all(!is.na(stoxLandingPost$landings$GearGroup)))
 
+context("teadt-StoxBaselineFunctions: AddGearGroupStoxBiotic")
+gearDef <- RstoxData::DefineTranslation(NULL, F, "ResourceFile", NULL, system.file("testresources","geargroupsBiotic.txt", package="RstoxFDA"))
+stoxbiotic <- readRDS(system.file("testresources","StoxBioticData.rds", package="RstoxFDA"))
+stoxbioticPost <- AddGearGroupStoxBiotic(stoxbiotic, gearDef)
+expect_true("GearGroup" %in% names(stoxbioticPost$Haul))
+expect_equal(sum(!is.na(stoxbioticPost$Haul$GearGroup)), sum(!is.na(stoxbiotic$Haul$Gear)))
 
 context("test-StoxBaselineFunctions: DefineTemporalCategories")
 temp <- DefineTemporalCategories(NULL)

@@ -653,6 +653,18 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "StoxLandingData"
   ),
   
+  AddGearGroupStoxLanding = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxLandingData"
+  ),
+  
+  AddGearGroupStoxBiotic = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxBioticData"
+  ),
+  
   AddStratumStoxLanding = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
