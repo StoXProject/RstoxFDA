@@ -400,7 +400,7 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
     RecaParameterData$Landings <- landings
     results <- Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters)
     results <- ecaResult2Stox(results)
-    results$AggregationVariables <- AggregationVariables
+    results$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
     return(results)
     
   }
@@ -439,7 +439,7 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
         result$MeanWeight <- rbind(result$MeanWeight, partitionresults$MeanWeight)
       }
     }
-    result$AggregationVariables <- AggregationVariables
+    result$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
     return(result)
   }
   

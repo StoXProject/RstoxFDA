@@ -12,7 +12,7 @@ a list of data tables:
  \item{CatchAtAge}{\code{\link[data.table]{data.table}} tabulating the estimated catch-at-age by length group for each Reca iteration (MCMC sample)}
  \item{MeanLength}{\code{\link[data.table]{data.table}} tabulating the mean length in cm by age for each Reca iteration (MCMC sample)}
  \item{MeanWeight}{\code{\link[data.table]{data.table}} tabulating the mean weight in g by age for each Reca iteration (MCMC sample)}
- \item{AggregationVariables}{character vector identifying any variables that catch-at-age estimates are partitioned on.}
+ \item{AggregationVariables}{\code{\link[data.table]{data.table}} with any variables that catch-at-age estimates are partitioned on in the column 'AggregationVariables'.}
 }
 In addition to columns for the variables in 'AggregationVariables', column names in the data tables should be interpreted as:
 \describe{

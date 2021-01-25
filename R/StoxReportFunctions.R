@@ -70,7 +70,7 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, AggregationVariab
   
   output <- list()
   output$FisheriesSampling <- tab
-  output$AggregationVariables <- AggregationVariables
+  output$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
   
   return(output)
 }
