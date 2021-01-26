@@ -162,10 +162,10 @@ is.RecaData <- function(RecaData){
 #'  \item{LevelIndex}{Level identifier used internally in Reca}
 #'  \item{Slope}{The value of the regression slope}
 #'  \item{tau_Slope}{The value of tau parameter for the regression slope}
-#'  \item{car_Slope}{The value of regression slope of a the autoregressive coefficient associated with the effect}
+#'  \item{ar_Slope}{The value of regression slope of a the autoregressive coefficient associated with the effect}
 #'  \item{Intercept}{The value of the regression intercept}
 #'  \item{tau_Intercept}{The value of tau parameter for the regression intercept}
-#'  \item{car_Intercept}{The value of the regression intercept of a autoregressive coefficient associated with the effect}
+#'  \item{ar_Intercept}{The value of the regression intercept of a autoregressive coefficient associated with the effect}
 #'  }
 #'  Consult Hirst et.al. 2005 for description of the parameters
 #'  

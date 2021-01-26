@@ -391,7 +391,7 @@ getNeighbours <- function(neighbours, covariateMap){
   if (is.null(neighbours)){
     return(NULL)
   }
-
+  
   if (length(neighbours) != length(covariateMap)){
     stop("length of neighbours does not match length of covariateMap")
   }
@@ -622,6 +622,10 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
     stop(paste("The effects specified in 'interaction' must be provided as either fixedEffects, randomEffects, or carEffect. Missing:", paste(missing, collapse=",")))
   }
   
+  if (!is.null(neighbours) & !is.list(neighbours)){
+    stop("Wrong CAR-format")
+  }
+  
   
   # check mandatory columns
   if (!(all(c("LiveWeightKG") %in% names(landings)))){
@@ -685,7 +689,6 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
     if (is.null(neighbours)){
       stop("CAR effect specified, but no neighbours provided.")
     }
-
     for (l in names(neighbours)){
       for (n in neighbours[[l]]){
         if (!(n %in% names(neighbours) | l %in% c(neighbours[[n]])))
@@ -737,6 +740,9 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   covariateMaps$inLandings <- list()
   for (f in c(fixedEffects, randomEffects, carEffect)[c(fixedEffects, randomEffects, carEffect) %in% names(landings)]){
     covariateMaps$inLandings[[f]] <- getCovariateMap(f, samples, landings)
+  }
+  if (!is.null(carEffect)){
+    covariateMaps$carEffect <- carEffect
   }
 
   #covariateMaps specific to each model (random effects not in landings)

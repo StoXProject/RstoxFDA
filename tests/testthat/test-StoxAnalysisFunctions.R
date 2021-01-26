@@ -19,6 +19,19 @@ expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects =
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area"), CarEffect = "Area"), "UseCarEffect is False, while the parameter 'CarEffect' is given")
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area"), CarEffect = "Area", UseCarEffect = T, CarNeighbours = list()), "The CAR effect Area is also specified as fixed effect or random effect")
 
+#check CAR value cehcks
+carfile <- system.file("testresources","mainarea_neighbour_correct_codes.txt", package="RstoxFDA")
+car <- DefineCarNeighbours(NULL, FileName = carfile)
+car$Neighbours[9] <- paste(car$Neighbours[9], "30", sep=",")
+car$Neighbours[29] <- paste(car$Neighbours[29], "08", sep=",")
+prepCar <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), CarEffect = "Area", UseCarEffect = T, CarNeighbours = car)
+
+context("PrepareRecaEstimate: test run with car")
+fpath <- makeTempDirReca()
+paramOut <- ParameterizeRecaModels(prepCar, 10, 50, 1, fpath)
+results <- RunRecaModels(paramOut, StoxLandingData)
+removeTempDirReca(fpath)
+expect_true(all(!is.na(paramOut$FitLengthGivenAge$Area$car_Intercept)))
 
 context("ParameterizeRecaModels: simple case")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")

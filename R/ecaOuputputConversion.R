@@ -3,7 +3,7 @@ convertModelFit2Stox <- function(paramfit, paramtype, covariate, covariateMaps){
   
   paramfit$cov[[covariate]]
   paramtauname <- paste("tau", paramtype, sep="_")
-  paramcarname <- paste("car", paramtype, sep="_")
+  paramcarname <- paste("ar", paramtype, sep="_")
   
   fits <- data.table::as.data.table(paramfit$cov[[covariate]])
   names(fits) <- c("AgeIndex", "LevelIndex", "Iteration", paramtype)
@@ -15,8 +15,10 @@ convertModelFit2Stox <- function(paramfit, paramtype, covariate, covariateMaps){
     fits[[paramtauname]] <- c(NA)[fits$Iteration]
   }
   
-  if (!is.null(paramfit$CAR[[covariate]])){
-    fits[[paramcarname]] <- paramfit$CAR[fits$Iteration]
+  if (!is.null(covariateMaps$carEffect)){
+    if (covariateMaps$carEffect==covariate){
+      fits[[paramcarname]] <- paramfit$CAR$spatial[fits$Iteration]  
+    }
   }
   else{
     fits[[paramcarname]] <- c(NA)[fits$Iteration]
@@ -32,7 +34,6 @@ convertModelFit <- function(modelfit, covariateMaps, model){
   output$LogLikelihood <- as.data.table(modelfit$LogLikelihood)
   names(output$LogLikelihood) <- "LogLikelihood"
   output$LogLikelihood$Iteration <- 1:nrow(output$LogLikelihood)
-  
   covariates <- names(modelfit$Intercept$cov)
   for (co in covariates){
     fit <- convertModelFit2Stox(modelfit$Intercept, "Intercept", co, covariateMaps)
@@ -121,11 +122,11 @@ convertModelFit2eca <- function(stoxfit, propatage=F){
       }
       
       # add car slope
-      if (any(!is.na(stoxfit[[cov]]$car_Slope))){
-        car_int <- stoxfit[[cov]][,c("Iteration", "car_Slope")]
+      if (any(!is.na(stoxfit[[cov]]$ar_Slope))){
+        car_int <- stoxfit[[cov]][,c("Iteration", "ar_Slope")]
         car_int <- car_int[!duplicated(car_int$Iteration)]
         car_int <- car_int[order(car_int$Iteration),]
-        car_slopes[[cov]] <- car_int$car_Slope
+        car_slopes[[cov]] <- car_int$ar_Slope
       }
     }
     
@@ -138,11 +139,11 @@ convertModelFit2eca <- function(stoxfit, propatage=F){
     }
     
     # add car intercept
-    if (any(!is.na(stoxfit[[cov]]$car_Intercept))){
-      car_int <- stoxfit[[cov]][,c("Iteration", "car_Intercept")]
+    if (any(!is.na(stoxfit[[cov]]$ar_Intercept))){
+      car_int <- stoxfit[[cov]][,c("Iteration", "ar_Intercept")]
       car_int <- car_int[!duplicated(car_int$Iteration)]
       car_int <- car_int[order(car_int$Iteration),]
-      car_intercepts[[cov]] <- car_int$car_Intercept
+      car_intercepts[[cov]] <- car_int$ar_Intercept
     }
     
   }
@@ -254,11 +255,35 @@ ecaResult2Stox <- function(ecaPrediction){
   return(out)
 }
 
+#' reformats CarNeigbours, must handle covariate names
+#' @noRd
+convertCarNeighbours2stox <- function(ecaCar, covariateMaps){
+  if (is.null(ecaCar)){
+    return(NULL)
+  }
+  browser()
+}
 
-#' reformats data.frames
+#' reformats CarNeigbours to format accepted by wrapReca
+#' @noRd
+convertCarNeighbours2reca <- function(stoxCar, carLandingsValues){
+  if (is.null(stoxCar)){
+    return(NULL)
+  }
+  
+  stoxCar <- stoxCar[stoxCar$CarValue %in% carLandingsValues,]
+  neighbourList <- lapply(stoxCar$Neighbours, FUN=function(x){
+                                    nb <-strsplit(x, ",")[[1]];
+                                    return(nb[nb %in% carLandingsValues]);})
+  names(neighbourList) <- stoxCar$CarValue
+  
+  return(neighbourList)
+}
+
+
+#' reformats CarNeigbours, does not translate covariate names
 #' @noRd
 convertPrepReca2stox <- function(prepRecaOutput){
-  
   prepRecaOutput$AgeLength$DataMatrix <- data.table::as.data.table(prepRecaOutput$AgeLength$DataMatrix)
   prepRecaOutput$AgeLength$CovariateMatrix <- data.table::as.data.table(prepRecaOutput$AgeLength$CovariateMatrix)
   
@@ -275,6 +300,8 @@ convertPrepReca2stox <- function(prepRecaOutput){
   prepRecaOutput$Landings$WeightLengthCov <- data.table::as.data.table(prepRecaOutput$Landings$WeightLengthCov)
   
   prepRecaOutput$Landings$LiveWeightKG <- data.table::data.table(LiveWeightKG=prepRecaOutput$Landings$LiveWeightKG)
+  
+  prepRecaOutput$CARNeighbours <- convertCarNeighbours2stox(prepRecaOutput$CARNeighbours, prepRecaOutput$CovariateMaps)
   
   GlobalParameters <- data.table::data.table(lengthresCM=prepRecaOutput$GlobalParameters$lengthresCM,
                                                             maxlength=prepRecaOutput$GlobalParameters$maxlength,
@@ -303,7 +330,6 @@ convertPrepReca2stox <- function(prepRecaOutput){
 #' reformats data.tables
 #' @noRd
 convertStox2PrepReca <- function(stoxPrep){
-  
   stoxPrep$AgeLength$DataMatrix <- as.data.frame(stoxPrep$AgeLength$DataMatrix)
   stoxPrep$AgeLength$CovariateMatrix <- as.data.frame(stoxPrep$AgeLength$CovariateMatrix)
   
@@ -322,6 +348,8 @@ convertStox2PrepReca <- function(stoxPrep){
   stoxPrep$Landings$WeightLengthCov <- as.data.frame(stoxPrep$Landings$WeightLengthCov)
   
   stoxPrep$Landings$LiveWeightKG <- stoxPrep$Landings$LiveWeightKG$LiveWeightKG
+  
+  #stoxPrep$CARNeighbours <- convertCarNeighbours2reca(stoxPrep$CARNeighbours)
   
   gb <- stoxPrep$GlobalParameters
   GlobalParameters <- list()

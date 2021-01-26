@@ -110,8 +110,17 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects, R
   if (!isGiven(HatchDay)){
     HatchDay <- 1
   }
+  
   if (!isGiven(CarEffect)){
     CarEffect <- c()
+    convertedNeighbours <- NULL
+    
+  }
+  else{
+    if (!(CarEffect %in% names(StoxLandingData$landings))){
+      stop(paste("CarEffect", CarEffect, "must be found in 'StoxLandings'"))
+    }
+    convertedNeighbours <- convertCarNeighbours2reca(CarNeighbours, unique(StoxLandingData$landings[[CarEffect]]))
   }
   if (!isGiven(MinAge)){
     MinAge <- NULL
@@ -178,7 +187,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects, R
                          FixedEffects, 
                          RandomEffects, 
                          CarEffect, 
-                         neighbours=CarNeighbours, 
+                         neighbours=convertedNeighbours, 
                          nFish=nFish, 
                          ageError=AgeErrorMatrix, 
                          minAge=MinAge, 
