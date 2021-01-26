@@ -281,7 +281,6 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=character(), Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric()){
   
   RecaData <- convertStox2PrepReca(RecaData)
-  
   Lgamodel <- match.arg(Lgamodel, Lgamodel)
   if (!isGiven(Lgamodel)){
     stop("Parameter 'Lgamodel' must be provided.")
@@ -399,6 +398,13 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #' @return \code{\link[RstoxFDA]{RecaCatchAtAge}}
 #' @export
 RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric()){
+  
+  #discard fit info and convert
+  RecaParameterData$FitProportionAtAge <- NULL
+  RecaParameterData$FitLengthGivenAge <- NULL
+  RecaParameterData$FitWeightGivenLength <- NULL
+  RecaParameterData <- convertStox2PrepReca(RecaParameterData)
+  
   TemporalResolution <- match.arg(TemporalResolution, TemporalResolution)
   if (!isGiven(TemporalResolution)){
     stop("The parameter 'TemporalResolution' must be provided.")

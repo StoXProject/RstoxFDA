@@ -273,6 +273,30 @@ convertPrepReca2stox <- function(prepRecaOutput){
   
   prepRecaOutput$Landings$AgeLengthCov <- data.table::as.data.table(prepRecaOutput$Landings$AgeLengthCov)
   prepRecaOutput$Landings$WeightLengthCov <- data.table::as.data.table(prepRecaOutput$Landings$WeightLengthCov)
+  
+  prepRecaOutput$Landings$LiveWeightKG <- data.table::data.table(LiveWeightKG=prepRecaOutput$Landings$LiveWeightKG)
+  
+  GlobalParameters <- data.table::data.table(lengthresCM=prepRecaOutput$GlobalParameters$lengthresCM,
+                                                            maxlength=prepRecaOutput$GlobalParameters$maxlength,
+                                                            minage=prepRecaOutput$GlobalParameters$minage,
+                                                            maxage=prepRecaOutput$GlobalParameters$maxage,
+                                                            age.error=prepRecaOutput$GlobalParameters$age.error,
+                                                            CC=prepRecaOutput$GlobalParameters$CC,
+                                                            CCerror=prepRecaOutput$GlobalParameters$CCerror,
+                                             
+                                                            nSamples=prepRecaOutput$GlobalParameters$nSamples,
+                                                            burnin=prepRecaOutput$GlobalParameters$burnin,
+                                                            lgamodel=prepRecaOutput$GlobalParameters$lgamodel,
+                                                            resultdir=prepRecaOutput$GlobalParameters$resultdir,
+                                                            fitfile=prepRecaOutput$GlobalParameters$fitfile,
+                                                            predictfile=prepRecaOutput$GlobalParameters$predictfile,
+                                                            thin=prepRecaOutput$GlobalParameters$thin,
+                                                            delta.age=prepRecaOutput$GlobalParameters$delta.age,
+                                                            seed=prepRecaOutput$GlobalParameters$seed
+                                                            )
+  prepRecaOutput$GlobalParameters <- list()
+  prepRecaOutput$GlobalParameters$GlobalParameters <-  GlobalParameters
+  
   return(prepRecaOutput)
 }
 
@@ -296,5 +320,30 @@ convertStox2PrepReca <- function(stoxPrep){
   
   stoxPrep$Landings$AgeLengthCov <- as.data.frame(stoxPrep$Landings$AgeLengthCov)
   stoxPrep$Landings$WeightLengthCov <- as.data.frame(stoxPrep$Landings$WeightLengthCov)
+  
+  stoxPrep$Landings$LiveWeightKG <- stoxPrep$Landings$LiveWeightKG$LiveWeightKG
+  
+  gb <- stoxPrep$GlobalParameters
+  GlobalParameters <- list()
+  GlobalParameters$lengthresCM <- gb$GlobalParameters$lengthresCM
+  GlobalParameters$maxlength <- gb$GlobalParameters$maxlength
+  GlobalParameters$minage <- gb$GlobalParameters$minage
+  GlobalParameters$maxage <- gb$GlobalParameters$maxage
+  GlobalParameters$age.error <- gb$GlobalParameters$age.error
+  GlobalParameters$CC <- gb$GlobalParameters$CC
+  GlobalParameters$CCerror <- gb$GlobalParameters$CCerror
+  
+  GlobalParameters$nSamples <- gb$GlobalParameters$nSamples
+  GlobalParameters$burnin < gb$GlobalParameters$burnin
+  GlobalParameters$lgamodel <- gb$GlobalParameters$lgamodel
+  GlobalParameters$resultdir <- gb$GlobalParameters$resultdir
+  GlobalParameters$fitfile <- gb$GlobalParameters$fitfile
+  GlobalParameters$predictfile <- gb$GlobalParameters$predictfile
+  GlobalParameters$thin <- gb$GlobalParameters$thin
+  GlobalParameters$delta.age <- gb$GlobalParameters$delta.age
+  GlobalParameters$seed <- gb$GlobalParameters$seed
+
+  stoxPrep$GlobalParameters <- GlobalParameters
+  
   return(stoxPrep)
 }
