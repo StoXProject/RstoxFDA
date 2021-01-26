@@ -70,6 +70,9 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NU
   }
   if (!UseCarEffect){
     CarNeighbours = NULL
+    if (isGiven(CarEffect)){
+      stop("UseCarEffect is False, while the parameter 'CarEffect' is given")
+    }
     CarEffect = c()
   }
   if (UseCarEffect){
@@ -87,6 +90,16 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NU
   }
   if (is.null(RandomEffects)){
     RandomEffects <- c()
+  }
+  
+  if (isGiven(CarEffect)){
+    if (CarEffect %in% c(FixedEffects, RandomEffects)){
+      stop(paste("The CAR effect", CarEffect, "is also specified as fixed effect or random effect"))
+    }
+  }
+  if (isGiven(RandomEffects) & any(RandomEffects %in% FixedEffects)){
+    dup <- RandomEffects[RandomEffects %in% FixedEffects]
+    stop(paste("Some random effects are also specified as fixed effects:", paste(dup, collapse=",")))
   }
   
   interaction <- c()

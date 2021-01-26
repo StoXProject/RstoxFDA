@@ -1,5 +1,25 @@
 
 library(RstoxData)
+context("PrepareRecaEstimate: configuration tests")
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+
+
+StoxLandingData$landings$NewConst <- 1
+StoxBioticData$Station$NewConst <- 1
+
+expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("NewConst"), RandomEffects = c()), "Only one level for categorical covariate NewConst")
+expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("NewConst")), "Only one level for categorical covariate NewConst")
+
+StoxBioticData$Station$Area <- StoxLandingData$landings$Area[sample(20,45,T)]
+expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("Area"), RandomEffects = c("Area")), "Some random effects are also specified as fixed effects: Area")
+expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area"), CarEffect = "Area"), "UseCarEffect is False, while the parameter 'CarEffect' is given")
+expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area"), CarEffect = "Area", UseCarEffect = T, CarNeighbours = list()), "The CAR effect Area is also specified as fixed effect or random effect")
+
+
 context("ParameterizeRecaModels: simple case")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
@@ -90,7 +110,7 @@ StoxBioticDataDelp$Sample$CatchFractionCount[2] <- 3000
 prep <- PrepareRecaEstimate(StoxBioticDataDelp, StoxLandingData, FixedEffects = c(), RandomEffects = c())
 
 context("test-StoxAnalysisFunctions: RunRecaEstimate, stratified samples (nFish)")
-est <- RunRecaEstimate(prep, 10, 50, 0)
+est <- RunRecaEstimate(prep, 10, 100, 0)
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate with  with random effect Area")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")

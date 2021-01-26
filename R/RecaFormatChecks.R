@@ -1,3 +1,4 @@
+
 #' checks that column names are present on datamatrix
 #' @noRd
 check_columns_present <- function(datamatrix, columns){
@@ -39,6 +40,7 @@ check_cov_vs_info <- function(modelobj){
     if (any(is.na(modelobj$CovariateMatrix[,co]))){
       stop(paste("NAs for covariate", co))
     }
+  
     ma <- max(modelobj$CovariateMatrix[,co])
     mi <- min(modelobj$CovariateMatrix[,co])
     num_unique <- length(unique(modelobj$CovariateMatrix[,co]))
@@ -160,6 +162,7 @@ checkAgeLength<-function(agelength, num_tolerance = 1e-10){
       stop("Rows of age error matrix does not sum to 1")
     }
   }
+  
 }
 #' checks that weightlenght is configured correctly
 #' @noRd

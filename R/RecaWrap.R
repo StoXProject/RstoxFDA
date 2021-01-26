@@ -826,6 +826,8 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   ret$GlobalParameters <- GlobalParameters
   ret$CovariateMaps <- covariateMaps
 
+  checkEcaObj(ret)
+  
   return(ret)
 }
 
