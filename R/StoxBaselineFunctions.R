@@ -51,7 +51,7 @@ checkSymmetry <- function(tab){
 #'  When 'LocationCol' is specified as 'Location', 'Area' and 'Location' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 #'  When 'LocationCol' is specified as 'Coastal', 'Area' and 'Costal' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 #' @param StoxLandingData landing data, see \code{\link[RstoxData]{StoxLandingData}}
-#' @param AreaPosition coordinates for Area and SubArea codes, see \code{\link[RstoxFDA]{AreaPosition}}
+#' @param AreaPosition coordinates for Area and Location codes, see \code{\link[RstoxFDA]{AreaPosition}}
 #' @param LocationCol Specify which column in 'StoxLandingsData' should are represented by 'Location' in 'AreaPosition'. See details.
 #' @return \code{\link[RstoxData]{StoxLandingData}} with columns for latitude and longitude appended.
 #' @export
@@ -109,6 +109,112 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationCo
     stop(paste("Parameter", LocationCol, "is not supported for 'LocationCol'."))
   }
 
+}
+
+#' Set position Biotic
+#' @description 
+#'  Sets start position based on area codes.
+#' @details 
+#'  Positions are appended in the columns 'latitudestart' and 'longitudestart' on 'fishstation' 
+#'  whenever the value in the column 'system' on 'fishstation' is equal to the parameter 'System'.
+#'  These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
+#'  For bioticdata that does not conform to this, no modifications are done.
+#'  
+#'  No modifications are done to rows that have missing values for 'system' or 'area' (or 'location', depending on the parameter 'LocationCol').
+#'  Any rows with areas coded in another system than specified by the parameter 'System' will not be changed.
+#'  
+#'  When 'LocationCol' is specified as 'None' area is looked up from 'AreaPosition', using the row where 'Location' is missing.
+#'  When 'LocationCol' is specified as 'location', 'area' and 'location' in 'BioticData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
+#'  
+#' @param BioticData \code{\link[RstoxData]{BioticData}} data for which positions should be set
+#' @param AreaPosition coordinates for Area and Location codes, see \code{\link[RstoxFDA]{AreaPosition}}
+#' @param LocationCol Specify which column in 'BioticData' should are represented by 'Location' in 'AreaPosition'. See details.
+#' @param System identifies the area coding system used. Corresonds to the column 'system' on 'fishstation' in 'BioticData'.
+#' @param Overwrite if True any existing values in 'latitudestart' and 'longitudestart' will be overwritten. If False postions with both latitude and longitude will be kept as they were.
+#' @return \code{\link[RstoxData]{BioticData}}
+#' @export
+SetAreaPositionsBiotic <- function(BioticData, AreaPosition, LocationCol = c("None", "location"), System=character(), Overwrite=F){
+  
+  if (!isGiven(System)){
+    stop("Parameter 'System' must be provided.")
+  }
+  if (!isGiven(LocationCol)){
+    stop("Parameter 'LocationCol' must be provided.")
+  }
+  
+  LocationCol <- match.arg(LocationCol, LocationCol)
+  if (LocationCol == "None"){
+    AreaPosition <- AreaPosition[is.na(AreaPosition$Location)]
+  }
+  else if (LocationCol == "location"){
+    AreaPosition <- AreaPosition[!is.na(AreaPosition$Location)]
+  }
+  else{
+    stop(paste("'LocationCol", LocationCol, "is not supported."))
+  }
+  
+  for (file in names(BioticData)){
+    #
+    # should extract this to separate function
+    #
+    if ("fishstation" %in% names(BioticData[[file]]) &
+        "system" %in% names(BioticData[[file]]$fishstation) &
+        "area" %in% names(BioticData[[file]]$fishstation) &
+        "location" %in% names(BioticData[[file]]$fishstation) &
+        "latitudestart" %in% names(BioticData[[file]]$fishstation) &
+        "longitudestart" %in% names(BioticData[[file]]$fishstation)){
+      
+      selection <- !is.na(BioticData[[file]]$fishstation$area) &
+        !is.na(BioticData[[file]]$fishstation$system) &
+        BioticData[[file]]$fishstation$system == System
+      
+      if (!Overwrite){
+        selection <- selection &  
+          (is.na(BioticData[[file]]$fishstation$latitudestart) | 
+          is.na(BioticData[[file]]$fishstation$longitudestart))
+      }
+      if (LocationCol == "location"){
+        selection <- selection & 
+          !is.na(BioticData[[file]]$fishstation$location)
+      }
+      
+      #avoid checking if nothing is selected
+      if (any(selection)){
+        latitudes <- BioticData[[file]]$fishstation$latitudestart
+        longitudes <- BioticData[[file]]$fishstation$longitudestart
+        
+        selectedAreas <- BioticData[[file]]$fishstation$area[selection]
+        selectedLocations <- BioticData[[file]]$fishstation$location[selection]
+        
+        if (LocationCol == "location"){
+          combocodeData <- paste(selectedAreas, selectedLocations, sep="-")
+          combocodeReference <- paste(AreaPosition$Area, AreaPosition$Location, sep="-")
+          missing <- unique(combocodeData[!(combocodeData %in% combocodeReference)])
+          if (length(missing)>0){
+            stop(paste("Not all areas and locations in 'BioticData' are defined in 'AreaPosition. Missing:", paste(missing, collapse=",")))
+          }
+        }
+        else if (!all(selectedAreas %in% AreaPosition$Area)){
+          missing <- unique(selectedAreas[!(selectedAreas %in% AreaPosition$Area)])
+          stop(paste("Not all areas in 'BioticData' are defined without Location in 'AreaPosition'. Missing:", paste(missing, collapse=",")))
+        }
+        
+        if (LocationCol == "None"){
+          latitudes[selection] <- AreaPosition$Latitude[match(selectedAreas, AreaPosition$Area)]
+          longitudes[selection] <- AreaPosition$Longitude[match(selectedAreas, AreaPosition$Area)]
+        }
+        else if (LocationCol == "location"){
+          latitudes[selection] <- AreaPosition$Latitude[match(paste(selectedAreas, selectedLocations), paste(AreaPosition$Area, AreaPosition$Location))]
+          longitudes[selection] <- AreaPosition$Longitude[match(paste(selectedAreas, selectedLocations), paste(AreaPosition$Area, AreaPosition$Location))]
+        }
+        
+        BioticData[[file]]$fishstation$latitudestart <- latitudes
+        BioticData[[file]]$fishstation$longitudestart <- longitudes 
+      }
+    }
+  }
+  
+  return(BioticData)
 }
 
 #'

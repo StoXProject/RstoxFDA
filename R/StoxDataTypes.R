@@ -659,6 +659,12 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "BioticData"
   ),
   
+  SetAreaPositionsBiotic =list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "BioticData"
+  ),
+  
   AddAreaPositionStoxLanding = list(
     functionType = "modelData", 
     functionCategory = "baseline", 

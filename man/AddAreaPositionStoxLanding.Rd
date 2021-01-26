@@ -13,7 +13,7 @@ AddAreaPositionStoxLanding(
 \arguments{
 \item{StoxLandingData}{landing data, see \code{\link[RstoxData]{StoxLandingData}}}
 
-\item{AreaPosition}{coordinates for Area and SubArea codes, see \code{\link[RstoxFDA]{AreaPosition}}}
+\item{AreaPosition}{coordinates for Area and Location codes, see \code{\link[RstoxFDA]{AreaPosition}}}
 
 \item{LocationCol}{Specify which column in 'StoxLandingsData' should are represented by 'Location' in 'AreaPosition'. See details.}
 }
