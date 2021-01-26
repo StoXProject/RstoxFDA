@@ -52,7 +52,6 @@
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @export
 PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=NULL, RandomEffects=NULL, UseCarEffect=F, CarEffect=character(), CarNeighbours=NULL, UseAgingError=F, AgeErrorMatrix=NULL, CellEffect=F, MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
-  
   #expose as parameter when implemented
   ClassificationError=NULL
   StockSplitting=FALSE

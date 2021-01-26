@@ -71,12 +71,10 @@ expect_true("Gear" %in% names(paramOut$Landings$AgeLengthCov))
 expect_true("Age" %in% names(results$CatchAtAge))
 expect_true(is.RecaCatchAtAge(results))
 
+context("test-StoxAnalysisFunctions: PrepareRecaEstimate missing arguments")
+expect_error(ParameterizeRecaModels(prep, 10, 50, 1, fpath, Lgamodel = NULL), "Parameter 'Lgamodel' must be provided.")
 
 removeTempDirReca(fpath)
-
-context("test-StoxAnalysisFunctions: PrepareRecaEstimate missing arguments")
-expect_error(ParameterizeRecaModels(prep, 10, 50, 1, "~/temp/ecatest", Lgamodel = NULL), "Parameter 'Lgamodel' must be provided.")
-
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate simple case")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
@@ -115,22 +113,31 @@ est <- RunRecaEstimate(prep, 10, 100, 0)
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate with  with random effect Area")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
-StoxBioticData <- AddStratumStoxBiotic(StoxBioticData, StratumPolygon = mainareaFdir2018)
 
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
-StoxLandingData$landings$Stratum <- StoxLandingData$landings$Area
 
-prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Stratum"))
-expect_true("Stratum" %in% names(prep$Landings$AgeLengthCov))
+StoxBioticData$Station$Area <- c(rep(StoxLandingData$landings$Area[10], 20), rep(StoxLandingData$landings$Area[20], 25))
+StoxBioticData$Station$GG <- c(rep(StoxLandingData$landings$Gear[10], 20), rep(StoxLandingData$landings$Gear[20], 25))
+StoxLandingData$landings$GG <- StoxLandingData$landings$Gear
+
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area"))
+expect_true("Area" %in% names(prep$Landings$AgeLengthCov))
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate cellEffect")
-prepCell <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Stratum"), CellEffect = T)
-expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covariate=="Stratum"], 1)
+prepCell <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area", "GG"), CellEffect = T)
+expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covariate=="Area"], 1)
+expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covariate=="GG"], 1)
+
+fpath <- makeTempDirReca()
+paramOut <- ParameterizeRecaModels(prepCell, 10, 50, 1, fpath)
+expect("cell" %in% names(paramOut$FitProportionAtAge))
+removeTempDirReca(fpath)
+
 
 context("test-StoxAnalysisFunctions: RunRecaEstimate with random effect Area")
 est <- RunRecaEstimate(prep, 10, 50, 0)
-expect_true("Stratum" %in% names(est$fit$ProportionAtAge$Intercept$cov))
+expect_true("Area" %in% names(est$fit$ProportionAtAge$Intercept$cov))
 
 context("RunRecaEstimate not providing burnin")
 expect_error(RunRecaEstimate(prep, 10))

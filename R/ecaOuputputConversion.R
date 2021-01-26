@@ -35,7 +35,6 @@ convertModelFit <- function(modelfit, covariateMaps, model){
   
   covariates <- names(modelfit$Intercept$cov)
   for (co in covariates){
-    
     fit <- convertModelFit2Stox(modelfit$Intercept, "Intercept", co, covariateMaps)
         
     if (("Slope") %in% names(modelfit)){
