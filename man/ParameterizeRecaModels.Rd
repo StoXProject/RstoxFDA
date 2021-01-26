@@ -9,7 +9,7 @@ ParameterizeRecaModels(
   Nsamples = integer(),
   Burnin = integer(),
   Thin = integer(),
-  ResultDirectory = NULL,
+  ResultDirectory = character(),
   Lgamodel = c("log-linear", "non-linear"),
   Delta.age = numeric(),
   Seed = numeric()

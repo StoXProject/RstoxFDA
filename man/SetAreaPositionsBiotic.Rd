@@ -7,7 +7,7 @@
 SetAreaPositionsBiotic(
   BioticData,
   AreaPosition,
-  LocationCol = c("None", "location"),
+  LocationVariable = c("None", "location"),
   System = character(),
   Overwrite = F
 )
@@ -17,7 +17,7 @@ SetAreaPositionsBiotic(
 
 \item{AreaPosition}{coordinates for Area and Location codes, see \code{\link[RstoxFDA]{AreaPosition}}}
 
-\item{LocationCol}{Specify which column in 'BioticData' should are represented by 'Location' in 'AreaPosition'. See details.}
+\item{LocationVariable}{Specify which column in 'BioticData' should are represented by 'Location' in 'AreaPosition'. See details.}
 
 \item{System}{identifies the area coding system used. Corresonds to the column 'system' on 'fishstation' in 'BioticData'.}
 
@@ -35,9 +35,9 @@ Positions are appended in the columns 'latitudestart' and 'longitudestart' on 'f
  These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
  For bioticdata that does not conform to this, no modifications are done.
  
- No modifications are done to rows that have missing values for 'system' or 'area' (or 'location', depending on the parameter 'LocationCol').
+ No modifications are done to rows that have missing values for 'system' or 'area' (or 'location', depending on the parameter 'LocationVariable').
  Any rows with areas coded in another system than specified by the parameter 'System' will not be changed.
  
- When 'LocationCol' is specified as 'None' area is looked up from 'AreaPosition', using the row where 'Location' is missing.
- When 'LocationCol' is specified as 'location', 'area' and 'location' in 'BioticData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
+ When 'LocationVariable' is specified as 'None' area is looked up from 'AreaPosition', using the row where 'Location' is missing.
+ When 'LocationVariable' is specified as 'location', 'area' and 'location' in 'BioticData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 }

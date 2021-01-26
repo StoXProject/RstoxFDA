@@ -266,7 +266,7 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
 #' @return \code{\link[RstoxFDA]{RecaParameterData}} results from Reca Model Parameterization.
 #' @export
-ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=NULL, Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric()){
+ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=character(), Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric()){
   
   RecaData <- convertStox2PrepReca(RecaData)
   

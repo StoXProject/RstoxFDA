@@ -47,17 +47,17 @@ checkSymmetry <- function(tab){
 #'  Appends a position to landings data, based on Area and Location codes.
 #' @details
 #'  Positions are appended in the new columns 'Latitude' and 'Longitude'
-#'  When 'LocationCol' is specified as 'None' Area is looked up from 'AreaPosition', using the row where 'Location' is missing.
-#'  When 'LocationCol' is specified as 'Location', 'Area' and 'Location' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
-#'  When 'LocationCol' is specified as 'Coastal', 'Area' and 'Costal' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
+#'  When 'LocationVariable' is specified as 'None' Area is looked up from 'AreaPosition', using the row where 'Location' is missing.
+#'  When 'LocationVariable' is specified as 'Location', 'Area' and 'Location' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
+#'  When 'LocationVariable' is specified as 'Coastal', 'Area' and 'Costal' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 #' @param StoxLandingData landing data, see \code{\link[RstoxData]{StoxLandingData}}
 #' @param AreaPosition coordinates for Area and Location codes, see \code{\link[RstoxFDA]{AreaPosition}}
-#' @param LocationCol Specify which column in 'StoxLandingsData' should are represented by 'Location' in 'AreaPosition'. See details.
+#' @param LocationVariable Specify which column in 'StoxLandingsData' should are represented by 'Location' in 'AreaPosition'. See details.
 #' @return \code{\link[RstoxData]{StoxLandingData}} with columns for latitude and longitude appended.
 #' @export
-AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationCol = c("None", "Location", "Coastal")){
+AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVariable = c("None", "Location", "Coastal")){
   
-  LocationCol <- match.arg(LocationCol)
+  LocationVariable <- match.arg(LocationVariable)
   
   latColName="Latitude"    
   lonColName="Longitude"
@@ -76,7 +76,7 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationCo
   AreaPosition[[latColName]] <- AreaPosition$Latitude
   AreaPosition[[lonColName]] <- AreaPosition$Longitude
 
-  if (LocationCol == "None"){
+  if (LocationVariable == "None"){
     
     if (!all(StoxLandingData$landings$Area %in% AreaPosition$Area)){
       missing <- StoxLandingData$landings$Area[!(StoxLandingData$landings$Area %in% AreaPosition$Area)]
@@ -92,9 +92,9 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationCo
     StoxLandingData$landings <- data.table::as.data.table(merge(StoxLandingData$landings, AreaPosition, by.x="Area", by.y="Area", all.x=T))
     return(StoxLandingData)
   }
-  else if (LocationCol %in% c("Location", "Coastal")){
+  else if (LocationVariable %in% c("Location", "Coastal")){
     
-    arealocdata <- paste(StoxLandingData$landings$Area, StoxLandingData$landings[[LocationCol]], sep="-")
+    arealocdata <- paste(StoxLandingData$landings$Area, StoxLandingData$landings[[LocationVariable]], sep="-")
     arealocresource <- paste(AreaPosition$Area, AreaPosition$Location, sep="-")
     if (!all(arealocdata %in% arealocresource)){
       missing <- arealocdata[!(arealocdata %in% arealocresource)]
@@ -102,11 +102,11 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationCo
     }
     AreaPosition <- AreaPosition[,c("Area", "Location", latColName, lonColName), with=F]
     stopifnot(!any(duplicated(paste(AreaPosition$Area, AreaPosition$Location))))
-    StoxLandingData$landings <- data.table::as.data.table(merge(StoxLandingData$landings, AreaPosition, by.x=c("Area", LocationCol), by.y=c("Area", "Location"), all.x=T))
+    StoxLandingData$landings <- data.table::as.data.table(merge(StoxLandingData$landings, AreaPosition, by.x=c("Area", LocationVariable), by.y=c("Area", "Location"), all.x=T))
     return(StoxLandingData)
   }
   else{
-    stop(paste("Parameter", LocationCol, "is not supported for 'LocationCol'."))
+    stop(paste("Parameter", LocationVariable, "is not supported for 'LocationVariable'."))
   }
 
 }
@@ -120,37 +120,37 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationCo
 #'  These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
 #'  For bioticdata that does not conform to this, no modifications are done.
 #'  
-#'  No modifications are done to rows that have missing values for 'system' or 'area' (or 'location', depending on the parameter 'LocationCol').
+#'  No modifications are done to rows that have missing values for 'system' or 'area' (or 'location', depending on the parameter 'LocationVariable').
 #'  Any rows with areas coded in another system than specified by the parameter 'System' will not be changed.
 #'  
-#'  When 'LocationCol' is specified as 'None' area is looked up from 'AreaPosition', using the row where 'Location' is missing.
-#'  When 'LocationCol' is specified as 'location', 'area' and 'location' in 'BioticData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
+#'  When 'LocationVariable' is specified as 'None' area is looked up from 'AreaPosition', using the row where 'Location' is missing.
+#'  When 'LocationVariable' is specified as 'location', 'area' and 'location' in 'BioticData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 #'  
 #' @param BioticData \code{\link[RstoxData]{BioticData}} data for which positions should be set
 #' @param AreaPosition coordinates for Area and Location codes, see \code{\link[RstoxFDA]{AreaPosition}}
-#' @param LocationCol Specify which column in 'BioticData' should are represented by 'Location' in 'AreaPosition'. See details.
+#' @param LocationVariable Specify which column in 'BioticData' should are represented by 'Location' in 'AreaPosition'. See details.
 #' @param System identifies the area coding system used. Corresonds to the column 'system' on 'fishstation' in 'BioticData'.
 #' @param Overwrite if True any existing values in 'latitudestart' and 'longitudestart' will be overwritten. If False postions with both latitude and longitude will be kept as they were.
 #' @return \code{\link[RstoxData]{BioticData}}
 #' @export
-SetAreaPositionsBiotic <- function(BioticData, AreaPosition, LocationCol = c("None", "location"), System=character(), Overwrite=F){
+SetAreaPositionsBiotic <- function(BioticData, AreaPosition, LocationVariable = c("None", "location"), System=character(), Overwrite=F){
   
   if (!isGiven(System)){
     stop("Parameter 'System' must be provided.")
   }
-  if (!isGiven(LocationCol)){
-    stop("Parameter 'LocationCol' must be provided.")
+  if (!isGiven(LocationVariable)){
+    stop("Parameter 'LocationVariable' must be provided.")
   }
   
-  LocationCol <- match.arg(LocationCol, LocationCol)
-  if (LocationCol == "None"){
+  LocationVariable <- match.arg(LocationVariable, LocationVariable)
+  if (LocationVariable == "None"){
     AreaPosition <- AreaPosition[is.na(AreaPosition$Location)]
   }
-  else if (LocationCol == "location"){
+  else if (LocationVariable == "location"){
     AreaPosition <- AreaPosition[!is.na(AreaPosition$Location)]
   }
   else{
-    stop(paste("'LocationCol", LocationCol, "is not supported."))
+    stop(paste("'LocationVariable", LocationVariable, "is not supported."))
   }
   
   for (file in names(BioticData)){
@@ -173,7 +173,7 @@ SetAreaPositionsBiotic <- function(BioticData, AreaPosition, LocationCol = c("No
           (is.na(BioticData[[file]]$fishstation$latitudestart) | 
           is.na(BioticData[[file]]$fishstation$longitudestart))
       }
-      if (LocationCol == "location"){
+      if (LocationVariable == "location"){
         selection <- selection & 
           !is.na(BioticData[[file]]$fishstation$location)
       }
@@ -186,7 +186,7 @@ SetAreaPositionsBiotic <- function(BioticData, AreaPosition, LocationCol = c("No
         selectedAreas <- BioticData[[file]]$fishstation$area[selection]
         selectedLocations <- BioticData[[file]]$fishstation$location[selection]
         
-        if (LocationCol == "location"){
+        if (LocationVariable == "location"){
           combocodeData <- paste(selectedAreas, selectedLocations, sep="-")
           combocodeReference <- paste(AreaPosition$Area, AreaPosition$Location, sep="-")
           missing <- unique(combocodeData[!(combocodeData %in% combocodeReference)])
@@ -199,11 +199,11 @@ SetAreaPositionsBiotic <- function(BioticData, AreaPosition, LocationCol = c("No
           stop(paste("Not all areas in 'BioticData' are defined without Location in 'AreaPosition'. Missing:", paste(missing, collapse=",")))
         }
         
-        if (LocationCol == "None"){
+        if (LocationVariable == "None"){
           latitudes[selection] <- AreaPosition$Latitude[match(selectedAreas, AreaPosition$Area)]
           longitudes[selection] <- AreaPosition$Longitude[match(selectedAreas, AreaPosition$Area)]
         }
-        else if (LocationCol == "location"){
+        else if (LocationVariable == "location"){
           latitudes[selection] <- AreaPosition$Latitude[match(paste(selectedAreas, selectedLocations), paste(AreaPosition$Area, AreaPosition$Location))]
           longitudes[selection] <- AreaPosition$Longitude[match(paste(selectedAreas, selectedLocations), paste(AreaPosition$Area, AreaPosition$Location))]
         }

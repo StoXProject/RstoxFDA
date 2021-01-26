@@ -240,19 +240,19 @@ areaPos <- DefineAreaPosition(NULL, FileName = regularfile, StratumPolygon = NUL
 bioticfiles <- system.file("testresources","biotic_v3_example.xml", package="RstoxFDA")
 BioticData <- RstoxData::ReadBiotic(bioticfiles)
 BioticData$biotic_v3_example.xml$fishstation$area <- c("03", "02")
-expect_error(SetAreaPositionsBiotic(BioticData, areaPos, LocationCol="location", System="2", Overwrite = T), "Not all areas and locations in 'BioticData' are defined in 'AreaPosition. Missing: 03-35,02-27")
-BioticDataPost <- SetAreaPositionsBiotic(BioticData, areaPos, LocationCol="None", System="2", Overwrite = T)
+expect_error(SetAreaPositionsBiotic(BioticData, areaPos, LocationVariable="location", System="2", Overwrite = T), "Not all areas and locations in 'BioticData' are defined in 'AreaPosition. Missing: 03-35,02-27")
+BioticDataPost <- SetAreaPositionsBiotic(BioticData, areaPos, LocationVariable="None", System="2", Overwrite = T)
 expect_true(all(abs(BioticDataPost$biotic_v3_example.xml$fishstation$latitudestart - BioticData$biotic_v3_example.xml$fishstation$latitudestart)>1))
 
 #test when nothing needs writing
-BioticDataPost <- SetAreaPositionsBiotic(BioticData, areaPos, LocationCol="None", System="2")
+BioticDataPost <- SetAreaPositionsBiotic(BioticData, areaPos, LocationVariable="None", System="2")
 expect_true(all(abs(BioticDataPost$biotic_v3_example.xml$fishstation$latitudestart - BioticData$biotic_v3_example.xml$fishstation$latitudestart)<1e-10))
-BioticDataPost <- SetAreaPositionsBiotic(BioticData, areaPos, LocationCol="location", System="2")
+BioticDataPost <- SetAreaPositionsBiotic(BioticData, areaPos, LocationVariable="location", System="2")
 expect_true(all(abs(BioticDataPost$biotic_v3_example.xml$fishstation$latitudestart - BioticData$biotic_v3_example.xml$fishstation$latitudestart)<1e-10))
 
 #test with location
 BioticData$biotic_v3_example.xml$fishstation$location <- c("22", "08")
-BioticDataPost <- SetAreaPositionsBiotic(BioticData, areaPos, LocationCol="location", System="2", Overwrite = T)
+BioticDataPost <- SetAreaPositionsBiotic(BioticData, areaPos, LocationVariable="location", System="2", Overwrite = T)
 expect_true(all(abs(BioticDataPost$biotic_v3_example.xml$fishstation$latitudestart - BioticData$biotic_v3_example.xml$fishstation$latitudestart)>1))
 
 
@@ -261,7 +261,7 @@ regularfile <- system.file("testresources","mainarea_fdir_from_2018_incl.txt", p
 areaPos <- DefineAreaPosition(NULL, FileName = regularfile, StratumPolygon = NULL)
 landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
 stoxLandingPre <- RstoxData:::StoxLanding(landingH)
-expect_error(AddAreaPositionStoxLanding(stoxLandingPre, areaPos, LocationCol = "Location"))
+expect_error(AddAreaPositionStoxLanding(stoxLandingPre, areaPos, LocationVariable = "Location"))
 expect_error(AddAreaPositionStoxLanding(stoxLandingPre, areaPos))
 
 context("test-StoxBaselineFunctions: AppendPositionLanding regular run")
@@ -273,7 +273,7 @@ expect_true(all(!is.na(landingPost$landings$Latitude)))
 expect_true(all(!is.na(landingPost$landings$Longitude)))
 
 lata <- min(landingPost$landings$Latitude[1])
-landingPost <- AddAreaPositionStoxLanding(stoxLandingPre, areaPos, LocationCol = "Location")
+landingPost <- AddAreaPositionStoxLanding(stoxLandingPre, areaPos, LocationVariable = "Location")
 expect_false(lata == min(landingPost$landings$Latitude[1]))
 
 context("test-StoxBaselineFunctions: AppendPositionLanding used colName")
