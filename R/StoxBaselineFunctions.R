@@ -644,7 +644,7 @@ DefineTemporalCategories <- function(processData, temporalCategory=c("Quarter", 
 #' @param UseProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
 #' @return \code{\link[RstoxFDA]{AreaPosition}}.
 #' @export
-DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "StratumPolygon"), FileName=NULL, StratumPolygon=NULL, UseProcessData=F){
+DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "StratumPolygon"), FileName=character(), StratumPolygon, UseProcessData=F){
 
   DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
   encoding="UTF-8"

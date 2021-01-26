@@ -7,8 +7,8 @@
 DefineAreaPosition(
   processData,
   DefinitionMethod = c("ResourceFile", "StratumPolygon"),
-  FileName = NULL,
-  StratumPolygon = NULL,
+  FileName = character(),
+  StratumPolygon,
   UseProcessData = F
 )
 }
