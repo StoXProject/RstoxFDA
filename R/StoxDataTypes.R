@@ -421,10 +421,10 @@ is.UnifiedVariableDefinition <- function(UnifiedVariableDefinition){
 #'
 #' @details
 #'  \describe{
-#'   \item{temporalCategory}{character() Value of the temporal category}
-#'   \item{startDay}{integer() Day of month for first day in the temporal category (1-based)}
-#'   \item{startMonth}{integer() Month for first day in the temporal category (1-based)}
-#'   \item{year}{integer() Year for which the category is defined, NA for seasonal definitions or for definition for a single unspecified year.}
+#'   \item{TemporalCategory}{character() Value of the temporal category}
+#'   \item{StartDay}{integer() Day of month for first day in the temporal category (1-based)}
+#'   \item{StartMonth}{integer() Month for first day in the temporal category (1-based)}
+#'   \item{StartYear}{integer() Year for which the category is defined, NA for seasonal definitions.}
 #'  }
 #'
 #'  Start and end of year is not implied as category delimitations when not included.
@@ -445,7 +445,7 @@ is.TemporalDefinition <- function(TemporalDefinition){
   if (!data.table::is.data.table(TemporalDefinition)){
     return(FALSE)
   }
-  if (!all(c("temporalCategory", "startDay", "startMonth") %in% names(TemporalDefinition))){
+  if (!all(c("TemporalCategory", "StartDay", "StartMonth", "StartYear") %in% names(TemporalDefinition))){
     return(FALSE)
   }
   

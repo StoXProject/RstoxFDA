@@ -61,45 +61,46 @@ expect_equal(nrow(temp), 4)
 expect_equal(ncol(temp), 4)
 
 context("test-StoxBaselineFunctions: DefineTemporalCategories useProcessData")
-temp <- DefineTemporalCategories(NULL, useProcessData = T)
+temp <- DefineTemporalCategories(NULL, UseProcessData = T)
 expect_true(is.null(temp))
 
 context("test-StoxBaselineFunctions: DefineTemporalCategories Month")
-temp <- DefineTemporalCategories(NULL, temporalCategory = "Month")
+temp <- DefineTemporalCategories(NULL, TemporalCategory = "Month")
 expect_true(data.table::is.data.table(temp))
 expect_equal(nrow(temp), 12)
 expect_equal(ncol(temp), 4)
 
 context("test-StoxBaselineFunctions: DefineTemporalCategories non-seasonal")
-temp <- DefineTemporalCategories(NULL, temporalCategory = "Month", years=c(2015,2016))
+temp <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("04-02-2018", "04-09-2018"))
 expect_true(data.table::is.data.table(temp))
-expect_equal(nrow(temp), 24)
+expect_equal(nrow(temp), 4)
 expect_equal(ncol(temp), 4)
-expect_false(any(is.na(temp$year)))
+expect_false(any(is.na(temp$StartYear)))
 
 
 context("test-StoxBaselineFunctions: DefineTemporalCategories unrecognized category")
-expect_error(DefineTemporalCategories(NULL, temporalCategory = "Something"), "Temporal category Something not recognized.")
+expect_error(DefineTemporalCategories(NULL, TemporalCategory = "Something"), "Temporal category Something not recognized.")
 
 context("test-StoxBaselineFunctions: DefineTemporalCategories Custom")
-temp <- DefineTemporalCategories(NULL, temporalCategory = "Custom", customPeriods = c("05-02","15-09"))
+temp <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("05-02","15-09"))
 expect_true(data.table::is.data.table(temp))
 expect_equal(nrow(temp), 2)
 expect_equal(ncol(temp), 4)
 
 context("test-StoxBaselineFunctions: DefineTemporalCategories Custom seasonal")
-temp <- DefineTemporalCategories(NULL, temporalCategory = "Custom", customPeriods = c("05-02","15-09"))
+temp <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("05-02","15-09"))
 expect_true(data.table::is.data.table(temp))
 expect_equal(nrow(temp), 2)
 expect_equal(ncol(temp), 4)
 
 context("test-StoxBaselineFunctions: DefineTemporalCategories Custom non-seasonal")
-expect_error(DefineTemporalCategories(NULL, temporalCategory = "Custom", customPeriods = c("01-01","15-09","01-01"), years=c(2015, 2016)), "Need to provide unique periods.")
-temp <- DefineTemporalCategories(NULL, temporalCategory = "Custom", customPeriods = c("01-01","15-09"), years=c(2015, 2016))
+expect_error(DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-01","15-09","01-01")), "Need to provide unique periods.")
+temp2 <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-01-2016","15-09-2016"))
 expect_true(data.table::is.data.table(temp))
-expect_equal(nrow(temp), 4)
-expect_equal(ncol(temp), 4)
-expect_false(any(is.na(temp$year)))
+
+expect_equal(nrow(temp2), 3)
+expect_equal(ncol(temp2), 4)
+expect_false(any(is.na(temp2$StartYear)))
 
 
 
@@ -187,10 +188,11 @@ expect_true(is.null(classNULL))
 
 
 context("test-StoxBaselineFunctions: appendTemporal")
-temp <- DefineTemporalCategories(NULL, temporalCategory = "Custom", customPeriods = c("01-10","01-12"))
+temp <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10","01-12"))
 tabExampleFile <- system.file("testresources","startStopExample.txt", package="RstoxFDA")
 tabExamplePre <- readTabSepFile(tabExampleFile, col_types = "ccccDD")
 tabExamplePost <- appendTemporal(tabExamplePre, "period", temp, datecolumns = c("startD", "stopD"))
+
 expect_equal(tabExamplePost$period[1], "[01-12, 01-10>")
 expect_equal(tabExamplePost$period[2], "[01-12, 01-10>")
 expect_equal(tabExamplePost$period[3], "[01-10, 01-12>")
@@ -205,34 +207,18 @@ tabExampleMissing$stopD[2] <- NA
 expect_error(appendTemporal(tabExampleMissing, "period", temp, datecolumns = c("stopD", "startD")), "NA for some dates")
 
 tempMisspec <- temp
-tempMisspec$year[1] <- 1993
+tempMisspec$StartYear[1] <- 1993
 expect_error(appendTemporal(tabExamplePre, "period", tempMisspec, datecolumns = c("stopD", "startD")), "Year is provided for some, but not all temporal definitions.")
 
 tempYearspec <- temp
-temp$year <- 2019
+temp$StartYear <- 2019
 expect_error(appendTemporal(tabExamplePre, "period", temp, datecolumns = c("stopD", "startD")), "Some dates preced the first temporal category.")
 
-my <- DefineTemporalCategories(NULL, temporalCategory = "Custom", customPeriods = c("01-10","01-12"), years = c(2019,2020))
 tabMultiYear <- tabExamplePre
-tabMultiYear$stopD[2] <- as.Date("2019-01-01")
-expect_error(appendTemporal(tabMultiYear, "period", my, datecolumns = c("stopD", "startD")), "Some dates preced the first temporal category.")
-tabMultiYear$stopD[2] <- as.Date("2019-10-01")
-appendTemporal(tabMultiYear, "period", my, datecolumns = c("stopD", "startD"))
-
-my <- DefineTemporalCategories(NULL, temporalCategory = "Custom", customPeriods = c("01-10","01-12"), years = c(2019))
+my <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10-2019","01-12-2019"))
 tabMultiYear$stopD[2] <- as.Date("2020-10-01")
 expect_error(appendTemporal(tabMultiYear, "period", my, datecolumns = c("stopD", "startD")),"Year is provided in temporal definitions, but does not contain definitions for all years in data.")
 
-
-context("test-StoxBaselineFunctions: AppendTemporalStoxLanding")
-temp <- DefineTemporalCategories(NULL, temporalCategory = "Quarter")
-landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
-stoxLandingPre <- RstoxData:::StoxLanding(landingH)
-stoxLandingPost <- AppendTemporalStoxLanding(stoxLandingPre, temp)
-expect_false(any(is.na(stoxLandingPost$TemporalCategory)))
-
-context("test-StoxBaselineFunctions: AppendTemporalStoxLanding used colName")
-expect_error(AppendTemporalStoxLanding(stoxLandingPre, temp, columnName = "CatchDate"), "s")
 
 
 context("test-StoxBaselineFunctions: SetAreaPositionsBiotic")

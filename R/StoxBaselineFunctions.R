@@ -222,12 +222,11 @@ SetAreaPositionsBiotic <- function(BioticData, AreaPosition, LocationVariable = 
 #' @noRd
 appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumns){
   stopifnot(is.TemporalDefinition(temporalDefinition))
-
   if (temporalColumn %in% names(table)){
     stop(paste("Temporal column", temporalColumn, "exists already."))
   }
 
-  if (!(all(is.na(temporalDefinition$year))) & any(is.na(temporalDefinition$year))){
+  if (!(all(is.na(temporalDefinition$StartYear))) & any(is.na(temporalDefinition$StartYear))){
     stop("Year is provided for some, but not all temporal definitions.")
   }
   dateCol <- as.POSIXct(rep(NA, nrow(table)))
@@ -248,37 +247,37 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
   day <- as.integer(strftime(dateCol, format="%d"))
   year <- as.integer(strftime(dateCol, format="%Y"))
 
-  if (!(all(is.na(temporalDefinition$year))) & !(all(year %in% temporalDefinition$year))){
+  if (!(all(is.na(temporalDefinition$StartYear))) & !(all(year %in% temporalDefinition$StartYear))){
     stop("Year is provided in temporal definitions, but does not contain definitions for all years in data.")
   }
 
-  temporalDefinition <- temporalDefinition[order(temporalDefinition$year, temporalDefinition$startMonth, temporalDefinition$startDay, decreasing = F),]
+  temporalDefinition <- temporalDefinition[order(temporalDefinition$StartYear, temporalDefinition$StartMonth, temporalDefinition$StartDay, decreasing = F),]
 
   temporalCategory <- rep(NA, nrow(table))
 
-  if (all(is.na(temporalDefinition$year))){
-    filt <- (month < temporalDefinition$startMonth[1] | (month == temporalDefinition$startMonth[1] & day < temporalDefinition$startDay[1]))
-    temporalCategory[filt] <- temporalDefinition$temporalCategory[nrow(temporalDefinition)]
+  if (all(is.na(temporalDefinition$StartYear))){
+    filt <- (month < temporalDefinition$StartMonth[1] | (month == temporalDefinition$StartMonth[1] & day < temporalDefinition$StartDay[1]))
+    temporalCategory[filt] <- temporalDefinition$TemporalCategory[nrow(temporalDefinition)]
 
     for (i in 1:nrow(temporalDefinition)){
-      filt <- (month > temporalDefinition$startMonth[i] | (month == temporalDefinition$startMonth[i] & day >= temporalDefinition$startDay[i]))
-      temporalCategory[filt] <- temporalDefinition$temporalCategory[i]
+      filt <- (month > temporalDefinition$StartMonth[i] | (month == temporalDefinition$StartMonth[i] & day >= temporalDefinition$StartDay[i]))
+      temporalCategory[filt] <- temporalDefinition$TemporalCategory[i]
     }
 
   }
-  else if (all(!is.na(temporalDefinition$year))){
+  else if (all(!is.na(temporalDefinition$StartYear))){
 
-    if (any(year < temporalDefinition$year[1] |
-            year == temporalDefinition$year[1] & month < temporalDefinition$startMonth[1] |
-            (year == temporalDefinition$year[1] & month == temporalDefinition$startMonth[1] & day < temporalDefinition$startDay[1]))){
+    if (any(year < temporalDefinition$StartYear[1] |
+            year == temporalDefinition$StartYear[1] & month < temporalDefinition$StartMonth[1] |
+            (year == temporalDefinition$StartYear[1] & month == temporalDefinition$StartMonth[1] & day < temporalDefinition$StartDay[1]))){
       stop("Some dates preced the first temporal category.")
     }
 
     for (i in 1:nrow(temporalDefinition)){
-      filt <- (year > temporalDefinition$year[i] |
-                 (year == temporalDefinition$year[i] & month > temporalDefinition$startMonth[i]) |
-                 (year == temporalDefinition$year[i] & month == temporalDefinition$startMonth[i] & day >= temporalDefinition$startDay[i]))
-      temporalCategory[filt] <- temporalDefinition$temporalCategory[i]
+      filt <- (year > temporalDefinition$StartYear[i] |
+                 (year == temporalDefinition$StartYear[i] & month > temporalDefinition$StartMonth[i]) |
+                 (year == temporalDefinition$StartYear[i] & month == temporalDefinition$StartMonth[i] & day >= temporalDefinition$StartDay[i]))
+      temporalCategory[filt] <- temporalDefinition$TemporalCategory[i]
     }
   }
   else{
@@ -496,61 +495,70 @@ SetStartDateBiotic <- function(BioticData, OverWrite=F){
 
 #' Define Temporal Categories
 #' @description
-#'  StoX function
 #'  Define temporal categories for grouping data based on date.
 #' @details
-#'  Not providing years, has the effect of making the defintion seasonal, independent of year,
-#'  so that e.g. Q1 in 2015 is considered the same category as Q1 in 2016
-#' @param processData data.table() as returned from this function
-#' @param temporalCategory character(), defaults to 'Quarter', type of temporal category: 'Quarter', 'Month' or 'Custom'
-#' @param customPeriods character(), provided if temporalCategory is 'Custom', vector of strings formatted as DD-MM, giving the start date of each temporal category.
-#' @param years integer() vector, optional, provide if defintion should be non-seasonal.
-#' @param encoding encoding of resource file
-#' @param useProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
+#'  The 'TemporalCategory'-options 'Quarter' and 'Month' produce seasonal definitions.
+#'  Seasonal definitions include dates
+#'  based on day and month, irrespective of year. Seasonal definitions also wrap around so that 
+#'  January is considered to follow December. 
+#'  
+#'  In order to make custom seasonal definitions,
+#'  use the TemporalCategory'-option 'Custom' without providing years in 'CustomPeriods': "DD-MM".
+#'  In order to make non-seasonal definitions for Quarter or Month, provide the as 'CustomPeriods'
+#'  for all years of interest. If years are provided categories are automatically extended to the entire year, if necesesarry.
+#'  That is a category starting with 1. Jan is added if not present, and likewise a category ending with 31. Dec.
+#' @param ProcessData \code{\link[RstoxFDA]{TemporalDefinition}} as returned from this function
+#' @param TemporalCategory type of temporal category: 'Quarter', 'Month' or 'Custom', defaults to 'Quarter'
+#' @param CustomPeriods provided if temporalCategory is 'Custom', vector of strings formatted as DD-MM or DD-MM-YYYY, giving the start date of each temporal category.
+#' @param UseProcessData Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'
 #' @return Temporal Categories, see: \code{\link[RstoxFDA]{TemporalDefinition}}.
 #' @export
-DefineTemporalCategories <- function(processData, temporalCategory=c("Quarter", "Month", "Custom"), customPeriods = NULL,  years = NULL, encoding="UTF-8", useProcessData=F){
+DefineTemporalCategories <- function(ProcessData, TemporalCategory=c("Quarter", "Month", "Custom"), CustomPeriods = character(), UseProcessData=F){
+  
+  if (UseProcessData){
+    return(ProcessData)
+  }
+  
+  TemporalCategory <- match.arg(TemporalCategory, TemporalCategory)
 
-  if (useProcessData){
-    return(processData)
+  if (length(CustomPeriods)>0 & TemporalCategory != "Custom"){
+    stop(paste("Custom period provided, but 'TemporalCategory' is", TemporalCategory))
   }
 
-  temporalCategory <- match.arg(temporalCategory, temporalCategory)
-
-  if (length(customPeriods)>0 & temporalCategory != "Custom"){
-    stop(paste("Custom period provided, but temporalCategory is", temporalCategory))
-  }
-
-  if (length(customPeriods)>0){
-    if (length(customPeriods) == 1){
+  if (length(CustomPeriods)>0){
+    if (length(CustomPeriods) == 1){
       stop("Need to provide at least two periods")
     }
-    if (any(duplicated(customPeriods))){
+    if (any(duplicated(CustomPeriods))){
       stop("Need to provide unique periods.")
     }
-    customPeriods <- trimws(customPeriods)
+    CustomPeriods <- trimws(CustomPeriods)
     form <- function(x){
-      if (nchar(x) != 5){
-        stop("Malformed custom period. All periods must be on the form 'DD-MM' (startday)")
+      if (nchar(x) != 5 & nchar(x) != 10){
+        stop("Malformed custom period. All periods must be on the form 'DD-MM' or 'DD-MM-YYYY' (startday)")
       }
       if (substr(x,3,3) != "-"){
-        stop("Malformed custom period. All periods must be on the form 'DD-MM' (startday)")
+        stop("Malformed custom period. All periods must be on the form 'DD-MM' or 'DD-MM-YYYY' (startday)")
       }
       if (is.na(as.integer(substr(x,1,2))) | is.na(as.integer(substr(x,4,5)))){
-        stop("Malformed custom period. All periods must be on the form 'DD-MM' (startday)")
+        stop("Malformed custom period. All periods must be on the form 'DD-MM'or 'DD-MM-YYYY' (startday)")
       }
-      if (as.integer(substr(x,1,2)) > 31 |
-          as.integer(substr(x,1,2)) < 1 |
-          as.integer(substr(x,4,5)) < 1 |
-          as.integer(substr(x,4,5)) > 12){
-        stop("Malformed custom period. All periods must be on the form 'DD-MM' (startday)")
+      if (is.na(as.integer(substr(x,1,2))) | as.integer(substr(x,1,2)) > 31 |
+          is.na(as.integer(substr(x,1,2))) | as.integer(substr(x,1,2)) < 1 |
+          is.na(as.integer(substr(x,4,5))) | as.integer(substr(x,4,5)) < 1 |
+          is.na(as.integer(substr(x,4,5))) | as.integer(substr(x,4,5)) > 12){
+        stop("Malformed custom period. All periods must be on the form 'DD-MM' or 'DD-MM-YYYY' (startday)")
+      }
+      
+      if (nchar(x) == 10 & is.na(as.integer(substr(x,7,10)))){
+        stop("Malformed custom period. All periods must be on the form 'DD-MM' or 'DD-MM-YYYY' (startday)")
       }
     }
 
-    sapply(customPeriods, form)
+    sapply(CustomPeriods, form)
   }
-
-  if (temporalCategory == "Month"){
+  
+  if (TemporalCategory == "Month"){
     output <- data.table::data.table(temporalCategory=as.character(
         c("January", "Februrary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")),
         startDay=as.integer(rep(1,12)),
@@ -558,7 +566,7 @@ DefineTemporalCategories <- function(processData, temporalCategory=c("Quarter", 
         year=as.integer(rep(NA, 12))
     )
   }
-  else if (temporalCategory == "Quarter"){
+  else if (TemporalCategory == "Quarter"){
     output <- data.table::data.table(temporalCategory=as.character(
       c("Q1", "Q2", "Q3", "Q4")),
       startDay=as.integer(rep(1,4)),
@@ -566,52 +574,59 @@ DefineTemporalCategories <- function(processData, temporalCategory=c("Quarter", 
       year=as.integer(rep(NA, 4))
     )
   }
-  else if (temporalCategory == "Custom"){
-    days <- as.integer(substr(customPeriods, 1,2))
-    months <- as.integer(substr(customPeriods, 4,5))
-
+  else if (TemporalCategory == "Custom"){
+    days <- as.integer(substr(CustomPeriods, 1,2))
+    months <- as.integer(substr(CustomPeriods, 4,5))
+    years <- as.integer(substr(CustomPeriods, 7,10))
+    
+    if (any(is.na(years)) & !all(is.na(years))){
+      stop("Provide year (DD-MM-YYYY) for either all or none of the temporal categories in paramaeter 'CustomPeriods'.")
+    }
+    
     ord <- order(months, days, decreasing = F)
+    if (all(!is.na(years))){
+      ord <- order(years, months, days, decreasing = F)
+    }
     months <- months[ord]
     days <- days[ord]
+    years <- years[ord]
+    CustomPeriods <- CustomPeriods[ord]
+    
+    #make span entire year, if years are provied
+    if (all(!is.na(years))){
+      if (days[1]!=1 | months[1]!=1){
+        days <- c(1, days)
+        months <- c(1, months)
+        years <- c(min(years), years)
+        CustomPeriods <- c(paste("01-01", min(years), sep="-"), CustomPeriods)
+      }
+      if (days[length(days)]!=31 | months[length(months)]!=12){
+        days <- c(days, 31)
+        months <- c(months, 12)
+        years <- c(years, max(years))
+        CustomPeriods <- c(CustomPeriods, paste("31-12", max(years), sep="-"))
+      }
+      
+    }
 
-    startstr <- customPeriods
+    startstr <- CustomPeriods
 
-
-    if (months[1]==1 & days[1] == 1){
-        endstr <- c(customPeriods[2:length(customPeriods)], "-----")
+    if (months[1]==1 & days[1] == 1 & is.na(years[1])){
+        endstr <- c(CustomPeriods[2:length(CustomPeriods)], "-----")
     }
     else {
-      endstr <- c(customPeriods[2:length(customPeriods)], customPeriods[1])
+      endstr <- c(CustomPeriods[2:length(CustomPeriods)], CustomPeriods[1])
     }
-
-    output <- data.table::data.table(temporalCategory=as.character(
+    output <- data.table::data.table(TemporalCategory=as.character(
       paste("[", startstr, ", ", endstr, ">", sep="")),
-      startDay=days,
-      startMonth=months,
-      year=as.integer(rep(NA, length(days)))
+      StartDay=days,
+      StartMonth=months,
+      StartYear=years
     )
+    
   }
   else{
-    stop(paste("Temporal category", temporalCategory, "not recognized."))
-  }
-
-  if (length(years)>0){
-    ncat <- nrow(output)
-    out <- output
-    out$year <- rep(years[1], ncat)
-    out$temporalCategory <- paste(years[1], " ", output$temporalCategory, sep="")
-    yearoutput <- out
-    output <- yearoutput
-  }
-  if (length(years)>1){
-    for (i in 1:(length(years)-1)){
-      y<-i+1
-      out <- output
-      out$year <- rep(years[y], ncat)
-      out$temporalCategory <- paste(years[y], " ", output$temporalCategory, sep="")
-      yearoutput <- rbind(yearoutput, out)
-    }
-    output <- yearoutput
+    stop(paste("Temporal category", TemporalCategory, "not recognized."))
   }
 
   return(output)
