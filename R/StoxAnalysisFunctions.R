@@ -56,7 +56,6 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects, R
   ClassificationError=NULL
   StockSplitting=FALSE
   ContinousEffect<-NULL
-  warning("Stox splitting, continous effect.")
   
   
   if (!UseAgingError){
