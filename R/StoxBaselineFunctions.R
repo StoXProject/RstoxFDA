@@ -731,12 +731,41 @@ DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "
 
 }
 
+#' Read CAR neighbours from file
+#' @noRd
+loadCarNeighboursFile <- function(FileName, encoding){
+  tab <- readTabSepFile(FileName, col_types = "cc", col_names = c("CarValue", "Neighbours"), encoding = encoding)
+  
+  checkSymmetry(tab)
+  
+  if (length(unique(tab[["CarValue"]])) != nrow(tab)){
+    d <- tab[["CarValue"]][duplicated(tab[["CarValue"]])]
+    stop(paste("Malformed resource file, Non-unique keys: repition in first column:", paste(d, collapse = ",")))
+  }
+  
+  return(tab)
+}
+
+#' Calculate CAR neighbours from stratum polygon
+#' @noRd
+calculateCarNeighbours <- function(StratumPolygon){
+  sfpoly <- sf::st_as_sf(StratumPolygon)
+  neighbourIndecies <- sf::st_touches(sfpoly, sfpoly)
+  
+  carValues <- sfpoly$polygonName
+  neighbours <- unlist(lapply(neighbourIndecies, function(x){paste(sfpoly$polygonName[x],collapse=",")}))
+  
+  carTable <- data.table::data.table(CarValues=carValues, Neighbours=neighbours)
+  
+  return(carTable)
+}
+
 #' Define CAR neighbours
 #' @description
-#'  StoX function.
 #'  Define which spatial strata are to be considered neighbours,
 #'  when used as a CAR-variable (Conditional AutoRegressive variable).
 #' @details
+#'  For DefinitionMethod 'ResourceFile':
 #'  Definitions are read from a tab separated file with headers. Columns defined as:
 #'  \describe{
 #'  \item{Column 1: 'CarValue'}{Value for the CAR-variable (key)}
@@ -744,30 +773,38 @@ DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "
 #'  }
 #'  The neighbour definition must be symmetric.
 #'  If a is among the neighbours of b, b must also be among the neighbours of a.
+#'  For DefinitionMethod 'StratumPolygon':
+#'  A \code{\link[RstoxFDA]{CarNeighbours}} table will be calculated from the provided 'StratumPolygon'
+#'  runing time and correctness of calcuation may depend on the quality and complexity of the 'StratumPolygon'.
 #' @param processData data.table() as returned from this function
-#' @param DefinitionMethod ResourceFile
+#' @param DefinitionMethod 'ResourceFile' or 'StratumPolygon'
 #' @param FileName path to file for resource 
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Area Neighbour Definition, see: \code{\link[RstoxFDA]{CarNeighbours}}.
 #' @export
 DefineCarNeighbours <- function(processData,
-                                DefinitionMethod = c("ResourceFile"), 
-                                FileName, UseProcessData = FALSE){
-  encoding = "UTF-8"
+                                DefinitionMethod = c("ResourceFile", "StratumPolygon"), 
+                                FileName, StratumPolygon, UseProcessData = FALSE){
   if (UseProcessData){
     return(processData)
   }
 
-  tab <- readTabSepFile(FileName, col_types = "cc", col_names = c("CarValue", "Neighbours"), encoding = encoding)
-
-  checkSymmetry(tab)
-
-  if (length(unique(tab[["CarValue"]])) != nrow(tab)){
-    d <- tab[["CarValue"]][duplicated(tab[["CarValue"]])]
-    stop(paste("Malformed resource file, Non-unique keys: repition in first column:", paste(d, collapse = ",")))
+  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
+  
+  if (DefinitionMethod == "ResourceFile"){
+    encoding = "UTF-8"
+    return(loadCarNeighboursFile(FileName, encoding))
   }
-
-  return(tab)
+  
+  else if (DefinitionMethod == "StratumPolygon"){
+    return(calculateCarNeighbours(StratumPolygon))
+  }
+  
+  else{
+    stop(paste("DefinitionMethod", DefinitionMethod, "is not supported."))
+  }
+  
+  
 }
 
 #' Define Age Error Matrix

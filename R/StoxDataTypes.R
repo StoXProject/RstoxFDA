@@ -611,6 +611,21 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "CarNeighbours",
     functionParameterFormat = list(
       FileName = "filePath"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      StratumPolygon = list(
+        DefinitionMethod = "StratumPolygon", 
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      FileName = list(
+        DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      )
     )
   ),
   
@@ -620,6 +635,11 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "AgeErrorMatrix",
     functionParameterFormat = list(
       FileName = "filePath"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      )
     )
   ),
   

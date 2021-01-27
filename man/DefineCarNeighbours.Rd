@@ -6,15 +6,16 @@
 \usage{
 DefineCarNeighbours(
   processData,
-  DefinitionMethod = c("ResourceFile"),
+  DefinitionMethod = c("ResourceFile", "StratumPolygon"),
   FileName,
+  StratumPolygon,
   UseProcessData = FALSE
 )
 }
 \arguments{
 \item{processData}{data.table() as returned from this function}
 
-\item{DefinitionMethod}{ResourceFile}
+\item{DefinitionMethod}{'ResourceFile' or 'StratumPolygon'}
 
 \item{FileName}{path to file for resource}
 
@@ -24,16 +25,19 @@ DefineCarNeighbours(
 Area Neighbour Definition, see: \code{\link[RstoxFDA]{CarNeighbours}}.
 }
 \description{
-StoX function.
- Define which spatial strata are to be considered neighbours,
+Define which spatial strata are to be considered neighbours,
  when used as a CAR-variable (Conditional AutoRegressive variable).
 }
 \details{
-Definitions are read from a tab separated file with headers. Columns defined as:
+For DefinitionMethod 'ResourceFile':
+ Definitions are read from a tab separated file with headers. Columns defined as:
  \describe{
  \item{Column 1: 'CarValue'}{Value for the CAR-variable (key)}
  \item{Column 2: 'Neigbhours'}{Comma-separated list of neighbours (each should occur in Column 1)}
  }
  The neighbour definition must be symmetric.
  If a is among the neighbours of b, b must also be among the neighbours of a.
+ For DefinitionMethod 'StratumPolygon':
+ A \code{\link[RstoxFDA]{CarNeighbours}} table will be calculated from the provided 'StratumPolygon'
+ runing time and correctness of calcuation may depend on the quality and complexity of the 'StratumPolygon'.
 }

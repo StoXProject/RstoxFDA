@@ -145,7 +145,12 @@ errorfile <- system.file("testresources","mainarea_error2.txt", package="RstoxFD
 expect_error(DefineCarNeighbours(NULL, FileName = errorfile), "Malformed resource file, Non-unique keys: repition in first column: 1")
 
 
-
+context("test-StoxBaselineFunctions: DefineCarNeighbours StratumPolygon")
+car <- DefineCarNeighbours(NULL, DefinitionMethod = "StratumPolygon", StratumPolygon = mainareaFdir2018)
+neighbours44 <- strsplit(car$Neighbours[car$CarValues=="44"], ",")[[1]]
+expect_true(all(c("43", "45", "49") %in% neighbours44))
+neighbours08 <- strsplit(car$Neighbours[car$CarValues=="08"], ",")[[1]]
+expect_true(all(c("09", "28", "41", "42") %in% neighbours08))
 
 context("test-StoxBaselineFunctions: DefineAgeErrorMatrix")
 ageerorfile <- system.file("testresources","AgeErrorHirstEtAl2012.txt", package="RstoxFDA")
