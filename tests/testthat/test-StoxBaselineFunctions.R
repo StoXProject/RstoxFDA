@@ -54,48 +54,48 @@ stoxbioticPost <- AddGearGroupStoxBiotic(stoxbiotic, gearDef)
 expect_true("GearGroup" %in% names(stoxbioticPost$Haul))
 expect_equal(sum(!is.na(stoxbioticPost$Haul$GearGroup)), sum(!is.na(stoxbiotic$Haul$Gear)))
 
-context("test-StoxBaselineFunctions: DefineTemporalCategories")
-temp <- DefineTemporalCategories(NULL)
+context("test-StoxBaselineFunctions: DefinePeriod")
+temp <- DefinePeriod(NULL)
 expect_true(data.table::is.data.table(temp))
 expect_equal(nrow(temp), 4)
 expect_equal(ncol(temp), 4)
 
-context("test-StoxBaselineFunctions: DefineTemporalCategories useProcessData")
-temp <- DefineTemporalCategories(NULL, UseProcessData = T)
+context("test-StoxBaselineFunctions: DefinePeriod useProcessData")
+temp <- DefinePeriod(NULL, UseProcessData = T)
 expect_true(is.null(temp))
 
-context("test-StoxBaselineFunctions: DefineTemporalCategories Month")
-temp <- DefineTemporalCategories(NULL, TemporalCategory = "Month")
+context("test-StoxBaselineFunctions: DefinePeriod Month")
+temp <- DefinePeriod(NULL, TemporalCategory = "Month")
 expect_true(data.table::is.data.table(temp))
 expect_equal(nrow(temp), 12)
 expect_equal(ncol(temp), 4)
 
-context("test-StoxBaselineFunctions: DefineTemporalCategories non-seasonal")
-temp <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("04-02-2018", "04-09-2018"))
+context("test-StoxBaselineFunctions: DefinePeriod non-seasonal")
+temp <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("04-02-2018", "04-09-2018"))
 expect_true(data.table::is.data.table(temp))
 expect_equal(nrow(temp), 4)
 expect_equal(ncol(temp), 4)
 expect_false(any(is.na(temp$StartYear)))
 
 
-context("test-StoxBaselineFunctions: DefineTemporalCategories unrecognized category")
-expect_error(DefineTemporalCategories(NULL, TemporalCategory = "Something"), "Temporal category Something not recognized.")
+context("test-StoxBaselineFunctions: DefinePeriod unrecognized category")
+expect_error(DefinePeriod(NULL, TemporalCategory = "Something"), "Temporal category Something not recognized.")
 
-context("test-StoxBaselineFunctions: DefineTemporalCategories Custom")
-temp <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("05-02","15-09"))
+context("test-StoxBaselineFunctions: DefinePeriod Custom")
+temp <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("05-02","15-09"))
 expect_true(data.table::is.data.table(temp))
 expect_equal(nrow(temp), 2)
 expect_equal(ncol(temp), 4)
 
-context("test-StoxBaselineFunctions: DefineTemporalCategories Custom seasonal")
-temp <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("05-02","15-09"))
+context("test-StoxBaselineFunctions: DefinePeriod Custom seasonal")
+temp <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("05-02","15-09"))
 expect_true(data.table::is.data.table(temp))
 expect_equal(nrow(temp), 2)
 expect_equal(ncol(temp), 4)
 
-context("test-StoxBaselineFunctions: DefineTemporalCategories Custom non-seasonal")
-expect_error(DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-01","15-09","01-01")), "Need to provide unique periods.")
-temp2 <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-01-2016","15-09-2016"))
+context("test-StoxBaselineFunctions: DefinePeriod Custom non-seasonal")
+expect_error(DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-01","15-09","01-01")), "Need to provide unique periods.")
+temp2 <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-01-2016","15-09-2016"))
 expect_true(data.table::is.data.table(temp))
 
 expect_equal(nrow(temp2), 3)
@@ -188,7 +188,7 @@ expect_true(is.null(classNULL))
 
 
 context("test-StoxBaselineFunctions: appendTemporal")
-temp <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10","01-12"))
+temp <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10","01-12"))
 tabExampleFile <- system.file("testresources","startStopExample.txt", package="RstoxFDA")
 tabExamplePre <- readTabSepFile(tabExampleFile, col_types = "ccccDD")
 tabExamplePost <- appendTemporal(tabExamplePre, "period", temp, datecolumns = c("startD", "stopD"))
@@ -217,20 +217,20 @@ expect_error(appendTemporal(tabExamplePre, "period", temp, datecolumns = c("stop
 tabMonth  <- tabExamplePre
 
 #test using month
-monthCat <- DefineTemporalCategories(NULL, TemporalCategory = "Month")
+monthCat <- DefinePeriod(NULL, TemporalCategory = "Month")
 tabMonthPost <- appendTemporal(tabMonth, "period", monthCat, datecolumns = c("stopD", "startD"))
 expect_equal(tabMonthPost$period[1], "October")
 tabMonthPost <- appendTemporal(tabMonth, "period", monthCat, datecolumns = c("startD", "stopD"))
 expect_equal(tabMonthPost$period[1], "September")
 
 #test using quarter
-monthCat <- DefineTemporalCategories(NULL, TemporalCategory = "Quarter")
+monthCat <- DefinePeriod(NULL, TemporalCategory = "Quarter")
 tabMonthPost <- appendTemporal(tabMonth, "period", monthCat, datecolumns = c("stopD", "startD"))
 expect_equal(tabMonthPost$period, c("Q4", "Q1", "Q4"))
 
 
 tabMultiYear <- tabExamplePre
-my <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10-2019","01-12-2019"))
+my <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10-2019","01-12-2019"))
 tabMultiYear$stopD[2] <- as.Date("2020-10-01")
 expect_error(appendTemporal(tabMultiYear, "period", my, datecolumns = c("stopD", "startD")),"Year is provided in temporal definitions, but does not contain definitions for all years in data.")
 

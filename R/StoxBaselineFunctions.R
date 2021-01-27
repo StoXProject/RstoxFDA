@@ -257,11 +257,11 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 
   if (all(is.na(temporalDefinition$StartYear))){
     filt <- (month < temporalDefinition$StartMonth[1] | (month == temporalDefinition$StartMonth[1] & day < temporalDefinition$StartDay[1]))
-    temporalCategory[filt] <- temporalDefinition$TemporalCategory[nrow(temporalDefinition)]
+    temporalCategory[filt] <- temporalDefinition$Period[nrow(temporalDefinition)]
 
     for (i in 1:nrow(temporalDefinition)){
       filt <- (month > temporalDefinition$StartMonth[i] | (month == temporalDefinition$StartMonth[i] & day >= temporalDefinition$StartDay[i]))
-      temporalCategory[filt] <- temporalDefinition$TemporalCategory[i]
+      temporalCategory[filt] <- temporalDefinition$Period[i]
     }
 
   }
@@ -277,7 +277,7 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
       filt <- (year > temporalDefinition$StartYear[i] |
                  (year == temporalDefinition$StartYear[i] & month > temporalDefinition$StartMonth[i]) |
                  (year == temporalDefinition$StartYear[i] & month == temporalDefinition$StartMonth[i] & day >= temporalDefinition$StartDay[i]))
-      temporalCategory[filt] <- temporalDefinition$TemporalCategory[i]
+      temporalCategory[filt] <- temporalDefinition$Period[i]
     }
   }
   else{
@@ -493,9 +493,9 @@ SetStartDateBiotic <- function(BioticData, OverWrite=F){
   return(BioticData) 
 }
 
-#' Define Temporal Categories
+#' Define Periods
 #' @description
-#'  Define temporal categories for grouping data based on date.
+#'  Define periods for grouping data based on date.
 #' @details
 #'  The 'TemporalCategory'-options 'Quarter' and 'Month' produce seasonal definitions.
 #'  Seasonal definitions include dates
@@ -513,10 +513,10 @@ SetStartDateBiotic <- function(BioticData, OverWrite=F){
 #' @param UseProcessData Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'
 #' @return Temporal Categories, see: \code{\link[RstoxFDA]{TemporalDefinition}}.
 #' @export
-DefineTemporalCategories <- function(ProcessData, TemporalCategory=c("Quarter", "Month", "Custom"), CustomPeriods = character(), UseProcessData=F){
+DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Custom"), CustomPeriods = character(), UseProcessData=F){
   
   if (UseProcessData){
-    return(ProcessData)
+    return(processData)
   }
   
   TemporalCategory <- match.arg(TemporalCategory, TemporalCategory)
@@ -559,7 +559,7 @@ DefineTemporalCategories <- function(ProcessData, TemporalCategory=c("Quarter", 
   }
   
   if (TemporalCategory == "Month"){
-    output <- data.table::data.table(TemporalCategory=as.character(
+    output <- data.table::data.table(Period=as.character(
         c("January", "Februrary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")),
         StartDay=as.integer(rep(1,12)),
         StartMonth=as.integer(seq(1,12)),
@@ -567,7 +567,7 @@ DefineTemporalCategories <- function(ProcessData, TemporalCategory=c("Quarter", 
     )
   }
   else if (TemporalCategory == "Quarter"){
-    output <- data.table::data.table(TemporalCategory=as.character(
+    output <- data.table::data.table(Period=as.character(
       c("Q1", "Q2", "Q3", "Q4")),
       StartDay=as.integer(rep(1,4)),
       StartMonth=as.integer(c(1,4,7,10)),
@@ -617,7 +617,7 @@ DefineTemporalCategories <- function(ProcessData, TemporalCategory=c("Quarter", 
     else {
       endstr <- c(CustomPeriods[2:length(CustomPeriods)], CustomPeriods[1])
     }
-    output <- data.table::data.table(TemporalCategory=as.character(
+    output <- data.table::data.table(Period=as.character(
       paste("[", startstr, ", ", endstr, ">", sep="")),
       StartDay=days,
       StartMonth=months,

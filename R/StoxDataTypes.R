@@ -445,7 +445,7 @@ is.TemporalDefinition <- function(TemporalDefinition){
   if (!data.table::is.data.table(TemporalDefinition)){
     return(FALSE)
   }
-  if (!all(c("TemporalCategory", "StartDay", "StartMonth", "StartYear") %in% names(TemporalDefinition))){
+  if (!all(c("Period", "StartDay", "StartMonth", "StartYear") %in% names(TemporalDefinition))){
     return(FALSE)
   }
   
@@ -647,6 +647,25 @@ stoxFunctionAttributes <- list(
     )
   ),
   
+  DefinePeriod = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "TemporalDefinition", 
+    functionParameterFormat = list(
+      CustomPeriods = "periodvector"
+    ), 
+    functionArgumentHierarchy = list(
+      TemporalCategory = list(
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      CustomPeriods = list(
+        TemporalCategory = "Custom", 
+        UseProcessData = FALSE
+      )
+    )
+  ),
+  
   SetTimeBiotic = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
@@ -751,6 +770,12 @@ processPropertyFormats <- list(
     class = "single", 
     title = "The path to a single file"
   ),
+  periodvector = list(
+    class = "vector", 
+    title = "Period defintinions. Start date on the form \"DD-MM\" or \"DD-MM-YYYY\"", 
+    variableTypes = "character"
+  ),
+  
   randomcovariates = list(
     class = "vector", 
     title = "One or more variables to use as covariates in Reca", 
@@ -767,7 +792,7 @@ processPropertyFormats <- list(
       possibleValues <- possibleValues[!(possibleValues %in% c("CruiseKey", "StationKey", "HaulKey", "SpeciesCategoryKey", "SampleKey"))]
       return(sort(possibleValues))
     }, 
-    variableTypes <- "character"
+    variableTypes = "character"
   ),
   aggregationvariables = list(
     class = "vector", 
@@ -776,7 +801,7 @@ processPropertyFormats <- list(
       possibleValues <- names(StoxLandingData$landings)[!(names(StoxLandingData$landings) %in% c("RoundWeight"))]
       return(sort(possibleValues))
     }, 
-    variableTypes <- "character"
+    variableTypes = "character"
   ),
   samplereportvariables = list(
     class = "vector", 
@@ -794,7 +819,7 @@ processPropertyFormats <- list(
       possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$landings)]
       return(sort(possibleValues))
     }, 
-    variableTypes <- "character"
+    variableTypes = "character"
   ),
   fixedcovariates = list(
     class = "vector", 
@@ -812,7 +837,7 @@ processPropertyFormats <- list(
       possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$landings)]
       return(sort(possibleValues))
     }, 
-    variableTypes <- "character"
+    variableTypes = "character"
   ),
   carcovariate = list(
     class = "single",
