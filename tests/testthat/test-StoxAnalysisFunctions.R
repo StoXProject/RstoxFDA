@@ -1,5 +1,3 @@
-
-require(RstoxData)
 context("PrepareRecaEstimate: configuration tests")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)

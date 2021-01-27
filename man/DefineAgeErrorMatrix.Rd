@@ -19,8 +19,6 @@ DefineAgeErrorMatrix(
 \item{FileName}{path to resource file}
 
 \item{UseProcessData}{Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'}
-
-\item{encoding}{encoding of resource file}
 }
 \value{
 Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.

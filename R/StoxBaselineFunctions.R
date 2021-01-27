@@ -821,7 +821,6 @@ DefineCarNeighbours <- function(processData,
 #' @param processData data.table() as returned from this function
 #' @param DefinitionMethod 'ResourceFile'. See details.
 #' @param FileName path to resource file
-#' @param encoding encoding of resource file
 #' @param UseProcessData Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'
 #' @return Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.
 #' @export

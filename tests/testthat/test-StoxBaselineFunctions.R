@@ -1,4 +1,3 @@
-require(RstoxData)
 
 context("test-StoxBaselineFunctions: SetTimeBiotic")
 bioticfiles <- c(f1=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"), f2=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"))
