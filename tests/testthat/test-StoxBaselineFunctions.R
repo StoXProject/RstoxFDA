@@ -214,6 +214,21 @@ tempYearspec <- temp
 temp$StartYear <- 2019
 expect_error(appendTemporal(tabExamplePre, "period", temp, datecolumns = c("stopD", "startD")), "Some dates preced the first temporal category.")
 
+tabMonth  <- tabExamplePre
+
+#test using month
+monthCat <- DefineTemporalCategories(NULL, TemporalCategory = "Month")
+tabMonthPost <- appendTemporal(tabMonth, "period", monthCat, datecolumns = c("stopD", "startD"))
+expect_equal(tabMonthPost$period[1], "October")
+tabMonthPost <- appendTemporal(tabMonth, "period", monthCat, datecolumns = c("startD", "stopD"))
+expect_equal(tabMonthPost$period[1], "September")
+
+#test using quarter
+monthCat <- DefineTemporalCategories(NULL, TemporalCategory = "Quarter")
+tabMonthPost <- appendTemporal(tabMonth, "period", monthCat, datecolumns = c("stopD", "startD"))
+expect_equal(tabMonthPost$period, c("Q4", "Q1", "Q4"))
+
+
 tabMultiYear <- tabExamplePre
 my <- DefineTemporalCategories(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10-2019","01-12-2019"))
 tabMultiYear$stopD[2] <- as.Date("2020-10-01")

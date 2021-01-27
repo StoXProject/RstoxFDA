@@ -559,19 +559,19 @@ DefineTemporalCategories <- function(ProcessData, TemporalCategory=c("Quarter", 
   }
   
   if (TemporalCategory == "Month"){
-    output <- data.table::data.table(temporalCategory=as.character(
+    output <- data.table::data.table(TemporalCategory=as.character(
         c("January", "Februrary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")),
-        startDay=as.integer(rep(1,12)),
-        startMonth=as.integer(seq(1,12)),
-        year=as.integer(rep(NA, 12))
+        StartDay=as.integer(rep(1,12)),
+        StartMonth=as.integer(seq(1,12)),
+        StartYear=as.integer(rep(NA, 12))
     )
   }
   else if (TemporalCategory == "Quarter"){
-    output <- data.table::data.table(temporalCategory=as.character(
+    output <- data.table::data.table(TemporalCategory=as.character(
       c("Q1", "Q2", "Q3", "Q4")),
-      startDay=as.integer(rep(1,4)),
-      startMonth=as.integer(c(1,4,7,10)),
-      year=as.integer(rep(NA, 4))
+      StartDay=as.integer(rep(1,4)),
+      StartMonth=as.integer(c(1,4,7,10)),
+      StartYear=as.integer(rep(NA, 4))
     )
   }
   else if (TemporalCategory == "Custom"){
