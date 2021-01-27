@@ -7,7 +7,7 @@
 is.RecaParameterData(RecaParameterData)
 }
 \arguments{
-\item{RecaData}{argument to be checked for data conformity}
+\item{RecaParameterData}{argument to be checked for data conformity}
 }
 \value{
 logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaParameterData}}

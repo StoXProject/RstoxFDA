@@ -356,7 +356,6 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
 #' @seealso \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for appending positions to \code{\link[RstoxData]{StoxLandingData}}.
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
-#' @param columnName Name of the column that will be appended. Defaults to 'Stratum'.
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @export
 AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon){
@@ -383,7 +382,6 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon){
 #'  The strata are added to the new column 'Stratum'.
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
-#' @param columnName Name of the column that will be appended. Defaults to 'Stratum'.
 #' @return StoxBioticData with column appended to data.table 'Station'. See \code{\link[RstoxData]{StoxBioticData}}.
 #' @export
 AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
@@ -466,7 +464,7 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
 #' @param Overwrite if True any existing values in stationstarttime will be overwritten.
 #' @return \code{\link[RstoxData]{BioticData}}
 #' @export
-SetTimeBiotic <- function(BioticData, Time=character(), OverWrite=F){
+SetTimeBiotic <- function(BioticData, Time=character(), Overwrite=F){
   if (!isGiven(Time)){
     Time="12:00:00Z"
   }
@@ -479,7 +477,7 @@ SetTimeBiotic <- function(BioticData, Time=character(), OverWrite=F){
   for (file in names(BioticData)){
     if ("fishstation" %in% names(BioticData[[file]]) & "stationstarttime" %in% names(BioticData[[file]]$fishstation)){
       times <- BioticData[[file]]$fishstation$stationstarttime
-      if (!OverWrite){
+      if (!Overwrite){
         times[is.na(times)] <- Time  
         BioticData[[file]]$fishstation$stationstarttime <- times
       }
@@ -506,14 +504,14 @@ SetTimeBiotic <- function(BioticData, Time=character(), OverWrite=F){
 #' @param Overwrite if True any existing values in stationstartdate will be overwritten.
 #' @return \code{\link[RstoxData]{BioticData}}
 #' @export
-SetStartDateBiotic <- function(BioticData, OverWrite=F){
+SetStartDateBiotic <- function(BioticData, Overwrite=F){
  
   for (file in names(BioticData)){
     if ("fishstation" %in% names(BioticData[[file]]) & 
         "stationstartdate" %in% names(BioticData[[file]]$fishstation) &
         "stationstopdate" %in% names(BioticData[[file]]$fishstation)){
       dates <- BioticData[[file]]$fishstation$stationstartdate
-      if (!OverWrite){
+      if (!Overwrite){
         dates[is.na(dates)] <- BioticData[[file]]$fishstation$stationstopdate[is.na(dates)]
         BioticData[[file]]$fishstation$stationstartdate <- dates
       }
@@ -539,7 +537,7 @@ SetStartDateBiotic <- function(BioticData, OverWrite=F){
 #'  In order to make non-seasonal definitions for Quarter or Month, provide the as 'CustomPeriods'
 #'  for all years of interest. If years are provided categories are automatically extended to the entire year, if necesesarry.
 #'  That is a category starting with 1. Jan is added if not present, and likewise a category ending with 31. Dec.
-#' @param ProcessData \code{\link[RstoxFDA]{TemporalDefinition}} as returned from this function
+#' @param processData \code{\link[RstoxFDA]{TemporalDefinition}} as returned from this function
 #' @param TemporalCategory type of temporal category: 'Quarter', 'Month' or 'Custom', defaults to 'Quarter'
 #' @param CustomPeriods provided if temporalCategory is 'Custom', vector of strings formatted as DD-MM or DD-MM-YYYY, giving the start date of each temporal category.
 #' @param UseProcessData Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'
@@ -771,14 +769,18 @@ calculateCarNeighbours <- function(StratumPolygon){
 #'  \item{Column 1: 'CarValue'}{Value for the CAR-variable (key)}
 #'  \item{Column 2: 'Neigbhours'}{Comma-separated list of neighbours (each should occur in Column 1)}
 #'  }
-#'  The neighbour definition must be symmetric.
+#'  The neighbour definition must be symmetric
 #'  If a is among the neighbours of b, b must also be among the neighbours of a.
+#'  Neighbours may be defined even if they are not geographic neighbours.
+#'  
 #'  For DefinitionMethod 'StratumPolygon':
-#'  A \code{\link[RstoxFDA]{CarNeighbours}} table will be calculated from the provided 'StratumPolygon'
+#'  A \code{\link[RstoxFDA]{CarNeighbours}} table will be calculated from the provided 'StratumPolygon'.
+#'  Strata that are geographic neighbours (touching each other) will be considered neighbours.
 #'  runing time and correctness of calcuation may depend on the quality and complexity of the 'StratumPolygon'.
 #' @param processData data.table() as returned from this function
-#' @param DefinitionMethod 'ResourceFile' or 'StratumPolygon'
+#' @param DefinitionMethod 'ResourceFile' or 'StratumPolygon'. See details
 #' @param FileName path to file for resource 
+#' @param StratumPolygon Definition of spatial strata that neighbours should be calculated for (\code{\link[RstoxBase]{StratumPolygon}}).
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Area Neighbour Definition, see: \code{\link[RstoxFDA]{CarNeighbours}}.
 #' @export
@@ -817,9 +819,10 @@ DefineCarNeighbours <- function(processData,
 #'  The matrix encodes the probability of observing an age (rows), given true age (columns).
 #'  Columns must sum to 1.
 #' @param processData data.table() as returned from this function
+#' @param DefinitionMethod 'ResourceFile'. See details.
 #' @param FileName path to resource file
 #' @param encoding encoding of resource file
-#' @param useProcessData If TRUE, bypasses execution of function and returns existing 'processData'
+#' @param UseProcessData Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'
 #' @return Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.
 #' @export
 DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile"), FileName, UseProcessData=F){

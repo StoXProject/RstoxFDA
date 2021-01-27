@@ -1,4 +1,4 @@
-
+require(RstoxData)
 
 context("test-StoxBaselineFunctions: SetTimeBiotic")
 bioticfiles <- c(f1=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"), f2=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"))
@@ -24,7 +24,7 @@ BioticData$biotic_v3_example.xml$fishstation$stationstarttime[1] <- "21:00:02"
 
 #test overwrite
 expect_equal(SetTimeBiotic(BioticData, Time="21:00:01Z")$biotic_v3_example.xml$fishstation$stationstarttime[1], "21:00:02")
-expect_equal(SetTimeBiotic(BioticData, Time="21:00:01Z", OverWrite = T)$biotic_v3_example.xml$fishstation$stationstarttime[1], "21:00:01Z")
+expect_equal(SetTimeBiotic(BioticData, Time="21:00:01Z", Overwrite = T)$biotic_v3_example.xml$fishstation$stationstarttime[1], "21:00:01Z")
 
 context("test-StoxBaselineFunctions: SetStartDateBiotic")
 bioticfiles <- system.file("testresources","biotic_v3_example.xml", package="RstoxFDA")
@@ -37,7 +37,7 @@ expect_lt(sum(is.na(StoxBioticPost$Station$DateTime)), sum(is.na(StoxBioticPre$S
 #test overwrite
 BioticData$biotic_v3_example.xml$fishstation$stationstartdate <- "1982-09-15Z"
 expect_equal(SetStartDateBiotic(BioticData)$biotic_v3_example.xml$fishstation$stationstartdate[1], "1982-09-15Z")
-expect_equal(SetStartDateBiotic(BioticData, OverWrite = T)$biotic_v3_example.xml$fishstation$stationstartdate[1], "2018-04-04Z")
+expect_equal(SetStartDateBiotic(BioticData, Overwrite = T)$biotic_v3_example.xml$fishstation$stationstartdate[1], "2018-04-04Z")
 
 context("test-StoxBaselineFunctions: AddGearGroupStoxLanding")
 gearDef <- RstoxData::DefineTranslation(NULL, F, "ResourceFile", NULL, system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))

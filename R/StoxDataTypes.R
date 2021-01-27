@@ -191,7 +191,7 @@ NULL
 #' Check if argument is RecaParameterData
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
-#' @param RecaData argument to be checked for data conformity
+#' @param RecaParameterData argument to be checked for data conformity
 #' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaParameterData}}
 #' @export
 is.RecaParameterData <- function(RecaParameterData){

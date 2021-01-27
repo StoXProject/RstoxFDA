@@ -15,9 +15,11 @@ DefineCarNeighbours(
 \arguments{
 \item{processData}{data.table() as returned from this function}
 
-\item{DefinitionMethod}{'ResourceFile' or 'StratumPolygon'}
+\item{DefinitionMethod}{'ResourceFile' or 'StratumPolygon'. See details}
 
 \item{FileName}{path to file for resource}
+
+\item{StratumPolygon}{Definition of spatial strata that neighbours should be calculated for (\code{\link[RstoxBase]{StratumPolygon}}).}
 
 \item{UseProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
 }
@@ -35,9 +37,12 @@ For DefinitionMethod 'ResourceFile':
  \item{Column 1: 'CarValue'}{Value for the CAR-variable (key)}
  \item{Column 2: 'Neigbhours'}{Comma-separated list of neighbours (each should occur in Column 1)}
  }
- The neighbour definition must be symmetric.
+ The neighbour definition must be symmetric
  If a is among the neighbours of b, b must also be among the neighbours of a.
+ Neighbours may be defined even if they are not geographic neighbours.
+ 
  For DefinitionMethod 'StratumPolygon':
- A \code{\link[RstoxFDA]{CarNeighbours}} table will be calculated from the provided 'StratumPolygon'
+ A \code{\link[RstoxFDA]{CarNeighbours}} table will be calculated from the provided 'StratumPolygon'.
+ Strata that are geographic neighbours (touching each other) will be considered neighbours.
  runing time and correctness of calcuation may depend on the quality and complexity of the 'StratumPolygon'.
 }

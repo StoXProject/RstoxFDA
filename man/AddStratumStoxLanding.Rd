@@ -10,8 +10,6 @@ AddStratumStoxLanding(StoxLandingData, StratumPolygon)
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.}
 
 \item{StratumPolygon}{Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}}
-
-\item{columnName}{Name of the column that will be appended. Defaults to 'Stratum'.}
 }
 \value{
 StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.

@@ -4,7 +4,7 @@
 \alias{SetStartDateBiotic}
 \title{Set startdate Biotic}
 \usage{
-SetStartDateBiotic(BioticData, OverWrite = F)
+SetStartDateBiotic(BioticData, Overwrite = F)
 }
 \arguments{
 \item{BioticData}{\code{\link[RstoxData]{BioticData}} data for which time should be set}

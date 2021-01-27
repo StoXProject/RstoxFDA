@@ -1,3 +1,4 @@
+require(RstoxData)
 context("Test appendTripIdLogbooks")
 
 logb <- RstoxData::readErsFile(system.file("testresources","logbooks_mock_2018.psv", package="RstoxFDA"))

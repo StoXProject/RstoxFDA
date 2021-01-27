@@ -7,8 +7,8 @@
 PrepareRecaEstimate(
   StoxBioticData,
   StoxLandingData,
-  FixedEffects,
-  RandomEffects,
+  FixedEffects = character(),
+  RandomEffects = character(),
   UseCarEffect = F,
   CarEffect = character(),
   CarNeighbours,

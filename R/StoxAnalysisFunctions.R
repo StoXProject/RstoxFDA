@@ -51,7 +51,7 @@
 #'  encoding the day of the year when fish is consider to transition from one age to the next.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects, RandomEffects, UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, CellEffect=F, MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, CellEffect=F, MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
   #expose as parameter when implemented
   ClassificationError=NULL
   StockSplitting=FALSE
@@ -83,10 +83,10 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects, R
 
   }
   
-  if (is.null(FixedEffects)){
+  if (!isGiven(FixedEffects)){
     FixedEffects <- c()
   }
-  if (is.null(RandomEffects)){
+  if (!isGiven(RandomEffects)){
     RandomEffects <- c()
   }
   
@@ -227,7 +227,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects, R
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
 #' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
 #' @return \code{\link[RstoxFDA]{RecaResult}} results from Reca run.
-#' @noRd
+#' @export
 RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), Lgamodel=c("log-linear", "non-linear"), Resultdir=character(), Delta.age=numeric(), Seed=numeric(), Caa.burnin=numeric()){
 
   fitfile="fit"
@@ -280,7 +280,7 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @param Nsamples number of MCMC samples that will be made available for \code{\link[Reca]{eca.predict}}. See documentation for \code{\link[Reca]{eca.estimate}},
 #' @param Burnin number of MCMC samples run and discarded by \code{\link[Reca]{eca.estimate}} before any samples are saved. See documentation for \code{\link[Reca]{eca.estimate}}.
 #' @param Lgamodel The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}.
-#' @param Resultdir a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
+#' @param ResultDirectory a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
 #' @param Thin controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
 #' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.

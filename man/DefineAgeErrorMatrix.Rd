@@ -14,11 +14,13 @@ DefineAgeErrorMatrix(
 \arguments{
 \item{processData}{data.table() as returned from this function}
 
+\item{DefinitionMethod}{'ResourceFile'. See details.}
+
 \item{FileName}{path to resource file}
 
-\item{encoding}{encoding of resource file}
+\item{UseProcessData}{Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'}
 
-\item{useProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
+\item{encoding}{encoding of resource file}
 }
 \value{
 Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.

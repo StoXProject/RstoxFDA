@@ -36,7 +36,7 @@
 #'           projection="+proj=merc +datum=WGS84")
 #' @export
 plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="polygonName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=102014){
-
+  
   if (!is.null(data)){
     if (!(latCol %in% names(data))){
       stop("'latCol' not found in 'data'")
@@ -137,7 +137,9 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 #'        bubbleSize = 20, title="Landings on ICES areas")
 #' @export
 plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="polygonName", legendTitle=quantityCol, areaLabels=T, xlim=NULL, ylim=NULL, areaLabelSize=2, bubbleColor="darkred", bubbleSize=10, bubbleShape=21, title="", projection=102014){
-
+  requireNamespace("rnaturalearth")
+  requireNamespace("sf")
+  
   if (!(areaCol %in% names(data))){
     stop("'areaCol' not found in 'data'")
   }

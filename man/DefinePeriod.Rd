@@ -12,13 +12,13 @@ DefinePeriod(
 )
 }
 \arguments{
+\item{processData}{\code{\link[RstoxFDA]{TemporalDefinition}} as returned from this function}
+
 \item{TemporalCategory}{type of temporal category: 'Quarter', 'Month' or 'Custom', defaults to 'Quarter'}
 
 \item{CustomPeriods}{provided if temporalCategory is 'Custom', vector of strings formatted as DD-MM or DD-MM-YYYY, giving the start date of each temporal category.}
 
 \item{UseProcessData}{Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'}
-
-\item{ProcessData}{\code{\link[RstoxFDA]{TemporalDefinition}} as returned from this function}
 }
 \value{
 Temporal Categories, see: \code{\link[RstoxFDA]{TemporalDefinition}}.
