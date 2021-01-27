@@ -22,6 +22,22 @@ is.Date <- function(date){
   return(FALSE)
 }
 
+#' Checks if argument is \code{\link[RstoxData]{Translation}}
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxData]{Translation}}
+#' @param Translation argument to be checked for data conformity
+#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{Translation}}
+#' @export
+is.Translation <- function(Translation){
+  if (!data.table::is.data.table(Translation)){
+    return(FALSE)
+  }
+  if (!all(c("VariableName", "Value",	"NewValue") %in% names(Translation))){
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
 #' Sampling Report data (ReportFdaSamplingData)
 #' 
 #' @description 
@@ -752,8 +768,7 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "RecaData",
     functionParameterFormat = list(
       RandomEffects = "randomcovariates",
-      FixedEffects = "fixedcovariates",
-      CarEffect = "carcovariate"),
+      FixedEffects = "fixedcovariates"),
     functionArgumentHierarchy = list(
       AgeErrorMatrix = list(
         UseAgingError = TRUE

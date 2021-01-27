@@ -9,11 +9,14 @@ AddGearGroupStoxLanding(StoxLandingData, Translation)
 \arguments{
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} data which will be annotated.}
 
-\item{Translation}{Translation table (\code{\link[RstoxData]{Translation}}) that maps the column 'Gear' in 'StoxLandingData' to a gear group.}
+\item{Translation}{Translation table (\code{\link[RstoxData]{Translation}}). See details.}
 }
 \value{
 StoxLandingData with column 'GearGroup' appended. See \code{\link[RstoxData]{StoxLandingData}}.
 }
 \description{
 Adds a column to StoxLandingData with gear groups
+}
+\details{
+The provided Translation should maps values ('Value' in Translation) for the variable 'Gear' ('VariableName' in Translation) in 'StoxBioticData' to a gear group ('NewValue').
 }

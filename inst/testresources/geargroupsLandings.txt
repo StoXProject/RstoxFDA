@@ -1,7 +1,8 @@
-NS9400	GearGroup
-11	Seine
-12	Seine
-14	Seine
-10	Seine
-15	Seine
-53	PelTrawl
+VariableName	Value	NewValue
+Gear	11	Seine
+Gear	12	Seine
+Gear	14	Seine
+Gear	10	Seine
+Gear	15	Seine
+Gear	53	PelTrawl
+Gear	51	PelTrawl
