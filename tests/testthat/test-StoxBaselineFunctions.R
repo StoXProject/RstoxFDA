@@ -234,7 +234,19 @@ my <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10-2
 tabMultiYear$stopD[2] <- as.Date("2020-10-01")
 expect_error(appendTemporal(tabMultiYear, "period", my, datecolumns = c("stopD", "startD")),"Year is provided in temporal definitions, but does not contain definitions for all years in data.")
 
+context("test-StoxBaselineFunctions: AddPeriodStoxBiotic")
+stoxbiotic <- readRDS(system.file("testresources","StoxBioticData.rds", package="RstoxFDA"))
+quart <- DefinePeriod(NULL, TemporalCategory = "Quarter")
+stoxbioticPost <- AddPeriodStoxBiotic(stoxbiotic, quart)
+expect_true("Period" %in% names(stoxbioticPost$Station))
+expect_true(all(c("Q1", "Q2") %in% stoxbioticPost$Station$Period))
 
+context("test-StoxBaselineFunctions: AddPeriodStoxLanding")
+stoxlanding <- readRDS(system.file("testresources","StoxLandingData.rds", package="RstoxFDA"))
+quart <- DefinePeriod(NULL, TemporalCategory = "Quarter")
+stoxlandingPost <- AddPeriodStoxLanding(stoxlanding, quart)
+expect_true("Period" %in% names(stoxlandingPost$landings))
+expect_true(all(c("Q1", "Q2") %in% stoxlandingPost$landings$Period))
 
 context("test-StoxBaselineFunctions: SetAreaPositionsBiotic")
 areaPos <- DefineAreaPosition(NULL, FileName = regularfile, StratumPolygon = NULL)

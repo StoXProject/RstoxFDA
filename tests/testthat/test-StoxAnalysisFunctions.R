@@ -121,7 +121,7 @@ StoxBioticDataDelp$Sample$CatchFractionCount[2] <- 3000
 prep <- PrepareRecaEstimate(StoxBioticDataDelp, StoxLandingData, FixedEffects = c(), RandomEffects = c())
 
 context("test-StoxAnalysisFunctions: RunRecaEstimate, stratified samples (nFish)")
-est <- RunRecaEstimate(prep, 10, 100, 0)
+est <- RunRecaEstimate(prep, 10, 200, 0)
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate with  with random effect Area")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")

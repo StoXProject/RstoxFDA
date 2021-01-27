@@ -714,6 +714,18 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "StoxBioticData"
   ),
   
+  AddPeriodStoxLanding = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxLandingData"
+  ),
+  
+  AddPeriodStoxBiotic = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxBioticData"
+  ),
+  
   PrepareRecaEstimate = list(
     functionType = "modelData",
     functionCategory = "analysis",
