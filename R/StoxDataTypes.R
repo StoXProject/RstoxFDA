@@ -26,7 +26,7 @@ is.Date <- function(date){
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxData]{Translation}}
 #' @param Translation argument to be checked for data conformity
-#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{Translation}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxData]{Translation}}
 #' @export
 is.Translation <- function(Translation){
   if (!data.table::is.data.table(Translation)){
@@ -44,11 +44,12 @@ is.Translation <- function(Translation){
 #'  \code{\link[data.table]{data.table}} with factors for approximating the weight of a 
 #'  desired product type (e.g. round fish)
 #'  from weights of other fish products. Contains the columns:
+#'  \describe{
 #'  \item{'Description'}{Free-text description of the product type}
 #'  \item{'Species'}{Identifier for the species that the conversion applies to}
 #'  \item{'ProductType'}{Identifier for the type of product that the conversion applies to}
 #'  \item{'WeightFactor'}{scalar value that weights for the given 'ProductType' can be multiplied with to approximate desired product type (e.g. round fish).}
-#'  
+#'  }
 #'  NA is allowed for 'WeightFactor', which will result in NA for weights after conversion
 #'  
 #' @name WeightConversionTable
@@ -734,6 +735,31 @@ stoxFunctionAttributes <- list(
         UseProcessData = FALSE
       )
     )
+  ),
+  
+  DefineWeightConversionFactor = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "WeightConversionTable", 
+    functionParameterFormat = list(
+      FileName = "filePath"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      FileName = list(
+        DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      )
+    )
+  ),
+  
+  ConvertWeightsBiotic =list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "BioticData" 
   ),
   
   SetTimeBiotic = list(

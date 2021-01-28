@@ -37,12 +37,10 @@ Different products of fish may be measured and round weight (live weight)
  }
  
  After conversion the 'producttype'-variables will be changed to reflect the approximate weight.
- That is they will be set to 'TargetProductType'
+ That is they will be set to 'TargetProductType'.
  
  If 'WeightConversionTable' contains NAs for 'WeightFactor', converted weights will be NA.
  This is useful for dealing with species whoose weights are not needed in subsequent analysis. 
- 
- For weights that are missing (NA), no conversion will be attempted.
  
  The variables 'catchvolume', 'lengthsamplevolume', and 'individualvolume'
  are also dependent on product type. These are set to NA as weight is converted.

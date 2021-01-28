@@ -7,10 +7,11 @@
 \code{\link[data.table]{data.table}} with factors for approximating the weight of a 
  desired product type (e.g. round fish)
  from weights of other fish products. Contains the columns:
+ \describe{
  \item{'Description'}{Free-text description of the product type}
  \item{'Species'}{Identifier for the species that the conversion applies to}
  \item{'ProductType'}{Identifier for the type of product that the conversion applies to}
  \item{'WeightFactor'}{scalar value that weights for the given 'ProductType' can be multiplied with to approximate desired product type (e.g. round fish).}
- 
+ }
  NA is allowed for 'WeightFactor', which will result in NA for weights after conversion
 }

@@ -148,6 +148,9 @@ ConvertWeightsBiotic <- function(BioticData, WeightConversionTable, TargetProduc
   if (!isGiven(TargetProductType)){
     stop("'TargetProductType' must be provided.")
   }
+  if (!is.WeightConversionTable(WeightConversionTable)){
+    stop("invalid WeightConversionTable")
+  }
   
   for (file in names(BioticData)){
     if ("catchsample" %in% names(BioticData[[file]]) &
