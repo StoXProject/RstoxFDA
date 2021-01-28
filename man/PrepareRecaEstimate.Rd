@@ -7,20 +7,19 @@
 PrepareRecaEstimate(
   StoxBioticData,
   StoxLandingData,
-  fixedEffects,
-  randomEffects,
-  continousEffects = NULL,
-  carEffect = NULL,
-  CarNeighbours = NULL,
-  AgeErrorMatrix = NULL,
-  stockSplitting = F,
-  ClassificationError = NULL,
-  minAge = NULL,
-  maxAge = NULL,
-  maxLength = NULL,
-  lengthResolution = NULL,
-  temporalResolution = c("Quarter", "Month"),
-  hatchDay = 1
+  FixedEffects = character(),
+  RandomEffects = character(),
+  UseCarEffect = F,
+  CarEffect = character(),
+  CarNeighbours,
+  UseAgingError = F,
+  AgeErrorMatrix,
+  CellEffect = F,
+  MinAge = integer(),
+  MaxAge = integer(),
+  MaxLength = numeric(),
+  LengthResolution = numeric(),
+  HatchDay = integer()
 )
 }
 \arguments{
@@ -30,52 +29,50 @@ and approriate columns appended for identifying corresponding landings.}
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 and approriate columns appended for identifying corresponding samples}
 
-\item{fixedEffects}{character() vector identifying column names that should be treated as fixed effects}
+\item{FixedEffects}{optional, vector identifying column names that should be treated as fixed effects. Defaults to no fixed effects.}
 
-\item{randomEffects}{character() vector identifying column names that should be treated as random effects}
+\item{RandomEffects}{optional, vector identifying column names that should be treated as random effects. Defaults to no random effects.}
 
-\item{continousEffects}{character() vector identifying column names that should be treated as continous effect}
+\item{UseCarEffect}{logical indicating whether CAR-effect (conditional autoregressive effect) should be used.}
 
-\item{carEffect}{character(), optional, identifying the column name that should be treated as CAR-effect
-(conditional autoregressive effect)}
+\item{CarEffect}{optional, character identifying the column name that should be treated as CAR-effect.
+Mandatory if CAR-effect is TRUE
+(conditional autoregressive effect).}
 
 \item{CarNeighbours}{\code{\link[RstoxFDA]{CarNeighbours}}, mandatory if 'carEffect' is given.
 Identifies which values of the carEffect are to be considered as neighbours.}
 
+\item{UseAgingError}{If true error-aging parameters will be incorporated in the model}
+
 \item{AgeErrorMatrix}{\code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
-If not provided age errors will not be modelled.}
+mandatory if UseAgingError is TRUE.}
 
-\item{stockSplitting}{logical(), default FALSE, whether to run estimates for separate stocks in the data (coastal cod-analysis)}
+\item{CellEffect}{If true, an interaction term will be added with all covariates that exist in landings (whether they are fixed or random effects)}
 
-\item{ClassificationError}{\code{\link[RstoxFDA]{ClassificationError}}, optional,
-specifies the probability of misclassifying stock for an individual Used in conjunction with 'stockSplitting'. If not provided classification errors will not be modelled.}
-
-\item{minAge}{integer(), optional, must match dimensions of any 'AgeErrorMatrix'.
+\item{MinAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
 If not provided it will be derived from data.}
 
-\item{maxAge}{integer(), optional, must match dimensions of any 'AgeErrorMatrix'.
+\item{MaxAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
 If not provided it will be derived from data.}
 
-\item{maxLength}{numeric(), optional, maximal fish length in data in cm.
+\item{MaxLength}{optional, maximal fish length in data in cm.
 If not provided it will be derived from data.}
 
-\item{lengthResolution}{numeric(), optional, resolution for length measurements in cm.
+\item{LengthResolution}{optional, resolution for length measurements in cm.
 If not provided modal value from data is used.}
 
-\item{temporalResolution}{character(), default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
-Regulates temporal resolution for calculating fractional ages of fish.
-Not to be confused with any temporal covariate.}
-
-\item{hatchDay}{integer(), defaults to 1 representing Jan 1st.
+\item{HatchDay}{defaults to 1 representing Jan 1st.
 encoding the day of the year when fish is consider to transition from one age to the next.}
 }
 \value{
 \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 }
 \description{
-StoX-function.
- Performs data checks and data conversions,
+Performs data checks and data conversions,
  and stores some data-related parameters in preparation for running
- \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}
- via \code{\link[RstoxFDA]{RunRecaEstimate}}.
+ \code{\link[Reca]{eca.estimate}}
+ via \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
+}
+\details{
+A covariate indentifying haul or landing is always included in Reca. Do not add haul-identifiers as covariates.
 }

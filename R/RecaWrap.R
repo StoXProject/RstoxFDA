@@ -3,6 +3,29 @@
 
 # return ECA object, and mapping between codes.
 
+#' Make tempdir for Reca results
+#' returns path
+#' @noRd
+makeTempDirReca <- function(){
+  fpath <- file.path(tempdir(), "Recadir")
+  if (dir.exists(fpath)){
+    unlink(fpath, recursive = T)
+  }
+  dir.create(fpath)
+  return(fpath)
+}
+
+#' Remove tempdir for Reca results
+#' @noRd
+removeTempDirReca <- function(fpath){
+  unlink(fpath, recursive = T)
+  write("Removing tempdir:", stderr())
+  write(fpath, stderr())
+  if (dir.exists(fpath)){
+    warning(paste("Could not remove tempdir: ", fpath))
+  }
+}
+
 #' Check that all fixed effect combinations are sampled
 #' @noRd
 checkAllSampled <- function(landings, samples, fixedEffects){
@@ -100,7 +123,18 @@ getCovariateMap <- function(covariate, samples, landings){
 
 #' order columns by constant, inlandings, notinlandings (inlandings and notinalndings sorted alphabetically)
 #' @noRd
-getInfoMatrix <- function(samples, landings, fixedEffects, randomEffects, carEffect){
+getInfoMatrix <- function(samples, landings, fixedEffects, randomEffects, carEffect, interaction=NULL){
+  
+  if (any(duplicated(c(fixedEffects, randomEffects, carEffect)))){
+    stop("some effects are specified more than once")
+  }
+  
+  if (is.null(interaction)){
+    interaction <- c()
+  }
+  if (!all(interaction %in% c(fixedEffects, randomEffects, carEffect))){
+    stop("The effects specified in 'interaction' must be provided as either fixedEffects, randomEffects, or carEffect")
+  }
 
   info <- matrix(ncol=7, nrow=length(c(fixedEffects, randomEffects, carEffect))+1)
   colnames(info) <- c("random", "CAR", "continuous", "in.landings", "nlev", "interaction", "in.slopeModel")
@@ -110,22 +144,39 @@ getInfoMatrix <- function(samples, landings, fixedEffects, randomEffects, carEff
   if (!is.null(fixedEffects) & length(fixedEffects) > 0){
     for (e in fixedEffects){
       inl <- 0
+      int <- 0
       if (e %in% names(landings)){
         inl <- 1
+        if (e %in% interaction){
+          int <- 1
+        }
       }
-      info[i,] <- c(0,0,0,inl,length(unique(c(samples[[e]], landings[[e]]))), inl, 0)
+      else{
+        if (e %in% interaction){
+          stop(paste("Effect", e, "is specified in interaction, but is not found in landings"))
+        }
+      }
+      info[i,] <- c(0,0,0,inl,length(unique(c(samples[[e]], landings[[e]]))), int, 0)
       i <- i+1
     }
   }
   if (!is.null(randomEffects) & length(randomEffects) > 0){
     for (e in randomEffects){
       inl <- 0
+      int <- 0
       if (e %in% names(landings)){
+        if (e %in% interaction){
+          int <- 1
+        }
         inl <- 1
-        info[i,] <- c(1,0,0,inl,length(unique(c(samples[[e]], landings[[e]]))), inl, 0)
+        info[i,] <- c(1,0,0,inl,length(unique(c(samples[[e]], landings[[e]]))), int, 0)
       }
       else{
-        info[i,] <- c(1,0,0,inl,length(unique(samples[[e]])), inl, 0)
+          if (e %in% interaction){
+            stop(paste("Effect", e, "is specified in interaction, but is not found in landings"))
+          }
+        
+        info[i,] <- c(1,0,0,inl,length(unique(samples[[e]])), int, 0)
       }
 
       i <- i+1
@@ -169,6 +220,7 @@ addPartCount <- function(DataMatrix, nFish){
 
   if (nrow(partsamples) == 0){
     DataMatrix$partcount <- NA
+    DataMatrix$partnumber <- 1
     return(DataMatrix)
   }
   else if (nrow(partsamples) > 0){
@@ -177,6 +229,7 @@ addPartCount <- function(DataMatrix, nFish){
     }
     else if (is.null(nFish) & all(partsamples$nSampleId == 1)){
       DataMatrix$partcount <- NA
+      DataMatrix$partnumber <- 1
       return(DataMatrix)
     }
     if (!all(partsamples[partsamples$nSampleId > 1,]$sampleId %in% nFish$sampleId)){
@@ -186,6 +239,19 @@ addPartCount <- function(DataMatrix, nFish){
     nFish$partcount <- as.integer(round(nFish$count))
     nFish$count <- NULL
     DataMatrix <- merge(DataMatrix, nFish, by="sampleId", all.x=T)
+    
+    #convert sampleId to partnumber
+    DataMatrix$partnumber <- 1
+    ccount <- 1
+    for (cId in unique(DataMatrix$catchId[!is.na(DataMatrix$partcount)])){
+      scount <- 1
+      for (sId in unique(DataMatrix$sampleId[DataMatrix$catchId == cId])){
+        DataMatrix$partnumber[DataMatrix$catchId == cId & DataMatrix$sampleId == sId] <- scount
+        scount <- scount + 1
+      }
+      ccount <- ccount + 1
+    }
+    
     return(DataMatrix)
   }
 
@@ -223,7 +289,7 @@ getDataMatrixAgeLength <- function(samples, nFish=NULL, hatchday=1){
 
   DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "sampleId")]
   DataMatrix <- addPartCount(DataMatrix, nFish)
-  DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "sampleId", "partcount")]
+  DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "partnumber", "partcount")]
   names(DataMatrix) <- c("age", "part.year", "lengthCM", "catchId", "partnumber", "partcount")
   DataMatrix <- addSamplingId(DataMatrix)
   DataMatrix <- DataMatrix[order(DataMatrix$catchId),]
@@ -234,7 +300,7 @@ getDataMatrixAgeLength <- function(samples, nFish=NULL, hatchday=1){
   DataMatrix$otolithtype <- as.integer(DataMatrix$otolithtype)
   DataMatrix <- DataMatrix [,c("age",  "part.year", "lengthCM", "samplingID", "partnumber", "otolithtype", "partcount")]
 
-  if (any(DataMatrix$age) < 0){
+  if (any(!is.na(DataMatrix$age) & DataMatrix$age < 0)){
     stop("Negative age for fish. Consider parameter hatchDay.")
   }
 
@@ -325,7 +391,7 @@ getNeighbours <- function(neighbours, covariateMap){
   if (is.null(neighbours)){
     return(NULL)
   }
-
+  
   if (length(neighbours) != length(covariateMap)){
     stop("length of neighbours does not match length of covariateMap")
   }
@@ -368,7 +434,7 @@ getNeighbours <- function(neighbours, covariateMap){
 #'  getLandings(landings, c("Metier5"), covMap, month=landings$Month)
 #' @export
 getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NULL, quarter=NULL){
-
+  
   #consider redesigning, using info matrix for ordering
 
   if (is.null(date) & is.null(month) & is.null(quarter)){
@@ -450,7 +516,7 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #'  neighbours must be symetric, so that b \%in\% neighbours[a], implies a \%in\% neighbours[b]
 #'
 #'  nfish is only needed when several samples may be taken from the same catch.
-#'  If these are stratified in any way (e.g. pre-sorting by size or sex), an estimate of strata sizes must be given (column count), for each sample (column sampleId).
+#'  If these are stratified in any way (e.g. pre-sorting by size or sex), an estimate of strata sizes must be given (column 'count'), for each sample (column 'sampleId').
 #'  If these are replicate samples from the same selection frame, an estimate of the total catch may be given.
 #'
 #'  output GlobalParameters: While outputs AgeLength, WeightLength and Landings are complete and ready for R-ECA runs.
@@ -486,6 +552,7 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #' @param month integer() vector, matching the number of rows in 'landings', month of catch (1 for January, etc.), see details.
 #' @param quarter integer() vector, vector, matching the number of rows in 'landings', quarter of catch (1 for Q1, etc.), see details.
 #' @param hatchDay integer(), encoding the day of the year when fish is consider to transition from one age to the next.
+#' @param interaction character vector specifying effects that should be included in interaction term. Must correspond to effects specified in parameters 'fixedEffects', 'randomEffects', or 'carEffect'
 #' \describe{
 #'  \item{sampleID}{Column idenitfying the sample, defined as for 'samples'}
 #'  \item{count}{Estimated number of fish in the part of the catch the sample was taken from}
@@ -545,27 +612,57 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #'    nFish = nFish,
 #'    quarter = landings$Quarter)
 #' @export
-prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=NULL, neighbours=NULL, nFish=NULL, ageError=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, testMax=1000, date=NULL, month=NULL, quarter=NULL, hatchDay=1){
+prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=NULL, neighbours=NULL, nFish=NULL, ageError=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, testMax=1000, date=NULL, month=NULL, quarter=NULL, hatchDay=1, interaction=NULL){
   samples <- data.table::as.data.table(samples)
   landings <- data.table::as.data.table(landings)
 
+  # check interaction
+  if (!all(interaction %in% c(fixedEffects, randomEffects, carEffect))){
+    missing <- interaction[!(interaction %in% c(fixedEffects, randomEffects, carEffect))]
+    stop(paste("The effects specified in 'interaction' must be provided as either fixedEffects, randomEffects, or carEffect. Missing:", paste(missing, collapse=",")))
+  }
+  
+  if (!is.null(neighbours) & !is.list(neighbours)){
+    stop("Wrong CAR-format")
+  }
+  
+  
   # check mandatory columns
   if (!(all(c("LiveWeightKG") %in% names(landings)))){
     stop("Column LiveWeightKG is mandatory in landings")
   }
   if (!(all(c("catchId", "sampleId", "date", "Age", "Length", "Weight") %in% names(samples)))){
-    stop("Columns, catchId, sampleId, Age, Length, and Weight are mandatory in samples")
+    missing <- c("catchId", "sampleId", "date", "Age", "Length", "Weight")[!(c("catchId", "sampleId", "date", "Age", "Length", "Weight") %in% names(samples))]
+    stop(paste("Columns, catchId, sampleId, date, Age, Length, and Weight are mandatory in samples. Missing: ", paste(missing, collapse=",")))
   }
 
   # check for NAs
-  ins <- c(fixedEffects, randomEffects, carEffect, "Length")
+  ins <- c(fixedEffects, randomEffects, carEffect, "date", "Length")
   if (!all(!is.na(samples[, ins, with=F]))){
-    stop("NAs are only allowed for weight and age in samples")
+    nas <- c()
+    for (var in ins){
+      if (any(is.na(samples[[var]]))){
+        nas <- c(nas, var)
+      }
+    }
+    stop("NAs are only allowed for weight and age in samples, not for covariates, date or length. Found NA for: ", paste(nas, collapse=","))
   }
+  
+  if (is.null(maxLength)){
+    maxLength <- max(samples$Length)
+  }
+  if (is.null(minAge)){
+    minAge <- min(samples$Age, na.rm=T)
+  }
+  if (is.null(maxAge)){
+    maxAge <- max(samples$Age, na.rm=T)
+  }
+  
   inl <- c(fixedEffects, randomEffects, carEffect, "LiveWeightKG")[c(fixedEffects, randomEffects, carEffect, "LiveWeightKG") %in% names(landings)]
   if(!all(!is.na(landings[, inl, with=F]))){
     stop("NAs in landings")
   }
+  
 
   #check different effect types
   if (!is.null(fixedEffects) & length(fixedEffects) > 0){
@@ -592,7 +689,6 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
     if (is.null(neighbours)){
       stop("CAR effect specified, but no neighbours provided.")
     }
-
     for (l in names(neighbours)){
       for (n in neighbours[[l]]){
         if (!(n %in% names(neighbours) | l %in% c(neighbours[[n]])))
@@ -638,11 +734,15 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   }
 
   covariateMaps <- list()
+  covariateMaps$AgeCategories <- minAge:maxAge
 
   #covariateMaps common between models (effects in landings)
   covariateMaps$inLandings <- list()
   for (f in c(fixedEffects, randomEffects, carEffect)[c(fixedEffects, randomEffects, carEffect) %in% names(landings)]){
     covariateMaps$inLandings[[f]] <- getCovariateMap(f, samples, landings)
+  }
+  if (!is.null(carEffect)){
+    covariateMaps$carEffect <- carEffect
   }
 
   #covariateMaps specific to each model (random effects not in landings)
@@ -659,20 +759,14 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
     lengthResolution <- min(lengthDiffs[lengthDiffs != 0])
   }
 
-  if (is.null(maxLength)){
-    maxLength <- max(samples$Length)
-  }
-  if (is.null(minAge)){
-    minAge <- min(samples$Age, na.rm=T)
-  }
-  if (is.null(maxAge)){
-    maxAge <- max(samples$Age, na.rm=T)
-  }
+  
   if (any(!is.na(samples$Age) & samples$Age < minAge)){
-    stop("Samples contains ages smaller than minAge")
+    minSampleAge <- min(samples$Age, na.rm=T)
+    stop(paste("Samples contains ages (", minSampleAge, ") smaller than minAge (", minAge,"(",class(minAge),"))", sep=""))
   }
   if (any(!is.na(samples$Age) & samples$Age > maxAge)){
-    stop("Samples contains ages larger than maxAge")
+    maxSampleAge <- max(samples$Age, na.rm=T)
+    stop(paste("Samples contains ages (", maxSampleAge, ") larger than maxAge (", maxAge, "(",class(maxAge),"))", sep=""))
   }
   if (any(samples$Length > maxLength)){
     stop("Samples contains lengths longer than maxLength")
@@ -705,19 +799,19 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   ret <- getDataMatrixAgeLength(samples, nFish, hatchDay)
   AgeLength$DataMatrix <- ret$DataMatrix
   AgeLength$CovariateMatrix <- getCovariateMatrix(samples, c(fixedEffects, randomEffects, carEffect), covariateMaps$inLandings, covariateMaps$randomEffects$AgeLength)
-  AgeLength$info <- getInfoMatrix(samples, landings, fixedEffects, randomEffects, carEffect)
+  AgeLength$info <- getInfoMatrix(samples, landings, fixedEffects, randomEffects, carEffect, interaction)
   AgeLength$CARNeighbours <- getNeighbours(neighbours, covariateMaps$inLandings[[carEffect]])
   AgeLength$AgeErrorMatrix <- ageError
   AgeLength$CCerrorList <- NULL # CC (stock splitting) not supported
-  covariateMaps$randomEffects$AgeLength$CatchId <- ret$catchIdMap
+  covariateMaps$randomEffects$AgeLength$catchSample <- ret$catchIdMap
 
   WeightLength <- list()
   ret <- getDataMatrixWeightLength(samples[!is.na(samples$Weight),], nFish)
   WeightLength$DataMatrix <- ret$DataMatrix
   WeightLength$CovariateMatrix <- getCovariateMatrix(samples[!is.na(samples$Weight),], c(fixedEffects, randomEffects, carEffect), covariateMaps$inLandings, covariateMaps$randomEffects$WeightLength)
-  WeightLength$info <- getInfoMatrix(samples[!is.na(samples$Weight),], landings, fixedEffects, randomEffects, carEffect)
+  WeightLength$info <- getInfoMatrix(samples[!is.na(samples$Weight),], landings, fixedEffects, randomEffects, carEffect, interaction)
   WeightLength$CARNeighbours <- getNeighbours(neighbours, covariateMaps$inLandings[[carEffect]])
-  covariateMaps$randomEffects$WeightLength$CatchId <- ret$catchIdMap
+  covariateMaps$randomEffects$WeightLength$catchSample <- ret$catchIdMap
 
   Landings <- getLandings(landings, c(fixedEffects, randomEffects, carEffect), covariateMaps$inLandings, date, month, quarter)
 
@@ -738,6 +832,8 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   ret$GlobalParameters <- GlobalParameters
   ret$CovariateMaps <- covariateMaps
 
+  checkEcaObj(ret)
+  
   return(ret)
 }
 
@@ -752,7 +848,7 @@ checkEcaObj <- function(RECAobj){
   obj$Landings$AgeLengthCov <- as.data.frame(obj$Landings$AgeLengthCov)
   obj$Landings$WeightLengthCov <- as.data.frame(obj$Landings$WeightLengthCov)
 
-  checkWeightLength(obj$WeightLength)
+  checkWeightLength(obj$WeightLength, obj$Landings)
   checkAgeLength(obj$AgeLength)
   checkCovariateConsistency(obj$AgeLength, obj$Landings$AgeLengthCov)
   checkCovariateConsistency(obj$WeightLength, obj$Landings$WeightLengthCov)

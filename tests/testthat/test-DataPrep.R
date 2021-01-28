@@ -56,11 +56,11 @@ expect_warning(convertCodes(c("TBS", "TBN", "OTB"), gearConversion2), "Coercing 
 
 
 context("test-DataPrep: append area code")
-strp <- RstoxBase::DefineStratumPolygon(NULL, F, "ResourceFile",system.file("testresources", "mainarea_fdir_fom2018_strata.txt", package="RstoxFDA"))
+strp <- mainareaFdir2018
 sp::proj4string(strp) <- sp::CRS("+proj=longlat +datum=WGS84")
 
 areafile <- system.file("testresources","mainarea_fdir_from_2018_compl.txt", package="RstoxFDA")
-areaPos <- DefineAreaCodePosition(resourceFilePath = areafile)
+areaPos <- DefineAreaPosition(NULL, FileName = areafile)
 
 areaPosPost <- appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended")
 expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppended)))
@@ -85,7 +85,7 @@ expect_error(appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppende
 
 
 context("test-StoxBaselineFunctions: appendPosition")
-areaTab <- DefineAreaCodePosition(resourceFilePath = areafile)[,c("Area", "SubArea")]
+areaTab <- DefineAreaPosition(FileName = areafile)[,c("Area", "Location")]
 areaTabAppended <- appendPosition(areaTab, mainareaFdir2018, "Area", "lat", "lon")
 areaTabReAppended <- appendAreaCode(areaTabAppended, mainareaFdir2018, "lat", "lon", "Area2")
 expect_true(all(areaTabReAppended$Area == areaTabReAppended$Area2))

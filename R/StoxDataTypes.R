@@ -6,7 +6,7 @@ is.POSIXct <- function(date){
   if (length(date) == 1 & class(date) == "POSIXct"){
     return(TRUE)
   }
-
+  
   return(FALSE)
 }
 
@@ -18,9 +18,112 @@ is.Date <- function(date){
   if (length(date) == 1 & class(date) == "Date"){
     return(TRUE)
   }
-
+  
   return(FALSE)
 }
+
+#' Checks if argument is \code{\link[RstoxData]{Translation}}
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxData]{Translation}}
+#' @param Translation argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxData]{Translation}}
+#' @export
+is.Translation <- function(Translation){
+  if (!data.table::is.data.table(Translation)){
+    return(FALSE)
+  }
+  if (!all(c("VariableName", "Value",	"NewValue") %in% names(Translation))){
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
+#' Weight Conversion Table (WeightConversionTable)
+#' 
+#' @description 
+#'  \code{\link[data.table]{data.table}} with factors for approximating the weight of a 
+#'  desired product type (e.g. round fish)
+#'  from weights of other fish products. Contains the columns:
+#'  \describe{
+#'  \item{'Description'}{Free-text description of the product type}
+#'  \item{'Species'}{Identifier for the species that the conversion applies to}
+#'  \item{'ProductType'}{Identifier for the type of product that the conversion applies to}
+#'  \item{'WeightFactor'}{scalar value that weights for the given 'ProductType' can be multiplied with to approximate desired product type (e.g. round fish).}
+#'  }
+#'  NA is allowed for 'WeightFactor', which will result in NA for weights after conversion
+#'  
+#' @name WeightConversionTable
+#' 
+NULL
+
+#' Check if argument is WeightConversionTable
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{WeightConversionTable}}
+#' @param WeightConversionTable argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{WeightConversionTable}}
+#' @export
+is.WeightConversionTable <- function(WeightConversionTable){
+  if (!data.table::is.data.table(WeightConversionTable)){
+    return(FALSE)
+  }
+  if (!all(c("Description", "Species", "ProductType", "WeightFactor") %in% names(WeightConversionTable))){
+    return(FALSE)
+  }
+  
+  return(TRUE)
+}
+
+#' Sampling Report data (ReportFdaSamplingData)
+#' 
+#' @description 
+#'  list with tow members:
+#'  \describe{
+#'   \item{AggregationVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FishereisSampling' stored in the column 'AggregationVariables'}
+#'   \item{FisheriesSampling}{a \code{\link[data.table]{data.table}} described below.}
+#'  }
+#'  
+#'  FisheriesSampling is a report of sampling against total landings for partitions of a fishery.
+#'  The report is a \code{\link[data.table]{data.table}} with columns:
+#'  \describe{
+#'   \item{...}{A column for each of the provided Aggregation variables}
+#'   \item{LandedRoundWeight}{Total landings in kg}
+#'   \item{Catches}{Number of catches sampled}
+#'   \item{Vessels}{Number of vessels sampled}
+#'   \item{WeightMeasurments}{Number of fished measured for weight}
+#'   \item{LengthMeasurments}{Number of fished measured for length}
+#'   \item{AgeReadings}{Number of fished with age determined}
+#'   \item{WeightOfSampledCatches}{Total weight of the sampled catches}
+#'  }
+#' 
+#' @name ReportFdaSamplingData
+#' 
+NULL
+
+#' Check if argument is ReportFdaSamplingData
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
+#' @param ReportFdaSamplingData argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
+#' @export
+is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
+  if (!is.list(ReportFdaSamplingData)){
+    return(FALSE)
+  }
+  if (!all(c("AggregationVariables", "FisheriesSampling") %in% names(ReportFdaSamplingData))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(ReportFdaSamplingData$FisheriesSampling)){
+    return(FALSE)
+  }
+  
+  if (!all(c("LandedRoundWeight", "Catches", "Vessels", "WeightMeasurments", "LengthMeasurments", "AgeReadings", "WeightOfSampledCatches") %in% names(ReportFdaSamplingData$FisheriesSampling))){
+    return(FALSE)
+  }
+  
+  return(TRUE)
+  
+}
+
 #' Reca Data (RecaData)
 #'
 #' Data and some data parameters prepared for running
@@ -44,7 +147,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaData}}
 #' @param RecaData argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaData}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaData}}
 #' @export
 is.RecaData <- function(RecaData){
   if (!is.list(RecaData)){
@@ -68,7 +171,7 @@ is.RecaData <- function(RecaData){
   if (!is.list(RecaData$CovariateMaps)){
     return(FALSE)
   }
-
+  
   if (!all(c("DataMatrix", "CovariateMatrix", "info") %in% names(RecaData$AgeLength))){
     return(FALSE)
   }
@@ -78,7 +181,194 @@ is.RecaData <- function(RecaData){
   if (!all(c("AgeLengthCov", "WeightLengthCov", "LiveWeightKG") %in% names(RecaData$Landings))){
     return(FALSE)
   }
+  
+  return(TRUE)
+}
 
+
+#' Reca Parameter Data (RecaParameterData)
+#'
+#' @description 
+#' Data and some data parameters prepared for running
+#' various report functions that invoke \code{\link[Reca]{eca.predict}}.
+#'
+#' @section model fit:
+#'  For inspection or analysis of model fit, the lists 'FitProportionAtAge', 
+#'  'FitLengthGivenAge' and 'FitWeightGivenLength' is of interest. 
+#'  These lists correspond to the three Reca-models and contain:
+#'  \describe{
+#'  \item{LogLikeliehood}{A \code{\link[data.table]{data.table}} 
+#'    tabulating the logarithm of the likeliehood of the parameter set for each iteration}
+#'  \item{...}{A \code{\link[data.table]{data.table}} for each of the model effects (e.g. covariates).}
+#'  }
+#'  
+#'  In addition to configurable covariates, the models always contain a constant effect (named 'constant'),
+#'  a catch or haul effect (named 'catchSample') and effects for fish measurments (named 'fish'). 
+#'  Where relevant the following parameters may be tabulated for each effect:
+#'  \describe{
+#'  \item{Age}{Identifying the age the effect applies to}
+#'  \item{Level}{Identifying the value or level of the covariate the effect applies to}
+#'  \item{Iteration}{Identifying the iteration the fit is provided for}
+#'  \item{AgeIndex}{Age identifier used internally in Reca}
+#'  \item{LevelIndex}{Level identifier used internally in Reca}
+#'  \item{Slope}{The value of the regression slope}
+#'  \item{tau_Slope}{The value of tau parameter for the regression slope}
+#'  \item{ar_Slope}{The value of regression slope of a the autoregressive coefficient associated with the effect}
+#'  \item{Intercept}{The value of the regression intercept}
+#'  \item{tau_Intercept}{The value of tau parameter for the regression intercept}
+#'  \item{ar_Intercept}{The value of the regression intercept of a autoregressive coefficient associated with the effect}
+#'  }
+#'  Consult Hirst et.al. 2005 for description of the parameters
+#'  
+#'  @section other data:
+#'  The lists 'AgeLength', 'WeightLength', 'Landings', 'GlobalParameters' and 'CovariateMaps'
+#'  may be passed to \code{\link[Reca]{eca.predict}} in functions consuming output from this function. All in all
+#'  the following lists can be accessed on RecaParameterData objects:
+#'  \describe{
+#'  \item{FitProportionAtAge}{list of data tables with parameters for for the Proportion-at-age model}
+#'  \item{FitLengthGivenAge}{list of data tables with parameters for for the Length-given-age model}
+#'  \item{FitWeightGivenLength}{list of data tables with parameters for for the Weight-given-length model}
+#'  \item{AgeLength}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}}
+#'  \item{WeightLength}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}}
+#'  \item{Landings}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}}
+#'  \item{GlobalParameters}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. see details}
+#'  \item{CovariateMaps}{Mapping of values for each covariate in landings and samples (including non-configurable catchId) to integer value used in R-ECA.}
+#' }
+#'
+#' @name RecaParameterData
+#'
+NULL
+
+#' Check if argument is RecaParameterData
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
+#' @param RecaParameterData argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
+#' @export
+is.RecaParameterData <- function(RecaParameterData){
+  
+  if (!is.list(RecaParameterData)){
+    return(FALSE)
+  }
+  if (!all(c("FitProportionAtAge", "FitLengthGivenAge", "FitWeightGivenLength", "AgeLength", "WeightLength", "Landings", "GlobalParameters", "CovariateMaps") %in% names(RecaParameterData))){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$AgeLength)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$WeightLength)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$Landings)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$GlobalParameters)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$CovariateMaps)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$FitProportionAtAge)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$FitLengthGivenAge)){
+    return(FALSE)
+  }
+  if (!is.list(RecaParameterData$FitWeightGivenLength)){
+    return(FALSE)
+  }
+  
+  if (!all(c("DataMatrix", "CovariateMatrix", "info") %in% names(RecaParameterData$AgeLength))){
+    return(FALSE)
+  }
+  if (!all(c("DataMatrix", "CovariateMatrix", "info") %in% names(RecaParameterData$WeightLength))){
+    return(FALSE)
+  }
+  if (!all(c("AgeLengthCov", "WeightLengthCov", "LiveWeightKG") %in% names(RecaParameterData$Landings))){
+    return(FALSE)
+  }
+  if (!all(c("LogLikelihood") %in% names(RecaParameterData$FitProportionAtAge))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaParameterData$FitProportionAtAge$LogLikelihood)){
+    return(FALSE)
+  }
+  if (!all(c("LogLikelihood") %in% names(RecaParameterData$FitLengthGivenAge))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaParameterData$FitLengthGivenAge$LogLikelihood)){
+    return(FALSE)
+  }
+  if (!all(c("LogLikelihood") %in% names(RecaParameterData$FitWeightGivenLength))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaParameterData$FitWeightGivenLength$LogLikelihood)){
+    return(FALSE)
+  }
+  
+  return(TRUE)
+}
+
+#' Reca Results (RecaCatchAtAge)
+#' 
+#' @description
+#'  Posterior distribution of total catch at age and weight and length parameters.
+#'
+#' @details
+#' a list of data tables:
+#' \describe{
+#'  \item{CatchAtAge}{\code{\link[data.table]{data.table}} tabulating the estimated catch-at-age by length group for each Reca iteration (MCMC sample)}
+#'  \item{MeanLength}{\code{\link[data.table]{data.table}} tabulating the mean length in cm by age for each Reca iteration (MCMC sample)}
+#'  \item{MeanWeight}{\code{\link[data.table]{data.table}} tabulating the mean weight in g by age for each Reca iteration (MCMC sample)}
+#'  \item{AggregationVariables}{\code{\link[data.table]{data.table}} with any variables that catch-at-age estimates are partitioned on in the column 'AggregationVariables'.}
+#' }
+#' In addition to columns for the variables in 'AggregationVariables', column names in the data tables should be interpreted as:
+#' \describe{
+#'  \item{Length}{Upper limit of length group in cm}
+#'  \item{Age}{Age in number of years}
+#'  \item{Iteration}{The Reca iteration (MCMC sample) that estimates are calculated for}
+#'  \item{CatchAtAge}{The total catch at age in numbers}
+#'  \item{MeanIndividualLength}{Mean Length at age in cm}
+#'  \item{MeanIndividualWeight}{Mean weight at age in g}
+#' }
+#' 
+#'
+#' @name RecaCatchAtAge
+#'
+NULL
+
+#' Check if argument is RecaCatchAtAge
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
+#' @param RecaCatchAtAge argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
+#' @export
+is.RecaCatchAtAge <- function(RecaCatchAtAge){
+  if (!is.list(RecaCatchAtAge)){
+    return(FALSE)
+  }
+  if (!all(c("CatchAtAge", "MeanLength", "MeanWeight") %in% names(RecaCatchAtAge))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaCatchAtAge$CatchAtAge)){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaCatchAtAge$MeanLength)){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(RecaCatchAtAge$MeanWeight)){
+    return(FALSE)
+  }
+  if (!all(c("Length", "Age", "Iteration", "CatchAtAge") %in% names(RecaCatchAtAge$CatchAtAge))){
+    return(FALSE)
+  }
+  if (!all(c("MeanIndividualLength", "Age", "Iteration") %in% names(RecaCatchAtAge$MeanLength))){
+    return(FALSE)
+  }
+  if (!all(c("MeanIndividualWeight", "Age", "Iteration") %in% names(RecaCatchAtAge$MeanWeight))){
+    return(FALSE)
+  }
+  
   return(TRUE)
 }
 
@@ -125,7 +415,7 @@ is.RecaPrediction <- function(prediction){
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}
 #' @param RecaResult argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaResult}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}
 #' @export
 is.RecaResult <- function(RecaResult){
   if (!is.list(RecaResult)){
@@ -140,7 +430,7 @@ is.RecaResult <- function(RecaResult){
   if (!is.RecaPrediction(RecaResult$prediction)){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -163,7 +453,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{UnifiedVariableDefinition}}
 #' @param UnifiedVariableDefinition argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{UnifiedVariableDefinition}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{UnifiedVariableDefinition}}
 #' @export
 is.UnifiedVariableDefinition <- function(UnifiedVariableDefinition){
   if (!data.table::is.data.table(UnifiedVariableDefinition)){
@@ -172,7 +462,7 @@ is.UnifiedVariableDefinition <- function(UnifiedVariableDefinition){
   if (!all(c("UnifiedVariable", "Source", "Definition") %in% names(UnifiedVariableDefinition))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -182,10 +472,10 @@ is.UnifiedVariableDefinition <- function(UnifiedVariableDefinition){
 #'
 #' @details
 #'  \describe{
-#'   \item{temporalCategory}{character() Value of the temporal category}
-#'   \item{startDay}{integer() Day of month for first day in the temporal category (1-based)}
-#'   \item{startMonth}{integer() Month for first day in the temporal category (1-based)}
-#'   \item{year}{integer() Year for which the category is defined, NA for seasonal definitions or for definition for a single unspecified year.}
+#'   \item{TemporalCategory}{character() Value of the temporal category}
+#'   \item{StartDay}{integer() Day of month for first day in the temporal category (1-based)}
+#'   \item{StartMonth}{integer() Month for first day in the temporal category (1-based)}
+#'   \item{StartYear}{integer() Year for which the category is defined, NA for seasonal definitions.}
 #'  }
 #'
 #'  Start and end of year is not implied as category delimitations when not included.
@@ -200,20 +490,20 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
 #' @param TemporalDefinition argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
 #' @export
 is.TemporalDefinition <- function(TemporalDefinition){
   if (!data.table::is.data.table(TemporalDefinition)){
     return(FALSE)
   }
-  if (!all(c("temporalCategory", "startDay", "startMonth") %in% names(TemporalDefinition))){
+  if (!all(c("Period", "StartDay", "StartMonth", "StartYear") %in% names(TemporalDefinition))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
-#' Area Code Positions (AreaCodePosition)
+#' Area Code Positions (AreaPosition)
 #'
 #' Table (\code{\link[data.table]{data.table}}) defining a position for area codes.
 #'
@@ -226,24 +516,24 @@ is.TemporalDefinition <- function(TemporalDefinition){
 #'  }
 #'  If location is provided, the case for missing location is also encoded.
 #'
-#' @name AreaCodePosition
+#' @name AreaPosition
 #'
 NULL
 
-#' Check if argument is AreaCodePosition
+#' Check if argument is AreaPosition
 #' @description
-#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AreaCodePosition}}
-#' @param AreaCodePosition argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{AreaCodePosition}}
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AreaPosition}}
+#' @param AreaPosition argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{AreaPosition}}
 #' @export
-is.AreaCodePosition <- function(AreaCodePosition){
-  if (!data.table::is.data.table(AreaCodePosition)){
+is.AreaPosition <- function(AreaPosition){
+  if (!data.table::is.data.table(AreaPosition)){
     return(FALSE)
   }
-  if (!all(c("Area", "SubArea", "Latitude", "Longitude") %in% names(AreaCodePosition))){
+  if (!all(c("Area", "Location", "Latitude", "Longitude") %in% names(AreaPosition))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -268,7 +558,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
 #' @param CarNeighbours argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{CarNeighbours}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
 #' @export
 is.CarNeighbours <- function(CarNeighbours){
   if (!data.table::is.data.table(CarNeighbours)){
@@ -277,7 +567,7 @@ is.CarNeighbours <- function(CarNeighbours){
   if (!all(c("CarVariable", "Neighbours") %in% names(CarNeighbours))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -302,7 +592,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
 #' @param AgeErrorMatrix argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
 #' @export
 is.AgeErrorMatrix <- function(AgeErrorMatrix){
   if (!data.table::is.data.table(AgeErrorMatrix)){
@@ -311,7 +601,7 @@ is.AgeErrorMatrix <- function(AgeErrorMatrix){
   if (!("ReadAge" %in% names(AgeErrorMatrix))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
@@ -349,7 +639,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ClassificationError}}
 #' @param ClassificationError argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{ClassificationError}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ClassificationError}}
 #' @export
 is.ClassificationError <- function(ClassificationError){
   if (!data.table::is.data.table(ClassificationError)){
@@ -358,204 +648,319 @@ is.ClassificationError <- function(ClassificationError){
   if (!all(c("ptype1.CC", "ptype1.S", "ptype2.CC", "ptype2.S", "ptype4.CC", "ptype4.S", "ptype5.CC", "ptype5.S") %in% names(ClassificationError))){
     return(FALSE)
   }
-
+  
   return(TRUE)
 }
 
-#' Function specification for inclusion in StoX projects
+#' Function specification for inclusion in StoX UI
 #' @export
 stoxFunctionAttributes <- list(
-
-  DefineGear = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "UnifiedVariableDefinition",
-    functionParameterType = list(resourceFilePath = "character"),
-    functionParameterFormat = list(resourceFilePath = "filePaths"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  DefineTemporalCategories = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "TemporalDefinition",
-    functionParameterType = list(temporalCategory = "character",
-                                 customPeriods = "character",
-                                 seasonal = "logical",
-                                 years = "integer"),
-    functionParameterFormat = list(customPeriods = "vector",
-                                   years = "vector"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
-  DefineAreaCodePosition = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "AreaCodePosition",
-    functionParameterType = list(resourceFilePath = "character"),
-    functionParameterFormat = list(resourceFilePath = "filePaths"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
-  ),
-
+  
   DefineCarNeighbours = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
+    functionType = "modelData", 
+    functionCategory = "baseline", 
     functionOutputDataType = "CarNeighbours",
-    functionParameterType = list(resourceFilePath = "character"),
-    functionParameterFormat = list(resourceFilePath = "filePaths"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
+    functionParameterFormat = list(
+      FileName = "filePath"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      StratumPolygon = list(
+        DefinitionMethod = "StratumPolygon", 
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      FileName = list(
+        DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      )
+    )
   ),
-
-  DefineAgeErrorMatrix  = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
+  
+  DefineAgeErrorMatrix = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
     functionOutputDataType = "AgeErrorMatrix",
-    functionParameterType = list(resourceFilePath = "character"),
-    functionParameterFormat = list(resourceFilePath = "filePaths"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
+    functionParameterFormat = list(
+      FileName = "filePath"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      )
+    )
   ),
-
-  DefineClassificationError  = list(
-    functionType = "processData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "ClassificationError",
-    functionParameterType = list(resourceFilePath = "character"),
-    functionParameterFormat = list(resourceFilePath = "filePaths"),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
+  
+  DefineAreaPosition = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AreaPosition", 
+    functionParameterFormat = list(
+      FileName = "filePath"
+    ), 
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      StratumPolygon = list(
+        DefinitionMethod = "StratumPolygon", 
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      FileName = list(
+        DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      )
+    )
   ),
-
-  AppendGearStoxBiotic  = list(
-    functionType = "modelData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "StoxBioticData",
-    functionParameterType = list(StoxBioticData = "character",
-                                 UnifiedVariableDefinition = "character"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
+  
+  DefinePeriod = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "TemporalDefinition", 
+    functionParameterFormat = list(
+      CustomPeriods = "periodvector"
+    ), 
+    functionArgumentHierarchy = list(
+      TemporalCategory = list(
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      CustomPeriods = list(
+        TemporalCategory = "Custom", 
+        UseProcessData = FALSE
+      )
+    )
   ),
-
-  AppendGearStoxLanding  = list(
-    functionType = "modelData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "StoxLandingData",
-    functionParameterType = list(StoxBioticData = "character",
-                                 UnifiedVariableDefinition = "character"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
+  
+  DefineWeightConversionFactor = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "WeightConversionTable", 
+    functionParameterFormat = list(
+      FileName = "filePath"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      FileName = list(
+        DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      )
+    )
   ),
-
-  AppendTemporalStoxLanding  = list(
-    functionType = "modelData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "StoxLandingData",
-    functionParameterType = list(StoxLandingData = "character",
-                                 TemporalDefinition = "character"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
+  
+  ConvertWeightsBiotic =list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "BioticData" 
   ),
-
-  AppendPositionLanding = list(
-    functionType = "modelData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "StoxLandingData",
-    functionParameterType = list(StoxLandingData = "character",
-                                 AreaCodePosition = "character",
-                                 resolution = "character"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
+  
+  SetTimeBiotic = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "BioticData"
   ),
-
-  AppendStratumStoxLanding = list(
-    functionType = "modelData",
-    functionCategory = "Baseline",
-    functionOutputDataType = "StoxLandingData",
-    functionParameterType = list(StoxLandingData = "character",
-                                 StratumPolygon = "character"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
+  
+  SetStartDateBiotic = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "BioticData"
   ),
-
+  
+  SetAreaPositionsBiotic =list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "BioticData"
+  ),
+  
+  AddAreaPositionStoxLanding = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxLandingData"
+  ),
+  
+  AddGearGroupStoxLanding = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxLandingData"
+  ),
+  
+  AddGearGroupStoxBiotic = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxBioticData"
+  ),
+  
+  AddStratumStoxLanding = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxLandingData"
+  ),
+  
+  AddStratumStoxBiotic = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxBioticData"
+  ),
+  
+  AddPeriodStoxLanding = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxLandingData"
+  ),
+  
+  AddPeriodStoxBiotic = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxBioticData"
+  ),
+  
   PrepareRecaEstimate = list(
     functionType = "modelData",
-    functionCategory = "Analysis",
+    functionCategory = "analysis",
     functionOutputDataType = "RecaData",
-    functionParameterType = list(StoxBioticData = "character",
-                                 StoxLandingData = "character",
-                                 fixedEffects = "character",
-                                 randomEffects = "character",
-                                 continousEffects = "character",
-                                 carEffect = "character",
-                                 CarNeighbours = "character",
-                                 AgeErrorMatrix = "character",
-                                 stockSplitting = "logical",
-                                 ClassificationError = "character",
-                                 minAge = "integer",
-                                 maxAge = "integer",
-                                 maxLength = "numeric",
-                                 lengthResolution = "numeric",
-                                 temporalResolution = "character",
-                                 hatchDay = "integer"),
     functionParameterFormat = list(
-      fixedEffects = "vector",
-      randomEffects = "vector",
-      continousEffects = "vector"
-    ),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
+      RandomEffects = "randomcovariates",
+      FixedEffects = "fixedcovariates"),
+    functionArgumentHierarchy = list(
+      AgeErrorMatrix = list(
+        UseAgingError = TRUE
+      ),
+      CarNeighbours = list(
+        UseCarEffect = TRUE
+      ),
+      CarEffect = list(
+        UseCarEffect = TRUE
+      )
+    )
   ),
-
-  RunRecaEstimate = list(
+  ParameterizeRecaModels = list(
     functionType = "modelData",
-    functionCategory = "Analysis",
-    functionOutputDataType = "RecaData",
-    functionParameterType = list(RecaData = "character",
-                                 nSamples = "integer",
-                                 burnin = "integer",
-                                 lgamodel = "character",
-                                 thin = "integer",
-                                 delta.age = "double",
-                                 seed = "integer",
-                                 caa.burnin = "integer"),
-    functionParameterFormat = list(),
-    functionArgumentHierarchy = list(),
-    functionAlias = list(),
-    functionParameterAlias = list(),
-    functionParameterValueAilas = list()
+    functionCategory = "analysis",
+    functionOutputDataType = "RecaParameterData"
+    #doesnt work for directory
+    #functionParameterFormat = list(
+    #  ResultDirectory = "filePath"
+    #)
+  ),
+  RunRecaModels = list(
+    functionType = "modelData",
+    functionCategory = "analysis",
+    functionOutputDataType = "RecaCatchAtAge",
+    functionParameterFormat = list(
+      AggregationVariables = "aggregationvariables"
+    )
+  ),
+  ReportFdaSampling = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaSamplingData",
+    functionParameterFormat = list(
+      AggregationVariables = "samplereportvariables"
+    )
   )
-
 )
+
+#' Define the process property formats for inclusion in stox UI
+#' 
+#' @export
+#' 
+processPropertyFormats <- list(
+  filePath = list(
+    class = "single", 
+    title = "The path to a single file"
+  ),
+  periodvector = list(
+    class = "vector", 
+    title = "Period defintinions. Start date on the form \"DD-MM\" or \"DD-MM-YYYY\"", 
+    variableTypes = "character"
+  ),
+  
+  randomcovariates = list(
+    class = "vector", 
+    title = "One or more variables to use as covariates in Reca", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Station", "Haul", "SpeciesCategory", "Sample")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      possibleValues <- possibleValues[!(possibleValues %in% c("CruiseKey", "StationKey", "HaulKey", "SpeciesCategoryKey", "SampleKey"))]
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  aggregationvariables = list(
+    class = "vector", 
+    title = "One or more variables to use as aggregation variables.", 
+    possibleValues = function(StoxLandingData) {
+      possibleValues <- names(StoxLandingData$Landing)[!(names(StoxLandingData$Landing) %in% c("RoundWeight"))]
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  samplereportvariables = list(
+    class = "vector", 
+    title = "One or more variables to use as aggregation variables.", 
+    possibleValues = function(StoxLandingData, StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Station", "Haul", "SpeciesCategory", "Sample")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$Landing)]
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  fixedcovariates = list(
+    class = "vector", 
+    title = "One or more variables to use as covariates in Reca", 
+    possibleValues = function(StoxLandingData, StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Station", "Haul", "SpeciesCategory", "Sample")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$Landing)]
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  carcovariate = list(
+    class = "single",
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Station", "Haul", "SpeciesCategory", "Sample")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      possibleValues <- possibleValues[!(possibleValues %in% c("CruiseKey", "StationKey", "HaulKey", "SpeciesCategoryKey", "SampleKey"))]
+      return(sort(possibleValues))
+    }
+  )
+)
+

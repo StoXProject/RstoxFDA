@@ -1,4 +1,4 @@
-Area	SubArea	Latitude	Longitude
+Area	Location	Latitude	Longitude
 00	03	67.25000	 11.50000
 00	04	67.33333	 12.33333
 00	05	67.22556	 13.53719

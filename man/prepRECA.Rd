@@ -21,7 +21,8 @@ prepRECA(
   date = NULL,
   month = NULL,
   quarter = NULL,
-  hatchDay = 1
+  hatchDay = 1,
+  interaction = NULL
 )
 }
 \arguments{
@@ -70,7 +71,9 @@ prepRECA(
 
 \item{quarter}{integer() vector, vector, matching the number of rows in 'landings', quarter of catch (1 for Q1, etc.), see details.}
 
-\item{hatchDay}{integer(), encoding the day of the year when fish is consider to transition from one age to the next.
+\item{hatchDay}{integer(), encoding the day of the year when fish is consider to transition from one age to the next.}
+
+\item{interaction}{character vector specifying effects that should be included in interaction term. Must correspond to effects specified in parameters 'fixedEffects', 'randomEffects', or 'carEffect'
 \describe{
  \item{sampleID}{Column idenitfying the sample, defined as for 'samples'}
  \item{count}{Estimated number of fish in the part of the catch the sample was taken from}
@@ -99,7 +102,7 @@ The cell definition is specified by 'landings'.
  neighbours must be symetric, so that b \%in\% neighbours[a], implies a \%in\% neighbours[b]
 
  nfish is only needed when several samples may be taken from the same catch.
- If these are stratified in any way (e.g. pre-sorting by size or sex), an estimate of strata sizes must be given (column count), for each sample (column sampleId).
+ If these are stratified in any way (e.g. pre-sorting by size or sex), an estimate of strata sizes must be given (column 'count'), for each sample (column 'sampleId').
  If these are replicate samples from the same selection frame, an estimate of the total catch may be given.
 
  output GlobalParameters: While outputs AgeLength, WeightLength and Landings are complete and ready for R-ECA runs.

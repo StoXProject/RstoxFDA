@@ -6,19 +6,19 @@
 \usage{
 DefineAgeErrorMatrix(
   processData,
-  resourceFilePath,
-  encoding = "UTF-8",
-  useProcessData = F
+  DefinitionMethod = c("ResourceFile"),
+  FileName,
+  UseProcessData = F
 )
 }
 \arguments{
 \item{processData}{data.table() as returned from this function}
 
-\item{resourceFilePath}{path to resource file}
+\item{DefinitionMethod}{'ResourceFile'. See details.}
 
-\item{encoding}{encoding of resource file}
+\item{FileName}{path to resource file}
 
-\item{useProcessData}{logical() Bypasses execution of function, and simply returns argument 'processData'}
+\item{UseProcessData}{Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'}
 }
 \value{
 Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.

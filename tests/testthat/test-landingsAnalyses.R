@@ -1,3 +1,4 @@
+
 context("Test tabulate Fisheries")
 data(landings)
 ss <- tabulateFisheries(landings, cellCols = c("Area"))

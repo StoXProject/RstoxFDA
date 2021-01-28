@@ -66,6 +66,10 @@ expect_equal(nrow(infom), 3)
 expect_true(all(c("constant", "Metier5", "vessel") %in% rownames(infom)))
 expect_true(all(c("random", "CAR", "nlev") %in% colnames(infom)))
 
+context("tets getInfoMatrix: interaction")
+infom <- getInfoMatrix(fishdata, landings, c("Metier5"), c("vessel"), NULL, c("Metier5"))
+expect_equal(infom["Metier5", "interaction"], 1)
+expect_error(getInfoMatrix(fishdata, landings, c("Metier5"), c("vessel"), NULL, c("vessel")), "Effect vessel is specified in interaction, but is not found in landings")
 
 context("tets getDataMatrixAgeLength: simple run")
 dmAgeLength <- getDataMatrixAgeLength(fishdata[1:10,], NULL)

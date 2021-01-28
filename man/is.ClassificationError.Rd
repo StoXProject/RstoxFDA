@@ -10,7 +10,7 @@ is.ClassificationError(ClassificationError)
 \item{ClassificationError}{argument to be checked for data conformity}
 }
 \value{
-logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{ClassificationError}}
+logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ClassificationError}}
 }
 \description{
 Checks if argument conforms to specification for \code{\link[RstoxFDA]{ClassificationError}}

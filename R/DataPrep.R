@@ -124,7 +124,7 @@ convertCodes <- function(code, conversionTable){
   }
 
   if (!all(code %in% names(conversionTable))){
-    missing <- code[!(code %in% names(conversionTable))]
+    missing <- unique(code[!(code %in% names(conversionTable))])
     stop(paste("Conversion not defined for all codes. Missing for:", paste(missing, collapse=", ")))
   }
 
@@ -162,14 +162,17 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, polyg
     stop("Missing values in column: ", lonName)
   }
 
+  projcheck <- grep("proj=longlat", sp::proj4string(areaPolygons))
+  datumcheck <- grep("+datum=WGS84", sp::proj4string(areaPolygons))
+  if ( length(projcheck) == 0 | length(datumcheck) == 0 | projcheck<1 | datumcheck <1){
+    warning("Assuming unprojected WGS84 coordinates, but did not find expected components in proj4string of areaPolygons:", sp::proj4string(areaPolygons))
+  }
+  
   pos <- as.data.frame(table[,c(latName, lonName), with=F])
   names(pos) <- c("LAT", "LON")
   sp::coordinates(pos) <- ~ LON + LAT
-  sp::proj4string(pos) <- sp::CRS("+proj=longlat +datum=WGS84")
+  sp::proj4string(pos) <- sp::CRS(sp::proj4string(areaPolygons))
 
-  if (!sp::identicalCRS(pos, areaPolygons)){
-    stop(paste("CRS:", sp::proj4string(areaPolygons), "not supported."))
-  }
 
   location_codes <- sp::over(pos, areaPolygons)
   table[[colName]] <- location_codes[[polygonName]]
@@ -202,15 +205,17 @@ appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName
   if (lonColName %in% names(table)){
     stop(paste("Column name", lonColName, "already exists."))
   }
+  if (!(areaName %in% names(table))){
+    stop(paste("Column name", areaName, "not found in 'table'."))
+  }
 
   if (length(grep("proj=longlat", sp::proj4string(areaPolygons)))==0){
     warning("could not verify projection of 'areaPolygons'")
   }
-
   mapping <- cbind(data.table::as.data.table(sp::coordinates(areaPolygons)), areaPolygons[[polygonName]])
   names(mapping) <- c(lonColName, latColName, areaName)
 
-  newTab <- merge(table, mapping, all.x=T)
+  newTab <- merge(table, mapping, by=areaName, all.x=T)
 
   return(newTab)
 }

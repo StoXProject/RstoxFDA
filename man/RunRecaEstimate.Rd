@@ -2,44 +2,38 @@
 % Please edit documentation in R/StoxAnalysisFunctions.R
 \name{RunRecaEstimate}
 \alias{RunRecaEstimate}
-\title{Run Reca}
+\title{Run Reca. Being kept for testing purposes. Is replaced by \code{\link[RstoxFDA]{ParameterizeRecaModels}} and reporting functions}
 \usage{
 RunRecaEstimate(
   RecaData,
-  nSamples,
-  burnin,
-  lgamodel = c("log-linear", "non-linear"),
-  fitfile = "fit",
-  predictfile = "pred",
-  resultdir = NULL,
-  thin = 10,
-  delta.age = 0.001,
-  seed = NULL,
-  caa.burnin = 0
+  Nsamples = integer(),
+  Burnin = integer(),
+  Thin = integer(),
+  Lgamodel = c("log-linear", "non-linear"),
+  Resultdir = character(),
+  Delta.age = numeric(),
+  Seed = numeric(),
+  Caa.burnin = numeric()
 )
 }
 \arguments{
 \item{RecaData}{\code{\link[RstoxFDA]{RecaData}} as returned from \code{\link[RstoxFDA]{PrepareRecaEstimate}}}
 
-\item{nSamples}{number of MCMC samples that will be made available for \code{\link[Reca]{eca.predict}}. See documentation for \code{\link[Reca]{eca.estimate}},}
+\item{Nsamples}{number of MCMC samples that will be made available for \code{\link[Reca]{eca.predict}}. See documentation for \code{\link[Reca]{eca.estimate}},}
 
-\item{burnin}{number of MCMC samples run and discarded by \code{\link[Reca]{eca.estimate}} before any samples are saved. See documentation for \code{\link[Reca]{eca.estimate}}.}
+\item{Burnin}{number of MCMC samples run and discarded by \code{\link[Reca]{eca.estimate}} before any samples are saved. See documentation for \code{\link[Reca]{eca.estimate}}.}
 
-\item{lgamodel}{The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}.}
+\item{Thin}{controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}}
 
-\item{fitfile}{name of output files in resultdir. See documentation for \code{\link[Reca]{eca.estimate}}.}
+\item{Lgamodel}{The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}.}
 
-\item{predictfile}{name of output files in resultdir. See documentation for \code{\link[Reca]{eca.predict}}.}
+\item{Resultdir}{a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. . If not given a temporary directory will be created. See documentation for \code{\link[Reca]{eca.estimate}}.}
 
-\item{resultdir}{a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. . If NULL, a temporary directory will be created. See documentation for \code{\link[Reca]{eca.estimate}}.}
+\item{Delta.age}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.}
 
-\item{thin}{controls how many iterations are run between each samples saved. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}}
+\item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.}
 
-\item{delta.age}{see documentation for \code{\link[Reca]{eca.estimate}}}
-
-\item{seed}{see documentation for \code{\link[Reca]{eca.estimate}}}
-
-\item{caa.burnin}{see documentation for \code{\link[Reca]{eca.predict}}}
+\item{Caa.burnin}{see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.}
 }
 \value{
 \code{\link[RstoxFDA]{RecaResult}} results from Reca run.
@@ -55,7 +49,7 @@ StoX-function.
  in order to obtain proportinos of catches and fish parameters.
  Using these parameters and the given total landings, predictions of distribution of catch-parameter distributions will be calculated.
 
- If resultdir is NULL,  atemporary directory will be created for its purpose.
+ If resultdir is NULL,  a temporary directory will be created for its purpose.
  This will be attempted removed after execution.
  If removal is not successful a warning will be issued which includes the path to the temporary directory.
 }
