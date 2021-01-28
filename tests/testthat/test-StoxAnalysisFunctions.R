@@ -6,13 +6,13 @@ StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="R
 StoxLandingData <- readRDS(StoxLandingFile)
 
 
-StoxLandingData$landings$NewConst <- 1
+StoxLandingData$Landing$NewConst <- 1
 StoxBioticData$Station$NewConst <- 1
 
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("NewConst"), RandomEffects = c()), "Only one level for categorical covariate NewConst")
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("NewConst")), "Only one level for categorical covariate NewConst")
 
-StoxBioticData$Station$Area <- StoxLandingData$landings$Area[sample(20,45,T)]
+StoxBioticData$Station$Area <- StoxLandingData$Landing$Area[sample(20,45,T)]
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("Area"), RandomEffects = c("Area")), "Some random effects are also specified as fixed effects: Area")
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area"), CarEffect = "Area"), "UseCarEffect is False, while the parameter 'CarEffect' is given")
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area"), CarEffect = "Area", UseCarEffect = T, CarNeighbours = list()), "The CAR effect Area is also specified as fixed effect or random effect")
@@ -65,7 +65,7 @@ StoxLandingData <- readRDS(StoxLandingFile)
 
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
-StoxBioticData$Haul$Gear <- StoxLandingData$landings$Gear[sample.int(20,45, replace=T)]
+StoxBioticData$Haul$Gear <- StoxLandingData$Landing$Gear[sample.int(20,45, replace=T)]
 
 fpath <- makeTempDirReca()
 
@@ -129,9 +129,9 @@ StoxBioticData <- readRDS(StoxBioticFile)
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
 
-StoxBioticData$Station$Area <- c(rep(StoxLandingData$landings$Area[10], 20), rep(StoxLandingData$landings$Area[20], 25))
-StoxBioticData$Station$GG <- c(rep(StoxLandingData$landings$Gear[10], 20), rep(StoxLandingData$landings$Gear[20], 25))
-StoxLandingData$landings$GG <- StoxLandingData$landings$Gear
+StoxBioticData$Station$Area <- c(rep(StoxLandingData$Landing$Area[10], 20), rep(StoxLandingData$Landing$Area[20], 25))
+StoxBioticData$Station$GG <- c(rep(StoxLandingData$Landing$Gear[10], 20), rep(StoxLandingData$Landing$Gear[20], 25))
+StoxLandingData$Landing$GG <- StoxLandingData$Landing$Gear
 
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area"))
 expect_true("Area" %in% names(prep$Landings$AgeLengthCov))

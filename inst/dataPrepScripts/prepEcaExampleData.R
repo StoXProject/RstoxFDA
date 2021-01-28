@@ -64,9 +64,9 @@ StoxBioticData$Station$Quarter <- quarters(StoxBioticData$Station$DateTime)
 
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
-StoxLandingData$landings$Stratum <- substr(StoxLandingData$landings$Area,1,1)
-StoxLandingData$landings$Stratum[!(StoxLandingData$landings$Stratum %in% c("3","4"))] <- "4"
-StoxLandingData$landings$Quarter <- quarters(StoxLandingData$landings$CatchDate)
+StoxLandingData$Landing$Stratum <- substr(StoxLandingData$Landing$Area,1,1)
+StoxLandingData$Landing$Stratum[!(StoxLandingData$Landing$Stratum %in% c("3","4"))] <- "4"
+StoxLandingData$Landing$Quarter <- quarters(StoxLandingData$Landing$CatchDate)
 
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Stratum", "Quarter"))
 est <- RstoxFDA:::RunRecaEstimate(prep, 10, 5000, 1)

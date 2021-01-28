@@ -19,7 +19,7 @@
 #' @export
 ReportFdaSampling <- function(StoxBioticData, StoxLandingData, AggregationVariables=NULL){
   
-  flatlandings <- StoxLandingData$landings
+  flatlandings <- StoxLandingData$Landing
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData)
   
   if (!isGiven(AggregationVariables)){

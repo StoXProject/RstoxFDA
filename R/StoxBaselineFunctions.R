@@ -66,10 +66,10 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVa
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   stopifnot(is.AreaPosition(AreaPosition))
 
-  if (latColName %in% names(StoxLandingData$landings)){
+  if (latColName %in% names(StoxLandingData$Landing)){
     stop(paste("Column", latColName, "already exists."))
   }
-  if (lonColName %in% names(StoxLandingData$landings)){
+  if (lonColName %in% names(StoxLandingData$Landing)){
     stop(paste("Column", lonColName, "already exists."))
   }
 
@@ -78,23 +78,23 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVa
 
   if (LocationVariable == "None"){
     
-    if (!all(StoxLandingData$landings$Area %in% AreaPosition$Area)){
-      missing <- StoxLandingData$landings$Area[!(StoxLandingData$landings$Area %in% AreaPosition$Area)]
+    if (!all(StoxLandingData$Landing$Area %in% AreaPosition$Area)){
+      missing <- StoxLandingData$Landing$Area[!(StoxLandingData$Landing$Area %in% AreaPosition$Area)]
       stop(paste("Positions not provided for all Areas in StoxLandingData. Missing: ", paste(missing, collapse=",")))
     }
-    if (!all(StoxLandingData$landings$Area %in% AreaPosition$Area[is.na(AreaPosition$Location)])){
-      missing <- StoxLandingData$landings$Area[!(StoxLandingData$landings$Area %in% AreaPosition$Area[is.na(AreaPosition$Location)])]
+    if (!all(StoxLandingData$Landing$Area %in% AreaPosition$Area[is.na(AreaPosition$Location)])){
+      missing <- StoxLandingData$Landing$Area[!(StoxLandingData$Landing$Area %in% AreaPosition$Area[is.na(AreaPosition$Location)])]
       stop(paste("Positions is not provided for the case of missing Location for some Areas in StoxLandingData: ", paste(missing, collapse=",")))
     }
     AreaPosition <- AreaPosition[is.na(AreaPosition$Location),c("Area", latColName, lonColName), with=F]
     stopifnot(!any(duplicated(AreaPosition$Area)))
     
-    StoxLandingData$landings <- data.table::as.data.table(merge(StoxLandingData$landings, AreaPosition, by.x="Area", by.y="Area", all.x=T))
+    StoxLandingData$Landing <- data.table::as.data.table(merge(StoxLandingData$Landing, AreaPosition, by.x="Area", by.y="Area", all.x=T))
     return(StoxLandingData)
   }
   else if (LocationVariable %in% c("Location", "Coastal")){
     
-    arealocdata <- paste(StoxLandingData$landings$Area, StoxLandingData$landings[[LocationVariable]], sep="-")
+    arealocdata <- paste(StoxLandingData$Landing$Area, StoxLandingData$Landing[[LocationVariable]], sep="-")
     arealocresource <- paste(AreaPosition$Area, AreaPosition$Location, sep="-")
     if (!all(arealocdata %in% arealocresource)){
       missing <- arealocdata[!(arealocdata %in% arealocresource)]
@@ -102,7 +102,7 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVa
     }
     AreaPosition <- AreaPosition[,c("Area", "Location", latColName, lonColName), with=F]
     stopifnot(!any(duplicated(paste(AreaPosition$Area, AreaPosition$Location))))
-    StoxLandingData$landings <- data.table::as.data.table(merge(StoxLandingData$landings, AreaPosition, by.x=c("Area", LocationVariable), by.y=c("Area", "Location"), all.x=T))
+    StoxLandingData$Landing <- data.table::as.data.table(merge(StoxLandingData$Landing, AreaPosition, by.x=c("Area", LocationVariable), by.y=c("Area", "Location"), all.x=T))
     return(StoxLandingData)
   }
   else{
@@ -432,14 +432,14 @@ AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition){
   if (columnName %in% names(StoxLandingData)){
     stop(paste("The column", columnName, "already exists in StoxLandingData."))
   }
-  if (any(is.na(StoxLandingData$landings$CatchDate))){
+  if (any(is.na(StoxLandingData$Landing$CatchDate))){
     stop("Cannot add period when 'CatchDate' is missing for some rows.")
   }
   
   
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   stopifnot(is.TemporalDefinition(TemporalDefinition))
-  StoxLandingData$landings <- appendTemporal(StoxLandingData$landings, columnName, TemporalDefinition, "CatchDate")
+  StoxLandingData$Landing <- appendTemporal(StoxLandingData$Landing, columnName, TemporalDefinition, "CatchDate")
   return(StoxLandingData)
 }
 
@@ -490,13 +490,13 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon){
   lonColumn <- "Longitude"  
   
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
-  if (!(all(c(latColumn, lonColumn) %in% names(StoxLandingData$landings)))){
+  if (!(all(c(latColumn, lonColumn) %in% names(StoxLandingData$Landing)))){
     stop(paste("Could not find columns:", latColumn, "and", lonColumn, "that should be added to StoxLandingData"))
   }
-  if (columnName %in% names(StoxLandingData$landings)){
+  if (columnName %in% names(StoxLandingData$Landing)){
     stop(paste("Column name", columnName, "already exists."))
   }
-  StoxLandingData$landings <- appendAreaCode(StoxLandingData$landings, StratumPolygon, latColumn, lonColumn, columnName)
+  StoxLandingData$Landing <- appendAreaCode(StoxLandingData$Landing, StratumPolygon, latColumn, lonColumn, columnName)
   return(StoxLandingData)
 }
 
@@ -567,7 +567,7 @@ AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
   }
   geardef <- Translation[Translation$VariableName=="Gear",c("Value", "NewValue")]
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
-  StoxLandingData$landings<-appendGear(StoxLandingData$landings, "Gear", geardef, "GearGroup")
+  StoxLandingData$Landing<-appendGear(StoxLandingData$Landing, "Gear", geardef, "GearGroup")
   return(StoxLandingData)
 }
 

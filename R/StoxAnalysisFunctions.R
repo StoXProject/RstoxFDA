@@ -103,7 +103,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   interaction <- c()
   if (CellEffect){
     interaction <- c(RandomEffects, FixedEffects, CarEffect)
-    interaction <- interaction[interaction %in% names(StoxLandingData$landings)]
+    interaction <- interaction[interaction %in% names(StoxLandingData$Landing)]
   }
   
   if (!isGiven(HatchDay)){
@@ -116,10 +116,10 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     
   }
   else{
-    if (!(CarEffect %in% names(StoxLandingData$landings))){
+    if (!(CarEffect %in% names(StoxLandingData$Landing))){
       stop(paste("CarEffect", CarEffect, "must be found in 'StoxLandings'"))
     }
-    convertedNeighbours <- convertCarNeighbours2reca(CarNeighbours, unique(StoxLandingData$landings[[CarEffect]]))
+    convertedNeighbours <- convertCarNeighbours2reca(CarNeighbours, unique(StoxLandingData$Landing[[CarEffect]]))
   }
   if (!isGiven(MinAge)){
     MinAge <- NULL
@@ -142,11 +142,11 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   # Landings compilation are only done to ensure coding consistency.
   # The temporal resolution doesnt matter.
   #
-  quarter <- quarter(StoxLandingData$landings$CatchDate)
+  quarter <- quarter(StoxLandingData$Landing$CatchDate)
   data <- NULL
   month <- NULL
 
-  flatlandings <- StoxLandingData$landings
+  flatlandings <- StoxLandingData$Landing
   flatlandings$LiveWeightKG <- flatlandings$RoundWeight
 
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData, TargetTable = "Individual")
@@ -365,24 +365,24 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
 #' @noRd
 getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, TemporalResolution){
   
-  StoxLandingData$landings$LiveWeightKG <- StoxLandingData$landings$RoundWeight
+  StoxLandingData$Landing$LiveWeightKG <- StoxLandingData$Landing$RoundWeight
   quarter <- NULL
   month <- NULL
   date <- NULL
   if (TemporalResolution == "Quarter"){
-    quarter <- quarter(StoxLandingData$landings$CatchDate)
+    quarter <- quarter(StoxLandingData$Landing$CatchDate)
   }
   else if (TemporalResolution == "Month"){
-    month <- month(StoxLandingData$landings$CatchDate)
+    month <- month(StoxLandingData$Landing$CatchDate)
   }
   else if (TemporalResolution == "Day"){
-    date <- StoxLandingData$landings$CatchDate
+    date <- StoxLandingData$Landing$CatchDate
   }
   else{
     stop(paste("Temporal resolution", TemporalResolution, "not supported"))
   }
   
-  l <- getLandings(StoxLandingData$landings, covariates = names(RecaParameterData$CovariateMaps$inLandings), covariateMaps = RecaParameterData$CovariateMaps$inLandings, month = month, quarter = quarter, date = date)
+  l <- getLandings(StoxLandingData$Landing, covariates = names(RecaParameterData$CovariateMaps$inLandings), covariateMaps = RecaParameterData$CovariateMaps$inLandings, month = month, quarter = quarter, date = date)
   return(l)
 }
 
@@ -436,26 +436,26 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
     
   }
   else{
-    if (!all(AggregationVariables %in% names(StoxLandingData$landings))){
-      missing <- AggregationVariables[!(AggregationVariables %in% names(StoxLandingData$landings))]
+    if (!all(AggregationVariables %in% names(StoxLandingData$Landing))){
+      missing <- AggregationVariables[!(AggregationVariables %in% names(StoxLandingData$Landing))]
       stop(paste("Parameter 'AggregationVariables' contain some variables not found as columns in 'StoxLandingData':", paste(missing, collapse=",")))
     }
     
     result <- NULL
-    frame <- unique(StoxLandingData$landings[,AggregationVariables, with=F])
+    frame <- unique(StoxLandingData$Landing[,AggregationVariables, with=F])
     frame$aggregationId <- 1:nrow(frame)
     
-    l <- merge(StoxLandingData$landings, frame, by=names(frame)[names(frame) %in% names(StoxLandingData$landings)])
+    l <- merge(StoxLandingData$Landing, frame, by=names(frame)[names(frame) %in% names(StoxLandingData$Landing)])
     for (id in frame$aggregationId){
       partition <- l[l$aggregationId==id,]
       Sl <- StoxLandingData
-      Sl$landings <- partition
-      landings <- getLandingsFromStoxLandings(RecaParameterData, Sl, TemporalResolution)
-      RecaParameterData$Landings <- landings
+      Sl$Landing <- partition
+      Landing <- getLandingsFromStoxLandings(RecaParameterData, Sl, TemporalResolution)
+      RecaParameterData$Landings <- Landing
       partitionresults <- ecaResult2Stox(Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters))
       
       for (a in AggregationVariables){
-        stopifnot(length(unique(partition[[a]]))==1) # ensured by frame <- unique(StoxLandingData$landings[,AggregationVariables, with=F])
+        stopifnot(length(unique(partition[[a]]))==1) # ensured by frame <- unique(StoxLandingData$Landing[,AggregationVariables, with=F])
         partitionresults$CatchAtAge[[a]] <- partition[[a]][1]
         partitionresults$MeanLength[[a]] <- partition[[a]][1]
         partitionresults$MeanWeight[[a]] <- partition[[a]][1]

@@ -5,7 +5,7 @@ StoxBioticData$Station$Quarter <- quarters(StoxBioticData$Station$DateTime)
 
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
-StoxLandingData$landings$Quarter <- quarters(StoxLandingData$landings$CatchDate)
+StoxLandingData$Landing$Quarter <- quarters(StoxLandingData$Landing$CatchDate)
 
 SamplingReport <- ReportFdaSampling(StoxBioticData, StoxLandingData, AggregationVariables = c("Quarter"))
 expect_true(is.ReportFdaSamplingData(SamplingReport))

@@ -905,7 +905,7 @@ processPropertyFormats <- list(
     class = "vector", 
     title = "One or more variables to use as aggregation variables.", 
     possibleValues = function(StoxLandingData) {
-      possibleValues <- names(StoxLandingData$landings)[!(names(StoxLandingData$landings) %in% c("RoundWeight"))]
+      possibleValues <- names(StoxLandingData$Landing)[!(names(StoxLandingData$Landing) %in% c("RoundWeight"))]
       return(sort(possibleValues))
     }, 
     variableTypes = "character"
@@ -923,7 +923,7 @@ processPropertyFormats <- list(
         }
       }
       possibleValues <- unique(possibleValues)
-      possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$landings)]
+      possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$Landing)]
       return(sort(possibleValues))
     }, 
     variableTypes = "character"
@@ -941,7 +941,7 @@ processPropertyFormats <- list(
         }
       }
       possibleValues <- unique(possibleValues)
-      possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$landings)]
+      possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$Landing)]
       return(sort(possibleValues))
     }, 
     variableTypes = "character"
