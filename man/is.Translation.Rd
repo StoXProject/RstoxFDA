@@ -10,7 +10,7 @@ is.Translation(Translation)
 \item{Translation}{argument to be checked for data conformity}
 }
 \value{
-logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{Translation}}
+logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{Translation}}
 }
 \description{
 Checks if argument conforms to specification for \code{\link[RstoxData]{Translation}}

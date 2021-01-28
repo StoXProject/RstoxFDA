@@ -10,7 +10,7 @@ is.RecaCatchAtAge(RecaCatchAtAge)
 \item{RecaCatchAtAge}{argument to be checked for data conformity}
 }
 \value{
-logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
+logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
 }
 \description{
 Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}

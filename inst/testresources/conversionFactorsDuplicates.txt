@@ -1,0 +1,4 @@
+Description	Species	ProductType	WeightFactor
+"Cod Round"	164712	1	1
+"Cod GWH"	164712	4	1.18
+"Cod GWOH"	164712	4	1.50

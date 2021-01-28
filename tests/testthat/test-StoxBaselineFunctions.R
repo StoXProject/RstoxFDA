@@ -1,4 +1,121 @@
 
+context("test-StoxBaselineFunctions: DefineWeightConversionFactor")
+conversionfile <- system.file("testresources","conversionFactors.txt", package="RstoxFDA")
+tab <- DefineWeightConversionFactor(FileName=conversionfile)
+expect_true(is.WeightConversionTable(tab))
+expect_true(is.na(tab$WeightFactor[7]))
+expect_equal(sum(!is.na(tab$WeightFactor)), 6)
+expect_error(suppressWarnings(DefineWeightConversionFactor(FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))), "Resource file does not have required columns: Description, Species, ProductType, WeightFactor")
+expect_error(DefineWeightConversionFactor(FileName=system.file("testresources","conversionFactorsDuplicates.txt", package="RstoxFDA")), regexp="File contains duplicate definitions ")
+
+context("test-StoxBaselineFunctions: ConvertWeightsBiotic")
+bioticfile <- system.file("testresources","biotic_v3_producttypes.xml", package="RstoxFDA")
+conversionfile <- system.file("testresources","conversionFactors.txt", package="RstoxFDA")
+BioticData <- RstoxData::ReadBiotic(bioticfile)
+tab <- DefineWeightConversionFactor(FileName=conversionfile)
+BioticDataPost <- ConvertWeightsBiotic(BioticData, tab, "1")
+
+#check that producttype NAs are preserved
+expect_equal(is.na(BioticData$biotic_v3_producttypes.xml$catchsample$sampleproducttype), is.na(BioticDataPost$biotic_v3_producttypes.xml$catchsample$sampleproducttype))
+expect_equal(is.na(BioticData$biotic_v3_producttypes.xml$individual$individualproducttype), is.na(BioticDataPost$biotic_v3_producttypes.xml$individual$individualproducttype))
+
+#check that producttype is otherwise uniform
+expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$catchsample$catchproducttype[!is.na(BioticData$biotic_v3_producttypes.xml$catchsample$catchproducttype)]=="1"))
+expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$catchsample$sampleproducttype[!is.na(BioticData$biotic_v3_producttypes.xml$catchsample$sampleproducttype)]=="1"))
+expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$individual$individualproducttype[!is.na(BioticData$biotic_v3_producttypes.xml$individual$individualproducttype)]=="1"))
+
+#
+# checks on catchweightconversion
+#
+context("test-StoxBaselineFunctions: ConvertWeightsBiotic catchweightconversion")
+shouldBeConverted <- BioticData$biotic_v3_producttypes.xml$catchsample$commonname %in% c("torsk", "sei", "hyse") &
+  !is.na(BioticData$biotic_v3_producttypes.xml$catchsample$catchweight) &
+  BioticData$biotic_v3_producttypes.xml$catchsample$catchproducttype != "1"
+expect_equal(sum(shouldBeConverted), 2)
+
+wasConverted <- !is.na(BioticDataPost$biotic_v3_producttypes.xml$catchsample$catchweight) &
+  BioticDataPost$biotic_v3_producttypes.xml$catchsample$catchweight - BioticData$biotic_v3_producttypes.xml$catchsample$catchweight > 1e-10
+
+# check that all that was to be converted was converted
+expect_true(all(wasConverted == shouldBeConverted))
+
+# check that producttype codes was converted
+expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$catchsample$catchproducttype[wasConverted]=="1"))
+expect_true(all(BioticData$biotic_v3_producttypes.xml$catchsample$catchproducttype[wasConverted]!="1"))
+
+#check that species conforms to expectation
+expect_equal(c("torsk","hyse"), BioticDataPost$biotic_v3_producttypes.xml$catchsample$commonname[wasConverted])
+
+# check that correct factor was applied (refer to testresources/conversionFactors.txt)
+postweightCod <- BioticDataPost$biotic_v3_producttypes.xml$catchsample[wasConverted,][1,"catchweight"]
+preweightCod <- BioticData$biotic_v3_producttypes.xml$catchsample[wasConverted,][1,"catchweight"]
+expect_equal(unlist(postweightCod / preweightCod)[[1]], 1.5) #COD prodtype 3
+
+postweightHad <- BioticDataPost$biotic_v3_producttypes.xml$catchsample[wasConverted,][2,"catchweight"]
+preweightHad <- BioticData$biotic_v3_producttypes.xml$catchsample[wasConverted,][2,"catchweight"]
+expect_equal(unlist(postweightHad / preweightHad)[[1]], 2) #hadd prodtype 4
+
+
+
+#
+# checks on sampleweightconversion
+#
+context("test-StoxBaselineFunctions: ConvertWeightsBiotic sampleweightconversion")
+
+shouldBeConverted <- BioticData$biotic_v3_producttypes.xml$catchsample$commonname %in% c("torsk", "sei", "hyse") &
+  !is.na(BioticData$biotic_v3_producttypes.xml$catchsample$lengthsampleweight) &
+  BioticData$biotic_v3_producttypes.xml$catchsample$sampleproducttype != "1"
+expect_equal(sum(shouldBeConverted), 2)
+
+wasConverted <- !is.na(BioticDataPost$biotic_v3_producttypes.xml$catchsample$lengthsampleweight) &
+  BioticDataPost$biotic_v3_producttypes.xml$catchsample$lengthsampleweight - BioticData$biotic_v3_producttypes.xml$catchsample$lengthsampleweight > 1e-10
+
+# check that all that was to be converted was converted
+expect_true(all(wasConverted == shouldBeConverted))
+
+
+# check that producttype codes was converted
+expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$catchsample$sampleproducttype[wasConverted]=="1"))
+expect_true(all(BioticData$biotic_v3_producttypes.xml$catchsample$sampleproducttype[wasConverted]!="1"))
+
+#check that species conforms to expectation
+expect_equal(c("torsk","hyse"), BioticDataPost$biotic_v3_producttypes.xml$catchsample$commonname[wasConverted])
+
+# check that correct factor was applied (refer to testresources/conversionFactors.txt)
+postweightCod <- BioticDataPost$biotic_v3_producttypes.xml$catchsample[wasConverted,][1,"lengthsampleweight"]
+preweightCod <- BioticData$biotic_v3_producttypes.xml$catchsample[wasConverted,][1,"lengthsampleweight"]
+expect_equal(unlist(postweightCod / preweightCod)[[1]], 1.18)
+
+postweightHad <- BioticDataPost$biotic_v3_producttypes.xml$catchsample[wasConverted,][2,"lengthsampleweight"]
+preweightHad <- BioticData$biotic_v3_producttypes.xml$catchsample[wasConverted,][2,"lengthsampleweight"]
+expect_equal(unlist(postweightHad / preweightHad)[[1]], 2)
+
+
+
+#
+# checks on individualweightconversion
+#
+
+context("test-StoxBaselineFunctions: ConvertWeightsBiotic individualweightconversion")
+
+# not confirming species
+shouldBeConverted <- !is.na(BioticData$biotic_v3_producttypes.xml$individual$individualweight) &
+  BioticData$biotic_v3_producttypes.xml$individual$individualproducttype != "1"
+wasConverted <- !is.na(BioticDataPost$biotic_v3_producttypes.xml$individual$individualweight) &
+  BioticDataPost$biotic_v3_producttypes.xml$individual$individualweight - BioticData$biotic_v3_producttypes.xml$individual$individualweight > 1e-10
+
+# check that producttype codes was converted
+expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$individual$individualproducttype[wasConverted]=="1"))
+expect_true(all(BioticData$biotic_v3_producttypes.xml$individual$individualproducttype[wasConverted]!="1"))
+
+#check that factors correspond to 1 saithe: type 4, rest haddock: type 4
+postweight <- BioticDataPost$biotic_v3_producttypes.xml$individual$individualweight[wasConverted]
+preweight <- BioticData$biotic_v3_producttypes.xml$individual$individualweight[wasConverted]
+ratio <- postweight / preweight
+expect_equal(sum(ratio==4), 1)
+expect_equal(sum(ratio==2), sum(wasConverted)-1)
+
+
 context("test-StoxBaselineFunctions: SetTimeBiotic")
 bioticfiles <- c(f1=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"), f2=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"))
 BioticData <- RstoxData::ReadBiotic(bioticfiles)

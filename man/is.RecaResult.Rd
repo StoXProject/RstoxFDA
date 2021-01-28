@@ -10,7 +10,7 @@ is.RecaResult(RecaResult)
 \item{RecaResult}{argument to be checked for data conformity}
 }
 \value{
-logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaResult}}
+logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}
 }
 \description{
 Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}

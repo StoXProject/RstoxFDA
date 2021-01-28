@@ -111,6 +111,128 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVa
 
 }
 
+#' Convert weights Biotic
+#' @description 
+#'  Convert weights to round weights.
+#' @details 
+#'  Different products of fish may be measured and round weight (live weight)
+#'  or some other product type may be approximated by multiplying with a scalar conversion factor.
+#'  
+#'  For records where the variable 'catchcategory' on the table 'catchsample' matches the 'Species' variable in 'Translation'
+#'  this function converts weights to desired product type ('TargetProductType') by matching 'producttype'-variables to 'ProductType' in 'Translation'.
+#'  The following weights are converted:
+#'  \itemize{
+#'   \item{'catchweight' based on 'catchproducttype' both on the table 'catchsample'}
+#'   \item{'lengthsampleweight' based on 'sampleproducttype' both on the table 'catchsample'}
+#'   \item{'individualweight' based on 'individualproducttype' both on the table 'individual'} 
+#'  }
+#'  
+#'  After conversion the 'producttype'-variables will be changed to reflect the approximate weight.
+#'  That is they will be set to 'TargetProductType'.
+#'  
+#'  If 'WeightConversionTable' contains NAs for 'WeightFactor', converted weights will be NA.
+#'  This is useful for dealing with species whoose weights are not needed in subsequent analysis. 
+#'  
+#'  The variables 'catchvolume', 'lengthsamplevolume', and 'individualvolume'
+#'  are also dependent on product type. These are set to NA as weight is converted.
+#'  
+#'  These variables are on these tables in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
+#'  For bioticdata that does not conform to this, no modifications are done.
+#' @param BioticData \code{\link[RstoxData]{BioticData}} for which weights should be converted
+#' @param WeightConversionTable \code{\link[RstoxFDA]{WeightConversionTable}} with parameters for converting weights to 'TargetProductType'.
+#' @param TargetProductType The desired producttype. Typically the code for Round fish.
+#' @return \code{\link[RstoxData]{BioticData}} with converted weights.
+#' @export
+ConvertWeightsBiotic <- function(BioticData, WeightConversionTable, TargetProductType=character()){
+  
+  if (!isGiven(TargetProductType)){
+    stop("'TargetProductType' must be provided.")
+  }
+  
+  for (file in names(BioticData)){
+    if ("catchsample" %in% names(BioticData[[file]]) &
+        "individual" %in% names(BioticData[[file]]) &
+        "catchcategory" %in% names(BioticData[[file]]$catchsample) &
+        "catchweight" %in% names(BioticData[[file]]$catchsample) &
+        "catchproducttype" %in% names(BioticData[[file]]$catchsample) &
+        "lengthsampleweight" %in% names(BioticData[[file]]$catchsample) &
+        "sampleproducttype" %in% names(BioticData[[file]]$catchsample) &
+        "individualweight" %in% names(BioticData[[file]]$individual) &
+        "individualproducttype" %in% names(BioticData[[file]]$individual)){
+      
+      
+      speciesInData <- unique(BioticData[[file]]$catchsample$catchcategory)
+      missing <- speciesInData[!(speciesInData %in% WeightConversionTable$Species)]
+      if (length(missing)>0){
+        stop(paste("No conversion factors found for species:", paste(missing, collapse=",")))  
+      }
+      
+      #set producttype and volume for any missing weights to NA
+      BioticData[[file]]$catchsample$catchproducttype[is.na(BioticData[[file]]$catchsample$catchweight) & !is.na(BioticData[[file]]$catchsample$catchproducttype)] <- TargetProductType
+      BioticData[[file]]$catchsample$sampleproducttype[is.na(BioticData[[file]]$catchsample$lengthsampleweight) & !is.na(BioticData[[file]]$catchsample$sampleproducttype)] <- TargetProductType
+      BioticData[[file]]$individual$individualproducttype[is.na(BioticData[[file]]$individual$individualweight) & !is.na(BioticData[[file]]$individual$individualproducttype)] <- TargetProductType
+      
+      for (species in speciesInData){
+        spectab <- WeightConversionTable[WeightConversionTable$Species == species,]
+        
+        #convert catchweight
+        conversionCatch <- spectab$WeightFactor[match(BioticData[[file]]$catchsample$catchproducttype, spectab$ProductType)]
+        filterCatchSample <- BioticData[[file]]$catchsample$catchcategory == species & 
+          BioticData[[file]]$catchsample$catchproducttype != TargetProductType &
+          !is.na(BioticData[[file]]$catchsample$catchweight)
+        
+        if (!all(BioticData[[file]]$catchsample$catchproducttype[filterCatchSample] %in% spectab$ProductType)){
+          missing <- unique(BioticData[[file]]$catchsample$catchproducttype[filterCatchSample][!(BioticData[[file]]$catchsample$catchproducttype[filterCatchSample] %in% spectab$ProductType)])
+          stop(paste("Not all necessary conversion factors found for species ", species, ". Missing: ", paste(missing, collapse=","), sep=""))
+        }
+        
+        BioticData[[file]]$catchsample$catchweight[filterCatchSample] <- BioticData[[file]]$catchsample$catchweight[filterCatchSample] * conversionCatch[filterCatchSample]
+        BioticData[[file]]$catchsample$catchproducttype[filterCatchSample] <- TargetProductType
+        BioticData[[file]]$catchsample$catchvolume[filterCatchSample] <- NA
+          
+        #convert sampleweight
+        conversionSample <- spectab$WeightFactor[match(BioticData[[file]]$catchsample$sampleproducttype, spectab$ProductType)]
+        filterCatchSample <- BioticData[[file]]$catchsample$catchcategory == species & 
+          BioticData[[file]]$catchsample$sampleproducttype != TargetProductType &
+          !is.na(BioticData[[file]]$catchsample$lengthsampleweight)
+        
+        if (!all(BioticData[[file]]$catchsample$sampleproducttype[filterCatchSample] %in% spectab$ProductType)){
+          missing <- unique(BioticData[[file]]$catchsample$sampleproducttype[filterCatchSample][!(BioticData[[file]]$catchsample$sampleproducttype[filterCatchSample] %in% spectab$ProductType)])
+          stop(paste("Not all necessary conversion factors found for species ", species, ". Missing: ", paste(missing, collapse=","), sep=""))
+        }
+        
+        BioticData[[file]]$catchsample$lengthsampleweight[filterCatchSample] <- BioticData[[file]]$catchsample$lengthsampleweight[filterCatchSample] * conversionSample[filterCatchSample]
+        BioticData[[file]]$catchsample$sampleproducttype[filterCatchSample] <- TargetProductType
+        BioticData[[file]]$catchsample$lengthsamplevolume[filterCatchSample] <- NA
+        
+        #locate individuals of the species    
+        catchKeys <- names(BioticData[[file]]$catchsample)[names(BioticData[[file]]$catchsample) %in% names(BioticData[[file]]$individual)]
+        catchIds <- Reduce(BioticData[[file]]$catchsample[,catchKeys, with=F], f = paste)
+        catchIds <- catchIds[BioticData[[file]]$catchsample$catchcategory == species]
+        indCatchIds <- Reduce(BioticData[[file]]$individual[,catchKeys, with=F], f = paste)
+        
+        #convert individual weight
+        filterIndividual <- indCatchIds %in% catchIds & 
+          BioticData[[file]]$individual$individualproducttype != TargetProductType &
+          !is.na(BioticData[[file]]$individual$individualweight)
+        
+        if (!all(BioticData[[file]]$individual$individualproducttype[filterIndividual] %in% spectab$ProductType)){
+          missing <- unique(BioticData[[file]]$individual$individualproducttype[filterIndividual][!(BioticData[[file]]$individual$individualproducttype[filterIndividual] %in% spectab$ProductType)])
+          stop(paste("Not all necessary conversion factors found for species ", species, ". Missing: ", paste(missing, collapse=","), sep=""))
+        }
+        
+        conversionInd <- spectab$WeightFactor[match(BioticData[[file]]$individual$individualproducttype, spectab$ProductType)]
+        BioticData[[file]]$individual$individualweight[filterIndividual] <- BioticData[[file]]$individual$individualweight[filterIndividual] * conversionInd[filterIndividual]
+        BioticData[[file]]$individual$individualproducttype[filterIndividual] <- TargetProductType
+        BioticData[[file]]$individual$individualvolume[filterIndividual] <- NA
+      }
+      
+    }
+  }
+ return(BioticData) 
+}
+
+
 #' Set position Biotic
 #' @description 
 #'  Sets start position based on area codes.
@@ -915,5 +1037,53 @@ DefineClassificationError<- function(processData, resourceFilePath, encoding="UT
   }
 
   return(tab)
+}
+
+#' Define Weight Conversion Factors
+#' @description 
+#'  Define weight conversion factors for calculating approximate weights for a product type (e.g. round fish)
+#'  from the weight of other fish products, such as gutted fish.
+#' @details 
+#'  For DefinitionMethod 'ResourceFile':
+#'  Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
+#'  \describe{
+#'  \item{Column 1: 'Description'}{Free-text description of the product}
+#'  \item{Column 2: 'Species'}{Identifier for the species that the conversion applies to}
+#'  \item{Column 3: 'ProductType'}{Identifier for the type of product that the conversion applies to}
+#'  \item{Column 4: 'WeightFactor'}{scalar value that weights for the given 'ProductType' can be multiplied with to approximate the desired product type (w.g. round fish).}
+#'  }
+#'  
+#'  Missing values for WeightFactor are interpreted as NA, and will result in NA for weights after conversion.
+#'  
+#' @param processData \code{\link[RstoxFDA]{WeightConversionTable}} as returned from this function
+#' @param DefinitionMethod 'ResourceFile'. See details.
+#' @param FileName path to resource file
+#' @param UseProcessData Bypasses execution of function, if TRUE, and simply returns argument 'processData'
+#' @return \code{\link[RstoxFDA]{WeightConversionTable}}
+#' @export
+DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("ResourceFile"), FileName, UseProcessData=F){
+  
+  if (UseProcessData){
+    return(processData)
+  }
+  
+  encoding <- "UTF-8"
+  
+  if (DefinitionMethod == "ResourceFile"){
+    tab <- readTabSepFile(FileName,
+                          col_types = "cccd",
+                          col_names = c("Description", "Species", "ProductType", "WeightFactor"),
+                          encoding = encoding)
+    
+    dups <- tab[duplicated(tab[,c("Species", "ProductType"), with=F])]
+    if (nrow(dups) > 0){
+      stop("File contains duplicate definitions for conversionfactors (Species-ProductType): ", paste(paste(dups$Species, dups$ProductType, sep="-"), collapse=","))
+    }
+    
+    return(tab)
+  }
+  else{
+    stop(paste("DefinitionMethod", DefinitionMethod, "is not supported"))
+  }
 }
 

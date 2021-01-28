@@ -26,7 +26,7 @@ is.Date <- function(date){
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxData]{Translation}}
 #' @param Translation argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{Translation}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{Translation}}
 #' @export
 is.Translation <- function(Translation){
   if (!data.table::is.data.table(Translation)){
@@ -35,6 +35,40 @@ is.Translation <- function(Translation){
   if (!all(c("VariableName", "Value",	"NewValue") %in% names(Translation))){
     return(FALSE)
   }
+  return(TRUE)
+}
+
+#' Weight Conversion Table (WeightConversionTable)
+#' 
+#' @description 
+#'  \code{\link[data.table]{data.table}} with factors for approximating the weight of a 
+#'  desired product type (e.g. round fish)
+#'  from weights of other fish products. Contains the columns:
+#'  \item{'Description'}{Free-text description of the product type}
+#'  \item{'Species'}{Identifier for the species that the conversion applies to}
+#'  \item{'ProductType'}{Identifier for the type of product that the conversion applies to}
+#'  \item{'WeightFactor'}{scalar value that weights for the given 'ProductType' can be multiplied with to approximate desired product type (e.g. round fish).}
+#'  
+#'  NA is allowed for 'WeightFactor', which will result in NA for weights after conversion
+#'  
+#' @name WeightConversionTable
+#' 
+NULL
+
+#' Check if argument is WeightConversionTable
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{WeightConversionTable}}
+#' @param WeightConversionTable argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{WeightConversionTable}}
+#' @export
+is.WeightConversionTable <- function(WeightConversionTable){
+  if (!data.table::is.data.table(WeightConversionTable)){
+    return(FALSE)
+  }
+  if (!all(c("Description", "Species", "ProductType", "WeightFactor") %in% names(WeightConversionTable))){
+    return(FALSE)
+  }
+  
   return(TRUE)
 }
 
@@ -68,7 +102,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @param ReportFdaSamplingData argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @export
 is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
   if (!is.list(ReportFdaSamplingData)){
@@ -112,7 +146,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaData}}
 #' @param RecaData argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaData}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaData}}
 #' @export
 is.RecaData <- function(RecaData){
   if (!is.list(RecaData)){
@@ -208,7 +242,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
 #' @param RecaParameterData argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaParameterData}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
 #' @export
 is.RecaParameterData <- function(RecaParameterData){
   
@@ -306,7 +340,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
 #' @param RecaCatchAtAge argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
 #' @export
 is.RecaCatchAtAge <- function(RecaCatchAtAge){
   if (!is.list(RecaCatchAtAge)){
@@ -380,7 +414,7 @@ is.RecaPrediction <- function(prediction){
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}
 #' @param RecaResult argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{RecaResult}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}
 #' @export
 is.RecaResult <- function(RecaResult){
   if (!is.list(RecaResult)){
@@ -418,7 +452,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{UnifiedVariableDefinition}}
 #' @param UnifiedVariableDefinition argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{UnifiedVariableDefinition}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{UnifiedVariableDefinition}}
 #' @export
 is.UnifiedVariableDefinition <- function(UnifiedVariableDefinition){
   if (!data.table::is.data.table(UnifiedVariableDefinition)){
@@ -455,7 +489,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
 #' @param TemporalDefinition argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
 #' @export
 is.TemporalDefinition <- function(TemporalDefinition){
   if (!data.table::is.data.table(TemporalDefinition)){
@@ -489,7 +523,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AreaPosition}}
 #' @param AreaPosition argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{AreaPosition}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{AreaPosition}}
 #' @export
 is.AreaPosition <- function(AreaPosition){
   if (!data.table::is.data.table(AreaPosition)){
@@ -523,7 +557,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
 #' @param CarNeighbours argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{CarNeighbours}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
 #' @export
 is.CarNeighbours <- function(CarNeighbours){
   if (!data.table::is.data.table(CarNeighbours)){
@@ -557,7 +591,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
 #' @param AgeErrorMatrix argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
 #' @export
 is.AgeErrorMatrix <- function(AgeErrorMatrix){
   if (!data.table::is.data.table(AgeErrorMatrix)){
@@ -604,7 +638,7 @@ NULL
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ClassificationError}}
 #' @param ClassificationError argument to be checked for data conformity
-#' @return logical, TRUE if argument conformed to specification for \code{\link[RstoxFDA]{ClassificationError}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ClassificationError}}
 #' @export
 is.ClassificationError <- function(ClassificationError){
   if (!data.table::is.data.table(ClassificationError)){
