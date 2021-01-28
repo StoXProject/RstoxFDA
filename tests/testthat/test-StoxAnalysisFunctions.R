@@ -1,3 +1,16 @@
+context("PrepRecaEstimate: AgerrorMatrix")
+ageerorfile <- system.file("testresources","AgeErrorHirstEtAl2012.txt", package="RstoxFDA")
+ageerror <- DefineAgeErrorMatrix(FileName = ageerorfile)
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseAgingError = T, AgeErrorMatrix = ageerror, MinAge = 0, MaxAge = 14)
+expect_true(!is.null(prep$AgeLength$AgeErrorMatrix))
+est <- RunRecaEstimate(prep, 10, 50)
+
 context("PrepareRecaEstimate: configuration tests")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
@@ -153,7 +166,3 @@ expect_true("Area" %in% names(est$fit$ProportionAtAge$Intercept$cov))
 
 context("RunRecaEstimate not providing burnin")
 expect_error(RunRecaEstimate(prep, 10))
-
-
-
-

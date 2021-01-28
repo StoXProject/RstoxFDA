@@ -158,8 +158,8 @@ checkAgeLength<-function(agelength, num_tolerance = 1e-10){
     stop("Invalid values in age error matrix")
   }
   if (!is.null(agelength$AgeErrorMatrix)){
-    if (any(abs(rowSums(agelength$AgeErrorMatrix)-1)>num_tolerance)){
-      stop("Rows of age error matrix does not sum to 1")
+    if (any(abs(colSums(agelength$AgeErrorMatrix)-1)>num_tolerance)){
+      stop("Columns of age error matrix does not sum to 1")
     }
   }
   

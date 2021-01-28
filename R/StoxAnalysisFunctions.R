@@ -57,7 +57,6 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   StockSplitting=FALSE
   ContinousEffect<-NULL
   
-  
   if (!UseAgingError){
     AgeErrorMatrix = NULL
   }
@@ -65,6 +64,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     if (is.null(AgeErrorMatrix)){
       stop("'AgeErrorMatrix' must be provided when UseAgingError is TRUE.")
     }
+    AgeErrorMatrix <- convertAgeErrorMatrixReca(AgeErrorMatrix)
   }
   if (!UseCarEffect){
     CarNeighbours = NULL

@@ -303,6 +303,13 @@ convertPrepReca2stox <- function(prepRecaOutput){
   
   prepRecaOutput$CARNeighbours <- convertCarNeighbours2stox(prepRecaOutput$CARNeighbours, prepRecaOutput$CovariateMaps)
   
+  if (!is.null(prepRecaOutput$AgeLength$AgeErrorMatrix)){
+    prepRecaOutput$AgeLength$AgeErrorMatrix <- convertAgeErrorMatrixStox(prepRecaOutput$AgeLength$AgeErrorMatrix, prepRecaOutput$GlobalParameters$minage, prepRecaOutput$GlobalParameters$maxage)
+  }
+  if (!is.null(prepRecaOutput$WeightLength$AgeErrorMatrix)){
+    prepRecaOutput$WeightLength$AgeErrorMatrix <- convertAgeErrorMatrixStox(prepRecaOutput$WeightLength$AgeErrorMatrix, prepRecaOutput$GlobalParameters$minage, prepRecaOutput$GlobalParameters$maxage)
+  }
+  
   GlobalParameters <- data.table::data.table(lengthresCM=prepRecaOutput$GlobalParameters$lengthresCM,
                                                             maxlength=prepRecaOutput$GlobalParameters$maxlength,
                                                             minage=prepRecaOutput$GlobalParameters$minage,
@@ -351,6 +358,14 @@ convertStox2PrepReca <- function(stoxPrep){
   
   #stoxPrep$CARNeighbours <- convertCarNeighbours2reca(stoxPrep$CARNeighbours)
   
+  if (!is.null(stoxPrep$AgeLength$AgeErrorMatrix)){
+    stoxPrep$AgeLength$AgeErrorMatrix <- convertAgeErrorMatrixReca(stoxPrep$AgeLength$AgeErrorMatrix)
+  }
+  if (!is.null(stoxPrep$WeightLength$AgeErrorMatrix)){
+    browser()
+    stoxPrep$WeightLength$AgeErrorMatrix <- convertAgeErrorMatrixReca(stoxPrep$WeightLength$AgeErrorMatrix)
+  }
+  
   gb <- stoxPrep$GlobalParameters
   GlobalParameters <- list()
   GlobalParameters$lengthresCM <- gb$GlobalParameters$lengthresCM
@@ -374,4 +389,18 @@ convertStox2PrepReca <- function(stoxPrep){
   stoxPrep$GlobalParameters <- GlobalParameters
   
   return(stoxPrep)
+}
+
+#' Converts Age Error matrix to Reca format
+convertAgeErrorMatrixReca <- function(AgeErrorMatrix){
+  AgeErrorMatrix <- as.matrix(AgeErrorMatrix[,!(names(AgeErrorMatrix) %in% "ReadAge"), with=F])
+  rownames(AgeErrorMatrix) <- colnames(AgeErrorMatrix)
+  return(AgeErrorMatrix)
+}
+
+#' Converts Age Error matrix from Reca format
+convertAgeErrorMatrixStox <- function(AgeErrorMatrix, minAge, maxAge){
+  AgeErrorMatrix <- data.table::data.table(AgeErrorMatrix)
+  AgeErrorMatrix$ReadAge <- minAge:maxAge
+  return(AgeErrorMatrix)
 }
