@@ -427,6 +427,7 @@ convertStox2PrepReca <- function(stoxPrep){
 }
 
 #' Converts Age Error matrix to Reca format, also accepted by recaWrap
+#' @noRd
 convertAgeErrorMatrixReca <- function(AgeErrorMatrix){
   AgeErrorMatrix <- as.matrix(AgeErrorMatrix[,!(names(AgeErrorMatrix) %in% "ReadAge"), with=F])
   rownames(AgeErrorMatrix) <- colnames(AgeErrorMatrix)
@@ -434,6 +435,7 @@ convertAgeErrorMatrixReca <- function(AgeErrorMatrix){
 }
 
 #' Converts Age Error matrix from Reca format, also accepted by recaWrap
+#' @noRd
 convertAgeErrorMatrixStox <- function(AgeErrorMatrix, minAge, maxAge){
   AgeErrorMatrix <- data.table::data.table(AgeErrorMatrix)
   AgeErrorMatrix$ReadAge <- minAge:maxAge

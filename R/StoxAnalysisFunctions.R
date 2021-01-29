@@ -102,8 +102,8 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   
   interaction <- c()
   if (CellEffect){
-    interaction <- c(RandomEffects, FixedEffects, CarEffect)
-    interaction <- interaction[interaction %in% names(StoxLandingData$Landing)]
+    effects <- c(RandomEffects, FixedEffects, CarEffect)
+    interaction <- effects[effects %in% names(StoxLandingData$Landing)]
   }
   
   if (!isGiven(HatchDay)){
