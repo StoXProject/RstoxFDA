@@ -261,23 +261,51 @@ convertCarNeighbours2stox <- function(ecaCar, covariateMaps){
   if (is.null(ecaCar)){
     return(NULL)
   }
-  browser()
+  CarValue <- unlist(covariateMaps$inLandings[[covariateMaps$carEffect]])
+  Neighbours <- rep("", length(CarValue))
+  numNindex <- 1
+  for (i in 1:length(Neighbours)){
+    Neighbours[i] <- paste(covariateMaps$inLandings[[covariateMaps$carEffect]][ecaCar$idNeighbours[numNindex:(numNindex+ecaCar$numNeighbours[i]-1)]], collapse=",")
+    numNindex <- numNindex + ecaCar$numNeighbours[i]
+  }
+  return(data.table::data.table(CarValue=CarValue, Neighbours=Neighbours))
 }
 
 #' reformats CarNeigbours to format accepted by wrapReca
 #' @noRd
-convertCarNeighbours2reca <- function(stoxCar, carLandingsValues){
+convertCarNeighbours2recaWrap <- function(stoxCar, carLandingsValues){
+  if (is.null(stoxCar)){
+    return(NULL)
+  }
+    
+    stoxCar <- stoxCar[stoxCar$CarValue %in% carLandingsValues,]    
+    neighbourList <- lapply(stoxCar$Neighbours, FUN=function(x){
+      nb <-strsplit(x, ",")[[1]];
+      return(nb[nb %in% carLandingsValues]);})
+    names(neighbourList) <- stoxCar$CarValue
+    
+    
+    #neighbourList <- lapply(stoxCar$Neighbours, FUN=function(x){
+    #  nb <-strsplit(x, ",")[[1]];
+    #  return(nb);})
+    #names(neighbourList) <- stoxCar$CarValue
+
+  return(neighbourList)
+}
+
+#' reformats CarNeigbours to format accepted by Reca
+#' @noRd
+convertCarNeighbours2reca <- function(stoxCar, covariateMap){
   if (is.null(stoxCar)){
     return(NULL)
   }
   
-  stoxCar <- stoxCar[stoxCar$CarValue %in% carLandingsValues,]
   neighbourList <- lapply(stoxCar$Neighbours, FUN=function(x){
-                                    nb <-strsplit(x, ",")[[1]];
-                                    return(nb[nb %in% carLandingsValues]);})
+    nb <-strsplit(x, ",")[[1]];
+    return(nb);})
   names(neighbourList) <- stoxCar$CarValue
-  
-  return(neighbourList)
+
+  return(getNeighbours(neighbourList, covariateMap$inLandings[[covariateMap$carEffect]]))
 }
 
 
@@ -301,8 +329,12 @@ convertPrepReca2stox <- function(prepRecaOutput){
   
   prepRecaOutput$Landings$LiveWeightKG <- data.table::data.table(LiveWeightKG=prepRecaOutput$Landings$LiveWeightKG)
   
-  prepRecaOutput$CARNeighbours <- convertCarNeighbours2stox(prepRecaOutput$CARNeighbours, prepRecaOutput$CovariateMaps)
-  
+  if (!is.null(prepRecaOutput$AgeLength$CARNeighbours)){
+    prepRecaOutput$AgeLength$CARNeighbours <- convertCarNeighbours2stox(prepRecaOutput$AgeLength$CARNeighbours, prepRecaOutput$CovariateMaps)    
+  }
+  if (!is.null(prepRecaOutput$WeightLength$CARNeighbours)){
+    prepRecaOutput$WeightLength$CARNeighbours <- convertCarNeighbours2stox(prepRecaOutput$WeightLength$CARNeighbours, prepRecaOutput$CovariateMaps)    
+  }
   if (!is.null(prepRecaOutput$AgeLength$AgeErrorMatrix)){
     prepRecaOutput$AgeLength$AgeErrorMatrix <- convertAgeErrorMatrixStox(prepRecaOutput$AgeLength$AgeErrorMatrix, prepRecaOutput$GlobalParameters$minage, prepRecaOutput$GlobalParameters$maxage)
   }
@@ -356,13 +388,16 @@ convertStox2PrepReca <- function(stoxPrep){
   
   stoxPrep$Landings$LiveWeightKG <- stoxPrep$Landings$LiveWeightKG$LiveWeightKG
   
-  #stoxPrep$CARNeighbours <- convertCarNeighbours2reca(stoxPrep$CARNeighbours)
-  
+  if (!is.null(stoxPrep$AgeLength$CARNeighbours)){
+    stoxPrep$AgeLength$CARNeighbours <- convertCarNeighbours2reca(stoxPrep$AgeLength$CARNeighbours, stoxPrep$CovariateMaps)    
+  }
+  if (!is.null(stoxPrep$WeightLength$CARNeighbours)){
+    stoxPrep$WeightLength$CARNeighbours <- convertCarNeighbours2reca(stoxPrep$WeightLength$CARNeighbours, stoxPrep$CovariateMaps)    
+  }
   if (!is.null(stoxPrep$AgeLength$AgeErrorMatrix)){
     stoxPrep$AgeLength$AgeErrorMatrix <- convertAgeErrorMatrixReca(stoxPrep$AgeLength$AgeErrorMatrix)
   }
   if (!is.null(stoxPrep$WeightLength$AgeErrorMatrix)){
-    browser()
     stoxPrep$WeightLength$AgeErrorMatrix <- convertAgeErrorMatrixReca(stoxPrep$WeightLength$AgeErrorMatrix)
   }
   
@@ -391,14 +426,14 @@ convertStox2PrepReca <- function(stoxPrep){
   return(stoxPrep)
 }
 
-#' Converts Age Error matrix to Reca format
+#' Converts Age Error matrix to Reca format, also accepted by recaWrap
 convertAgeErrorMatrixReca <- function(AgeErrorMatrix){
   AgeErrorMatrix <- as.matrix(AgeErrorMatrix[,!(names(AgeErrorMatrix) %in% "ReadAge"), with=F])
   rownames(AgeErrorMatrix) <- colnames(AgeErrorMatrix)
   return(AgeErrorMatrix)
 }
 
-#' Converts Age Error matrix from Reca format
+#' Converts Age Error matrix from Reca format, also accepted by recaWrap
 convertAgeErrorMatrixStox <- function(AgeErrorMatrix, minAge, maxAge){
   AgeErrorMatrix <- data.table::data.table(AgeErrorMatrix)
   AgeErrorMatrix$ReadAge <- minAge:maxAge

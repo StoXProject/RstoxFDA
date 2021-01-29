@@ -119,7 +119,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     if (!(CarEffect %in% names(StoxLandingData$Landing))){
       stop(paste("CarEffect", CarEffect, "must be found in 'StoxLandings'"))
     }
-    convertedNeighbours <- convertCarNeighbours2reca(CarNeighbours, unique(StoxLandingData$Landing[[CarEffect]]))
+    convertedNeighbours <- convertCarNeighbours2recaWrap(CarNeighbours, unique(StoxLandingData$Landing[[CarEffect]]))
   }
   if (!isGiven(MinAge)){
     MinAge <- NULL
