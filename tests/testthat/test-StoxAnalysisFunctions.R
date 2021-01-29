@@ -1,3 +1,4 @@
+
 context("PrepRecaEstimate: AgerrorMatrix")
 ageerorfile <- system.file("testresources","AgeErrorHirstEtAl2012.txt", package="RstoxFDA")
 ageerror <- DefineAgeErrorMatrix(FileName = ageerorfile)
@@ -21,6 +22,7 @@ StoxLandingData <- readRDS(StoxLandingFile)
 
 StoxLandingData$Landing$NewConst <- 1
 StoxBioticData$Station$NewConst <- 1
+
 
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("NewConst"), RandomEffects = c()), "Only one level for categorical covariate NewConst")
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("NewConst")), "Only one level for categorical covariate NewConst")
@@ -151,7 +153,7 @@ prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(),
 expect_true("Area" %in% names(prep$Landings$AgeLengthCov))
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate cellEffect")
-prepCell <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area", "GG"), CellEffect = T)
+prepCell <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area", "GG"), CellEffect = "All")
 expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covariate=="Area"], 1)
 expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covariate=="GG"], 1)
 
