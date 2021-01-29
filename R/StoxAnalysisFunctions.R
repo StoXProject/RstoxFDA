@@ -28,7 +28,8 @@
 #'  \code{\link[RstoxFDA]{CarNeighbours}}, mandatory if 'carEffect' is given.
 #'  Identifies which values of the carEffect are to be considered as neighbours.
 #' @param CellEffect
-#'  If true, an interaction term will be added with all covariates that exist in landings (whether they are fixed or random effects)
+#'  Configures the cell effect. If 'All', an interaction term will be added with all covariates that exist in landings (whether they are fixed or random effects).
+#'  Any CAR-effect is always included in the cell effect.
 #' @param UseAgingError 
 #'  If true error-aging parameters will be incorporated in the model
 #' @param AgeErrorMatrix
@@ -51,12 +52,13 @@
 #'  encoding the day of the year when fish is consider to transition from one age to the next.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, CellEffect=F, MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
   #expose as parameter when implemented
   ClassificationError=NULL
   StockSplitting=FALSE
   ContinousEffect<-NULL
   
+  CellEffect <- match.arg(CellEffect, CellEffect)
   
   if (!UseAgingError){
     AgeErrorMatrix = NULL
@@ -65,6 +67,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     if (is.null(AgeErrorMatrix)){
       stop("'AgeErrorMatrix' must be provided when UseAgingError is TRUE.")
     }
+    AgeErrorMatrix <- convertAgeErrorMatrixReca(AgeErrorMatrix)
   }
   if (!UseCarEffect){
     CarNeighbours = NULL
@@ -100,10 +103,15 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     stop(paste("Some random effects are also specified as fixed effects:", paste(dup, collapse=",")))
   }
   
-  interaction <- c()
-  if (CellEffect){
-    interaction <- c(RandomEffects, FixedEffects, CarEffect)
-    interaction <- interaction[interaction %in% names(StoxLandingData$Landing)]
+  if (isGiven(CellEffect) & CellEffect=="All"){
+    effects <- c(RandomEffects, FixedEffects, CarEffect)
+    interaction <- effects[effects %in% names(StoxLandingData$Landing)]
+  }
+  else if (isGiven(CellEffect) & CellEffect=="Off"){
+    interaction <- c()
+  }
+  else{
+    stop(paste("Opion", CellEffect, "is not supported for parameter 'CellEffect'"))
   }
   
   if (!isGiven(HatchDay)){
@@ -119,7 +127,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     if (!(CarEffect %in% names(StoxLandingData$Landing))){
       stop(paste("CarEffect", CarEffect, "must be found in 'StoxLandings'"))
     }
-    convertedNeighbours <- convertCarNeighbours2reca(CarNeighbours, unique(StoxLandingData$Landing[[CarEffect]]))
+    convertedNeighbours <- convertCarNeighbours2recaWrap(CarNeighbours, unique(StoxLandingData$Landing[[CarEffect]]))
   }
   if (!isGiven(MinAge)){
     MinAge <- NULL

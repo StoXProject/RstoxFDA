@@ -1,3 +1,17 @@
+
+context("PrepRecaEstimate: AgerrorMatrix")
+ageerorfile <- system.file("testresources","AgeErrorHirstEtAl2012.txt", package="RstoxFDA")
+ageerror <- DefineAgeErrorMatrix(FileName = ageerorfile)
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseAgingError = T, AgeErrorMatrix = ageerror, MinAge = 0, MaxAge = 14)
+expect_true(!is.null(prep$AgeLength$AgeErrorMatrix))
+est <- RunRecaEstimate(prep, 10, 50)
+
 context("PrepareRecaEstimate: configuration tests")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
@@ -9,10 +23,11 @@ StoxLandingData <- readRDS(StoxLandingFile)
 StoxLandingData$Landing$NewConst <- 1
 StoxBioticData$Station$NewConst <- 1
 
+
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("NewConst"), RandomEffects = c()), "Only one level for categorical covariate NewConst")
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("NewConst")), "Only one level for categorical covariate NewConst")
 
-StoxBioticData$Station$Area <- StoxLandingData$Landing$Area[sample(20,45,T)]
+StoxBioticData$Station$Area <- StoxLandingData$Landing$Area[c(7,8,13,4,3,4,11,20,4,5,6,20,4,12,3,3,10,4,1,20,11,5,11,5,15,8,14,7,10,6,13,16,11,14,19,20,2,19,11,16,15,5,11,11,9)]
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("Area"), RandomEffects = c("Area")), "Some random effects are also specified as fixed effects: Area")
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area"), CarEffect = "Area"), "UseCarEffect is False, while the parameter 'CarEffect' is given")
 expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area"), CarEffect = "Area", UseCarEffect = T, CarNeighbours = list()), "The CAR effect Area is also specified as fixed effect or random effect")
@@ -24,12 +39,13 @@ car$Neighbours[9] <- paste(car$Neighbours[9], "30", sep=",")
 car$Neighbours[29] <- paste(car$Neighbours[29], "08", sep=",")
 prepCar <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), CarEffect = "Area", UseCarEffect = T, CarNeighbours = car)
 
-context("PrepareRecaEstimate: test run with car")
 fpath <- makeTempDirReca()
 paramOut <- ParameterizeRecaModels(prepCar, 10, 50, 1, fpath)
-results <- RunRecaModels(paramOut, StoxLandingData)
+result <- RunRecaModels(paramOut, StoxLandingData)
 removeTempDirReca(fpath)
-expect_true(all(!is.na(paramOut$FitLengthGivenAge$Area$car_Intercept)))
+expect_true(is.RecaParameterData(paramOut))
+expect_true(is.RecaCatchAtAge(result))
+
 
 context("ParameterizeRecaModels: simple case")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
@@ -137,7 +153,7 @@ prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(),
 expect_true("Area" %in% names(prep$Landings$AgeLengthCov))
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate cellEffect")
-prepCell <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area", "GG"), CellEffect = T)
+prepCell <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area", "GG"), CellEffect = "All")
 expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covariate=="Area"], 1)
 expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covariate=="GG"], 1)
 
@@ -153,7 +169,3 @@ expect_true("Area" %in% names(est$fit$ProportionAtAge$Intercept$cov))
 
 context("RunRecaEstimate not providing burnin")
 expect_error(RunRecaEstimate(prep, 10))
-
-
-
-

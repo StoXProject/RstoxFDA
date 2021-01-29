@@ -14,7 +14,7 @@ PrepareRecaEstimate(
   CarNeighbours,
   UseAgingError = F,
   AgeErrorMatrix,
-  CellEffect = F,
+  CellEffect = c("Off", "All"),
   MinAge = integer(),
   MaxAge = integer(),
   MaxLength = numeric(),
@@ -47,7 +47,7 @@ Identifies which values of the carEffect are to be considered as neighbours.}
 \item{AgeErrorMatrix}{\code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
 mandatory if UseAgingError is TRUE.}
 
-\item{CellEffect}{If true, an interaction term will be added with all covariates that exist in landings (whether they are fixed or random effects)}
+\item{CellEffect}{Configures the cell effect. If 'All', an interaction term will be added with all covariates that exist in landings (whether they are fixed or random effects)}
 
 \item{MinAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
 If not provided it will be derived from data.}

@@ -67,15 +67,19 @@ checkSamplesInFrame <- function(samples, landings, covariates){
   return(all(samplescells %in% landingscells))
 }
 
-#' Check that all fixed effects are sampled in combination with carEffect or neighbout
+#' Check that all fixed effects are sampled in combination with carEffect or neighbour
 #' @noRd
 checkAllSampledCar <- function(landings, samples, fixedEffects, carEffect, neighbours){
-
   for (l in unique(landings[[carEffect]])){
     landcar <- landings[landings[[carEffect]] == l,]
     sampcar <- samples[samples[[carEffect]] %in% c(l, neighbours[l]),]
-    sampcar[[carEffect]] <- l
-    if (!checkAllSampled(landcar, sampcar, c(fixedEffects, carEffect))){
+    if (nrow(sampcar) > 0){
+      sampcar[[carEffect]] <- rep(l, nrow(sampcar))
+      if (!checkAllSampled(landcar, sampcar, c(fixedEffects, carEffect))){
+        return(F)
+      }
+    }
+    else{
       return(F)
     }
   }
@@ -390,6 +394,9 @@ getCovariateMatrix <- function(samples, covariates, covariatesMapInLandings, cov
 getNeighbours <- function(neighbours, covariateMap){
   if (is.null(neighbours)){
     return(NULL)
+  }
+  if (is.null(covariateMap)){
+    stop("covariateMap is not provided")
   }
   
   if (length(neighbours) != length(covariateMap)){
