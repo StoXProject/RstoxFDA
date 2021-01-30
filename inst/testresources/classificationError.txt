@@ -1,2 +1,2 @@
-ptype1.CC	ptype1.S	ptype2.CC	ptype2.S	ptype4.CC	ptype4.S	ptype5.CC	ptype5.S
-.8	.2	.6	.4	.4	.6	.2	.8
+CC.name	S.name	ptype1.1	ptype1.5	ptype2.2	ptype2.4	ptype4.2	ptype4.4	ptype5.1	ptype5.5
+"Coastal Cod"	"NEA cod"	.8	.2	.6	.4	.4	.6	.2	.8

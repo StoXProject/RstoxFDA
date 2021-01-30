@@ -1001,45 +1001,47 @@ DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile")
   return(dt)
 }
 
-#' Define Classification Error (for stock splitting)
-#' @description
-#'  StoX function.
-#'  Defines probabilities for misclassifying when determining stock membership of a specimen.
-#' @details
-#'  Definitions are read from a tab separated file with headers. Columns defined as:
-#'  \describe{
-#'   \item{Column 1 : ptype1.CC}{Probability of classifying a type 1 specimen as type 1.}
-#'   \item{Column 2: ptype1.S}{Probability of classifying a type 5 specimen as type 1.}
-#'   \item{Column 3: ptype2.CC}{Probability of classifying a type 2 specimen as type 2.}
-#'   \item{Column 4: ptype2.S}{Probability of classifying a type 4 specimen as type 2.}
-#'   \item{Column 5: ptype4.CC}{Probability of classifying a type 2 specimen as type 4.}
-#'   \item{Column 6: ptype4.S}{Probability of classifying a type 4 specimen as type 4.}
-#'   \item{Column 7: ptype5.CC}{Probability of classifying a type 1 specimen as type 5.}
-#'   \item{Column 8: ptype5.S}{Probability of classifying a type 5 specimen as type 5.}
-#'  }
-#'  see \code{\link[RstoxFDA]{ClassificationError}} for further explanation on the coding system.
-#' @param processData data.table() as returned from this function
-#' @param resourceFilePath path to resource file
-#' @param encoding encoding of resource file
-#' @param useProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
-#' @return Classification Error Matrix, see: \code{\link[RstoxFDA]{ClassificationError}}.
-#' @export
-DefineClassificationError<- function(processData, resourceFilePath, encoding="UTF-8", useProcessData=F){
-
-  if (useProcessData){
-    return(processData)
-  }
-
+#' Read Stock splitting parameters from file
+#'  @noRd
+readStockSplittingParamteres <- function(resourceFilePath, encoding){
   tab <- readTabSepFile(resourceFilePath,
-                        col_types = "dddddddd",
-                        col_names = c("ptype1.CC", "ptype1.S", "ptype2.CC", "ptype2.S", "ptype4.CC", "ptype4.S", "ptype5.CC", "ptype5.S"),
+                        col_types = "ccdddddddd",
+                        col_names = c("CC.name", "S.name", "ptype1.1", "ptype1.5", "ptype2.2", "ptype2.4", "ptype4.2", "ptype4.4", "ptype5.1", "ptype5.5"),
                         encoding = encoding)
-
+  
   if (nrow((tab)) != 1){
     stop("Malformed resource file: contains more than one row.")
   }
-
+  
   return(tab)
+}
+
+#' Define Classification Error (for stock splitting)
+#' @description
+#'  Defines parameters for the stock-splitting analysis in Reca, including
+#'  parameters for misclassifying when determining stock membership of a specimen.
+#' @details
+#'  For DefinitionMethod 'ResourceFile', definitions are read from a UTF-8 encoded tab separated file with headers and one row
+#'  with headers corresponding to column names in \code{\link[RstoxFDA]{StockSplittingParamteres}}.
+#'  see \code{\link[RstoxFDA]{StockSplittingParamteres}} for further explanation on the coding system.
+#' @param processData data.table() as returned from this function
+#' @param FileName path to resource file
+#' @param UseProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
+#' @return \code{\link[RstoxFDA]{StockSplittingParamteres}}.
+#' @export
+DefineStockSplittingParamteres <- function(processData, DefinitionMethod=c("ResourceFile", "FunctionParameters"), FileName=character(), UseProcessData=F){
+
+  if (UseProcessData){
+    return(processData)
+  }
+
+  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
+  
+  encoding <- "UTF-8"
+  
+  if (DefinitionMethod == "ResourceFile"){
+    return(readStockSplittingParamteres(FileName, encoding))
+  }
 }
 
 #' Define Weight Conversion Factors

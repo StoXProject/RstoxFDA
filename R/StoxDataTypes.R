@@ -605,47 +605,56 @@ is.AgeErrorMatrix <- function(AgeErrorMatrix){
   return(TRUE)
 }
 
-#' Stock classification error (ClassificationError)
+#' Stock splitting parameters (StockSplittingParamteres)
 #'
-#' Table (\code{\link[data.table]{data.table}})
-#' defining probabilities of misclassifying stock membership of a fish (e.g. from otholith).
+#' @description
+#'  Table (\code{\link[data.table]{data.table}})
+#'  
+#'  Defining parameters for the stock-splitting analysis in Reca, including
+#'  parameters for the probability of misclassifying when determining stock membership of a specimen.
 #'
-#' The stock classification system is designed for coastal and atlantic cod as they are determined at IMR.
-#' The two stock of interest are classified by code 1, and 5.
-#' Code 2 signifies the same as code 1, but indicate less certainty.
-#' Code 4 signifies the same as code 5, but indicate less certainty.
-#'
-#' The classification error specifies the probability of misclassifying between some of these classifications.
-#'
-#' @details
+#'  The stock splitting analysis allows catch at age to be estimated for two domains that partition all individuals,
+#'  and that are observed for all age-determined specimens. It was developed for disciminating Coastal Cod and North East Arctic Cod,
+#'  based on otholith growth patterns, and naming conventions are derived from that. It could be adapted to
+#'  other stocks and in principle to other bipartite domain definitions (such as Sex).
+#'  
+#'  Two otolith patterns are defined for each of the two stocks 'CC' and 'S'. Otolith type 1 and 2 identifies
+#'  that a specimen belongs to the stock 'CC', and are interpreted by otoloith readers as 'certain' and 'uncertain' CC, respectively.
+#'  Otolith type 4 and 5 identifies that a specimen belongs to the stock 'S', and are interpreted as 'uncertain' and 'certain' S, respectively.
+#'  
 #'  \describe{
-#'   \item{ptype1.CC}{numeric() [0,1]. Probability of classifying a type 1 specimen as type 1.}
-#'   \item{ptype1.S}{numeric() [0,1]. Probability of classifying a type 5 specimen as type 1.}
-#'   \item{ptype2.CC}{numeric() [0,1]. Probability of classifying a type 2 specimen as type 2.}
-#'   \item{ptype2.S}{numeric() [0,1]. Probability of classifying a type 4 specimen as type 2.}
-#'   \item{ptype4.CC}{numeric() [0,1]. Probability of classifying a type 2 specimen as type 4.}
-#'   \item{ptype4.S}{numeric() [0,1]. Probability of classifying a type 4 specimen as type 4.}
-#'   \item{ptype5.CC}{numeric() [0,1]. Probability of classifying a type 1 specimen as type 5.}
-#'   \item{ptype5.S}{numeric() [0,1]. Probability of classifying a type 5 specimen as type 5.}
+#'   \item{CC.name}{Name of the stock identified as CC}
+#'   \item{S.name}{Name of the stock identified as S}
+#'   \item{ptype1.1}{Probability of classifying a type 1 specimen as type 1 (certain CC).}
+#'   \item{ptype1.5}{Probability of classifying a type 5 (certain S) specimen as type 1 (certain CC).}
+#'   \item{ptype2.2}{Probability of classifying a type 2 (uncertain CC) specimen as type 2 (uncertain CC).}
+#'   \item{ptype2.4}{Probability of classifying a type 4 (uncertain S) specimen as type 2 (uncertain CC).}
+#'   \item{ptype4.2}{Probability of classifying a type 2 (uncertain CC) specimen as type 4 (uncertain S).}
+#'   \item{ptype4.4}{Probability of classifying a type 4 (uncertain S) specimen as type 4 (uncertain S).}
+#'   \item{ptype5.1}{Probability of classifying a type 1 (certain CC) specimen as type 5 (certain S).}
+#'   \item{ptype5.5}{Probability of classifying a type 5 (certain S) specimen as type 5 (certain S).}
 #'  }
 #'
 #'  The data table contains only one row
 #'
-#' @name ClassificationError
+#' @name StockSplittingParamteres
 #'
 NULL
 
-#' Check if argument is ClassificationError
+#' Check if argument is StockSplittingParamteres
 #' @description
-#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ClassificationError}}
-#' @param ClassificationError argument to be checked for data conformity
-#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ClassificationError}}
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param StockSplittingParamteres argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParamteres}}
 #' @export
-is.ClassificationError <- function(ClassificationError){
-  if (!data.table::is.data.table(ClassificationError)){
+is.StockSplittingParamteres <- function(StockSplittingParamteres){
+  if (!data.table::is.data.table(StockSplittingParamteres)){
     return(FALSE)
   }
-  if (!all(c("ptype1.CC", "ptype1.S", "ptype2.CC", "ptype2.S", "ptype4.CC", "ptype4.S", "ptype5.CC", "ptype5.S") %in% names(ClassificationError))){
+  if (!all(c("CC.name", "S.name", "ptype1.1", "ptype1.5", "ptype2.2", "ptype2.4", "ptype4.2", "ptype4.4", "ptype5.1", "ptype5.5") %in% names(StockSplittingParamteres))){
+    return(FALSE)
+  }
+  if (nrow(StockSplittingParamteres) != 1){
     return(FALSE)
   }
   
@@ -655,6 +664,30 @@ is.ClassificationError <- function(ClassificationError){
 #' Function specification for inclusion in StoX UI
 #' @export
 stoxFunctionAttributes <- list(
+  
+  DefineStockSplittingParamteres = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StockSplittingParamteres",
+    functionParameterFormat = list(
+      FileName = "filePath"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      StratumPolygon = list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      FileName = list(
+        DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      )
+    )
+  ),
   
   DefineCarNeighbours = list(
     functionType = "modelData", 

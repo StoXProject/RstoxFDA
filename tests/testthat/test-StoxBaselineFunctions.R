@@ -296,15 +296,16 @@ expect_error(DefineAgeErrorMatrix(FileName = ageerorfile),"Malformed resource fi
 
 
 
-context("test-StoxBaselineFunctions: DefineClassificationError")
+context("test-StoxBaselineFunctions: DefineStockSplittingParamteres")
 classerorfile <- system.file("testresources","classificationError.txt", package="RstoxFDA")
-classerror <- DefineClassificationError(resourceFilePath = classerorfile)
-expect_true(data.table::is.data.table(classerror))
+classerror <- DefineStockSplittingParamteres(FileName = classerorfile)
+
+expect_true(is.StockSplittingParamteres(classerror))
 expect_equal(nrow(classerror), 1)
-expect_equal(ncol(classerror), 8)
+expect_equal(ncol(classerror), 10)
 
 context("test-StoxBaselineFunctions: DefineClassificationError useProcessdata")
-classNULL <- DefineClassificationError(NULL, resourceFilePath = classerorfile, useProcessData = T)
+classNULL <- DefineStockSplittingParamteres(NULL, FileName = classerorfile, UseProcessData = T)
 expect_true(is.null(classNULL))
 
 
