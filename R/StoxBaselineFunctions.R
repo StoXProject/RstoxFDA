@@ -1006,7 +1006,11 @@ DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile")
 readStockSplittingParamteres <- function(resourceFilePath, encoding){
   tab <- readTabSepFile(resourceFilePath,
                         col_types = "ccdddddddd",
-                        col_names = c("CC.name", "S.name", "ptype1.1", "ptype1.5", "ptype2.2", "ptype2.4", "ptype4.2", "ptype4.4", "ptype5.1", "ptype5.5"),
+                        col_names = c("StockNameCC", "StockNameS", "ProbabilityType1As1",
+                                      "ProbabilityType1As5", "ProbabilityType2As2",
+                                      "ProbabilityType2As4",	"ProbabilityType4As2",
+                                      "ProbabilityType4As4",	"ProbabilityType5As1",
+                                      "ProbabilityType5As5"),
                         encoding = encoding)
   
   if (nrow((tab)) != 1){
@@ -1016,7 +1020,34 @@ readStockSplittingParamteres <- function(resourceFilePath, encoding){
   return(tab)
 }
 
-#' Define Classification Error (for stock splitting)
+#' checks that probabilities are valid for StockSplittingParamteres
+#' report specific errors
+#' @noRd
+checkProbabilities <- function(tab, tolerance=1e-10){
+  if (any(tab[,3:ncol(tab)]<0) | any(tab[,3:ncol(tab)]>1)){
+    stop("All probabilities must be in [0,1].")
+  }
+  sumToOne <- function(values){
+    return(abs(1-sum(values)) < tolerance)
+  }
+  if (!sumToOne(c(tab$ProbabilityType1As1, tab$ProbabilityType1As5))){
+    stop("Parameters 'ProbabilityType1As1' and ProbabilityType1As5' must sum to one")
+  }
+  if (!sumToOne(c(tab$ProbabilityType2As2, tab$ProbabilityType2As4))){
+    stop("Parameters 'ProbabilityType2As2' and ProbabilityType2As4' must sum to one")
+  }
+  if (!sumToOne(c(tab$ProbabilityType4As2, tab$ProbabilityType4As4))){
+    stop("Parameters 'ProbabilityType4As2' and ProbabilityType4As4' must sum to one")
+  }
+  if (!sumToOne(c(tab$ProbabilityType5As1, tab$ProbabilityType5As5))){
+    stop("Parameters 'ProbabilityType5As1' and ProbabilityType5As5' must sum to one")
+  }
+  if (!is.StockSplittingParamteres(tab)){
+    stop("The chosen file does not form a valid stock-splitting specifciation.")
+  }
+}
+
+#' Define Stock Splitting Parameters
 #' @description
 #'  Defines parameters for the stock-splitting analysis in Reca, including
 #'  parameters for misclassifying when determining stock membership of a specimen.
@@ -1026,10 +1057,26 @@ readStockSplittingParamteres <- function(resourceFilePath, encoding){
 #'  see \code{\link[RstoxFDA]{StockSplittingParamteres}} for further explanation on the coding system.
 #' @param processData data.table() as returned from this function
 #' @param FileName path to resource file
+#' @param StockNameCC Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param StockNameS Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType1As1 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType5As1 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType2As2 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType4As2 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType2As4 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType4As4 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType1As5 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType5As5 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
 #' @param UseProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
 #' @return \code{\link[RstoxFDA]{StockSplittingParamteres}}.
 #' @export
-DefineStockSplittingParamteres <- function(processData, DefinitionMethod=c("ResourceFile", "FunctionParameters"), FileName=character(), UseProcessData=F){
+DefineStockSplittingParamteres <- function(processData, DefinitionMethod=c("ResourceFile", "FunctionParameters"), FileName=character(),
+                                           StockNameCC=character(), StockNameS=character(), ProbabilityType1As1=numeric(),
+                                           ProbabilityType5As1=numeric(), ProbabilityType2As2=numeric(),
+                                           ProbabilityType4As2=numeric(),	ProbabilityType2As4=numeric(),
+                                           ProbabilityType4As4=numeric(),	ProbabilityType1As5=numeric(),
+                                           ProbabilityType5As5=numeric(),
+                                           UseProcessData=F){
 
   if (UseProcessData){
     return(processData)
@@ -1037,10 +1084,40 @@ DefineStockSplittingParamteres <- function(processData, DefinitionMethod=c("Reso
 
   DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
   
-  encoding <- "UTF-8"
-  
   if (DefinitionMethod == "ResourceFile"){
-    return(readStockSplittingParamteres(FileName, encoding))
+    encoding <- "UTF-8"
+    tab <- readStockSplittingParamteres(FileName, encoding)
+    checkProbabilities(tab)
+    return(tab)
+  }
+  else if (DefinitionMethod == "FunctionParameters"){
+    
+    if (!isGiven(StockNameCC) | !isGiven(StockNameS)){
+      stop("Provide names for the stocks ('StockNameCC' and 'StockNameS'.")
+    }
+    if (!isGiven(ProbabilityType1As1) | !isGiven(ProbabilityType1As5) |
+        !isGiven(ProbabilityType2As2) | !isGiven(ProbabilityType2As4) |
+        !isGiven(ProbabilityType4As2) | !isGiven(ProbabilityType4As4) |
+        !isGiven(ProbabilityType5As1) | !isGiven(ProbabilityType5As5)){
+      stop("Provide all stock classification probailities ProbabilityType<X>As<Y>.")
+    }
+    
+    tab <- data.table::data.table(StockNameCC=StockNameCC,
+                                  StockNameS=StockNameS,
+                                  ProbabilityType1As1=ProbabilityType1As1,
+                                  ProbabilityType5As1=ProbabilityType5As1,
+                                  ProbabilityType2As2=ProbabilityType2As2,
+                                  ProbabilityType4As2=ProbabilityType4As2,
+                                  ProbabilityType2As4=ProbabilityType2As4,
+                                  ProbabilityType4As4=ProbabilityType4As4,
+                                  ProbabilityType1As5=ProbabilityType1As5,
+                                  ProbabilityType5As5=ProbabilityType5As5)
+    checkProbabilities(tab)
+    return(tab)
+  }
+  
+  else{
+    stop(paste("DefinitionMethod", DefinitionMethod, "not supported."))
   }
 }
 

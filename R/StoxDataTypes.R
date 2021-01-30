@@ -623,19 +623,22 @@ is.AgeErrorMatrix <- function(AgeErrorMatrix){
 #'  Otolith type 4 and 5 identifies that a specimen belongs to the stock 'S', and are interpreted as 'uncertain' and 'certain' S, respectively.
 #'  
 #'  \describe{
-#'   \item{CC.name}{Name of the stock identified as CC}
-#'   \item{S.name}{Name of the stock identified as S}
-#'   \item{ptype1.1}{Probability of classifying a type 1 specimen as type 1 (certain CC).}
-#'   \item{ptype1.5}{Probability of classifying a type 5 (certain S) specimen as type 1 (certain CC).}
-#'   \item{ptype2.2}{Probability of classifying a type 2 (uncertain CC) specimen as type 2 (uncertain CC).}
-#'   \item{ptype2.4}{Probability of classifying a type 4 (uncertain S) specimen as type 2 (uncertain CC).}
-#'   \item{ptype4.2}{Probability of classifying a type 2 (uncertain CC) specimen as type 4 (uncertain S).}
-#'   \item{ptype4.4}{Probability of classifying a type 4 (uncertain S) specimen as type 4 (uncertain S).}
-#'   \item{ptype5.1}{Probability of classifying a type 1 (certain CC) specimen as type 5 (certain S).}
-#'   \item{ptype5.5}{Probability of classifying a type 5 (certain S) specimen as type 5 (certain S).}
+#'   \item{StockNameCC}{Name of the stock identified as CC}
+#'   \item{StockNameS}{Name of the stock identified as S}
+#'   \item{ProbabilityType1As1}{Probability of classifying a type 1 specimen as type 1 (certain CC).}
+#'   \item{ProbabilityType5As1}{Probability of classifying a type 5 (certain S) specimen as type 1 (certain CC).}
+#'   \item{ProbabilityType2As2}{Probability of classifying a type 2 (uncertain CC) specimen as type 2 (uncertain CC).}
+#'   \item{ProbabilityType4As2}{Probability of classifying a type 4 (uncertain S) specimen as type 2 (uncertain CC).}
+#'   \item{ProbabilityType2As4}{Probability of classifying a type 2 (uncertain CC) specimen as type 4 (uncertain S).}
+#'   \item{ProbabilityType4As4}{Probability of classifying a type 4 (uncertain S) specimen as type 4 (uncertain S).}
+#'   \item{ProbabilityType1As5}{Probability of classifying a type 1 (certain CC) specimen as type 5 (certain S).}
+#'   \item{ProbabilityType5As5}{Probability of classifying a type 5 (certain S) specimen as type 5 (certain S).}
 #'  }
 #'
-#'  The data table contains only one row
+#'  The probabilities for different ways to classify a type must sum to 1.
+#'  E.g.: ProbabilityType1As1 + ProbabilityType1As5 = 1.
+#'
+#'  The data table contains only one row.
 #'
 #' @name StockSplittingParamteres
 #'
@@ -651,10 +654,46 @@ is.StockSplittingParamteres <- function(StockSplittingParamteres){
   if (!data.table::is.data.table(StockSplittingParamteres)){
     return(FALSE)
   }
-  if (!all(c("CC.name", "S.name", "ptype1.1", "ptype1.5", "ptype2.2", "ptype2.4", "ptype4.2", "ptype4.4", "ptype5.1", "ptype5.5") %in% names(StockSplittingParamteres))){
+  if (!all(c("StockNameCC", "StockNameS", "ProbabilityType1As1",
+             "ProbabilityType1As5", "ProbabilityType2As2",
+             "ProbabilityType2As4",	"ProbabilityType4As2",
+             "ProbabilityType4As4",	"ProbabilityType5As1",
+             "ProbabilityType5As5") %in% names(StockSplittingParamteres))){
     return(FALSE)
   }
   if (nrow(StockSplittingParamteres) != 1){
+    return(FALSE)
+  }
+  
+  prob <- function(arg){
+    if (arg<0 | arg > 1){
+      return(FALSE)
+    }
+    return(TRUE)
+  }
+  
+  if (!prob(StockSplittingParamteres$ProbabilityType1As1)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType1As5)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType2As2)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType2As4)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType4As2)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType4As4)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType5As1)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType5As5)){
     return(FALSE)
   }
   
@@ -676,14 +715,48 @@ stoxFunctionAttributes <- list(
       DefinitionMethod = list(
         UseProcessData = FALSE
       ), 
-      # These two are joined with AND, and must both be fulfilled:
-      StratumPolygon = list(
-        DefinitionMethod = "FunctionParameters", 
-        UseProcessData = FALSE
-      ), 
-      # These two are joined with AND, and must both be fulfilled:
       FileName = list(
         DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      ),
+      StockNameCC=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      StockNameS=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType1As1=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType5As1=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType2As2=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType4As2=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType2As4=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType4As4=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType1As5=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType5As5=list(
+        DefinitionMethod = "FunctionParameters", 
         UseProcessData = FALSE
       )
     )

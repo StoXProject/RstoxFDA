@@ -308,6 +308,14 @@ context("test-StoxBaselineFunctions: DefineClassificationError useProcessdata")
 classNULL <- DefineStockSplittingParamteres(NULL, FileName = classerorfile, UseProcessData = T)
 expect_true(is.null(classNULL))
 
+context("test-StoxBaselineFunctions: DefineClassificationError functionparamters")
+manual <- DefineStockSplittingParamteres(DefinitionMethod = "FunctionParameters",
+                               StockNameCC="S1", StockNameS="S2", ProbabilityType1As1=.8,
+                               ProbabilityType1As5=.2, ProbabilityType2As2=.6,
+                               ProbabilityType2As4=.4,	ProbabilityType4As2=.4,
+                               ProbabilityType4As4=.6,	ProbabilityType5As1=.2,
+                               ProbabilityType5As5=.8)
+expect_true(is.StockSplittingParamteres(manual))
 
 context("test-StoxBaselineFunctions: appendTemporal")
 temp <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10","01-12"))

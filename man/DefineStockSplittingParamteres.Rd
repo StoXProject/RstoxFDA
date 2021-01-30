@@ -2,12 +2,22 @@
 % Please edit documentation in R/StoxBaselineFunctions.R
 \name{DefineStockSplittingParamteres}
 \alias{DefineStockSplittingParamteres}
-\title{Define Classification Error (for stock splitting)}
+\title{Define Stock Splitting Parameters}
 \usage{
 DefineStockSplittingParamteres(
   processData,
   DefinitionMethod = c("ResourceFile", "FunctionParameters"),
   FileName = character(),
+  StockNameCC = character(),
+  StockNameS = character(),
+  ProbabilityType1As1 = numeric(),
+  ProbabilityType5As1 = numeric(),
+  ProbabilityType2As2 = numeric(),
+  ProbabilityType4As2 = numeric(),
+  ProbabilityType2As4 = numeric(),
+  ProbabilityType4As4 = numeric(),
+  ProbabilityType1As5 = numeric(),
+  ProbabilityType5As5 = numeric(),
   UseProcessData = F
 )
 }
@@ -15,6 +25,26 @@ DefineStockSplittingParamteres(
 \item{processData}{data.table() as returned from this function}
 
 \item{FileName}{path to resource file}
+
+\item{StockNameCC}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
+
+\item{StockNameS}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
+
+\item{ProbabilityType1As1}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
+
+\item{ProbabilityType5As1}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
+
+\item{ProbabilityType2As2}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
+
+\item{ProbabilityType4As2}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
+
+\item{ProbabilityType2As4}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
+
+\item{ProbabilityType4As4}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
+
+\item{ProbabilityType1As5}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
+
+\item{ProbabilityType5As5}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
 
 \item{UseProcessData}{logical() Bypasses execution of function, and simply returns argument 'processData'}
 }
