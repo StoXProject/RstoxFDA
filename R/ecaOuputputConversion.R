@@ -225,32 +225,69 @@ stox2recaFit <- function(stoxFit){
 }
 
 #' Converst ecaResults to stox-formatted output
+#' @param stocks the member StocSplitting of covariateMaps, iff stock splitting was used.
 #' @noRd
-ecaResult2Stox <- function(ecaPrediction){
+ecaResult2Stox <- function(ecaPrediction, stocks=NULL){
   
   CatchAtAge <- data.table::as.data.table(ecaPrediction$TotalCount)
   names(CatchAtAge) <- c("Length", "Age", "Iteration","CatchAtAge")
   
+  #handle stock splitting
+  if (!is.null(stocks)){
+    stopifnot(all(c("StockNameCC","StockNameS") %in% names(stocks)))
+    stockNames <- c(rep(stocks$StockNameS, length(ecaPrediction$AgeCategories)/2),
+                    rep(stocks$StockNameCC, length(ecaPrediction$AgeCategories)/2))
+    CatchAtAge$Stock <- stockNames[CatchAtAge$Age]
+  }
+  
   out <- list()
   
+  #fix varaible levels
   len <- round(exp(ecaPrediction$LengthIntervalsLog), digits=2)
   CatchAtAge$Length <- len[CatchAtAge$Length]
   CatchAtAge$Age <- ecaPrediction$AgeCategories[CatchAtAge$Age]
   out$CatchAtAge <- CatchAtAge
+    
   
-  MeanLength <- data.table::as.data.table(t(ecaPrediction$MeanLength))
-  names(MeanLength) <- as.character(ecaPrediction$AgeCategories)
-  MeanLength$Iteration <- 1:nrow(MeanLength)
-  MeanLength <- data.table::melt(MeanLength, measure.vars=c(as.character(ecaPrediction$AgeCategories)), variable.name="Age",value.name="MeanIndividualLength", variable.factor=F)
+  # extract mean length
+  MeanLength <- data.table::as.data.table(ecaPrediction$MeanLength)
+  names(MeanLength) <- as.character(1:ncol(MeanLength))
+  MeanLength$Age <- as.character(ecaPrediction$AgeCategories)
+  
+  if (!is.null(stocks)){
+    stockNames <- c(rep(stocks$StockNameS, length(ecaPrediction$AgeCategories)/2),
+                    rep(stocks$StockNameCC, length(ecaPrediction$AgeCategories)/2))
+    MeanLength$Stock <- stockNames
+    MeanLength <- data.table::melt(MeanLength, id.vars=c("Age", "Stock"), variable.name="Iteration", value.name="MeanIndividualLength", variable.factor=F)
+  }
+  else{
+    MeanLength <- data.table::melt(MeanLength, id.vars=c("Age"), variable.name="Iteration", value.name="MeanIndividualLength", variable.factor=F)
+  }
+  
   MeanLength$Age <- as.integer(MeanLength$Age)
+  MeanLength$Iteration <- as.integer(MeanLength$Iteration)
   out$MeanLength <- MeanLength
   
-  MeanWeight <- data.table::as.data.table(t(ecaPrediction$MeanWeight))
-  names(MeanWeight) <- as.character(ecaPrediction$AgeCategories)
-  MeanWeight$Iteration <- 1:nrow(MeanWeight)
-  MeanWeight <- data.table::melt(MeanWeight, measure.vars=c(as.character(ecaPrediction$AgeCategories)), variable.name="Age", value.name="MeanIndividualWeight", variable.factor=F)
+  
+  # extract mean weight
+  
+  MeanWeight <- data.table::as.data.table(ecaPrediction$MeanWeight)
+  names(MeanWeight) <- as.character(1:ncol(MeanWeight))
+  MeanWeight$Age <- as.character(ecaPrediction$AgeCategories)
+  
+  if (!is.null(stocks)){
+    stockNames <- c(rep(stocks$StockNameS, length(ecaPrediction$AgeCategories)/2),
+                    rep(stocks$StockNameCC, length(ecaPrediction$AgeCategories)/2))
+    MeanWeight$Stock <- stockNames
+    MeanWeight <- data.table::melt(MeanWeight, id.vars=c("Age", "Stock"), variable.name="Iteration", value.name="MeanIndividualWeight", variable.factor=F)
+  }
+  else{
+    MeanWeight <- data.table::melt(MeanWeight, id.vars=c("Age"), variable.name="Iteration", value.name="MeanIndividualWeight", variable.factor=F)
+  }
+  
   MeanWeight$Age <- as.integer(MeanWeight$Age)
-  out$MeanWeight <- MeanWeight  
+  MeanWeight$Iteration <- as.integer(MeanWeight$Iteration)
+  out$MeanWeight <- MeanWeight
   
   return(out)
 }
@@ -342,6 +379,11 @@ convertPrepReca2stox <- function(prepRecaOutput){
     prepRecaOutput$WeightLength$AgeErrorMatrix <- convertAgeErrorMatrixStox(prepRecaOutput$WeightLength$AgeErrorMatrix, prepRecaOutput$GlobalParameters$minage, prepRecaOutput$GlobalParameters$maxage)
   }
   
+  if (!is.null(prepRecaOutput$AgeLength$CCerrorList)){
+    prepRecaOutput$AgeLength$StockSplittingParameters <- convertStockSplittingParameters2stox(prepRecaOutput$AgeLength$CCerrorList, prepRecaOutput$CovariateMaps)
+    prepRecaOutput$AgeLength$CCerrorList <- NULL
+  }
+  
   GlobalParameters <- data.table::data.table(lengthresCM=prepRecaOutput$GlobalParameters$lengthresCM,
                                                             maxlength=prepRecaOutput$GlobalParameters$maxlength,
                                                             minage=prepRecaOutput$GlobalParameters$minage,
@@ -401,6 +443,11 @@ convertStox2PrepReca <- function(stoxPrep){
     stoxPrep$WeightLength$AgeErrorMatrix <- convertAgeErrorMatrixReca(stoxPrep$WeightLength$AgeErrorMatrix)
   }
   
+  if (!is.null(stoxPrep$AgeLength$StockSplittingParameters)){
+    stoxPrep$AgeLength$CCerrorList <- convertStockSplittingParameters2reca(stoxPrep$AgeLength$StockSplittingParameters)
+    stoxPrep$AgeLength$StockSplittingParameters <- NULL
+  }
+  
   gb <- stoxPrep$GlobalParameters
   GlobalParameters <- list()
   GlobalParameters$lengthresCM <- gb$GlobalParameters$lengthresCM
@@ -440,4 +487,42 @@ convertAgeErrorMatrixStox <- function(AgeErrorMatrix, minAge, maxAge){
   AgeErrorMatrix <- data.table::data.table(AgeErrorMatrix)
   AgeErrorMatrix$ReadAge <- minAge:maxAge
   return(AgeErrorMatrix)
+}
+
+
+#' Converts Classification error to Reca format (Stock splitting not supported by recaWrap)
+#' @noRd
+convertStockSplittingParameters2reca <- function(stocksplit){
+  CCerrorList <- list()
+  CCerrorList$ptype1.CC <- stocksplit$ProbabilityType1As1
+  CCerrorList$ptype1.S <- stocksplit$ProbabilityType5As1
+  CCerrorList$ptype2.CC <- stocksplit$ProbabilityType2As2
+  CCerrorList$ptype2.S <- stocksplit$ProbabilityType4As2
+  CCerrorList$ptype4.CC <- stocksplit$ProbabilityType2As4
+  CCerrorList$ptype4.S <- stocksplit$ProbabilityType4As4
+  CCerrorList$ptype5.CC <- stocksplit$ProbabilityType1As5
+  CCerrorList$ptype5.S <- stocksplit$ProbabilityType5As5
+  
+  return(CCerrorList)
+  
+}
+
+#' Converts Classification error to Stox format
+#' @noRd
+convertStockSplittingParameters2stox <- function(CCerrorList, covariateMaps){
+  
+  stopifnot(!is.null(covariateMaps$StockSplitting))
+  
+  tab <- data.table(StockNameCC=covariateMaps$StockSplitting$StockNameCC,
+                    StockNameS=covariateMaps$StockSplitting$StockNameS,
+                    ProbabilityType1As1 = CCerrorList$ptype1.CC,
+                    ProbabilityType5As1 = CCerrorList$ptype1.S,
+                    ProbabilityType2As2 = CCerrorList$ptype2.CC,
+                    ProbabilityType4As2 = CCerrorList$ptype2.S,
+                    ProbabilityType2As4 = CCerrorList$ptype4.CC,
+                    ProbabilityType4As4 = CCerrorList$ptype4.S,
+                    ProbabilityType1As5 = CCerrorList$ptype5.CC,
+                    ProbabilityType5As5 = CCerrorList$ptype5.S)
+  stopifnot(is.StockSplittingParamteres(tab))
+  return(tab)
 }

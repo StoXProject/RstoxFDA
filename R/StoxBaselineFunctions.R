@@ -1001,45 +1001,128 @@ DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile")
   return(dt)
 }
 
-#' Define Classification Error (for stock splitting)
-#' @description
-#'  StoX function.
-#'  Defines probabilities for misclassifying when determining stock membership of a specimen.
-#' @details
-#'  Definitions are read from a tab separated file with headers. Columns defined as:
-#'  \describe{
-#'   \item{Column 1 : ptype1.CC}{Probability of classifying a type 1 specimen as type 1.}
-#'   \item{Column 2: ptype1.S}{Probability of classifying a type 5 specimen as type 1.}
-#'   \item{Column 3: ptype2.CC}{Probability of classifying a type 2 specimen as type 2.}
-#'   \item{Column 4: ptype2.S}{Probability of classifying a type 4 specimen as type 2.}
-#'   \item{Column 5: ptype4.CC}{Probability of classifying a type 2 specimen as type 4.}
-#'   \item{Column 6: ptype4.S}{Probability of classifying a type 4 specimen as type 4.}
-#'   \item{Column 7: ptype5.CC}{Probability of classifying a type 1 specimen as type 5.}
-#'   \item{Column 8: ptype5.S}{Probability of classifying a type 5 specimen as type 5.}
-#'  }
-#'  see \code{\link[RstoxFDA]{ClassificationError}} for further explanation on the coding system.
-#' @param processData data.table() as returned from this function
-#' @param resourceFilePath path to resource file
-#' @param encoding encoding of resource file
-#' @param useProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
-#' @return Classification Error Matrix, see: \code{\link[RstoxFDA]{ClassificationError}}.
-#' @export
-DefineClassificationError<- function(processData, resourceFilePath, encoding="UTF-8", useProcessData=F){
-
-  if (useProcessData){
-    return(processData)
-  }
-
+#' Read Stock splitting parameters from file
+#' @noRd
+readStockSplittingParamteres <- function(resourceFilePath, encoding){
   tab <- readTabSepFile(resourceFilePath,
-                        col_types = "dddddddd",
-                        col_names = c("ptype1.CC", "ptype1.S", "ptype2.CC", "ptype2.S", "ptype4.CC", "ptype4.S", "ptype5.CC", "ptype5.S"),
+                        col_types = "ccdddddddd",
+                        col_names = c("StockNameCC", "StockNameS", "ProbabilityType1As1",
+                                      "ProbabilityType1As5", "ProbabilityType2As2",
+                                      "ProbabilityType2As4",	"ProbabilityType4As2",
+                                      "ProbabilityType4As4",	"ProbabilityType5As1",
+                                      "ProbabilityType5As5"),
                         encoding = encoding)
-
+  
   if (nrow((tab)) != 1){
     stop("Malformed resource file: contains more than one row.")
   }
-
+  
   return(tab)
+}
+
+#' checks that probabilities are valid for StockSplittingParamteres
+#' report specific errors
+#' @noRd
+checkProbabilities <- function(tab, tolerance=1e-10){
+  if (any(tab[,3:ncol(tab)]<0) | any(tab[,3:ncol(tab)]>1)){
+    stop("All probabilities must be in [0,1].")
+  }
+  sumToOne <- function(values){
+    return(abs(1-sum(values)) < tolerance)
+  }
+  if (!sumToOne(c(tab$ProbabilityType1As1, tab$ProbabilityType1As5))){
+    stop("Parameters 'ProbabilityType1As1' and ProbabilityType1As5' must sum to one")
+  }
+  if (!sumToOne(c(tab$ProbabilityType2As2, tab$ProbabilityType2As4))){
+    stop("Parameters 'ProbabilityType2As2' and ProbabilityType2As4' must sum to one")
+  }
+  if (!sumToOne(c(tab$ProbabilityType4As2, tab$ProbabilityType4As4))){
+    stop("Parameters 'ProbabilityType4As2' and ProbabilityType4As4' must sum to one")
+  }
+  if (!sumToOne(c(tab$ProbabilityType5As1, tab$ProbabilityType5As5))){
+    stop("Parameters 'ProbabilityType5As1' and ProbabilityType5As5' must sum to one")
+  }
+  if (!is.StockSplittingParamteres(tab)){
+    stop("The chosen file does not form a valid stock-splitting specifciation.")
+  }
+}
+
+#' Define Stock Splitting Parameters
+#' @description
+#'  Defines parameters for the stock-splitting analysis in Reca, including
+#'  parameters for misclassifying when determining stock membership of a specimen.
+#' @details
+#'  For DefinitionMethod 'ResourceFile', definitions are read from a UTF-8 encoded tab separated file with headers and one row
+#'  with headers corresponding to column names in \code{\link[RstoxFDA]{StockSplittingParamteres}}.
+#'  see \code{\link[RstoxFDA]{StockSplittingParamteres}} for further explanation on the coding system.
+#'  
+#'  For DefinitionMethod 'FunctionParameters' defintions are constructed from parameters to this function.
+#'  
+#' @param processData data.table() as returned from this function
+#' @param DefinitionMethod 'ResourceFile' or 'FunctionParameters', see details.
+#' @param FileName path to resource file
+#' @param StockNameCC Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param StockNameS Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType1As1 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType5As1 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType2As2 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType4As2 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType2As4 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType4As4 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType1As5 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param ProbabilityType5As5 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param UseProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
+#' @return \code{\link[RstoxFDA]{StockSplittingParamteres}}.
+#' @export
+DefineStockSplittingParamteres <- function(processData, DefinitionMethod=c("ResourceFile", "FunctionParameters"), FileName=character(),
+                                           StockNameCC=character(), StockNameS=character(), ProbabilityType1As1=numeric(),
+                                           ProbabilityType5As1=numeric(), ProbabilityType2As2=numeric(),
+                                           ProbabilityType4As2=numeric(),	ProbabilityType2As4=numeric(),
+                                           ProbabilityType4As4=numeric(),	ProbabilityType1As5=numeric(),
+                                           ProbabilityType5As5=numeric(),
+                                           UseProcessData=F){
+
+  if (UseProcessData){
+    return(processData)
+  }
+
+  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
+  
+  if (DefinitionMethod == "ResourceFile"){
+    encoding <- "UTF-8"
+    tab <- readStockSplittingParamteres(FileName, encoding)
+    checkProbabilities(tab)
+    return(tab)
+  }
+  else if (DefinitionMethod == "FunctionParameters"){
+    
+    if (!isGiven(StockNameCC) | !isGiven(StockNameS)){
+      stop("Provide names for the stocks ('StockNameCC' and 'StockNameS'.")
+    }
+    if (!isGiven(ProbabilityType1As1) | !isGiven(ProbabilityType1As5) |
+        !isGiven(ProbabilityType2As2) | !isGiven(ProbabilityType2As4) |
+        !isGiven(ProbabilityType4As2) | !isGiven(ProbabilityType4As4) |
+        !isGiven(ProbabilityType5As1) | !isGiven(ProbabilityType5As5)){
+      stop("Provide all stock classification probailities ProbabilityType<X>As<Y>.")
+    }
+    
+    tab <- data.table::data.table(StockNameCC=StockNameCC,
+                                  StockNameS=StockNameS,
+                                  ProbabilityType1As1=ProbabilityType1As1,
+                                  ProbabilityType5As1=ProbabilityType5As1,
+                                  ProbabilityType2As2=ProbabilityType2As2,
+                                  ProbabilityType4As2=ProbabilityType4As2,
+                                  ProbabilityType2As4=ProbabilityType2As4,
+                                  ProbabilityType4As4=ProbabilityType4As4,
+                                  ProbabilityType1As5=ProbabilityType1As5,
+                                  ProbabilityType5As5=ProbabilityType5As5)
+    checkProbabilities(tab)
+    return(tab)
+  }
+  
+  else{
+    stop(paste("DefinitionMethod", DefinitionMethod, "not supported."))
+  }
 }
 
 #' Define Weight Conversion Factors

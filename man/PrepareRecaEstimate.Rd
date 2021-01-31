@@ -14,6 +14,8 @@ PrepareRecaEstimate(
   CarNeighbours,
   UseAgingError = F,
   AgeErrorMatrix,
+  UseStockSplitting = F,
+  StockSplittingParamteres,
   CellEffect = c("Off", "All"),
   MinAge = integer(),
   MaxAge = integer(),
@@ -42,12 +44,17 @@ Mandatory if CAR-effect is TRUE
 \item{CarNeighbours}{\code{\link[RstoxFDA]{CarNeighbours}}, mandatory if 'carEffect' is given.
 Identifies which values of the carEffect are to be considered as neighbours.}
 
-\item{UseAgingError}{If true error-aging parameters will be incorporated in the model}
+\item{UseAgingError}{If TRUE error-aging parameters will be incorporated in the model}
 
 \item{AgeErrorMatrix}{\code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
 mandatory if UseAgingError is TRUE.}
 
-\item{CellEffect}{Configures the cell effect. If 'All', an interaction term will be added with all covariates that exist in landings (whether they are fixed or random effects)}
+\item{UseStockSplitting}{If TRUE, models will be condigured to provide estimates for each of two stocks based on otholitt-typing. See \code{\link[RstoxFDA]{StockSplittingParamteres}}.}
+
+\item{StockSplittingParamteres}{Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParamteres}}.}
+
+\item{CellEffect}{Configures the cell effect. If 'All', an interaction term will be added with all covariates that exist in landings (whether they are fixed or random effects).
+Any CAR-effect is always included in the cell effect.}
 
 \item{MinAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
 If not provided it will be derived from data.}
@@ -75,4 +82,10 @@ Performs data checks and data conversions,
 }
 \details{
 A covariate indentifying haul or landing is always included in Reca. Do not add haul-identifiers as covariates.
+ 
+ Any variable provided as 'FixedEffects' or 'CarEffect' must exist and be coded coherently in
+ bot 'StoxBioticData' and 'StoxLandingData'
+
+ The option UseStockSplitting requires that a Variable 'otolithtype' is added to
+ the table 'Individual' in StoxBioticData.
 }

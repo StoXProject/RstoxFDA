@@ -34,6 +34,7 @@ prepRECA(
  \item{Age}{integer() Age of fish}
  \item{Length}{numeric() Length of fish in cm. Must be complete (no NAs)}
  \item{Weight}{numeric() Weight of fish in kg. Fish with missing values will not be included in Weight-given-length model.}
+ \item{Otolithtype}{integer(), optional, Code identifying stock-classification, may contain integers 1,2,4 and 5.}
  \item{...}{Additional columns which may be used as covariates as covariates. Type of covariate must be sepcified in 'fixedEffects', 'randomEffects' or 'carEffect'}
 }}
 
@@ -104,6 +105,11 @@ The cell definition is specified by 'landings'.
  nfish is only needed when several samples may be taken from the same catch.
  If these are stratified in any way (e.g. pre-sorting by size or sex), an estimate of strata sizes must be given (column 'count'), for each sample (column 'sampleId').
  If these are replicate samples from the same selection frame, an estimate of the total catch may be given.
+
+ If the column 'Otolithtype' is provided, data is prepared for running stock-splitting analysis.
+ Support 4 otolithtypes, where type 1 and 2 correspond to one stock, and type 4 and 5 correspond to another
+ review documentation for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}},
+ for information about how to configure running of this stock splitting, and how to interpret results.
 
  output GlobalParameters: While outputs AgeLength, WeightLength and Landings are complete and ready for R-ECA runs.
  This function populates the list of GlobalParameters only partially. Run parameters have to be added afterwards.

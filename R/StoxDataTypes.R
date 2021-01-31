@@ -322,16 +322,28 @@ is.RecaParameterData <- function(RecaParameterData){
 #'  \item{MeanWeight}{\code{\link[data.table]{data.table}} tabulating the mean weight in g by age for each Reca iteration (MCMC sample)}
 #'  \item{AggregationVariables}{\code{\link[data.table]{data.table}} with any variables that catch-at-age estimates are partitioned on in the column 'AggregationVariables'.}
 #' }
-#' In addition to columns for the variables in 'AggregationVariables', column names in the data tables should be interpreted as:
+#' In addition to columns for the variables in 'AggregationVariables', the data tables 'CatchAtAge', 'MeanLength', and 'MeanWeight' have the following variables:
 #' \describe{
-#'  \item{Length}{Upper limit of length group in cm}
-#'  \item{Age}{Age in number of years}
+#'  \item{Age}{Age in number of years.}
 #'  \item{Iteration}{The Reca iteration (MCMC sample) that estimates are calculated for}
-#'  \item{CatchAtAge}{The total catch at age in numbers}
-#'  \item{MeanIndividualLength}{Mean Length at age in cm}
-#'  \item{MeanIndividualWeight}{Mean weight at age in g}
+#'  \item{Stock}{Identifies the stock the estimates are calculated for. Present only if Stock Splitting was used.}
 #' }
 #' 
+#' 'CatchAtAge' also have the variables
+#' \describe{
+#'  \item{Length}{Upper limit of length group in cm}
+#'  \item{CatchAtAge}{The total catch at age in numbers}
+#' }
+#' 
+#' 'MeanLength' has the variable:
+#' \describe{
+#'  \item{MeanIndividualLength}{Mean Length at age in cm}
+#' }
+#' 
+#' 'MeanWeight' has the variable:
+#' \describe{
+#'  \item{MeanIndividualWeight}{Mean weight at age in g}
+#' }
 #'
 #' @name RecaCatchAtAge
 #'
@@ -605,47 +617,95 @@ is.AgeErrorMatrix <- function(AgeErrorMatrix){
   return(TRUE)
 }
 
-#' Stock classification error (ClassificationError)
+#' Stock splitting parameters (StockSplittingParamteres)
 #'
-#' Table (\code{\link[data.table]{data.table}})
-#' defining probabilities of misclassifying stock membership of a fish (e.g. from otholith).
+#' @description
+#'  Table (\code{\link[data.table]{data.table}})
+#'  
+#'  Defining parameters for the stock-splitting analysis in Reca, including
+#'  parameters for the probability of misclassifying when determining stock membership of a specimen.
 #'
-#' The stock classification system is designed for coastal and atlantic cod as they are determined at IMR.
-#' The two stock of interest are classified by code 1, and 5.
-#' Code 2 signifies the same as code 1, but indicate less certainty.
-#' Code 4 signifies the same as code 5, but indicate less certainty.
-#'
-#' The classification error specifies the probability of misclassifying between some of these classifications.
-#'
-#' @details
+#'  The stock splitting analysis allows catch at age to be estimated for two domains that partition all individuals,
+#'  and that are observed for all age-determined specimens. It was developed for disciminating Coastal Cod and North East Arctic Cod,
+#'  based on otholith growth patterns, and naming conventions are derived from that. It could be adapted to
+#'  other stocks and in principle to other bipartite domain definitions (such as Sex).
+#'  
+#'  Two otolith patterns are defined for each of the two stocks 'CC' and 'S'. Otolith type 1 and 2 identifies
+#'  that a specimen belongs to the stock 'CC', and are interpreted by otoloith readers as 'certain' and 'uncertain' CC, respectively.
+#'  Otolith type 4 and 5 identifies that a specimen belongs to the stock 'S', and are interpreted as 'uncertain' and 'certain' S, respectively.
+#'  
 #'  \describe{
-#'   \item{ptype1.CC}{numeric() [0,1]. Probability of classifying a type 1 specimen as type 1.}
-#'   \item{ptype1.S}{numeric() [0,1]. Probability of classifying a type 5 specimen as type 1.}
-#'   \item{ptype2.CC}{numeric() [0,1]. Probability of classifying a type 2 specimen as type 2.}
-#'   \item{ptype2.S}{numeric() [0,1]. Probability of classifying a type 4 specimen as type 2.}
-#'   \item{ptype4.CC}{numeric() [0,1]. Probability of classifying a type 2 specimen as type 4.}
-#'   \item{ptype4.S}{numeric() [0,1]. Probability of classifying a type 4 specimen as type 4.}
-#'   \item{ptype5.CC}{numeric() [0,1]. Probability of classifying a type 1 specimen as type 5.}
-#'   \item{ptype5.S}{numeric() [0,1]. Probability of classifying a type 5 specimen as type 5.}
+#'   \item{StockNameCC}{Name of the stock identified as CC}
+#'   \item{StockNameS}{Name of the stock identified as S}
+#'   \item{ProbabilityType1As1}{Probability of classifying a type 1 specimen as type 1 (certain CC).}
+#'   \item{ProbabilityType5As1}{Probability of classifying a type 5 (certain S) specimen as type 1 (certain CC).}
+#'   \item{ProbabilityType2As2}{Probability of classifying a type 2 (uncertain CC) specimen as type 2 (uncertain CC).}
+#'   \item{ProbabilityType4As2}{Probability of classifying a type 4 (uncertain S) specimen as type 2 (uncertain CC).}
+#'   \item{ProbabilityType2As4}{Probability of classifying a type 2 (uncertain CC) specimen as type 4 (uncertain S).}
+#'   \item{ProbabilityType4As4}{Probability of classifying a type 4 (uncertain S) specimen as type 4 (uncertain S).}
+#'   \item{ProbabilityType1As5}{Probability of classifying a type 1 (certain CC) specimen as type 5 (certain S).}
+#'   \item{ProbabilityType5As5}{Probability of classifying a type 5 (certain S) specimen as type 5 (certain S).}
 #'  }
 #'
-#'  The data table contains only one row
+#'  The probabilities for different ways to classify a type must sum to 1.
+#'  E.g.: ProbabilityType1As1 + ProbabilityType1As5 = 1.
 #'
-#' @name ClassificationError
+#'  The data table contains only one row.
+#'
+#' @name StockSplittingParamteres
 #'
 NULL
 
-#' Check if argument is ClassificationError
+#' Check if argument is StockSplittingParamteres
 #' @description
-#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ClassificationError}}
-#' @param ClassificationError argument to be checked for data conformity
-#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ClassificationError}}
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param StockSplittingParamteres argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParamteres}}
 #' @export
-is.ClassificationError <- function(ClassificationError){
-  if (!data.table::is.data.table(ClassificationError)){
+is.StockSplittingParamteres <- function(StockSplittingParamteres){
+  if (!data.table::is.data.table(StockSplittingParamteres)){
     return(FALSE)
   }
-  if (!all(c("ptype1.CC", "ptype1.S", "ptype2.CC", "ptype2.S", "ptype4.CC", "ptype4.S", "ptype5.CC", "ptype5.S") %in% names(ClassificationError))){
+  if (!all(c("StockNameCC", "StockNameS", "ProbabilityType1As1",
+             "ProbabilityType1As5", "ProbabilityType2As2",
+             "ProbabilityType2As4",	"ProbabilityType4As2",
+             "ProbabilityType4As4",	"ProbabilityType5As1",
+             "ProbabilityType5As5") %in% names(StockSplittingParamteres))){
+    return(FALSE)
+  }
+  if (nrow(StockSplittingParamteres) != 1){
+    return(FALSE)
+  }
+  
+  prob <- function(arg){
+    if (arg<0 | arg > 1){
+      return(FALSE)
+    }
+    return(TRUE)
+  }
+  
+  if (!prob(StockSplittingParamteres$ProbabilityType1As1)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType1As5)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType2As2)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType2As4)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType4As2)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType4As4)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType5As1)){
+    return(FALSE)
+  }
+  if (!prob(StockSplittingParamteres$ProbabilityType5As5)){
     return(FALSE)
   }
   
@@ -655,6 +715,64 @@ is.ClassificationError <- function(ClassificationError){
 #' Function specification for inclusion in StoX UI
 #' @export
 stoxFunctionAttributes <- list(
+  
+  DefineStockSplittingParamteres = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StockSplittingParamteres",
+    functionParameterFormat = list(
+      FileName = "filePath"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ), 
+      FileName = list(
+        DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      ),
+      StockNameCC=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      StockNameS=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType1As1=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType5As1=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType2As2=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType4As2=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType2As4=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType4As4=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType1As5=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      ),
+      ProbabilityType5As5=list(
+        DefinitionMethod = "FunctionParameters", 
+        UseProcessData = FALSE
+      )
+    )
+  ),
   
   DefineCarNeighbours = list(
     functionType = "modelData", 
@@ -838,6 +956,9 @@ stoxFunctionAttributes <- list(
       ),
       CarEffect = list(
         UseCarEffect = TRUE
+      ),
+      StockSplittingParamteres = list(
+        UseStockSplitting = TRUE
       )
     )
   ),
