@@ -283,7 +283,10 @@ formatCatchIdMap <- function(catchidmap){
 #'
 #' @noRd
 getDataMatrixAgeLength <- function(samples, nFish=NULL, hatchday=1){
-  DataMatrix <- samples[,c("catchId", "sampleId", "date", "Age", "Length", "Weight")]
+  if (!("Otolithtype" %in% names(samples))){
+    samples$Otolithtype <- as.integer(NA)
+  }
+  DataMatrix <- samples[,c("catchId", "sampleId", "date", "Age", "Length", "Weight", "Otolithtype")]
   DataMatrix$day <- (as.integer(strftime(DataMatrix$date, "%j")) + 2 - hatchday) #srtftime returns 0-based day of the year
   sel <- DataMatrix$day <= 0
 
@@ -291,16 +294,15 @@ getDataMatrixAgeLength <- function(samples, nFish=NULL, hatchday=1){
   DataMatrix[sel,"day"] <- 366 + DataMatrix[sel,"day"] #day is negative in this case, hence the + operator
   DataMatrix$date <- DataMatrix$day / 366
 
-  DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "sampleId")]
+  DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "sampleId", "Otolithtype")]
   DataMatrix <- addPartCount(DataMatrix, nFish)
-  DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "partnumber", "partcount")]
-  names(DataMatrix) <- c("age", "part.year", "lengthCM", "catchId", "partnumber", "partcount")
+  DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "partnumber", "partcount", "Otolithtype")]
+  names(DataMatrix) <- c("age", "part.year", "lengthCM", "catchId", "partnumber", "partcount", "otolithtype")
   DataMatrix <- addSamplingId(DataMatrix)
   DataMatrix <- DataMatrix[order(DataMatrix$catchId),]
 
   catchidMap <- unique(DataMatrix[,c("catchId", "samplingID")])
 
-  DataMatrix$otolithtype <- NA
   DataMatrix$otolithtype <- as.integer(DataMatrix$otolithtype)
   DataMatrix <- DataMatrix [,c("age",  "part.year", "lengthCM", "samplingID", "partnumber", "otolithtype", "partcount")]
 
@@ -319,17 +321,19 @@ getDataMatrixAgeLength <- function(samples, nFish=NULL, hatchday=1){
 #' then renames and recodes (preserving order)
 #' @noRd
 getDataMatrixWeightLength <- function(samples, nFish=NULL){
-  DataMatrix <- samples[,c("catchId", "sampleId", "Age", "Length", "Weight")]
-  DataMatrix <- DataMatrix[,c("Weight", "Length", "catchId", "sampleId")]
+  if (!("Otolithtype" %in% names(samples))){
+    samples$Otolithtype <- as.integer(NA)
+  }
+  DataMatrix <- samples[,c("catchId", "sampleId", "Age", "Length", "Weight", "Otolithtype")]
+  DataMatrix <- DataMatrix[,c("Weight", "Length", "catchId", "sampleId", "Otolithtype")]
   DataMatrix <- addPartCount(DataMatrix, nFish)
-  DataMatrix <- DataMatrix[,c("Weight", "Length", "catchId", "sampleId", "partcount")]
-  names(DataMatrix) <- c("weightKG",  "lengthCM", "catchId", "partnumber", "partcount")
+  DataMatrix <- DataMatrix[,c("Weight", "Length", "catchId", "sampleId", "partcount", "Otolithtype")]
+  names(DataMatrix) <- c("weightKG",  "lengthCM", "catchId", "partnumber", "partcount", "otolithtype")
   DataMatrix <- addSamplingId(DataMatrix)
   DataMatrix <- DataMatrix[order(DataMatrix$catchId),]
 
   catchidMap <- unique(DataMatrix[,c("catchId", "samplingID")])
 
-  DataMatrix$otolithtype <- NA
   DataMatrix$otolithtype <- as.integer(DataMatrix$otolithtype)
   DataMatrix <- DataMatrix [,c("weightKG", "lengthCM", "samplingID", "partnumber", "otolithtype", "partcount")]
 
@@ -526,6 +530,11 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #'  If these are stratified in any way (e.g. pre-sorting by size or sex), an estimate of strata sizes must be given (column 'count'), for each sample (column 'sampleId').
 #'  If these are replicate samples from the same selection frame, an estimate of the total catch may be given.
 #'
+#'  If the column 'Otolithtype' is provided, data is prepared for running stock-splitting analysis.
+#'  Support 4 otolithtypes, where type 1 and 2 correspond to one stock, and type 4 and 5 correspond to another
+#'  review documentation for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}},
+#'  for information about how to configure running of this stock splitting, and how to interpret results.
+#'
 #'  output GlobalParameters: While outputs AgeLength, WeightLength and Landings are complete and ready for R-ECA runs.
 #'  This function populates the list of GlobalParameters only partially. Run parameters have to be added afterwards.
 #'
@@ -537,6 +546,7 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #'   \item{Age}{integer() Age of fish}
 #'   \item{Length}{numeric() Length of fish in cm. Must be complete (no NAs)}
 #'   \item{Weight}{numeric() Weight of fish in kg. Fish with missing values will not be included in Weight-given-length model.}
+#'   \item{Otolithtype}{integer(), optional, Code identifying stock-classification, may contain integers 1,2,4 and 5.}
 #'   \item{...}{Additional columns which may be used as covariates as covariates. Type of covariate must be sepcified in 'fixedEffects', 'randomEffects' or 'carEffect'}
 #'  }
 #' @param landings data.table() with total landings, each row corresponding to one cell. Contains columns:

@@ -1,3 +1,33 @@
+context("PrepRecaEstimate: StocSplitting")
+manual <- DefineStockSplittingParamteres(DefinitionMethod = "FunctionParameters",
+                                         StockNameCC="S1", StockNameS="S2", ProbabilityType1As1=.8,
+                                         ProbabilityType1As5=.2, ProbabilityType2As2=.6,
+                                         ProbabilityType2As4=.4,	ProbabilityType4As2=.4,
+                                         ProbabilityType4As4=.6,	ProbabilityType5As1=.2,
+                                         ProbabilityType5As5=.8)
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+StoxBioticData$Individual$otolithtype <- c(rep(c(1,5), 1045), c(1,5,1))
+
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseStockSplitting=T, StockSplittingParamteres=manual)
+expect_true(prep$GlobalParameters$GlobalParameters$CC)
+expect_true(prep$GlobalParameters$GlobalParameters$CCerror)
+expect_true(is.StockSplittingParamteres(prep$AgeLength$StockSplittingParameters))
+expect_true(is.null(prep$AgeLength$CCerrorList))
+fpath <- makeTempDirReca()
+param <- ParameterizeRecaModels(prep, 10, 100, ResultDirectory = fpath)
+result <- RunRecaModels(param, StoxLandingData = StoxLandingData)
+removeTempDirReca(fpath)
+expect_true(is.StockSplittingParamteres(param$AgeLength$StockSplittingParameters))
+expect_true(is.null(prep$AgeLength$CCerrorList))
+expect_equal(param$AgeLength$StockSplittingParameters, manual)
+expect_true(is.RecaCatchAtAge(result))
+expect_true("Stock" %in% names(result$CatchAtAge))
+expect_true("Stock" %in% names(result$MeanLength))
+expect_true("Stock" %in% names(result$MeanWeight))
 
 context("PrepRecaEstimate: AgerrorMatrix")
 ageerorfile <- system.file("testresources","AgeErrorHirstEtAl2012.txt", package="RstoxFDA")

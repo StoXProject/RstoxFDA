@@ -7,6 +7,12 @@
 #'  via \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
 #' @details 
 #'  A covariate indentifying haul or landing is always included in Reca. Do not add haul-identifiers as covariates.
+#'  
+#'  Any variable provided as 'FixedEffects' or 'CarEffect' must exist and be coded coherently in
+#'  bot 'StoxBioticData' and 'StoxLandingData'
+#'
+#'  The option UseStockSplitting requires that a Variable 'otolithtype' is added to
+#'  the table 'Individual' in StoxBioticData.
 #'
 #' @param StoxBioticData
 #'  \code{\link[RstoxData]{StoxBioticData}} data with samples from fisheries
@@ -31,10 +37,14 @@
 #'  Configures the cell effect. If 'All', an interaction term will be added with all covariates that exist in landings (whether they are fixed or random effects).
 #'  Any CAR-effect is always included in the cell effect.
 #' @param UseAgingError 
-#'  If true error-aging parameters will be incorporated in the model
+#'  If TRUE error-aging parameters will be incorporated in the model
 #' @param AgeErrorMatrix
 #'  \code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
 #'  mandatory if UseAgingError is TRUE.
+#' @param UseStockSplitting
+#'  If TRUE, models will be condigured to provide estimates for each of two stocks based on otholitt-typing. See \code{\link[RstoxFDA]{StockSplittingParamteres}}.
+#' @param StockSplittingParamteres
+#'  Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParamteres}}.
 #' @param MinAge
 #'  optional, must match dimensions of any 'AgeErrorMatrix'.
 #'  If not provided it will be derived from data.
@@ -52,16 +62,18 @@
 #'  encoding the day of the year when fish is consider to transition from one age to the next.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, UseStockSplitting=F, StockSplittingParamteres, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
   #expose as parameter when implemented
-  ClassificationError=NULL
-  StockSplitting=FALSE
   ContinousEffect<-NULL
   
   CellEffect <- match.arg(CellEffect, CellEffect)
   
+  if (!UseStockSplitting){
+    StockSplittingParamteres <- NULL
+  }
+  
   if (!UseAgingError){
-    AgeErrorMatrix = NULL
+    AgeErrorMatrix <- NULL
   }
   if (UseAgingError){
     if (is.null(AgeErrorMatrix)){
@@ -70,7 +82,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     AgeErrorMatrix <- convertAgeErrorMatrixReca(AgeErrorMatrix)
   }
   if (!UseCarEffect){
-    CarNeighbours = NULL
+    CarNeighbours <- NULL
     if (isGiven(CarEffect)){
       stop("UseCarEffect is False, while the parameter 'CarEffect' is given")
     }
@@ -151,7 +163,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   # The temporal resolution doesnt matter.
   #
   quarter <- quarter(StoxLandingData$Landing$CatchDate)
-  data <- NULL
+  date <- NULL
   month <- NULL
 
   flatlandings <- StoxLandingData$Landing
@@ -165,6 +177,13 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   flatbiotic$Length <- flatbiotic$IndividualTotalLength
   flatbiotic$Weight <- flatbiotic$IndividualRoundWeight
   flatbiotic$date <- as.Date(flatbiotic$DateTime)
+  
+  if (UseStockSplitting){
+    if (!("otolithtype" %in% names(flatbiotic))){
+      stop("The column 'otolithtype' must exist on the table 'Individual' of 'StoxBioticData' when the option 'UseStockSplitting' is used.")
+    }
+    flatbiotic$Otolithtype <- flatbiotic$otolithtype
+  }
   
   
   nFish = NULL
@@ -201,11 +220,25 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
                          maxAge=MaxAge, 
                          maxLength=MaxLength, 
                          lengthResolution=LengthResolution, 
-                         date=NULL, 
+                         date=date, 
                          month=month, 
                          quarter=quarter, 
                          hatchDay=HatchDay,
                          interaction = interaction)
+  
+  # stock splitting not handled by recawrap
+  if (!is.null(StockSplittingParamteres)){
+    recaObject$CovariateMaps$StockSplitting <- list()
+    recaObject$CovariateMaps$StockSplitting$StockNameCC <- StockSplittingParamteres$StockNameCC
+    recaObject$CovariateMaps$StockSplitting$StockNameS <- StockSplittingParamteres$StockNameS
+    recaObject$AgeLength$CCerrorList <- convertStockSplittingParameters2reca(StockSplittingParamteres)
+  }
+  
+  if (UseStockSplitting){
+    recaObject$GlobalParameters$CC = TRUE
+    recaObject$GlobalParameters$CCerror = TRUE
+  }
+  
   return(convertPrepReca2stox(recaObject))
 }
 
@@ -438,7 +471,7 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
     landings <- getLandingsFromStoxLandings(RecaParameterData, StoxLandingData, TemporalResolution)
     RecaParameterData$Landings <- landings
     results <- Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters)
-    results <- ecaResult2Stox(results)
+    results <- ecaResult2Stox(results, RecaParameterData$CovariateMaps$StockSplitting)
     results$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
     return(results)
     
@@ -460,7 +493,7 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
       Sl$Landing <- partition
       Landing <- getLandingsFromStoxLandings(RecaParameterData, Sl, TemporalResolution)
       RecaParameterData$Landings <- Landing
-      partitionresults <- ecaResult2Stox(Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters))
+      partitionresults <- ecaResult2Stox(Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters), RecaParameterData$CovariateMaps$StockSplitting)
       
       for (a in AggregationVariables){
         stopifnot(length(unique(partition[[a]]))==1) # ensured by frame <- unique(StoxLandingData$Landing[,AggregationVariables, with=F])

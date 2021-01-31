@@ -14,13 +14,26 @@ a list of data tables:
  \item{MeanWeight}{\code{\link[data.table]{data.table}} tabulating the mean weight in g by age for each Reca iteration (MCMC sample)}
  \item{AggregationVariables}{\code{\link[data.table]{data.table}} with any variables that catch-at-age estimates are partitioned on in the column 'AggregationVariables'.}
 }
-In addition to columns for the variables in 'AggregationVariables', column names in the data tables should be interpreted as:
+In addition to columns for the variables in 'AggregationVariables', the data tables 'CatchAtAge', 'MeanLength', and 'MeanWeight' have the following variables:
+\describe{
+ \item{Age}{Age in number of years.}
+ \item{Iteration}{The Reca iteration (MCMC sample) that estimates are calculated for}
+ \item{Stock}{Identifies the stock the estimates are calculated for. Present only if Stock Splitting was used.}
+}
+
+'CatchAtAge' also have the variables
 \describe{
  \item{Length}{Upper limit of length group in cm}
- \item{Age}{Age in number of years}
- \item{Iteration}{The Reca iteration (MCMC sample) that estimates are calculated for}
  \item{CatchAtAge}{The total catch at age in numbers}
+}
+
+'MeanLength' has the variable:
+\describe{
  \item{MeanIndividualLength}{Mean Length at age in cm}
+}
+
+'MeanWeight' has the variable:
+\describe{
  \item{MeanIndividualWeight}{Mean weight at age in g}
 }
 }
