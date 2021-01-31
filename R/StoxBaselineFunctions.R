@@ -1002,7 +1002,7 @@ DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile")
 }
 
 #' Read Stock splitting parameters from file
-#'  @noRd
+#' @noRd
 readStockSplittingParamteres <- function(resourceFilePath, encoding){
   tab <- readTabSepFile(resourceFilePath,
                         col_types = "ccdddddddd",
@@ -1055,7 +1055,11 @@ checkProbabilities <- function(tab, tolerance=1e-10){
 #'  For DefinitionMethod 'ResourceFile', definitions are read from a UTF-8 encoded tab separated file with headers and one row
 #'  with headers corresponding to column names in \code{\link[RstoxFDA]{StockSplittingParamteres}}.
 #'  see \code{\link[RstoxFDA]{StockSplittingParamteres}} for further explanation on the coding system.
+#'  
+#'  For DefinitionMethod 'FunctionParameters' defintions are constructed from parameters to this function.
+#'  
 #' @param processData data.table() as returned from this function
+#' @param DefinitionMethod 'ResourceFile' or 'FunctionParameters', see details.
 #' @param FileName path to resource file
 #' @param StockNameCC Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
 #' @param StockNameS Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}

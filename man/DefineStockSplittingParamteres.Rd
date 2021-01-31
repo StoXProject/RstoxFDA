@@ -24,6 +24,8 @@ DefineStockSplittingParamteres(
 \arguments{
 \item{processData}{data.table() as returned from this function}
 
+\item{DefinitionMethod}{'ResourceFile' or 'FunctionParameters', see details.}
+
 \item{FileName}{path to resource file}
 
 \item{StockNameCC}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
@@ -59,4 +61,6 @@ Defines parameters for the stock-splitting analysis in Reca, including
 For DefinitionMethod 'ResourceFile', definitions are read from a UTF-8 encoded tab separated file with headers and one row
  with headers corresponding to column names in \code{\link[RstoxFDA]{StockSplittingParamteres}}.
  see \code{\link[RstoxFDA]{StockSplittingParamteres}} for further explanation on the coding system.
+ 
+ For DefinitionMethod 'FunctionParameters' defintions are constructed from parameters to this function.
 }
