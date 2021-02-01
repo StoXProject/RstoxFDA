@@ -75,4 +75,45 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, AggregationVariab
   return(output)
 }
 
+#' Report catch at age
+#' @description 
+#'  Tabulates summary statistics from MCMC simulations using Reca.
+#'  Typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+#'  
+#'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
+#'  area, gear, stock, etc., summary statistics will be presented similarly.
+#' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
+#' @return \code{\link[RstoxFDA]{ReportRecaCatchAtAgeData}}
+#' @export
+ReportRecaCatchAtAge <- function(RecaCatchAtAge){
+  digits=2
+  
+  stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  output <- list()
+  
+  aggNames <- RecaCatchAtAge$AggregationVariables$AggregationVariables
+  if ("Stock" %in% names(RecaCatchAtAge$CatchAtAge)){
+    aggNames <- c(aggNames, "Stock")
+  }
+  
+  aggNames <- c("Iteration", "Age", aggNames)
+  stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
+  totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
+  
+  aggNames <- RecaCatchAtAge$AggregationVariables$AggregationVariables
+  aggNames <- c("Age", aggNames)
+  stopifnot(length(aggNames) == (ncol(totalOverLength)-2))
+  
+  result <- totalOverLength[,list(CatchAtAge=round(mean(get("CatchAtAge")), digits=digits), SD=round(sd(get("CatchAtAge")), digits=digits), CI.05=round(stats::quantile(get("CatchAtAge"), probs = .05), digits=digits), CI.95=round(stats::quantile(get("CatchAtAge"), probs = .95), digits=digits)), by=aggNames]
+  
+  data.table::setcolorder(result ,c("Age", "CatchAtAge", "SD", "CI.05", "CI.95", RecaCatchAtAge$AggregationVariables$AggregationVariables))
+  
+  output <- list()
+  output$CatchAtAge <- result
+  
+  output$AggregationVariables <- RecaCatchAtAge$AggregationVariables
+  
+  return(output)
+}
+
 

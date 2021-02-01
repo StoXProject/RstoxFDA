@@ -435,6 +435,8 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  If the function-paramter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
 #'  The parameter 'StoxLandingData' may differ from the landings used in parameterisation, 
 #'  as long as all not additional level for the model covariates are introduced.
+#'  
+#'  If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'AggregationVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
 #' @param RecaParameterData Parameters for Reca models.
 #' @param StoxLandingData Landings data (\code{\link[RstoxData]{StoxLandingData}}).
 #' @param AggregationVariables character vector identifying columns in 'StoxLandingData' that results should be provided for.
@@ -473,6 +475,13 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
     results <- Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters)
     results <- ecaResult2Stox(results, RecaParameterData$CovariateMaps$StockSplitting)
     results$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
+    if (RecaParameterData$GlobalParameters$CC){
+      stopifnot("Stock" %in% names(results$CatchAtAge))
+      if ("Stock" %in% names(results$AggregationVariables)){
+        stop("Cannot add 'Stock' to aggregation variables, when it already exists as an aggregation variable")
+      }
+      results$AggregationVariables$AggregationVariables <- "Stock" 
+    }
     return(results)
     
   }
@@ -512,6 +521,15 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
       }
     }
     result$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
+    
+    if (RecaParameterData$GlobalParameters$CC){
+      stopifnot("Stock" %in% names(results$CatchAtAge))
+      if ("Stock" %in% names(results$AggregationVariables)){
+        stop("Cannot add 'Stock' to aggregation variables, when it already exists as an aggregation variable")
+      }
+      result$AggregationVariables <- c(result$AggregationVariables, "Stock")  
+    }
+    
     return(result)
   }
   
