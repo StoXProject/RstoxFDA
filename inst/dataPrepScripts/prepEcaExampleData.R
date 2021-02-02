@@ -40,6 +40,15 @@ recaPrediction <- RstoxFDA:::RunRecaEstimate(recaDataExample, 50, 5000, 10)$pred
 usethis::use_data(recaPrediction, overwrite = T)
 usethis::use_data(recaDataExample, overwrite = T)
 
+#' example results for testing reporting
+fpath <- makeTempDirReca()
+param <- ParameterizeRecaModels(prep, 10, 100, ResultDirectory = fpath)
+recaParam <- RstoxFDA::ParameterizeRecaModels(recaDataExample, 10, 200, 10, ResultDirectory = fpath)
+recaPredictionFlat <- RstoxFDA::RunRecaModels(recaParam, StoxLandingData)
+recaPredictionFlatAggvar <- RstoxFDA::RunRecaModels(recaParam, StoxLandingData, AggregationVariables = c("Gear", "Area"))
+saveRDS(recaPredictionFlat, "inst/testresources/recaPredictionFlat.rds")
+saveRDS(recaPredictionFlatAggvar, "inst/testresources/recaPredictionDecomp.rds")
+removeTempDirReca(fpath)
 
 #
 # make test data with delprøve

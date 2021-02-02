@@ -75,4 +75,77 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, AggregationVariab
   return(output)
 }
 
+#' @noRd
+reportParameterAtAge <- function(table, aggVariables, parameter, digits=2){
+  output <- list()
+  
+  aggNames <- aggVariables
+  aggNames <- c("Age", aggNames)
+  stopifnot(length(aggNames) == (ncol(table)-2))
+  
+  result <- table[,list(par=round(mean(get(parameter)), digits=digits), SD=round(stats::sd(get(parameter)), digits=digits), CI.05=round(stats::quantile(get(parameter), probs = .05), digits=digits), CI.95=round(stats::quantile(get(parameter), probs = .95), digits=digits)), by=aggNames]
+  
+  data.table::setcolorder(result ,c("Age", "par", "SD", "CI.05", "CI.95", aggVariables))
+  names(result) <- c("Age", parameter, "SD", "CI.05", "CI.95", aggVariables)
+    
+  output <- list()
+  output$RecaReport <- result
+  
+  output$AggregationVariables <- data.table::data.table(AggregationVariables=aggVariables)
+  return(output)
+}
+
+#' Report catch at age
+#' @description 
+#'  Tabulates summary statistics for total catch at age from MCMC simulations using Reca.
+#'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+#'  
+#'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
+#'  area, gear, stock, etc., summary statistics will be presented similarly.
+#' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
+#' @return \code{\link[RstoxFDA]{ReportRecaCatchAtAgeData}}
+#' @export
+ReportRecaCatchAtAge <- function(RecaCatchAtAge){
+  
+  stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  
+  aggNames <- c("Iteration", "Age", RecaCatchAtAge$AggregationVariables$AggregationVariables)
+  stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
+  totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
+  
+  aggNames <- RecaCatchAtAge$AggregationVariables$AggregationVariables
+  
+  return(reportParameterAtAge(totalOverLength, aggNames, "CatchAtAge"))
+  
+}
+
+#' Report weight at age
+#' @description 
+#'  Tabulates summary statistics for mean weights at age from MCMC simulations using Reca.
+#'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+#'  
+#'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
+#'  area, gear, stock, etc., summary statistics will be presented similarly.
+#' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
+#' @return \code{\link[RstoxFDA]{ReportRecaWeightAtAgeData}}
+#' @export
+ReportRecaWeightAtAge <- function(RecaCatchAtAge){
+  stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  return(reportParameterAtAge(RecaCatchAtAge$MeanWeight, RecaCatchAtAge$AggregationVariables$AggregationVariables, "MeanIndividualWeight"))
+}
+
+#' Report length at age
+#' @description 
+#'  Tabulates summary statistics for mean length at age from MCMC simulations using Reca.
+#'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+#'  
+#'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
+#'  area, gear, stock, etc., summary statistics will be presented similarly.
+#' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
+#' @return \code{\link[RstoxFDA]{ReportRecaLengthAtAgeData}}
+#' @export
+ReportRecaLengthAtAge <- function(RecaCatchAtAge){
+  stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  return(reportParameterAtAge(RecaCatchAtAge$MeanLength, RecaCatchAtAge$AggregationVariables$AggregationVariables, "MeanIndividualLength"))
+}
 
