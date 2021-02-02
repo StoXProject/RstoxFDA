@@ -77,22 +77,36 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, AggregationVariab
 
 #' @noRd
 reportParameterAtAge <- function(table, aggVariables, parameter, digits=2){
+  
+  stopifnot(all(c("Age", "AgeGroup") %in% names(table)))
+  
   output <- list()
   
   aggNames <- aggVariables
-  aggNames <- c("Age", aggNames)
+  aggNames <- c("Age", "AgeGroup", aggNames)
   stopifnot(length(aggNames) == (ncol(table)-2))
   
   result <- table[,list(par=round(mean(get(parameter)), digits=digits), SD=round(stats::sd(get(parameter)), digits=digits), CI.05=round(stats::quantile(get(parameter), probs = .05), digits=digits), CI.95=round(stats::quantile(get(parameter), probs = .95), digits=digits)), by=aggNames]
   
-  data.table::setcolorder(result ,c("Age", "par", "SD", "CI.05", "CI.95", aggVariables))
-  names(result) <- c("Age", parameter, "SD", "CI.05", "CI.95", aggVariables)
+  data.table::setcolorder(result ,c("AgeGroup", "Age", "par", "SD", "CI.05", "CI.95", aggVariables))
+  names(result) <- c("AgeGroup", "Age", parameter, "SD", "CI.05", "CI.95", aggVariables)
     
   output <- list()
   output$RecaReport <- result
   
   output$AggregationVariables <- data.table::data.table(AggregationVariables=aggVariables)
   return(output)
+}
+
+#' Add character description of Age groups
+#' @noRd
+setAgeGroup <- function(AgeReport){
+  stopifnot(!("AgeGroup" %in% names(AgeReport)))
+  stopifnot(("Age" %in% names(AgeReport)))
+  
+  AgeReport$AgeGroup <- paste("Age", AgeReport$Age)
+  
+  return(AgeReport)
 }
 
 #' Report catch at age
@@ -103,9 +117,10 @@ reportParameterAtAge <- function(table, aggVariables, parameter, digits=2){
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
+#' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @return \code{\link[RstoxFDA]{ReportRecaCatchAtAgeData}}
 #' @export
-ReportRecaCatchAtAge <- function(RecaCatchAtAge){
+ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
   
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   
@@ -113,7 +128,22 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge){
   stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
   totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
   
-  aggNames <- RecaCatchAtAge$AggregationVariables$AggregationVariables
+  totalOverLength <- setAgeGroup(totalOverLength)
+  
+  if (isGiven(PlusGroup)){
+    if (PlusGroup > max(totalOverLength$Age)){
+      stop("'PlusGroup' is larger than the oldest age in the model.")
+    }
+    if (PlusGroup < min(totalOverLength$Age)){
+      stop("'PlusGroup' is smaller than the smallest age in the model.")
+    }
+    
+    aggNames <- c("Iteration", "AgeGroup", RecaCatchAtAge$AggregationVariables$AggregationVariables)
+    totalOverLength$AgeGroup[totalOverLength$Age>=PlusGroup] <- paste("Age ", PlusGroup, "+", sep="")
+    totalOverLength <- totalOverLength[, list(Age=min(get("Age")), CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
+  }
+  
+  aggNames <- c(RecaCatchAtAge$AggregationVariables$AggregationVariables)
   
   return(reportParameterAtAge(totalOverLength, aggNames, "CatchAtAge"))
   
@@ -131,6 +161,7 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge){
 #' @export
 ReportRecaWeightAtAge <- function(RecaCatchAtAge){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  RecaCatchAtAge$MeanWeight <- setAgeGroup(RecaCatchAtAge$MeanWeight)
   return(reportParameterAtAge(RecaCatchAtAge$MeanWeight, RecaCatchAtAge$AggregationVariables$AggregationVariables, "MeanIndividualWeight"))
 }
 
@@ -146,6 +177,7 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge){
 #' @export
 ReportRecaLengthAtAge <- function(RecaCatchAtAge){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  RecaCatchAtAge$MeanLength <- setAgeGroup(RecaCatchAtAge$MeanLength)
   return(reportParameterAtAge(RecaCatchAtAge$MeanLength, RecaCatchAtAge$AggregationVariables$AggregationVariables, "MeanIndividualLength"))
 }
 

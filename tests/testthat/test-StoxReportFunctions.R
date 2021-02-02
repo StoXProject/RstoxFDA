@@ -33,11 +33,25 @@ diff <- sum(catchAtAgeReportFlat$RecaReport$CatchAtAge) - sum(catchAtAgeReportDe
 reldiff <- abs(diff/sum(catchAtAgeReportFlat$RecaReport$CatchAtAge))
 expect_lt(reldiff, .001)
 expect_equal(length(catchAtAgeReportFlat$AggregationVariables$AggregationVariables), 0)
-expect_equal(ncol(catchAtAgeReportFlat$RecaReport), 5)
+expect_equal(ncol(catchAtAgeReportFlat$RecaReport), 6)
 
 expect_equal(length(catchAtAgeReportDecomp$AggregationVariables$AggregationVariables), 2)
-expect_equal(ncol(catchAtAgeReportDecomp$RecaReport), 7)
+expect_equal(ncol(catchAtAgeReportDecomp$RecaReport), 8)
 
+#test plusgroup
+catchAtAgeReportDecompPlusGr <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5)
+diff <- sum(catchAtAgeReportDecomp$RecaReport$CatchAtAge) - sum(catchAtAgeReportDecompPlusGr$RecaReport$CatchAtAge)
+reldiff <- abs(diff/sum(catchAtAgeReportDecompPlusGr$RecaReport$CatchAtAge))
+expect_lt(reldiff, .001)
+expect_equal(nrow(catchAtAgeReportDecompPlusGr$RecaReport), 40)
+expect_equal(nrow(catchAtAgeReportDecompPlusGr$AggregationVariables), 2)
+
+catchAtAgeReportFlatPlusGr <- ReportRecaCatchAtAge(catchAtAgeFlat, PlusGroup=5)
+diff <- sum(catchAtAgeReportFlat$RecaReport$CatchAtAge) - sum(catchAtAgeReportFlatPlusGr$RecaReport$CatchAtAge)
+reldiff <- abs(diff/sum(catchAtAgeReportFlatPlusGr$RecaReport$CatchAtAge))
+expect_lt(reldiff, .001)
+expect_equal(nrow(catchAtAgeReportFlatPlusGr$RecaReport), 4)
+expect_equal(nrow(catchAtAgeReportFlatPlusGr$AggregationVariables), 0)
 
 
 # Report Mean length

@@ -32,7 +32,8 @@ is.Date <- function(date){
 #'  list with two members 'RecaReport' and 'AggregationVariables'.
 #'  'RecaReport' is a \code{\link[data.table]{data.table}} with the columns:
 #'  \describe{
-#'   \item{Age}{The age the estimate is reported for}
+#'   \item{AgeGroup}{character. The age group the estimate is reported for. May be age or plus group}
+#'   \item{Age}{integer. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)}
 #'   \item{<Statistic>}{A reported statistic. Mean of the posterior distribution.}
 #'   \item{SD}{Standard deviation for the catch at age posterior distribution.}
 #'   \item{CI.05}{The lower limit of the 90\% Credible Interval. That is the 5\% quantile of the posterior distribution.}
