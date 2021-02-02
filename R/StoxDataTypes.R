@@ -23,17 +23,17 @@ is.Date <- function(date){
 }
 
 
-#' Catch at age report (ReportRecaCatchAtAgeData)
+#' Reca report (ReportRecaData)
 #' 
 #' @description 
-#'  Results from Reca catch at age estimations. The results may be presented
+#'  Results from Reca catch estimations. The results may be presented
 #'  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
 #'  
-#'  list with two members 'CatchAtAge' and 'AggregationVariables'.
-#'  'CatchAtAge' is a \code{\link[data.table]{data.table}} with the columns:
+#'  list with two members 'RecaReport' and 'AggregationVariables'.
+#'  'RecaReport' is a \code{\link[data.table]{data.table}} with the columns:
 #'  \describe{
 #'   \item{Age}{The age the estimate is reported for}
-#'   \item{CatchAtAge}{The estimated catch in numbers of fish of the given age. Mean of the posterior distribution.}
+#'   \item{<Statistic>}{A reported statistic. Mean of the posterior distribution.}
 #'   \item{SD}{Standard deviation for the catch at age posterior distribution.}
 #'   \item{CI.05}{The lower limit of the 90\% Credible Interval. That is the 5\% quantile of the posterior distribution.}
 #'   \item{CI.95}{The higher limit of the 90\% Credible Interval. That is the 95\% quantile of the posterior distribution.}
@@ -41,33 +41,82 @@ is.Date <- function(date){
 #'  }
 #'  'AggregationVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
+#' @name ReportRecaData
+#' 
+NULL
+
+#' Reca Catch At Age Report (ReportRecaCatchAtAgeData)
+#' 
+#' @description 
+#'  A \code{\link[RstoxFDA]{ReportRecaData}} object with the reported <Statistic> being:
+#'  
+#'  \describe{
+#'   \item{CacthAtAge}{The total catch at age in numbers.}
+#'  }
+#' 
 #' @name ReportRecaCatchAtAgeData
 #' 
 NULL
 
-#' Checks if argument is \code{\link[RstoxFDA]{ReportRecaCatchAtAgeData}}
+#' Reca Length At Age Report (ReportRecaLengthAtAgeData)
+#' 
+#' @description 
+#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportRecaData}} object
+#'  with the reported <Statistic> being:
+#'  
+#'  \describe{
+#'   \item{MeanIndividualLength}{The mean length at age in cm.}
+#'  }
+#'  
+#'  Note that the summary statistics are reported for posterior distributions
+#'  of mean lengths, so that e.g. SD report the standard deviation of the means,
+#'  and does not charachterize the length distribution of fish.
+#' 
+#' @name ReportRecaLengthAtAgeData
+#' 
+NULL
+
+#' Reca Weight At Age Report (ReportRecaWeightAtAgeData)
+#' 
+#' @description 
+#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportRecaData}} object
+#'  with the reported <Statistic> being:
+#'  
+#'  \describe{
+#'   \item{MeanIndividualWeight}{The mean weight at age in grammes}
+#'  }
+#'  
+#'  Note that the summary statistics are reported for posterior distributions
+#'  of mean weights, so that e.g. SD report the standard deviation of the means,
+#'  and does not charachterize the weight distribution of fish.
+#' 
+#' @name ReportRecaWeightAtAgeData
+#' 
+NULL
+
+#' Checks if argument is \code{\link[RstoxFDA]{ReportRecaData}}
 #' @description
-#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportRecaCatchAtAgeData}}
-#' @param ReportRecaCatchAtAgeData argument to be checked for data conformity
-#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportRecaCatchAtAgeData}}
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportRecaData}}
+#' @param ReportRecaData argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportRecaData}}
 #' @export
-is.ReportRecaCatchAtAgeData <- function(ReportRecaCatchAtAgeData){
-  if (!is.list(ReportRecaCatchAtAgeData)){
+is.ReportRecaData <- function(ReportRecaData){
+  if (!is.list(ReportRecaData)){
     return(FALSE)
   }
-  if (!all(c("AggregationVariables", "CatchAtAge") %in% names(ReportRecaCatchAtAgeData))){
+  if (!all(c("AggregationVariables", "RecaReport") %in% names(ReportRecaData))){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportRecaCatchAtAgeData$CatchAtAge)){
+  if (!data.table::is.data.table(ReportRecaData$RecaReport)){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportRecaCatchAtAgeData$AggregationVariables)){
+  if (!data.table::is.data.table(ReportRecaData$AggregationVariables)){
     return(FALSE)
   }
-  if (!all(c("CatchAtAge", "Age", "CI.05", "CI.95", "SD") %in% names(ReportRecaCatchAtAgeData$CatchAtAge))){
+  if (!all(c("Age", "CI.05", "CI.95", "SD") %in% names(ReportRecaData$RecaReport))){
     return(FALSE)
   }
-  if (!all(c("AggregationVariables") %in% names(ReportRecaCatchAtAgeData$AggregationVariables))){
+  if (!all(c("AggregationVariables") %in% names(ReportRecaData$AggregationVariables))){
     return(FALSE)
   }
   return(TRUE)
@@ -1043,6 +1092,16 @@ stoxFunctionAttributes <- list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "ReportRecaCatchAtAgeData"
+  ),
+  ReportRecaLengthAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportRecaLengthAtAgeData"
+  ),
+  ReportRecaWeightAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportRecaWeightAtAgeData"
   )
 )
 

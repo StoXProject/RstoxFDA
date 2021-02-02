@@ -2,20 +2,11 @@
 % Please edit documentation in R/StoxDataTypes.R
 \name{ReportRecaCatchAtAgeData}
 \alias{ReportRecaCatchAtAgeData}
-\title{Catch at age report (ReportRecaCatchAtAgeData)}
+\title{Reca Catch At Age Report (ReportRecaCatchAtAgeData)}
 \description{
-Results from Reca catch at age estimations. The results may be presented
- decomposed on combinations of aggregation variables, such as gear, area, stock etc.
+A \code{\link[RstoxFDA]{ReportRecaData}} object with the reported <Statistic> being:
  
- list with two members 'CatchAtAge' and 'AggregationVariables'.
- 'CatchAtAge' is a \code{\link[data.table]{data.table}} with the columns:
  \describe{
-  \item{Age}{The age the estimate is reported for}
-  \item{CatchAtAge}{The estimated catch in numbers of fish of the given age. Mean of the posterior distribution.}
-  \item{SD}{Standard deviation for the catch at age posterior distribution.}
-  \item{CI.05}{The lower limit of the 90\% Credible Interval. That is the 5\% quantile of the posterior distribution.}
-  \item{CI.95}{The higher limit of the 90\% Credible Interval. That is the 95\% quantile of the posterior distribution.}
-  \item{...}{Any aggregation variables. The names of these are listed in 'AggregationVariables'}
+  \item{CacthAtAge}{The total catch at age in numbers.}
  }
- 'AggregationVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 }

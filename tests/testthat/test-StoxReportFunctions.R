@@ -25,15 +25,24 @@ catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.r
 
 catchAtAgeReportDecomp <- ReportRecaCatchAtAge(catchAtAgeDecomp)
 catchAtAgeReportFlat <- ReportRecaCatchAtAge(catchAtAgeFlat)
-expect_true(is.ReportRecaCatchAtAgeData(catchAtAgeReportDecomp))
-expect_true(is.ReportRecaCatchAtAgeData(catchAtAgeReportFlat))
 
-diff <- sum(catchAtAgeReportFlat$CatchAtAge$CatchAtAge) - sum(catchAtAgeReportDecomp$CatchAtAge$CatchAtAge)
-reldiff <- abs(diff/sum(catchAtAgeReportFlat$CatchAtAge$CatchAtAge))
+expect_true(is.ReportRecaData(catchAtAgeReportDecomp))
+expect_true(is.ReportRecaData(catchAtAgeReportFlat))
+
+diff <- sum(catchAtAgeReportFlat$RecaReport$CatchAtAge) - sum(catchAtAgeReportDecomp$RecaReport$CatchAtAge)
+reldiff <- abs(diff/sum(catchAtAgeReportFlat$RecaReport$CatchAtAge))
 expect_lt(reldiff, .001)
 expect_equal(length(catchAtAgeReportFlat$AggregationVariables$AggregationVariables), 0)
-expect_equal(ncol(catchAtAgeReportFlat$CatchAtAge), 5)
+expect_equal(ncol(catchAtAgeReportFlat$RecaReport), 5)
 
 expect_equal(length(catchAtAgeReportDecomp$AggregationVariables$AggregationVariables), 2)
-expect_equal(ncol(catchAtAgeReportDecomp$CatchAtAge), 7)
+expect_equal(ncol(catchAtAgeReportDecomp$RecaReport), 7)
+
+
+
+# Report Mean length
+MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp)
+expect_true(is.ReportRecaData(MeanWeightReportDecomp))
+MeanLengthReportDecomp <- ReportRecaLengthAtAge(catchAtAgeDecomp)
+expect_true(is.ReportRecaData(MeanLengthReportDecomp))
 
