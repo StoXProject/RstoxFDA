@@ -172,7 +172,7 @@ expect_equal(sum(!is.na(stoxbioticPost$Haul$GearGroup)), sum(!is.na(stoxbiotic$H
 
 context("test-StoxBaselineFunctions: AddGearGroupStoxBiotic missing gear codes")
 stoxbiotic$Haul$Gear[1] <- NA
-expect_error(AddGearGroupStoxBiotic(stoxbiotic, gearDef), "'StoxBioticData' has missing values for the variable 'Gear' on the table 'Haul'")
+expect_error(suppressWarnings(AddGearGroupStoxBiotic(stoxbiotic, gearDef)), "'StoxBioticData' has missing values for the variable 'Gear' on the table 'Haul'")
 
 context("test-StoxBaselineFunctions: DefinePeriod")
 temp <- DefinePeriod(NULL)

@@ -588,6 +588,11 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
     stop("Translation table contains no translation for variable 'Gear'")
   }
   if (any(is.na(StoxBioticData$Haul$Gear))){
+    missing <- StoxBioticData$Haul[is.na(StoxBioticData$Haul$Gear),]
+    for (i in nrow(missing)){
+      warning(paste("'Gear' missing from Cruise:", missing$CruiseKey[i], ", Station:", missing$StationKey[i], "Haul:", missing$HaulKey[i]))      
+    }
+    
     stop("'StoxBioticData' has missing values for the variable 'Gear' on the table 'Haul'.")
   }
   
