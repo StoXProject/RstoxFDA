@@ -1,3 +1,28 @@
+context("PrepRecaEstimate: Missing values warnings")
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+
+StoxBioticData$Cruise$Cruise[1] <- NA
+expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Cruise"))))
+StoxBioticData <- readRDS(StoxBioticFile)
+StoxBioticData$Station$CatchPlatform[1] <- NA
+expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("CatchPlatform"))))
+StoxBioticData <- readRDS(StoxBioticFile)
+StoxBioticData$Haul$Gear[1] <- NA
+expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("Gear"), RandomEffects = c())))
+StoxBioticData <- readRDS(StoxBioticFile)
+StoxBioticData$Sample$CatchFractionCount[1] <- NA
+expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("CatchFractionCount"), RandomEffects = c())))
+StoxBioticData <- readRDS(StoxBioticFile)
+StoxBioticData$Individual$IndividualTotalLength[1] <- NA
+expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())))
+StoxBioticData <- readRDS(StoxBioticFile)
+StoxBioticData$Station$DateTime[1] <- NA
+expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())), regexp = "Cannot proceed with missing values for Reca-effects*")
+
+
 context("PrepRecaEstimate: StocSplitting")
 manual <- DefineStockSplittingParamteres(DefinitionMethod = "FunctionParameters",
                                          StockNameCC="S1", StockNameS="S2", ProbabilityType1As1=.8,
@@ -48,7 +73,6 @@ StoxBioticData <- readRDS(StoxBioticFile)
 
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
-
 
 StoxLandingData$Landing$NewConst <- 1
 StoxBioticData$Station$NewConst <- 1
@@ -154,7 +178,7 @@ expect_equal(dim(result$prediction$TotalCount)[3], 10)
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate, missing sample dates")
 StoxBioticData$Station$DateTime[1] <- NA
-expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c()))
+expect_error(suppressWarnings(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())))
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate, stratified samples (nFish), missing CatchFractionCount")
 StoxBioticDataDelp <- readRDS(system.file("testresources","StoxBioticDelpr.rds", package="RstoxFDA"))

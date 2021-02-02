@@ -1,4 +1,71 @@
 
+
+#' Issues stox warnings if any of the varnames has any missing values.
+#' Terminate with warning
+#' @noRd
+warnMissingCovariateStoxBiotic <- function(varnames, StoxBioticData){
+  error <- F
+  for (e in varnames){
+    # check cruise
+    if (e %in% names(StoxBioticData$Cruise)){
+      missing <- StoxBioticData$Cruise[is.na(StoxBioticData$Cruise[[e]])]
+      if (nrow(missing) > 0){
+        for (i in 1:nrow(missing)){
+          error <- T
+          stoxWarning(paste("Variable '",e,"' has missing values on the table 'Cruise' in 'StoxBioticData' for CruiseKey: ", missing$CruiseKey[i], sep=""))
+        }
+      }
+    }
+    # check station
+    if (e %in% names(StoxBioticData$Station)){
+      missing <- StoxBioticData$Station[is.na(StoxBioticData$Station[[e]])]
+      if (nrow(missing) > 0){
+        for (i in 1:nrow(missing)){
+          error <- T
+          stoxWarning(paste("Variable '",e,"' has missing values on the table 'Station' in 'StoxBioticData' for CruiseKey: ", missing$CruiseKey[i], " StationKey: ", missing$StationKey[i], sep=""))
+        }
+      }
+    }
+    
+    # check haul
+    if (e %in% names(StoxBioticData$Haul)){
+      missing <- StoxBioticData$Haul[is.na(StoxBioticData$Haul[[e]])]
+      if (nrow(missing) > 0){
+        for (i in 1:nrow(missing)){
+          error <- T
+          stoxWarning(paste("Variable '",e,"' has missing values on the table 'Haul' in 'StoxBioticData' for CruiseKey: ", missing$CruiseKey[i], " StationKey: ", missing$StationKey[i], " HaulKey: ", missing$HaulKey[i], sep=""))
+        }
+      }
+    }
+    
+    # check sample
+    if (e %in% names(StoxBioticData$Sample)){
+      missing <- StoxBioticData$Sample[is.na(StoxBioticData$Sample[[e]])]
+      if (nrow(missing) > 0){
+        for (i in 1:nrow(missing)){
+          error <- T
+          stoxWarning(paste("Variable '",e,"' has missing values on the table 'Sample' in 'StoxBioticData' for CruiseKey: ", missing$CruiseKey[i], " StationKey: ", missing$StationKey[i], " HaulKey: ", missing$HaulKey[i], " SampleKey: ", missing$SampleKey[i], sep=""))
+        }
+      }
+    }
+    
+    # check individual
+    if (e %in% names(StoxBioticData$Individual)){
+      missing <- StoxBioticData$Individual[is.na(StoxBioticData$Individual[[e]])]
+      if (nrow(missing) > 0){
+        for (i in 1:nrow(missing)){
+          error <- T
+          stoxWarning(paste("Variable '",e,"' has missing values on the table 'Individual' in 'StoxBioticData' for CruiseKey: ", missing$CruiseKey[i], " StationKey: ", missing$StationKey[i], " HaulKey: ", missing$HaulKey[i], " SampleKey: ", missing$SampleKey[i], " IndividualKey: ", missing$IndividualKey[i], sep=""))
+        }
+      }
+    }
+  }
+  
+  if (error){
+    stop("Cannot proceed with missing values for Reca-effects (covariates) or the variables for fish length or catch date.")
+  }
+}
+
 #' Prepare data for Reca.
 #' @description
 #'  Performs data checks and data conversions,
@@ -156,7 +223,13 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
 
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
 
-
+  #
+  # checks for NAs in covariates
+  #
+  effects <- c(FixedEffects, RandomEffects, CarEffect, "IndividualTotalLength", "DateTime")
+  warnMissingCovariateStoxBiotic(effects, StoxBioticData)
+  
+  
   #
   # Set temporal resolution.
   # Landings compilation are only done to ensure coding consistency.
@@ -184,7 +257,6 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     }
     flatbiotic$Otolithtype <- flatbiotic$otolithtype
   }
-  
   
   nFish = NULL
   #
