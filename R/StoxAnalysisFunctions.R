@@ -202,7 +202,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
         SampleKey <- missing$SampleKey[i]
         CruiseKey<- missing$CruiseKey[i]
         StationKey<- missing$StationKey[i]
-        warning(paste("'CatchFractionCount' missing from Sample", SampleKey, "from Haul", HaulKey, "which have several catch fractions sampled. Cruise:", CruiseKey, "Station:", StationKey))
+        stoxWarning(paste("'CatchFractionCount' missing from Sample", SampleKey, "from Haul", HaulKey, "which have several catch fractions sampled. Cruise:", CruiseKey, "Station:", StationKey))
       }
       stop("'StoxBioticData' have 'CatchFractionCount' missing from the 'Sample' table for Hauls with several fractions sampled.")
     }

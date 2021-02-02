@@ -1,4 +1,10 @@
 
+#' Issues warning prefixed with StoX:, necessary to be picked up by GUI
+#' @noRd
+stoxWarning <- function(msg){
+  warning(paste("StoX:", msg))
+}
+
 #' Check if parameter is given
 #' @noRd
 isGiven <- function(value){
@@ -517,7 +523,7 @@ AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
   
   missing <- StoxBioticData$Station[is.na(StoxBioticData$Station$Latitude) | is.na(StoxBioticData$Station$Longitude),]
   for (i in 1:nrow(missing)){
-      warning(paste("'Position' missing from Cruise:", missing$CruiseKey[i], ", Station:", missing$StationKey[i]))      
+    stoxWarning(paste("'Position' missing from Cruise:", missing$CruiseKey[i], ", Station:", missing$StationKey[i]))      
   }
   
   if (columnName %in% names(StoxBioticData$Station)){
@@ -595,7 +601,7 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
   if (any(is.na(StoxBioticData$Haul$Gear))){
     missing <- StoxBioticData$Haul[is.na(StoxBioticData$Haul$Gear),]
     for (i in nrow(missing)){
-      warning(paste("'Gear' missing from Cruise:", missing$CruiseKey[i], ", Station:", missing$StationKey[i], "Haul:", missing$HaulKey[i]))      
+      stoxWarning(paste("'Gear' missing from Cruise:", missing$CruiseKey[i], ", Station:", missing$StationKey[i], "Haul:", missing$HaulKey[i]))      
     }
     
     stop("'StoxBioticData' has missing values for the variable 'Gear' on the table 'Haul'.")
