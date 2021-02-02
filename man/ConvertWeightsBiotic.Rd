@@ -6,12 +6,15 @@
 \usage{
 ConvertWeightsBiotic(
   BioticData,
+  ConversionType = c("All", "CatchWeights", "IndividualWeight"),
   WeightConversionTable,
   TargetProductType = character()
 )
 }
 \arguments{
 \item{BioticData}{\code{\link[RstoxData]{BioticData}} for which weights should be converted}
+
+\item{ConversionType}{defines which weights to convert, may be 'All', 'CacthWeight', 'SampleWeight', 'IndividualWeight'}
 
 \item{WeightConversionTable}{\code{\link[RstoxFDA]{WeightConversionTable}} with parameters for converting weights to 'TargetProductType'.}
 
@@ -29,18 +32,18 @@ Different products of fish may be measured and round weight (live weight)
  
  For records where the variable 'catchcategory' on the table 'catchsample' matches the 'Species' variable in 'Translation'
  this function converts weights to desired product type ('TargetProductType') by matching 'producttype'-variables to 'ProductType' in 'Translation'.
- The following weights are converted:
- \itemize{
-  \item{'catchweight' based on 'catchproducttype' both on the table 'catchsample'}
-  \item{'lengthsampleweight' based on 'sampleproducttype' both on the table 'catchsample'}
-  \item{'individualweight' based on 'individualproducttype' both on the table 'individual'} 
+ The following weights may be converted, depending on the parameter 'ConversionType':
+ \describe{
+  \item{'All' or 'CatchWeights'}{'catchweight' is converted based on 'catchproducttype' both on the table 'catchsample'}
+  \item{'All' or 'CatchWeights'}{'lengthsampleweight' is converted based on 'sampleproducttype' both on the table 'catchsample'}
+  \item{'All' or 'IndividualWeight'}{'individualweight' is converted based on 'individualproducttype' both on the table 'individual'} 
  }
  
- After conversion the 'producttype'-variables will be changed to reflect the approximate weight.
+ After conversion the 'producttype'-variables will be changed to reflect the converted weight.
  That is they will be set to 'TargetProductType'.
  
  If 'WeightConversionTable' contains NAs for 'WeightFactor', converted weights will be NA.
- This is useful for dealing with species whoose weights are not needed in subsequent analysis. 
+ This may be useful for dealing with species whoose weights are not needed in subsequent analysis. 
  
  The variables 'catchvolume', 'lengthsamplevolume', and 'individualvolume'
  are also dependent on product type. These are set to NA as weight is converted.

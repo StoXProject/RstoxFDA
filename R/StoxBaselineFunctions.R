@@ -453,6 +453,7 @@ AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition){
   }
   
   
+  
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   stopifnot(is.TemporalDefinition(TemporalDefinition))
   StoxLandingData$Landing <- appendTemporal(StoxLandingData$Landing, columnName, TemporalDefinition, "CatchDate")
@@ -476,7 +477,11 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
     stop(paste("The column", columnName, "already exists in StoxLandingData."))
   }
   if (any(is.na(StoxBioticData$Station$DateTime))){
-    stop("Cannot add period when 'DateTime' is missing for some rows.")
+    missing <- StoxBioticData$Station[is.na(StoxBioticData$Station$DateTime),]
+    for (i in 1:nrow(missing)){
+      stoxWarning(paste("'DateTime' missing from table 'Station' in 'StoxBioticData'. CruiseKey:", missing$CruiseKey[i], ", StationKey:", missing$StationKey[i], "HaulKey:", missing$HaulKey[i]))
+    }
+    stop("Cannot add 'Period' when 'DateTime' is missing for some rows.")
   }
   
   stopifnot(is.TemporalDefinition(TemporalDefinition))
@@ -534,7 +539,7 @@ AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
   missing <- StoxBioticData$Station[is.na(StoxBioticData$Station$Latitude) | is.na(StoxBioticData$Station$Longitude),]
   if (nrow(missing) > 0){
     for (i in 1:nrow(missing)){
-      stoxWarning(paste("Position missing 'Station' in 'StoxBioticData'. CruiseKey:", missing$CruiseKey[i], ", StationKey:", missing$StationKey[i]))      
+      stoxWarning(paste("Position missing from 'Station' in 'StoxBioticData'. CruiseKey:", missing$CruiseKey[i], ", StationKey:", missing$StationKey[i]))      
     }
   }
   
@@ -613,7 +618,7 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
   if (any(is.na(StoxBioticData$Haul$Gear))){
     missing <- StoxBioticData$Haul[is.na(StoxBioticData$Haul$Gear),]
     for (i in nrow(missing)){
-      stoxWarning(paste("'Gear' missing from Cruise:", missing$CruiseKey[i], ", Station:", missing$StationKey[i], "Haul:", missing$HaulKey[i]))      
+      stoxWarning(paste("'Gear' missing from 'Haul' in 'StoxBioticData'. CruiseKey:", missing$CruiseKey[i], ", StationKey:", missing$StationKey[i], "HaulKey:", missing$HaulKey[i]))      
     }
     
     stop("'StoxBioticData' has missing values for the variable 'Gear' on the table 'Haul'.")
