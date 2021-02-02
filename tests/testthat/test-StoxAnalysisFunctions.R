@@ -158,7 +158,7 @@ expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects =
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate, stratified samples (nFish), missing CatchFractionCount")
 StoxBioticDataDelp <- readRDS(system.file("testresources","StoxBioticDelpr.rds", package="RstoxFDA"))
-expect_error(PrepareRecaEstimate(StoxBioticDataDelp, StoxLandingData, FixedEffects = c(), RandomEffects = c()))
+expect_error(suppressWarnings(PrepareRecaEstimate(StoxBioticDataDelp, StoxLandingData, FixedEffects = c(), RandomEffects = c())))
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate, stratified samples (nFish)")
 StoxBioticDataDelp$Sample$CatchFractionCount[2] <- 3000
