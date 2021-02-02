@@ -587,6 +587,11 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
   if (!any(Translation$VariableName=="Gear")){
     stop("Translation table contains no translation for variable 'Gear'")
   }
+  if (any(is.na(StoxBioticData$Haul$Gear))){
+    stop("'StoxBioticData' has missing values for the variable 'Gear' on the table 'Haul'.")
+  }
+  
+  
   geardef <- Translation[Translation$VariableName=="Gear",c("Value", "NewValue")]
   StoxBioticData$Haul<-appendGear(StoxBioticData$Haul, "Gear", geardef, "GearGroup")
   return(StoxBioticData)

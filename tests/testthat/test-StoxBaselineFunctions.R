@@ -163,12 +163,16 @@ stoxLandingPost <- AddGearGroupStoxLanding(stoxLandingPre, gearDef)
 expect_true("GearGroup" %in% names(stoxLandingPost$Landing))
 expect_true(all(!is.na(stoxLandingPost$Landing$GearGroup)))
 
-context("teadt-StoxBaselineFunctions: AddGearGroupStoxBiotic")
+context("test-StoxBaselineFunctions: AddGearGroupStoxBiotic")
 gearDef <- RstoxData::DefineTranslation(NULL, F, "ResourceFile", NULL, system.file("testresources","geargroupsBiotic.txt", package="RstoxFDA"))
 stoxbiotic <- readRDS(system.file("testresources","StoxBioticData.rds", package="RstoxFDA"))
 stoxbioticPost <- AddGearGroupStoxBiotic(stoxbiotic, gearDef)
 expect_true("GearGroup" %in% names(stoxbioticPost$Haul))
 expect_equal(sum(!is.na(stoxbioticPost$Haul$GearGroup)), sum(!is.na(stoxbiotic$Haul$Gear)))
+
+context("test-StoxBaselineFunctions: AddGearGroupStoxBiotic missing gear codes")
+stoxbiotic$Haul$Gear[1] <- NA
+expect_error(AddGearGroupStoxBiotic(stoxbiotic, gearDef), "'StoxBioticData' has missing values for the variable 'Gear' on the table 'Haul'")
 
 context("test-StoxBaselineFunctions: DefinePeriod")
 temp <- DefinePeriod(NULL)
