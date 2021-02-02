@@ -512,8 +512,13 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon){
 AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
   
   columnName <- "Stratum"    
-
+  
   stopifnot("Station" %in% names(StoxBioticData))
+  
+  missing <- StoxBioticData$Station[is.na(StoxBioticData$Station$Latitude) | is.na(StoxBioticData$Station$Longitude),]
+  for (i in 1:nrow(missing)){
+      warning(paste("'Position' missing from Cruise:", missing$CruiseKey[i], ", Station:", missing$StationKey[i]))      
+  }
   
   if (columnName %in% names(StoxBioticData$Station)){
     stop(paste("Column name", columnName, "already exists."))
