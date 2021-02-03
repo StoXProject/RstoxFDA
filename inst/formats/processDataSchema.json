@@ -19,5 +19,46 @@
   				]
   			}
   		]
+  	},
+      "TemporalDefinition": {
+  		"$schema": "http://json-schema.org/draft-04/schema#",
+  		"type": "array",
+  		"items": [
+  			{
+  				"type": "object",
+  				"properties": {
+  					"Period": { "type": "string"},
+  					"StartDay": { "type": "number"},
+  					"StartMonth": { "type": "number"},
+  					"StartYear": { "type": "number"}
+  				},
+  				"required": [
+  					"Period",
+  					"StartDay",
+  					"StartMonth"
+  				]
+  			}
+  		]
+  	},
+      "WeightConversionTable": {
+  		"$schema": "http://json-schema.org/draft-04/schema#",
+  		"type": "array",
+  		"items": [
+  			{
+  				"type": "object",
+  				"properties": {
+  					"Description": { "type": "string"},
+  					"Species": { "type": "string"},
+  					"ProductType": { "type": "string"},
+  					"WeightFactor": { "type": "number"}
+  				},
+  				"required": [
+  					"Description",
+  					"Species",
+  					"ProductType",
+					"WeightFactor"
+  				]
+  			}
+  		]
   	}
 }

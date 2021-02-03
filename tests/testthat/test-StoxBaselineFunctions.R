@@ -13,7 +13,7 @@ bioticfile <- system.file("testresources","biotic_v3_producttypes.xml", package=
 conversionfile <- system.file("testresources","conversionFactors.txt", package="RstoxFDA")
 BioticData <- RstoxData::ReadBiotic(bioticfile)
 tab <- DefineWeightConversionFactor(FileName=conversionfile)
-BioticDataPost <- ConvertWeightsBiotic(BioticData, tab, "1")
+BioticDataPost <- ConvertWeightsBiotic(BioticData, WeightConversionTable = tab, TargetProductType = "1")
 
 #check that producttype NAs are preserved
 expect_equal(is.na(BioticData$biotic_v3_producttypes.xml$catchsample$sampleproducttype), is.na(BioticDataPost$biotic_v3_producttypes.xml$catchsample$sampleproducttype))
@@ -115,6 +115,30 @@ ratio <- postweight / preweight
 expect_equal(sum(ratio==4), 1)
 expect_equal(sum(ratio==2), sum(wasConverted)-1)
 
+context("test-StoxBaselineFunctions: IndividualLevel only")
+BioticDataPostInd <- ConvertWeightsBiotic(BioticData, ConversionType = "IndividualWeight", WeightConversionTable = tab, TargetProductType = "1")
+# not confirming species
+shouldBeConverted <- !is.na(BioticData$biotic_v3_producttypes.xml$individual$individualweight) &
+  BioticData$biotic_v3_producttypes.xml$individual$individualproducttype != "1"
+wasConverted <- !is.na(BioticDataPostInd$biotic_v3_producttypes.xml$individual$individualweight) &
+  BioticDataPostInd$biotic_v3_producttypes.xml$individual$individualweight - BioticData$biotic_v3_producttypes.xml$individual$individualweight > 1e-10
+
+# check that producttype codes was converted
+expect_true(all(BioticDataPostInd$biotic_v3_producttypes.xml$individual$individualproducttype[wasConverted]=="1"))
+expect_true(all(BioticData$biotic_v3_producttypes.xml$individual$individualproducttype[wasConverted]!="1"))
+
+#check that factors correspond to 1 saithe: type 4, rest haddock: type 4
+postweight <- BioticDataPostInd$biotic_v3_producttypes.xml$individual$individualweight[wasConverted]
+preweight <- BioticData$biotic_v3_producttypes.xml$individual$individualweight[wasConverted]
+ratio <- postweight / preweight
+expect_equal(sum(ratio==4), 1)
+expect_equal(sum(ratio==2), sum(wasConverted)-1)
+
+#check that catchsample producttypes are not changed
+expect_true(all(c("1","4") %in% BioticDataPostInd$biotic_v3_producttypes.xml$catchsample$sampleproducttype))
+expect_true(all(c("1","3","4") %in% BioticDataPostInd$biotic_v3_producttypes.xml$catchsample$catchproducttype))
+expect_equal(BioticDataPostInd$biotic_v3_producttypes.xml$catchsample$catchweight, BioticData$biotic_v3_producttypes.xml$catchsample$catchweight)
+expect_equal(BioticDataPostInd$biotic_v3_producttypes.xml$catchsample$lengthsampleweight, BioticData$biotic_v3_producttypes.xml$catchsample$lengthsampleweight)
 
 context("test-StoxBaselineFunctions: SetTimeBiotic")
 bioticfiles <- c(f1=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"), f2=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"))
@@ -163,12 +187,16 @@ stoxLandingPost <- AddGearGroupStoxLanding(stoxLandingPre, gearDef)
 expect_true("GearGroup" %in% names(stoxLandingPost$Landing))
 expect_true(all(!is.na(stoxLandingPost$Landing$GearGroup)))
 
-context("teadt-StoxBaselineFunctions: AddGearGroupStoxBiotic")
+context("test-StoxBaselineFunctions: AddGearGroupStoxBiotic")
 gearDef <- RstoxData::DefineTranslation(NULL, F, "ResourceFile", NULL, system.file("testresources","geargroupsBiotic.txt", package="RstoxFDA"))
 stoxbiotic <- readRDS(system.file("testresources","StoxBioticData.rds", package="RstoxFDA"))
 stoxbioticPost <- AddGearGroupStoxBiotic(stoxbiotic, gearDef)
 expect_true("GearGroup" %in% names(stoxbioticPost$Haul))
 expect_equal(sum(!is.na(stoxbioticPost$Haul$GearGroup)), sum(!is.na(stoxbiotic$Haul$Gear)))
+
+context("test-StoxBaselineFunctions: AddGearGroupStoxBiotic missing gear codes")
+stoxbiotic$Haul$Gear[1] <- NA
+expect_error(suppressWarnings(AddGearGroupStoxBiotic(stoxbiotic, gearDef)), "'StoxBioticData' has missing values for the variable 'Gear' on the table 'Haul'")
 
 context("test-StoxBaselineFunctions: DefinePeriod")
 temp <- DefinePeriod(NULL)
