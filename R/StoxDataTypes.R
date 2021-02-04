@@ -139,6 +139,47 @@ is.Translation <- function(Translation){
   return(TRUE)
 }
 
+#' Length Conversion Table (LengthConversionTable)
+#' 
+#' @description
+#'  Length conversion parameters realting different length measurements.
+#' @details 
+#'  Length conversion factors relating different length measurements, such as 'standard length' and 'fork length'
+#'  based on a linear regression fit between length measurements:
+#'  L1 = alpha + beta \* L2,
+#'  where L1 and L2 are different length measurements
+#'  and 'alpha' and 'beta' are species-specific coefficients.
+#'  
+#'  \code{\link[data.table]{data.table}} with columns:
+#'  \describe{
+#'  \item{'Description'}{character: Free-text description of the product}
+#'  \item{'Species'}{character: Identifier for the species that the conversion applies to}
+#'  \item{'MeasurmentType'}{character: Identifier for the type of length measurement for the independent variable (L2 above)}
+#'  \item{'Alpha'}{numeric: scalar value representing the intercept (in cm) of a linear regression fit between length measurements.}
+#'  \item{'Beta'}{numeric: scalar value representing the slope of a linear regression fit between length measurements.}
+#'  }
+#'  
+#' @name LengthConversionTable
+#' 
+NULL
+
+#' Check if argument is LengthConversionTable
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{LengthConversionTable}}
+#' @param LengthConversionTable argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{LengthConversionTable}}
+#' @export
+is.LengthConversionTable <- function(LengthConversionTable){
+  if (!data.table::is.data.table(LengthConversionTable)){
+    return(FALSE)
+  }
+  if (!all(c("Description", "Species", "MeasurementType", "Alpha", "Beta") %in% names(LengthConversionTable))){
+    return(FALSE)
+  }
+  
+  return(TRUE)
+}
+
 #' Weight Conversion Table (WeightConversionTable)
 #' 
 #' @description 
@@ -976,7 +1017,32 @@ stoxFunctionAttributes <- list(
     )
   ),
   
-  ConvertWeightsBiotic =list(
+  DefineLengthConversionParameters = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "LengthConversionTable", 
+    functionParameterFormat = list(
+      FileName = "filePath"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ), 
+      # These two are joined with AND, and must both be fulfilled:
+      FileName = list(
+        DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      )
+    )
+  ),
+  
+  ConvertWeightBiotic =list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "BioticData" 
+  ),
+  
+  ConvertLengthBiotic =list(
     functionType = "modelData", 
     functionCategory = "baseline", 
     functionOutputDataType = "BioticData" 

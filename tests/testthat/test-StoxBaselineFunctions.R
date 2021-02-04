@@ -1,3 +1,31 @@
+context("test-StoxBaselineFunctions: DefineLengthConversionParameters")
+conversionfile <- system.file("testresources","lengthConversion.txt", package="RstoxFDA")
+tab <- DefineLengthConversionParameters(FileName=conversionfile)
+expect_true(is.LengthConversionTable(tab))
+
+expect_equal(sum(!is.na(tab$Alpha)), 2)
+expect_error(suppressWarnings(DefineLengthConversionParameters(FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))), "Resource file does not have required columns: Description, Species, MeasurementType, Alpha, Beta")
+expect_error(DefineLengthConversionParameters(FileName=system.file("testresources","lengthConversionDup.txt", package="RstoxFDA")), regexp="File contains duplicate definitions ")
+
+context("test-StoxBaselineFunctions: convertLengthBiotic")
+bioticfile <- system.file("testresources","biotic_v3_lengthmeasurements.xml", package="RstoxFDA")
+conversionfile <- system.file("testresources","lengthConversion.txt", package="RstoxFDA")
+tab <- DefineLengthConversionParameters(FileName=conversionfile)
+BioticData <- RstoxData::ReadBiotic(bioticfile)
+expect_error(expect_warning(ConvertLengthBiotic(BioticData, tab, "E")), "Could not convert length for unkown length measurement for individuals.")
+BioticData$biotic_v3_lengthmeasurements.xml$catchsample$lengthmeasurement[2]<-"E"
+expect_error(expect_warning(ConvertLengthBiotic(BioticData, tab, "E")),"Conversion parameters not found for length measurement K for species 164744")
+BioticData$biotic_v3_lengthmeasurements.xml$catchsample$lengthmeasurement[12] <- "E"
+BioticDataPost <- ConvertLengthBiotic(BioticData, tab, "E")
+nonNaLmPost <- BioticDataPost$biotic_v3_lengthmeasurements.xml$catchsample$lengthmeasurement[!is.na(BioticDataPost$biotic_v3_lengthmeasurements.xml$catchsample$lengthmeasurement)]
+expect_true(all(nonNaLmPost == "E"))
+
+#check that lengthmeasuremnt NAs are preserved
+expect_equal(is.na(BioticData$biotic_v3_lengthmeasurements.xml$catchsample$lengthmeasurement), is.na(BioticDataPost$biotic_v3_lengthmeasurements.xml$catchsample$lengthmeasurement))
+
+#check conversion
+expect_equal(BioticDataPost$biotic_v3_lengthmeasurements.xml$individual$length[1],
+             BioticData$biotic_v3_lengthmeasurements.xml$individual$length[1]*3.65 + .03)
 
 context("test-StoxBaselineFunctions: DefineWeightConversionFactor")
 conversionfile <- system.file("testresources","conversionFactors.txt", package="RstoxFDA")
@@ -8,12 +36,12 @@ expect_equal(sum(!is.na(tab$WeightFactor)), 6)
 expect_error(suppressWarnings(DefineWeightConversionFactor(FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))), "Resource file does not have required columns: Description, Species, ProductType, WeightFactor")
 expect_error(DefineWeightConversionFactor(FileName=system.file("testresources","conversionFactorsDuplicates.txt", package="RstoxFDA")), regexp="File contains duplicate definitions ")
 
-context("test-StoxBaselineFunctions: ConvertWeightsBiotic")
+context("test-StoxBaselineFunctions: ConvertWeightBiotic")
 bioticfile <- system.file("testresources","biotic_v3_producttypes.xml", package="RstoxFDA")
 conversionfile <- system.file("testresources","conversionFactors.txt", package="RstoxFDA")
 BioticData <- RstoxData::ReadBiotic(bioticfile)
 tab <- DefineWeightConversionFactor(FileName=conversionfile)
-BioticDataPost <- ConvertWeightsBiotic(BioticData, WeightConversionTable = tab, TargetProductType = "1")
+BioticDataPost <- ConvertWeightBiotic(BioticData, WeightConversionTable = tab, TargetProductType = "1")
 
 #check that producttype NAs are preserved
 expect_equal(is.na(BioticData$biotic_v3_producttypes.xml$catchsample$sampleproducttype), is.na(BioticDataPost$biotic_v3_producttypes.xml$catchsample$sampleproducttype))
@@ -27,7 +55,7 @@ expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$individual$individualp
 #
 # checks on catchweightconversion
 #
-context("test-StoxBaselineFunctions: ConvertWeightsBiotic catchweightconversion")
+context("test-StoxBaselineFunctions: ConvertWeightBiotic catchweightconversion")
 shouldBeConverted <- BioticData$biotic_v3_producttypes.xml$catchsample$commonname %in% c("torsk", "sei", "hyse") &
   !is.na(BioticData$biotic_v3_producttypes.xml$catchsample$catchweight) &
   BioticData$biotic_v3_producttypes.xml$catchsample$catchproducttype != "1"
@@ -60,7 +88,7 @@ expect_equal(unlist(postweightHad / preweightHad)[[1]], 2) #hadd prodtype 4
 #
 # checks on sampleweightconversion
 #
-context("test-StoxBaselineFunctions: ConvertWeightsBiotic sampleweightconversion")
+context("test-StoxBaselineFunctions: ConvertWeightBiotic sampleweightconversion")
 
 shouldBeConverted <- BioticData$biotic_v3_producttypes.xml$catchsample$commonname %in% c("torsk", "sei", "hyse") &
   !is.na(BioticData$biotic_v3_producttypes.xml$catchsample$lengthsampleweight) &
@@ -96,7 +124,7 @@ expect_equal(unlist(postweightHad / preweightHad)[[1]], 2)
 # checks on individualweightconversion
 #
 
-context("test-StoxBaselineFunctions: ConvertWeightsBiotic individualweightconversion")
+context("test-StoxBaselineFunctions: ConvertWeightBiotic individualweightconversion")
 
 # not confirming species
 shouldBeConverted <- !is.na(BioticData$biotic_v3_producttypes.xml$individual$individualweight) &
@@ -116,7 +144,7 @@ expect_equal(sum(ratio==4), 1)
 expect_equal(sum(ratio==2), sum(wasConverted)-1)
 
 context("test-StoxBaselineFunctions: IndividualLevel only")
-BioticDataPostInd <- ConvertWeightsBiotic(BioticData, ConversionType = "IndividualWeight", WeightConversionTable = tab, TargetProductType = "1")
+BioticDataPostInd <- ConvertWeightBiotic(BioticData, ConversionType = "IndividualWeight", WeightConversionTable = tab, TargetProductType = "1")
 # not confirming species
 shouldBeConverted <- !is.na(BioticData$biotic_v3_producttypes.xml$individual$individualweight) &
   BioticData$biotic_v3_producttypes.xml$individual$individualproducttype != "1"

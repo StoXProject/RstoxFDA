@@ -117,15 +117,121 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVa
 
 }
 
+#' return string for warnings with address to biotic catchsample
+#' @noRd
+getBioticCatchSampleAdress <- function(tab){
+  stopifnot(nrow(tab)==1)
+  return(paste("startyear/missiontype/platform/missionumber:", paste(tab$startyear[1], tab$missiontype[1], tab$platform[1], tab$missionnumber[1], sep="/"),
+  "serialnumber:", tab$serialnumber[1],
+  "catchsampleid:", tab$catchsampleid[1]))
+}
+
+#' Convert lengths Biotic
+#' @description 
+#'  Convert lengths to approximate values for a desired length measurement. Typically 'total length'
+#' @details 
+#'  Different length measurements may be defined for fish, such as 'total length' or 'fork length'.
+#'  'total length' or some other length measurement may be approximated by a regression model.
+#'  
+#'  For records where the variable 'catchcategory' on the table 'catchsample' matches the 'Species' variable in 'LengthConversionTable'
+#'  this function converts lengths ('length' on the 'Individual'-table) to desired measurement type ('TargetLengthMeasurement')
+#'  by matching the 'lengthmeasurement' variable on the corresponding 'catchsample'-table to 'MeasurementType' in 'LengthConversionTable'
+#'  and applying the formula L_{desired} = 0.01 \* Alpha + Beta \* L_{MeasurementType}.
+#'  The factor of 0.01 is applied because lengths in Biotic is defined i m, while 'Alpha' in 'LengthConversionTable' is defined in cm.
+#'  
+#'  After conversion the 'lengthmeasurement'-variable will be changed to reflect the converted length.
+#'  That is, they will be set to 'TargetLengthMeasurement'.
+#'  
+#'  These variables are on these tables in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
+#'  For bioticdata that does not conform to this, no modifications are done.
+#' @param BioticData \code{\link[RstoxData]{BioticData}} for which lengths should be converted
+#' @param LengthConversionTable \code{\link[RstoxFDA]{LengthConversionTable}} with parameters for converting lengths to 'TargetLengthMeasurement'.
+#' @param TargetLengthMeasurement The desired length measurement. Typically the code for 'total length'.
+#' @return \code{\link[RstoxData]{BioticData}} with converted lengths.
+#' @export
+ConvertLengthBiotic <- function(BioticData, LengthConversionTable, TargetLengthMeasurement=character()){
+  
+  if (!isGiven(TargetLengthMeasurement)){
+    stop("'TargetLengthMeasurement' must be provided.")
+  }
+  if (!is.LengthConversionTable(LengthConversionTable)){
+    stop("invalid LengthConversionTable")
+  }
+  
+  for (file in names(BioticData)){
+    if ("catchsample" %in% names(BioticData[[file]]) &
+        "individual" %in% names(BioticData[[file]]) &
+        "catchcategory" %in% names(BioticData[[file]]$catchsample) &
+        "lengthmeasurement" %in% names(BioticData[[file]]$catchsample) &
+        "length" %in% names(BioticData[[file]]$individual)){
+      
+      indCatch <- merge(BioticData[[file]]$catchsample, BioticData[[file]]$individual, by=names(BioticData[[file]]$catchsample)[names(BioticData[[file]]$catchsample) %in% names(BioticData[[file]]$individual)])
+      missing <- unique(indCatch[!is.na(indCatch$length) & is.na(indCatch$lengthmeasurement), c("startyear", "missiontype", "platform", "missionnumber", "serialnumber", "catchsampleid"), with=F])
+      if (nrow(missing)>0){
+        for (i in 1:nrow(missing)){
+          stoxWarning(paste("Length measurements found for 'catchsample' without 'lengthmeasurement' set: ", getBioticCatchSampleAdress(missing[i,])))          
+        }
+        stop("Could not convert length for unkown length measurement for individuals.")
+      }
+      
+      speciesInData <- unique(BioticData[[file]]$catchsample$catchcategory)
+      for (species in speciesInData){
+        spectab <- LengthConversionTable[LengthConversionTable$Species == species,]
+        
+        #locate individuals of species
+        catchKeys <- names(BioticData[[file]]$catchsample)[names(BioticData[[file]]$catchsample) %in% names(BioticData[[file]]$individual)]
+        catchIds <- Reduce(BioticData[[file]]$catchsample[,catchKeys, with=F], f = paste)
+        catchIdsSpecies <- catchIds[BioticData[[file]]$catchsample$catchcategory == species]
+        indCatchIds <- Reduce(BioticData[[file]]$individual[,catchKeys, with=F], f = paste)
+        
+        for (cId in unique(catchIdsSpecies)){
+          measurement <- BioticData[[file]]$catchsample$lengthmeasurement[match(cId, catchIds)]
+          filterIndividual <- indCatchIds == cId & !is.na(BioticData[[file]]$individual$length)
+          
+          # no individuals measured, set measurment code if not NA
+          if (sum(filterIndividual)==0){
+            if (!is.na(BioticData[[file]]$catchsample$lengthmeasurement[match(cId, catchIds)])){
+              BioticData[[file]]$catchsample$lengthmeasurement[match(cId, catchIds)] <- TargetLengthMeasurement              
+            }
+          }
+          #individuals measured, but length measurement not set
+          else if (is.na(measurement)){
+            stop("Could not convert length for unkown length measurement for individuals.")
+          }
+          # individuals measured and conversion necessary
+          else if (measurement != TargetLengthMeasurement){
+            
+            if (!(measurement %in% spectab$MeasurementType)){
+              cs <- BioticData[[file]]$catchsample[match(cId, catchIds),]
+              stoxWarning(paste("'lengthmeasurment'", measurement, "found for 'catchsample':", getBioticCatchSampleAdress(cs[1,])))
+              stop(paste("Conversion parameters not found for length measurement", measurement, "for species", species))
+            }
+            
+            # set measurement code
+            BioticData[[file]]$catchsample$lengthmeasurement[match(cId, catchIds)] <- TargetLengthMeasurement
+            
+            # convert length
+            alpha <- spectab$Alpha[match(measurement, spectab$MeasurementType)]
+            beta <- spectab$Beta[match(measurement, spectab$MeasurementType)]
+            BioticData[[file]]$individual$length[filterIndividual] <- 0.01*alpha + beta*BioticData[[file]]$individual$length[filterIndividual]
+          }
+        }
+      }
+    }
+  }
+  
+  return(BioticData)
+}
+
 #' Convert weights Biotic
 #' @description 
-#'  Convert weights to round weights.
+#'  Convert weights to approximate weight for desired product type.
 #' @details 
 #'  Different products of fish may be measured and round weight (live weight)
 #'  or some other product type may be approximated by multiplying with a scalar conversion factor.
 #'  
-#'  For records where the variable 'catchcategory' on the table 'catchsample' matches the 'Species' variable in 'Translation'
-#'  this function converts weights to desired product type ('TargetProductType') by matching 'producttype'-variables to 'ProductType' in 'Translation'.
+#'  For records where the variable 'catchcategory' on the table 'catchsample' matches the 'Species' variable in 'WeightConversionTable'
+#'  this function converts weights to desired product type ('TargetProductType') by matching 'producttype'-variables to 'ProductType' in 'WeightConversionTable'.
 #'  The following weights may be converted, depending on the parameter 'ConversionType':
 #'  \describe{
 #'   \item{'All' or 'CatchWeights'}{'catchweight' is converted based on 'catchproducttype' both on the table 'catchsample'}
@@ -150,7 +256,7 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVa
 #' @param TargetProductType The desired producttype. Typically the code for Round fish.
 #' @return \code{\link[RstoxData]{BioticData}} with converted weights.
 #' @export
-ConvertWeightsBiotic <- function(BioticData, ConversionType=c("All", "CatchWeights", "IndividualWeight"), WeightConversionTable, TargetProductType=character()){
+ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeights", "IndividualWeight"), WeightConversionTable, TargetProductType=character()){
   
   ConversionType <- match.arg(ConversionType, ConversionType)
   
@@ -1162,6 +1268,55 @@ DefineStockSplittingParamteres <- function(processData, DefinitionMethod=c("Reso
     stop(paste("DefinitionMethod", DefinitionMethod, "not supported."))
   }
 }
+
+#' Define Length Conversion Parameters
+#' @description 
+#'  Define length conversion parameters for approximating one type of length measurement from measurments of another type,
+#'  based on a linear regression fit between measurement types. E.g. calculating 'total length' from measured 'fork length'.
+#' @details 
+#'  For DefinitionMethod 'ResourceFile':
+#'  Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
+#'  \describe{
+#'  \item{Column 1: 'Description'}{Free-text description of the product}
+#'  \item{Column 2: 'Species'}{Identifier for the species that the conversion applies to}
+#'  \item{Column 3: 'MeasurmentType'}{Identifier for the type of length measurement of the measured length}
+#'  \item{Column 4: 'Alpha'}{scalar value representing the intercept (in cm) of a linear regression fit between length measurements.}
+#'  \item{Column 5: 'Beta'}{scalar value representing the slope of a linear regression fit between length measurements.}
+#'  }
+#'  See also \code{\link[RstoxFDA]{LengthConversionTable}}
+#'  
+#' @param processData \code{\link[RstoxFDA]{LengthConversionTable}} as returned from this function
+#' @param DefinitionMethod 'ResourceFile'. See details.
+#' @param FileName path to resource file
+#' @param UseProcessData Bypasses execution of function, if TRUE, and simply returns argument 'processData'
+#' @return \code{\link[RstoxFDA]{LengthConversionTable}}
+#' @export
+DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("ResourceFile"), FileName, UseProcessData=F){
+  
+  if (UseProcessData){
+    return(processData)
+  }
+  
+  encoding <- "UTF-8"
+  
+  if (DefinitionMethod == "ResourceFile"){
+    tab <- readTabSepFile(FileName,
+                          col_types = "cccdd",
+                          col_names = c("Description", "Species", "MeasurementType", "Alpha", "Beta"),
+                          encoding = encoding)
+    
+    dups <- tab[duplicated(tab[,c("Species", "MeasurementType"), with=F])]
+    if (nrow(dups) > 0){
+      stop("File contains duplicate definitions for length measurements (MeasurementType): ", paste(paste(dups$Species, dups$MeasurementType, sep="-"), collapse=","))
+    }
+    
+    return(tab)
+  }
+  else{
+    stop(paste("DefinitionMethod", DefinitionMethod, "is not supported"))
+  }
+}
+
 
 #' Define Weight Conversion Factors
 #' @description 

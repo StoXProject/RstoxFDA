@@ -60,5 +60,28 @@
   				]
   			}
   		]
+  	},
+      "LengthConversionTable": {
+  		"$schema": "http://json-schema.org/draft-04/schema#",
+  		"type": "array",
+  		"items": [
+  			{
+  				"type": "object",
+  				"properties": {
+  					"Description": { "type": "string"},
+  					"Species": { "type": "string"},
+  					"LengthMeasurement": { "type": "string"},
+  					"Alpha": { "type": "number"},
+  					"Beta": { "type": "number"}
+  				},
+  				"required": [
+  					"Description",
+  					"Species",
+  					"LengthMeasurement",
+					"Alpha",
+					"Beta"
+  				]
+  			}
+  		]
   	}
 }
