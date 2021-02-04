@@ -146,7 +146,7 @@ getBioticCatchSampleAdress <- function(tab){
 #'  For bioticdata that does not conform to this, no modifications are done.
 #' @param BioticData \code{\link[RstoxData]{BioticData}} for which lengths should be converted
 #' @param LengthConversionTable \code{\link[RstoxFDA]{LengthConversionTable}} with parameters for converting lengths to 'TargetLengthMeasurement'.
-#' @param TargetProductType The desired producttype. Typically the code for 'total length'.
+#' @param TargetLengthMeasurement The desired length measurement. Typically the code for 'total length'.
 #' @return \code{\link[RstoxData]{BioticData}} with converted lengths.
 #' @export
 ConvertLengthBiotic <- function(BioticData, LengthConversionTable, TargetLengthMeasurement=character()){

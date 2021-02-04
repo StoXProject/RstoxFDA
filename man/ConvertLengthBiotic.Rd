@@ -15,7 +15,7 @@ ConvertLengthBiotic(
 
 \item{LengthConversionTable}{\code{\link[RstoxFDA]{LengthConversionTable}} with parameters for converting lengths to 'TargetLengthMeasurement'.}
 
-\item{TargetProductType}{The desired producttype. Typically the code for 'total length'.}
+\item{TargetLengthMeasurement}{The desired length measurement. Typically the code for 'total length'.}
 }
 \value{
 \code{\link[RstoxData]{BioticData}} with converted lengths.
