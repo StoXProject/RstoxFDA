@@ -760,7 +760,7 @@ is.AgeErrorMatrix <- function(AgeErrorMatrix){
   return(TRUE)
 }
 
-#' Stock splitting parameters (StockSplittingParamteres)
+#' Stock splitting parameters (StockSplittingParameters)
 #'
 #' @description
 #'  Table (\code{\link[data.table]{data.table}})
@@ -795,28 +795,28 @@ is.AgeErrorMatrix <- function(AgeErrorMatrix){
 #'
 #'  The data table contains only one row.
 #'
-#' @name StockSplittingParamteres
+#' @name StockSplittingParameters
 #'
 NULL
 
-#' Check if argument is StockSplittingParamteres
+#' Check if argument is StockSplittingParameters
 #' @description
-#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParamteres}}
-#' @param StockSplittingParamteres argument to be checked for data conformity
-#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParameters}}
+#' @param StockSplittingParameters argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParameters}}
 #' @export
-is.StockSplittingParamteres <- function(StockSplittingParamteres){
-  if (!data.table::is.data.table(StockSplittingParamteres)){
+is.StockSplittingParameters <- function(StockSplittingParameters){
+  if (!data.table::is.data.table(StockSplittingParameters)){
     return(FALSE)
   }
   if (!all(c("StockNameCC", "StockNameS", "ProbabilityType1As1",
              "ProbabilityType1As5", "ProbabilityType2As2",
              "ProbabilityType2As4",	"ProbabilityType4As2",
              "ProbabilityType4As4",	"ProbabilityType5As1",
-             "ProbabilityType5As5") %in% names(StockSplittingParamteres))){
+             "ProbabilityType5As5") %in% names(StockSplittingParameters))){
     return(FALSE)
   }
-  if (nrow(StockSplittingParamteres) != 1){
+  if (nrow(StockSplittingParameters) != 1){
     return(FALSE)
   }
   
@@ -827,28 +827,28 @@ is.StockSplittingParamteres <- function(StockSplittingParamteres){
     return(TRUE)
   }
   
-  if (!prob(StockSplittingParamteres$ProbabilityType1As1)){
+  if (!prob(StockSplittingParameters$ProbabilityType1As1)){
     return(FALSE)
   }
-  if (!prob(StockSplittingParamteres$ProbabilityType1As5)){
+  if (!prob(StockSplittingParameters$ProbabilityType1As5)){
     return(FALSE)
   }
-  if (!prob(StockSplittingParamteres$ProbabilityType2As2)){
+  if (!prob(StockSplittingParameters$ProbabilityType2As2)){
     return(FALSE)
   }
-  if (!prob(StockSplittingParamteres$ProbabilityType2As4)){
+  if (!prob(StockSplittingParameters$ProbabilityType2As4)){
     return(FALSE)
   }
-  if (!prob(StockSplittingParamteres$ProbabilityType4As2)){
+  if (!prob(StockSplittingParameters$ProbabilityType4As2)){
     return(FALSE)
   }
-  if (!prob(StockSplittingParamteres$ProbabilityType4As4)){
+  if (!prob(StockSplittingParameters$ProbabilityType4As4)){
     return(FALSE)
   }
-  if (!prob(StockSplittingParamteres$ProbabilityType5As1)){
+  if (!prob(StockSplittingParameters$ProbabilityType5As1)){
     return(FALSE)
   }
-  if (!prob(StockSplittingParamteres$ProbabilityType5As5)){
+  if (!prob(StockSplittingParameters$ProbabilityType5As5)){
     return(FALSE)
   }
   
@@ -859,10 +859,10 @@ is.StockSplittingParamteres <- function(StockSplittingParamteres){
 #' @export
 stoxFunctionAttributes <- list(
   
-  DefineStockSplittingParamteres = list(
+  DefineStockSplittingParameters = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
-    functionOutputDataType = "StockSplittingParamteres",
+    functionOutputDataType = "StockSplittingParameters",
     functionParameterFormat = list(
       FileName = "filePath"
     ),
@@ -1125,7 +1125,7 @@ stoxFunctionAttributes <- list(
       CarEffect = list(
         UseCarEffect = TRUE
       ),
-      StockSplittingParamteres = list(
+      StockSplittingParameters = list(
         UseStockSplitting = TRUE
       )
     )

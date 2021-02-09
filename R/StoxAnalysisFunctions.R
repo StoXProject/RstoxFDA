@@ -119,9 +119,9 @@ warnMissingCovariateStoxBiotic <- function(varnames, StoxBioticData){
 #'  \code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
 #'  mandatory if UseAgingError is TRUE.
 #' @param UseStockSplitting
-#'  If TRUE, models will be condigured to provide estimates for each of two stocks based on otholitt-typing. See \code{\link[RstoxFDA]{StockSplittingParamteres}}.
-#' @param StockSplittingParamteres
-#'  Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParamteres}}.
+#'  If TRUE, models will be condigured to provide estimates for each of two stocks based on otholitt-typing. See \code{\link[RstoxFDA]{StockSplittingParameters}}.
+#' @param StockSplittingParameters
+#'  Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParameters}}.
 #' @param MinAge
 #'  optional, must match dimensions of any 'AgeErrorMatrix'.
 #'  If not provided it will be derived from data.
@@ -154,17 +154,17 @@ warnMissingCovariateStoxBiotic <- function(varnames, StoxBioticData){
 #'  \code{\link[RstoxFDA]{AddGearGroupStoxBiotic}}, 
 #'  and \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for making 'GearGroup' part of the cell definition.
 #'  \code{\link[RstoxFDA]{DefineAgeErrorMatrix}} for making an age-error matrix available for the Reca-analysis.
-#'  \code{\link[RstoxFDA]{DefineStockSplittingParamteres}} for configuring stock-splitting parameters, 
+#'  \code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters, 
 #'  and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, UseStockSplitting=F, StockSplittingParamteres, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, UseStockSplitting=F, StockSplittingParameters, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
   #expose as parameter when implemented
   ContinousEffect<-NULL
   
   CellEffect <- match.arg(CellEffect, CellEffect)
   
   if (!UseStockSplitting){
-    StockSplittingParamteres <- NULL
+    StockSplittingParameters <- NULL
   }
   
   if (!UseAgingError){
@@ -329,11 +329,11 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
                          interaction = interaction)
   
   # stock splitting not handled by recawrap
-  if (!is.null(StockSplittingParamteres)){
+  if (!is.null(StockSplittingParameters)){
     recaObject$CovariateMaps$StockSplitting <- list()
-    recaObject$CovariateMaps$StockSplitting$StockNameCC <- StockSplittingParamteres$StockNameCC
-    recaObject$CovariateMaps$StockSplitting$StockNameS <- StockSplittingParamteres$StockNameS
-    recaObject$AgeLength$CCerrorList <- convertStockSplittingParameters2reca(StockSplittingParamteres)
+    recaObject$CovariateMaps$StockSplitting$StockNameCC <- StockSplittingParameters$StockNameCC
+    recaObject$CovariateMaps$StockSplitting$StockNameS <- StockSplittingParameters$StockNameS
+    recaObject$AgeLength$CCerrorList <- convertStockSplittingParameters2reca(StockSplittingParameters)
   }
   
   if (UseStockSplitting){

@@ -24,7 +24,7 @@ expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData,
 
 
 context("PrepRecaEstimate: StocSplitting")
-manual <- DefineStockSplittingParamteres(DefinitionMethod = "FunctionParameters",
+manual <- DefineStockSplittingParameters(DefinitionMethod = "FunctionParameters",
                                          StockNameCC="S1", StockNameS="S2", ProbabilityType1As1=.8,
                                          ProbabilityType1As5=.2, ProbabilityType2As2=.6,
                                          ProbabilityType2As4=.4,	ProbabilityType4As2=.4,
@@ -37,16 +37,16 @@ StoxBioticData$Individual$otolithtype <- c(rep(c(1,5), 1045), c(1,5,1))
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
 
-prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseStockSplitting=T, StockSplittingParamteres=manual)
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseStockSplitting=T, StockSplittingParameters=manual)
 expect_true(prep$GlobalParameters$GlobalParameters$CC)
 expect_true(prep$GlobalParameters$GlobalParameters$CCerror)
-expect_true(is.StockSplittingParamteres(prep$AgeLength$StockSplittingParameters))
+expect_true(is.StockSplittingParameters(prep$AgeLength$StockSplittingParameters))
 expect_true(is.null(prep$AgeLength$CCerrorList))
 fpath <- makeTempDirReca()
 param <- ParameterizeRecaModels(prep, 10, 100, ResultDirectory = fpath)
 result <- RunRecaModels(param, StoxLandingData = StoxLandingData)
 removeTempDirReca(fpath)
-expect_true(is.StockSplittingParamteres(param$AgeLength$StockSplittingParameters))
+expect_true(is.StockSplittingParameters(param$AgeLength$StockSplittingParameters))
 expect_true(is.null(prep$AgeLength$CCerrorList))
 expect_equal(param$AgeLength$StockSplittingParameters, manual)
 expect_true(is.RecaCatchAtAge(result))

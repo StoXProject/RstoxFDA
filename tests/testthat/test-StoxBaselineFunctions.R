@@ -352,26 +352,26 @@ expect_error(DefineAgeErrorMatrix(FileName = ageerorfile),"Malformed resource fi
 
 
 
-context("test-StoxBaselineFunctions: DefineStockSplittingParamteres")
+context("test-StoxBaselineFunctions: DefineStockSplittingParameters")
 classerorfile <- system.file("testresources","classificationError.txt", package="RstoxFDA")
-classerror <- DefineStockSplittingParamteres(FileName = classerorfile)
+classerror <- DefineStockSplittingParameters(FileName = classerorfile)
 
-expect_true(is.StockSplittingParamteres(classerror))
+expect_true(is.StockSplittingParameters(classerror))
 expect_equal(nrow(classerror), 1)
 expect_equal(ncol(classerror), 10)
 
 context("test-StoxBaselineFunctions: DefineClassificationError useProcessdata")
-classNULL <- DefineStockSplittingParamteres(NULL, FileName = classerorfile, UseProcessData = T)
+classNULL <- DefineStockSplittingParameters(NULL, FileName = classerorfile, UseProcessData = T)
 expect_true(is.null(classNULL))
 
 context("test-StoxBaselineFunctions: DefineClassificationError functionparamters")
-manual <- DefineStockSplittingParamteres(DefinitionMethod = "FunctionParameters",
+manual <- DefineStockSplittingParameters(DefinitionMethod = "FunctionParameters",
                                StockNameCC="S1", StockNameS="S2", ProbabilityType1As1=.8,
                                ProbabilityType1As5=.2, ProbabilityType2As2=.6,
                                ProbabilityType2As4=.4,	ProbabilityType4As2=.4,
                                ProbabilityType4As4=.6,	ProbabilityType5As1=.2,
                                ProbabilityType5As5=.8)
-expect_true(is.StockSplittingParamteres(manual))
+expect_true(is.StockSplittingParameters(manual))
 
 context("test-StoxBaselineFunctions: appendTemporal")
 temp <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10","01-12"))

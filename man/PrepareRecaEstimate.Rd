@@ -15,7 +15,7 @@ PrepareRecaEstimate(
   UseAgingError = F,
   AgeErrorMatrix,
   UseStockSplitting = F,
-  StockSplittingParamteres,
+  StockSplittingParameters,
   CellEffect = c("Off", "All"),
   MinAge = integer(),
   MaxAge = integer(),
@@ -48,9 +48,9 @@ Identifies which values of the carEffect are to be considered as neighbours.}
 \item{AgeErrorMatrix}{\code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
 mandatory if UseAgingError is TRUE.}
 
-\item{UseStockSplitting}{If TRUE, models will be condigured to provide estimates for each of two stocks based on otholitt-typing. See \code{\link[RstoxFDA]{StockSplittingParamteres}}.}
+\item{UseStockSplitting}{If TRUE, models will be condigured to provide estimates for each of two stocks based on otholitt-typing. See \code{\link[RstoxFDA]{StockSplittingParameters}}.}
 
-\item{StockSplittingParamteres}{Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParamteres}}.}
+\item{StockSplittingParameters}{Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParameters}}.}
 
 \item{CellEffect}{Configures the cell effect. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
 Any CAR-effect is always included in the cell effect.}
@@ -115,6 +115,6 @@ Parameters are obtained for 'cells' using \code{\link[RstoxFDA]{ParameterizeReca
  \code{\link[RstoxFDA]{AddGearGroupStoxBiotic}}, 
  and \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for making 'GearGroup' part of the cell definition.
  \code{\link[RstoxFDA]{DefineAgeErrorMatrix}} for making an age-error matrix available for the Reca-analysis.
- \code{\link[RstoxFDA]{DefineStockSplittingParamteres}} for configuring stock-splitting parameters, 
+ \code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters, 
  and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
 }

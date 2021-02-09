@@ -40,5 +40,5 @@ For DefinitionMethod 'ResourceFile':
  Missing values for WeightFactor are interpreted as NA, and will result in NA for weights after conversion.
 }
 \seealso{
-\code{\link[rstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.
+\code{\link[RstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.
 }

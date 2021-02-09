@@ -1235,7 +1235,7 @@ DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile")
 
 #' Read Stock splitting parameters from file
 #' @noRd
-readStockSplittingParamteres <- function(resourceFilePath, encoding){
+readStockSplittingParameters <- function(resourceFilePath, encoding){
   tab <- readTabSepFile(resourceFilePath,
                         col_types = "ccdddddddd",
                         col_names = c("StockNameCC", "StockNameS", "ProbabilityType1As1",
@@ -1252,7 +1252,7 @@ readStockSplittingParamteres <- function(resourceFilePath, encoding){
   return(tab)
 }
 
-#' checks that probabilities are valid for StockSplittingParamteres
+#' checks that probabilities are valid for StockSplittingParameters
 #' report specific errors
 #' @noRd
 checkProbabilities <- function(tab, tolerance=1e-10){
@@ -1274,7 +1274,7 @@ checkProbabilities <- function(tab, tolerance=1e-10){
   if (!sumToOne(c(tab$ProbabilityType5As1, tab$ProbabilityType5As5))){
     stop("Parameters 'ProbabilityType5As1' and ProbabilityType5As5' must sum to one")
   }
-  if (!is.StockSplittingParamteres(tab)){
+  if (!is.StockSplittingParameters(tab)){
     stop("The chosen file does not form a valid stock-splitting specifciation.")
   }
 }
@@ -1286,29 +1286,29 @@ checkProbabilities <- function(tab, tolerance=1e-10){
 #'  
 #' @details
 #'  For DefinitionMethod 'ResourceFile', definitions are read from a UTF-8 encoded tab separated file with headers and one row
-#'  with headers corresponding to column names in \code{\link[RstoxFDA]{StockSplittingParamteres}}.
-#'  see \code{\link[RstoxFDA]{StockSplittingParamteres}} for further explanation on the coding system.
+#'  with headers corresponding to column names in \code{\link[RstoxFDA]{StockSplittingParameters}}.
+#'  see \code{\link[RstoxFDA]{StockSplittingParameters}} for further explanation on the coding system.
 #'  
 #'  For DefinitionMethod 'FunctionParameters' defintions are constructed from parameters to this function.
 #'  
 #' @param processData data.table() as returned from this function
 #' @param DefinitionMethod 'ResourceFile' or 'FunctionParameters', see details.
 #' @param FileName path to resource file
-#' @param StockNameCC Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
-#' @param StockNameS Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
-#' @param ProbabilityType1As1 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
-#' @param ProbabilityType5As1 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
-#' @param ProbabilityType2As2 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
-#' @param ProbabilityType4As2 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
-#' @param ProbabilityType2As4 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
-#' @param ProbabilityType4As4 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
-#' @param ProbabilityType1As5 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
-#' @param ProbabilityType5As5 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
+#' @param StockNameCC Variable for \code{\link[RstoxFDA]{StockSplittingParameters}}
+#' @param StockNameS Variable for \code{\link[RstoxFDA]{StockSplittingParameters}}
+#' @param ProbabilityType1As1 Variable for \code{\link[RstoxFDA]{StockSplittingParameters}}
+#' @param ProbabilityType5As1 Variable for \code{\link[RstoxFDA]{StockSplittingParameters}}
+#' @param ProbabilityType2As2 Variable for \code{\link[RstoxFDA]{StockSplittingParameters}}
+#' @param ProbabilityType4As2 Variable for \code{\link[RstoxFDA]{StockSplittingParameters}}
+#' @param ProbabilityType2As4 Variable for \code{\link[RstoxFDA]{StockSplittingParameters}}
+#' @param ProbabilityType4As4 Variable for \code{\link[RstoxFDA]{StockSplittingParameters}}
+#' @param ProbabilityType1As5 Variable for \code{\link[RstoxFDA]{StockSplittingParameters}}
+#' @param ProbabilityType5As5 Variable for \code{\link[RstoxFDA]{StockSplittingParameters}}
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
-#' @return \code{\link[RstoxFDA]{StockSplittingParamteres}}.
-#' @seealso \code{\link[RstoxFDA]{PrepareReceEstimate}} for use of stock-splitting parameters in Reca-estimation.
+#' @return \code{\link[RstoxFDA]{StockSplittingParameters}}.
+#' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of stock-splitting parameters in Reca-estimation.
 #' @export
-DefineStockSplittingParamteres <- function(processData, DefinitionMethod=c("ResourceFile", "FunctionParameters"), FileName=character(),
+DefineStockSplittingParameters <- function(processData, DefinitionMethod=c("ResourceFile", "FunctionParameters"), FileName=character(),
                                            StockNameCC=character(), StockNameS=character(), ProbabilityType1As1=numeric(),
                                            ProbabilityType5As1=numeric(), ProbabilityType2As2=numeric(),
                                            ProbabilityType4As2=numeric(),	ProbabilityType2As4=numeric(),
@@ -1324,7 +1324,7 @@ DefineStockSplittingParamteres <- function(processData, DefinitionMethod=c("Reso
   
   if (DefinitionMethod == "ResourceFile"){
     encoding <- "UTF-8"
-    tab <- readStockSplittingParamteres(FileName, encoding)
+    tab <- readStockSplittingParameters(FileName, encoding)
     checkProbabilities(tab)
     return(tab)
   }
@@ -1430,7 +1430,7 @@ DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("Re
 #' @param FileName path to resource file
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{WeightConversionTable}}
-#' @seealso \code{\link[rstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.
+#' @seealso \code{\link[RstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.
 #' @export
 DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("ResourceFile"), FileName, UseProcessData=F){
   
