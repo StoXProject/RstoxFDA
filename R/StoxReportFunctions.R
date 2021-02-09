@@ -119,6 +119,7 @@ setAgeGroup <- function(AgeReport){
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @return \code{\link[RstoxFDA]{ReportRecaCatchAtAgeData}}
+#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
 ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
   
@@ -158,6 +159,7 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @return \code{\link[RstoxFDA]{ReportRecaWeightAtAgeData}}
+#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
 ReportRecaWeightAtAge <- function(RecaCatchAtAge){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
@@ -174,6 +176,7 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge){
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @return \code{\link[RstoxFDA]{ReportRecaLengthAtAgeData}}
+#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
 ReportRecaLengthAtAge <- function(RecaCatchAtAge){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))

@@ -18,7 +18,7 @@ DefineLengthConversionParameters(
 
 \item{FileName}{path to resource file}
 
-\item{UseProcessData}{Bypasses execution of function, if TRUE, and simply returns argument 'processData'}
+\item{UseProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
 }
 \value{
 \code{\link[RstoxFDA]{LengthConversionTable}}
@@ -38,4 +38,7 @@ For DefinitionMethod 'ResourceFile':
  \item{Column 5: 'Beta'}{scalar value representing the slope of a linear regression fit between length measurements.}
  }
  See also \code{\link[RstoxFDA]{LengthConversionTable}}
+}
+\seealso{
+\code{\link[RstoxFDA]{ConvertLengthBiotic}} for applying length conversion to data
 }

@@ -523,6 +523,6 @@ convertStockSplittingParameters2stox <- function(CCerrorList, covariateMaps){
                     ProbabilityType4As4 = CCerrorList$ptype4.S,
                     ProbabilityType1As5 = CCerrorList$ptype5.CC,
                     ProbabilityType5As5 = CCerrorList$ptype5.S)
-  stopifnot(is.StockSplittingParamteres(tab))
+  stopifnot(is.StockSplittingParameters(tab))
   return(tab)
 }

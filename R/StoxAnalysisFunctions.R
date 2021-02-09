@@ -70,48 +70,58 @@ warnMissingCovariateStoxBiotic <- function(varnames, StoxBioticData){
 #' @description
 #'  Performs data checks and data conversions,
 #'  and stores some data-related parameters in preparation for running
-#'  \code{\link[Reca]{eca.estimate}}
-#'  via \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
+#'  \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
 #' @details 
-#'  A covariate indentifying haul or landing is always included in Reca. Do not add haul-identifiers as covariates.
+#'  Parameters are obtained for 'cells' using \code{\link[RstoxFDA]{ParameterizeRecaModels}} 
+#'  and and applied to landings-data when predicting total catch-at-age using \code{\link[RstoxFDA]{RunRecaModels}}.
 #'  
-#'  Any variable provided as 'FixedEffects' or 'CarEffect' must exist and be coded coherently in
-#'  bot 'StoxBioticData' and 'StoxLandingData'
-#'
+#'  'Cells' are defined by all effects / covariates that are specified for both 'StoxLandingData' and 'StoxBioticData' 
+#'  (see parameters 'FixedEffects', 'RandomEffects', and 'CarEffect'). That is, any variable that are to be included in
+#'  the cell definition must always exist (not containing NAs) 
+#'  and be coded coherently in both 'StoxBioticData' and 'StoxLandingData'.
+#'  
+#'  Only effects that are part of the cell definition may be specified as 'Fixed effect' or 'CAR effect'.
+#'  For fixed effect all values / levels of the effect must be sampled.
+#'  For CAR effect, cell or neighbouring cells ('CarNeighbours') must be sampled
+#'  
+#'  Any variable in samples 'StoxBioticData' may be included as a random effect as long as it is always observed
+#'  (not containing NAs).
+#' 
+#'  A random effect identifying haul / landing is always included in Reca. Do not add haul-identifiers as covariates.
+#'  
 #'  The option UseStockSplitting requires that a Variable 'otolithtype' is added to
 #'  the table 'Individual' in StoxBioticData.
 #'
 #' @param StoxBioticData
 #'  \code{\link[RstoxData]{StoxBioticData}} data with samples from fisheries
-#'  and approriate columns appended for identifying corresponding landings.
+#'  and approriate columns appended for specifying cells. See details.
 #' @param StoxLandingData
 #'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
-#'  and approriate columns appended for identifying corresponding samples
+#'  and approriate columns appended for specifying cells. See details.
 #' @param FixedEffects
-#'  optional, vector identifying column names that should be treated as fixed effects. Defaults to no fixed effects.
+#'  optional, vector identifying column names that should be treated as fixed effects. See details
 #' @param RandomEffects
-#'  optional, vector identifying column names that should be treated as random effects. Defaults to no random effects.
+#'  optional, vector identifying column names that should be treated as random effects. See details
 #' @param UseCarEffect
-#'  logical indicating whether CAR-effect (conditional autoregressive effect) should be used.
+#'  if TRUE, CAR-effect (conditional autoregressive effect) will be used.
 #' @param CarEffect
 #'  optional, character identifying the column name that should be treated as CAR-effect.
-#'  Mandatory if CAR-effect is TRUE
-#'  (conditional autoregressive effect).
+#'  Mandatory if 'UseCarEffect' is TRUE.
 #' @param CarNeighbours
 #'  \code{\link[RstoxFDA]{CarNeighbours}}, mandatory if 'carEffect' is given.
 #'  Identifies which values of the carEffect are to be considered as neighbours.
 #' @param CellEffect
-#'  Configures the cell effect. If 'All', an interaction term will be added with all covariates that exist in landings (whether they are fixed or random effects).
+#'  Configures the cell effect. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
 #'  Any CAR-effect is always included in the cell effect.
 #' @param UseAgingError 
-#'  If TRUE error-aging parameters will be incorporated in the model
+#'  If TRUE, aging, error parameters will be incorporated in the models.
 #' @param AgeErrorMatrix
 #'  \code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
 #'  mandatory if UseAgingError is TRUE.
 #' @param UseStockSplitting
-#'  If TRUE, models will be condigured to provide estimates for each of two stocks based on otholitt-typing. See \code{\link[RstoxFDA]{StockSplittingParamteres}}.
-#' @param StockSplittingParamteres
-#'  Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParamteres}}.
+#'  If TRUE, models will be condigured to provide estimates for each of two stocks based on otholitt-typing. See \code{\link[RstoxFDA]{StockSplittingParameters}}.
+#' @param StockSplittingParameters
+#'  Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParameters}}.
 #' @param MinAge
 #'  optional, must match dimensions of any 'AgeErrorMatrix'.
 #'  If not provided it will be derived from data.
@@ -128,15 +138,33 @@ warnMissingCovariateStoxBiotic <- function(varnames, StoxBioticData){
 #'  defaults to 1 representing Jan 1st.
 #'  encoding the day of the year when fish is consider to transition from one age to the next.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
+#' @seealso 
+#'  \code{\link[RstoxFDA]{ReportFdaSampling}} for inspecting the data availability for potential
+#'  cell definitions.
+#'  \code{\link[RstoxFDA]{ParameterizeRecaModels}}, 
+#'  and \code{\link[RstoxFDA]{RunRecaModels}} for parameterising and running the Reca-analysis.
+#'  \code{\link[RstoxBase]{DefineStratumPolygon}}, 
+#'  \code{\link[RstoxFDA]{AddStratumStoxBiotic}},
+#'  and \code{\link[RstoxFDA]{AddStratumStoxLanding}} for making 'Stratum' part of the cell definition,
+#'  and #'  \code{\link[RstoxFDA]{DefineCarNeighbours}}, for maing 'Stratum' available as a CAR-effect
+#'  \code{\link[RstoxFDA]{DefinePeriod}}, 
+#'  \code{\link[RstoxFDA]{AddPeriodStoxBiotic}}, 
+#'  and \code{\link[RstoxFDA]{AddPeriodStoxLanding}} for making 'Period' part of the cell definition.
+#'  #'  \code{\link[RstoxData]{DefineTranslation}}, 
+#'  \code{\link[RstoxFDA]{AddGearGroupStoxBiotic}}, 
+#'  and \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for making 'GearGroup' part of the cell definition.
+#'  \code{\link[RstoxFDA]{DefineAgeErrorMatrix}} for making an age-error matrix available for the Reca-analysis.
+#'  \code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters, 
+#'  and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, UseStockSplitting=F, StockSplittingParamteres, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, UseStockSplitting=F, StockSplittingParameters, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
   #expose as parameter when implemented
   ContinousEffect<-NULL
   
   CellEffect <- match.arg(CellEffect, CellEffect)
   
   if (!UseStockSplitting){
-    StockSplittingParamteres <- NULL
+    StockSplittingParameters <- NULL
   }
   
   if (!UseAgingError){
@@ -301,11 +329,11 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
                          interaction = interaction)
   
   # stock splitting not handled by recawrap
-  if (!is.null(StockSplittingParamteres)){
+  if (!is.null(StockSplittingParameters)){
     recaObject$CovariateMaps$StockSplitting <- list()
-    recaObject$CovariateMaps$StockSplitting$StockNameCC <- StockSplittingParamteres$StockNameCC
-    recaObject$CovariateMaps$StockSplitting$StockNameS <- StockSplittingParamteres$StockNameS
-    recaObject$AgeLength$CCerrorList <- convertStockSplittingParameters2reca(StockSplittingParamteres)
+    recaObject$CovariateMaps$StockSplitting$StockNameCC <- StockSplittingParameters$StockNameCC
+    recaObject$CovariateMaps$StockSplitting$StockNameS <- StockSplittingParameters$StockNameS
+    recaObject$AgeLength$CCerrorList <- convertStockSplittingParameters2reca(StockSplittingParameters)
   }
   
   if (UseStockSplitting){
@@ -400,6 +428,8 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
 #' @return \code{\link[RstoxFDA]{RecaParameterData}} results from Reca Model Parameterization.
+#' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for model configuration, and data preparation for this function, and
+#'  \code{\link[RstoxFDA]{RunRecaModels}} for obtaining predictions / estimates from the Reca-models.
 #' @export
 ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=character(), Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric()){
   
@@ -507,8 +537,8 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #' @details
 #'  Parameters may be obtained with \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
 #'  If the function-paramter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
-#'  The parameter 'StoxLandingData' may differ from the landings used in parameterisation, 
-#'  as long as all not additional level for the model covariates are introduced.
+#'  The parameter 'StoxLandingData' may differ from the landings used in parameterisation (passed to \code{\link[RstoxFDA]{ParameterizeRecaModels}}), 
+#'  as long as all not additional values / levels for the model covariates / effects are introduced.
 #'  
 #'  If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'AggregationVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
 #' @param RecaParameterData Parameters for Reca models.
@@ -521,6 +551,10 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to seed stored in 'RecaParameterData'.
 #' @return \code{\link[RstoxFDA]{RecaCatchAtAge}}
+#' @seealso \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation,
+#'  \code{\link[RstoxFDA]{ReportRecaCatchAtAge}}, 
+#'  \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}, 
+#'  \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} for compiling reports of predictions / estimates.
 #' @export
 RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric()){
   

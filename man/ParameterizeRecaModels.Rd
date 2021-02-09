@@ -49,3 +49,7 @@ Runs estimation of parameters for Reca models. Invokes \code{\link[Reca]{eca.est
  and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
 }
 
+\seealso{
+\code{\link[RstoxFDA]{PrepareRecaEstimate}} for model configuration, and data preparation for this function, and
+ \code{\link[RstoxFDA]{RunRecaModels}} for obtaining predictions / estimates from the Reca-models.
+}

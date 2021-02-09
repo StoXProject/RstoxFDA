@@ -18,5 +18,16 @@ StoxBioticData with column 'GearGroup' appended. See \code{\link[RstoxData]{Stox
 Adds a column to StoxBioticData with gear groups
 }
 \details{
-The provided Translation should maps values ('Value' in Translation) for the variable 'Gear' ('VariableName' in Translation) in 'StoxBioticData' to a gear group ('NewValue').
+Gear groups are defined as translations from a gear code to a gear group.
+ The provided Translation should map values ('Value' in Translation) for the variable 'Gear'on the table 'Haul' in 'StoxBioticData' ('VariableName' in Translation) to a gear group ('NewValue' in Translation).
+ The gear group will be added to 'StoxBioticData' as the column 'GearGroup'
+ 
+ For comparison or co-analysis with landing data, a \code{\link[RstoxData]{Translation}} should be defined for \code{\link[RstoxData]{StoxLandingData}}
+ with the same gear groups.
+}
+\seealso{
+\code{\link[RstoxData]{DefineTranslation}} for configuring translation to gear groups, 
+ \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for similar function for landing data, 
+ \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'GearGroup' as an effect in Reca-estimation,
+ and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'GearGroup' as an aggregation variable when comparing sampling with landed volume.
 }
