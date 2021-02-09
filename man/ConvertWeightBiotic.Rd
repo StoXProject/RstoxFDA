@@ -51,3 +51,6 @@ Different products of fish may be measured and round weight (live weight)
  These variables are on these tables in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
  For bioticdata that does not conform to this, no modifications are done.
 }
+\seealso{
+\code{\link[RstoxFDA]{DefineWeightConversionFactor}} for configuration of weight conversion parameters.
+}

@@ -18,7 +18,7 @@ DefineWeightConversionFactor(
 
 \item{FileName}{path to resource file}
 
-\item{UseProcessData}{Bypasses execution of function, if TRUE, and simply returns argument 'processData'}
+\item{UseProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
 }
 \value{
 \code{\link[RstoxFDA]{WeightConversionTable}}
@@ -38,4 +38,7 @@ For DefinitionMethod 'ResourceFile':
  }
  
  Missing values for WeightFactor are interpreted as NA, and will result in NA for weights after conversion.
+}
+\seealso{
+\code{\link[rstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.
 }

@@ -128,9 +128,11 @@ getBioticCatchSampleAdress <- function(tab){
 
 #' Convert lengths Biotic
 #' @description 
-#'  Convert lengths to approximate values for a desired length measurement. Typically 'total length'
+#'  Convert lengths to approximate values for a desired length measurement. Typically 'total length'.
 #' @details 
-#'  Different length measurements may be defined for fish, such as 'total length' or 'fork length'.
+#'  Different length measurements may be defined for fish, such as 'total length', 'standard length' or 'fork length'.
+#'  For partially processed fish, only some measurements may be available, such as 'head-length'.
+#'  When desired length measurment is not measured,
 #'  'total length' or some other length measurement may be approximated by a regression model.
 #'  
 #'  For records where the variable 'catchcategory' on the table 'catchsample' matches the 'Species' variable in 'LengthConversionTable'
@@ -148,6 +150,7 @@ getBioticCatchSampleAdress <- function(tab){
 #' @param LengthConversionTable \code{\link[RstoxFDA]{LengthConversionTable}} with parameters for converting lengths to 'TargetLengthMeasurement'.
 #' @param TargetLengthMeasurement The desired length measurement. Typically the code for 'total length'.
 #' @return \code{\link[RstoxData]{BioticData}} with converted lengths.
+#' @seealso \code{\link[RstoxFDA]{DefineLengthConversionParameters}} for configuration of length parameters.
 #' @export
 ConvertLengthBiotic <- function(BioticData, LengthConversionTable, TargetLengthMeasurement=character()){
   
@@ -255,6 +258,7 @@ ConvertLengthBiotic <- function(BioticData, LengthConversionTable, TargetLengthM
 #' @param WeightConversionTable \code{\link[RstoxFDA]{WeightConversionTable}} with parameters for converting weights to 'TargetProductType'.
 #' @param TargetProductType The desired producttype. Typically the code for Round fish.
 #' @return \code{\link[RstoxData]{BioticData}} with converted weights.
+#' @seealso \code{\link[RstoxFDA]{DefineWeightConversionFactor}} for configuration of weight conversion parameters.
 #' @export
 ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeights", "IndividualWeight"), WeightConversionTable, TargetProductType=character()){
   
@@ -362,16 +366,17 @@ ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeight
 #' @description 
 #'  Sets start position based on area codes.
 #' @details 
-#'  Positions are appended in the columns 'latitudestart' and 'longitudestart' on 'fishstation' 
+#'  Positions are filled in the columns 'latitudestart' and 'longitudestart' on 'fishstation' 
 #'  whenever the value in the column 'system' on 'fishstation' is equal to the parameter 'System'.
-#'  These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
-#'  For bioticdata that does not conform to this, no modifications are done.
+#'  
+#'  When 'LocationVariable' is specified as 'None' area is looked up from 'AreaPosition', using the row where 'Location' is missing.
+#'  When 'LocationVariable' is specified as 'location', 'area' and 'location' in 'BioticData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 #'  
 #'  No modifications are done to rows that have missing values for 'system' or 'area' (or 'location', depending on the parameter 'LocationVariable').
 #'  Any rows with areas coded in another system than specified by the parameter 'System' will not be changed.
 #'  
-#'  When 'LocationVariable' is specified as 'None' area is looked up from 'AreaPosition', using the row where 'Location' is missing.
-#'  When 'LocationVariable' is specified as 'location', 'area' and 'location' in 'BioticData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
+#'  These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
+#'  For bioticdata that does not conform to this, no modifications are done.
 #'  
 #' @param BioticData \code{\link[RstoxData]{BioticData}} data for which positions should be set
 #' @param AreaPosition coordinates for Area and Location codes, see \code{\link[RstoxFDA]{AreaPosition}}
@@ -379,6 +384,7 @@ ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeight
 #' @param System identifies the area coding system used. Corresonds to the column 'system' on 'fishstation' in 'BioticData'.
 #' @param Overwrite if True any existing values in 'latitudestart' and 'longitudestart' will be overwritten. If False postions with both latitude and longitude will be kept as they were.
 #' @return \code{\link[RstoxData]{BioticData}}
+#' @seealso \code{\link[RstoxFDA]{DefineAreaPosition}} for configuring definitions of positions for area codes.
 #' @export
 SetAreaPositionsBiotic <- function(BioticData, AreaPosition, LocationVariable = c("None", "location"), System=character(), Overwrite=F){
   
@@ -539,13 +545,19 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 
 #' Add Period to StoxLandingData
 #' @description
-#'  Add a column 'Period' to StoxLandingData with a temporal category, such as 'quarter'.
+#'  Add a column 'Period' to StoxLandingData with a temporal category, such as quarters.
 #' @details 
+#'  'Period' will be added based on the column 'CatchDate' in 'StoxLandingData'.
 #'  Temporal definitions (\code{\link[RstoxFDA]{TemporalDefinition}}) may be produced by
 #'  \code{\link[RstoxFDA]{DefinePeriod}}
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated.
 #' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definiton of temporal category.
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
+#' @seealso 
+#'  \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
+#'  \code{\link[RstoxFDA]{AddStratumStoxBiotic}} for similar function for sample data, 
+#'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
+#'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
 #' @export
 AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition){
   
@@ -558,8 +570,6 @@ AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition){
     stop("Cannot add period when 'CatchDate' is missing for some rows.")
   }
   
-  
-  
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   stopifnot(is.TemporalDefinition(TemporalDefinition))
   StoxLandingData$Landing <- appendTemporal(StoxLandingData$Landing, columnName, TemporalDefinition, "CatchDate")
@@ -570,11 +580,17 @@ AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition){
 #' @description
 #'  Add a column 'Period' to 'Station' on StoxBioticData with a temporal category, such as 'quarter'.
 #' @details 
+#'  'Period' will be added based on the column 'DateTime' on the table 'Station' in 'StoxBioticData'.
+#'  
 #'  Temporal definitions (\code{\link[RstoxFDA]{TemporalDefinition}}) may be produced by
 #'  \code{\link[RstoxFDA]{DefinePeriod}}
-#' @param StoxBioticData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated.
+#' @param StoxBioticData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated with period.
 #' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definiton of temporal category.
 #' @return StoxBioticData with column appended. See \code{\link[RstoxData]{StoxBioticData}}.
+#'  \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
+#'  \code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data, 
+#'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
+#'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
 #' @export
 AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
   columnName="Period"
@@ -598,17 +614,22 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
 
 #' Adds Stratum to StoxLandingData
 #' @description
-#'  StoX function
 #'  Adds a column to StoxLandingData with the spatial strata each row belongs to.
 #' @details
 #'  The strata are added to the new column 'Stratum'.
+#'  
 #'  \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
 #'  these need to be added as columns 'Latitude' and 'Longitude' before calling this function.
 #'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions, based on area codes.
-#' @seealso \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for appending positions to \code{\link[RstoxData]{StoxLandingData}}.
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
+#' @seealso \code{\link[RstoxBase]{DefineStratumPolygon}} for configuring stratum definitions.
+#'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to landings,
+#'  \code{\link[RstoxFDA]{AddStratumStoxBiotic}} for similar function for sample data, 
+#'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Stratum' as an effect in Reca-estimation,
+#'  \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
+#'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
 #' @export
 AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon){
   
@@ -635,6 +656,11 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon){
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
 #' @return StoxBioticData with column appended to data.table 'Station'. See \code{\link[RstoxData]{StoxBioticData}}.
+#' @seealso \code{\link[RstoxBase]{DefineStratumPolygon}} for configuring stratum definitions.
+#'  \code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data, 
+#'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Stratum' as an effect in Reca-estimation,
+#'  \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
+#'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
 #' @export
 AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
   
@@ -684,10 +710,19 @@ appendGear <- function(table, gearcolumn, gearDefinition, colName){
 #' @description
 #'  Adds a column to StoxLandingData with gear groups
 #' @details 
-#'  The provided Translation should maps values ('Value' in Translation) for the variable 'Gear' ('VariableName' in Translation) in 'StoxBioticData' to a gear group ('NewValue').
+#'  Gear groups are defined as translations from a gear code to a gear group.
+#'  The provided Translation should map values ('Value' in Translation) for the variable 'Gear' in 'StoxBioticData' ('VariableName' in Translation) to a gear group ('NewValue' in Translation).
+#'  The gear group will be added to 'StoxLandingData' as the column 'GearGroup'
+#'  
+#'  For comparison or co-analysis with sample data, a \code{\link[RstoxData]{Translation}} should be defined for \code{\link[RstoxData]{StoxBioticData}}
+#'  with the same gear groups.
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated.
 #' @param Translation Translation table (\code{\link[RstoxData]{Translation}}). See details.
-#' @return StoxLandingData with column 'GearGroup' appended. See \code{\link[RstoxData]{StoxLandingData}}.
+#' @return \code{\link[RstoxData]{StoxLandingData}} with column 'GearGroup' appended.
+#' @seealso \code{\link[RstoxData]{DefineTranslation}} for configuring translation to gear groups, 
+#'  \code{\link[RstoxFDA]{AddGearGroupStoxBiotic}} for similar function for sample data, 
+#'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'GearGroup' as an effect in Reca-estimation,
+#'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'GearGroup' as an aggregation variable when comparing sampling with landed volume.
 #' @export
 AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
   if (!is.Translation(Translation)){
@@ -709,10 +744,19 @@ AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
 #' @description
 #'  Adds a column to StoxBioticData with gear groups
 #' @details 
-#'  The provided Translation should maps values ('Value' in Translation) for the variable 'Gear' ('VariableName' in Translation) in 'StoxBioticData' to a gear group ('NewValue').
+#'  Gear groups are defined as translations from a gear code to a gear group.
+#'  The provided Translation should map values ('Value' in Translation) for the variable 'Gear'on the table 'Haul' in 'StoxBioticData' ('VariableName' in Translation) to a gear group ('NewValue' in Translation).
+#'  The gear group will be added to 'StoxBioticData' as the column 'GearGroup'
+#'  
+#'  For comparison or co-analysis with landing data, a \code{\link[RstoxData]{Translation}} should be defined for \code{\link[RstoxData]{StoxLandingData}}
+#'  with the same gear groups.
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated.
 #' @param Translation Translation table (\code{\link[RstoxData]{Translation}}). See details.
 #' @return StoxBioticData with column 'GearGroup' appended. See \code{\link[RstoxData]{StoxBioticData}}.
+#' @seealso \code{\link[RstoxData]{DefineTranslation}} for configuring translation to gear groups, 
+#'  \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for similar function for landing data, 
+#'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'GearGroup' as an effect in Reca-estimation,
+#'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'GearGroup' as an aggregation variable when comparing sampling with landed volume.
 #' @export
 AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
   if (!is.Translation(Translation)){
@@ -740,17 +784,21 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
 #' @description 
 #'  Set start time to a fixed time for all stations.
 #' @details 
-#'  Set the column 'stationstarttime' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to a fixed time
-#'  'stationstarttime' is on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
-#'  For bioticdata that does not conform to this, no modifications are done.
+#'  Set the column 'stationstarttime' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to a fixed time.
+#'  
 #'  Setting a fixed time to stationstarttime facilitates conversion to \code{\link[RstoxData]{StoxBioticData}} 
 #'  using \code{\link[RstoxData]{StoxBiotic}}, and is applicable if hourly resolution of date and time is not necessary
 #'  for subsequent analysis.
+#'  
+#'  'stationstarttime' is on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
+#'  For bioticdata that does not conform to this, no modifications are done.
+#'  
 #' @param BioticData \code{\link[RstoxData]{BioticData}} data for which time should be set
 #' @param Time character encoding time. Defaults to 12:00:00Z if not given, otherwise provide 
 #'   UTC-time formatted as \code{\link[base]{strptime}}-string: \%H:\%M:\%SZ, e.g. 12:00:00Z
 #' @param Overwrite if True any existing values in stationstarttime will be overwritten.
 #' @return \code{\link[RstoxData]{BioticData}}
+#' @seealso \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
 #' @export
 SetTimeBiotic <- function(BioticData, Time=character(), Overwrite=F){
   if (!isGiven(Time)){
@@ -779,18 +827,21 @@ SetTimeBiotic <- function(BioticData, Time=character(), Overwrite=F){
 
 #' Set startdate Biotic
 #' @description 
-#'  Set start date from stop date. 
+#'  Set start date to stop date. 
 #' @details
 #'  Set the column 'stationstartdate' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}}
 #'  to the value of 'stationstopdate'.
-#'  These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
-#'  For bioticdata that does not conform to this, no modifications are done.
+#'  
 #'  Setting stationstartdate facilitates conversion to \code{\link[RstoxData]{StoxBioticData}} 
 #'  using \code{\link[RstoxData]{StoxBiotic}}, and is applicable if daily resolution of date and time is not critical
 #'  for subsequent analysis.
+#'  
+#'  These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
+#'  For bioticdata that does not conform to this, no modifications are done.
 #' @param BioticData \code{\link[RstoxData]{BioticData}} data for which time should be set
 #' @param Overwrite if True any existing values in stationstartdate will be overwritten.
 #' @return \code{\link[RstoxData]{BioticData}}
+#' @seealso \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
 #' @export
 SetStartDateBiotic <- function(BioticData, Overwrite=F){
  
@@ -813,23 +864,42 @@ SetStartDateBiotic <- function(BioticData, Overwrite=F){
 
 #' Define Periods
 #' @description
-#'  Define periods for grouping data based on date.
+#'  Define periods, temporal categories such as 'Quarter', 'Month' or some custom defintion.
 #' @details
-#'  The 'TemporalCategory'-options 'Quarter' and 'Month' produce seasonal definitions.
-#'  Seasonal definitions include dates
-#'  based on day and month, irrespective of year. Seasonal definitions also wrap around so that 
-#'  January is considered to follow December. 
+#'  Periods define an association between dates and a categorical variable definition,
+#'  such as 'Month', 'Quarter' or some custom definition.
 #'  
-#'  In order to make custom seasonal definitions,
-#'  use the TemporalCategory'-option 'Custom' without providing years in 'CustomPeriods': "DD-MM".
-#'  In order to make non-seasonal definitions for Quarter or Month, provide the as 'CustomPeriods'
-#'  for all years of interest. If years are provided categories are automatically extended to the entire year, if necesesarry.
+#'  Periods may be seasonal, which means that dates are associated with the categories based on 
+#'  day and month only. This distinction does not matter if all data is from the same year.
+#'  The 'TemporalCategory'-options 'Quarter' and 'Month' produce seasonal definitions, so 
+#'  that Jan 1st 2015 and Jan 1st 2016 belon to the same category (e.g. "Q1" if 'TemporalCategory'
+#'  is 'Quarter').
+#'  
+#'  In order to make custom seasonal definitions, use the TemporalCategory'-option 'Custom' 
+#'  without providing years in 'CustomPeriods': "DD-MM". Periods defined in this way will automatically
+#'  "wrap around" so that dates in January may grouped together with dates in December.
+#'  
+#'  In order to make non-seasonal definitions for Quarter or Month, provide the 'CustomPeriods'
+#'  for all years of interest on the format "DD-MM-YYYY". If years are provided the periods do not "wrap around"
+#'  and categories are automatically extended to the entire year, if necesesarry.
 #'  That is a category starting with 1. Jan is added if not present, and likewise a category ending with 31. Dec.
-#' @param processData \code{\link[RstoxFDA]{TemporalDefinition}} as returned from this function
+#'  
+#' @param processData \code{\link[RstoxFDA]{TemporalDefinition}} as returned from this function.
 #' @param TemporalCategory type of temporal category: 'Quarter', 'Month' or 'Custom', defaults to 'Quarter'
-#' @param CustomPeriods provided if temporalCategory is 'Custom', vector of strings formatted as DD-MM or DD-MM-YYYY, giving the start date of each temporal category.
-#' @param UseProcessData Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'
+#' @param CustomPeriods provide if temporalCategory is 'Custom', vector of strings formatted as DD-MM or DD-MM-YYYY, giving the start date of each temporal category. See 'details'
+#' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Temporal Categories, see: \code{\link[RstoxFDA]{TemporalDefinition}}.
+#' @seealso \code{\link[RstoxFDA]{AddPeriodStoxBiotic}} and \code{\link[RstoxFDA]{AddPeriodStoxLanding}} for adding Periods to data.
+#' @examples 
+#'  # Define seasonal periods quarter
+#'  DefinePeriod(TemporalCategory = "Quarter")
+#'  
+#'  # Define two periods "15th March - 15th Sep" and "15th Sep - 15th March"
+#'  DefinePeriod(TemporalCategory = "Custom", CustomPeriods = c("15-09", "15-03"))
+#' 
+#'  # Add years to speficiation to define four periods "15th March 2015 - 31st Dec 2015" ...
+#'  DefinePeriod(TemporalCategory = "Custom", CustomPeriods = c("15-09-2105", "15-03-2015"))
+#' 
 #' @export
 DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Custom"), CustomPeriods = character(), UseProcessData=F){
   
@@ -952,10 +1022,16 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
 
 #' Define Area Code Positions
 #' @description
-#'  StoX function
 #'  Define positions for areas of a spatial coding system.
 #' @details
-#'  For DefinitionMethod ResourceFile:
+#'  Defines an association between area codes and positions that represent that area code.
+#'  For example an area code could be associated with the centre of mass of the area, or
+#'  some other point within the area. This may be useful for providing approximate
+#'  coordinates when locations are identified by area codes. The soruce of the
+#'  area-position association may be a table or a appropriately formatted
+#'  polygon-definition (\code{\link[RstoxBase]{StratumPolygon}}). 
+#' 
+#'  For DefinitionMethod 'ResourceFile':
 #'  Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
 #'  \describe{
 #'  \item{Column 1: 'Area'}{Area code (key)}
@@ -964,18 +1040,19 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
 #'  \item{Column 4: 'Longitude'}{WGS84 Longitude, decimal degrees}
 #'  }
 #'  
-#'  For DefinitionMethod StratumPolygon:
+#'  For DefinitionMethod 'StratumPolygon':
 #'  Definitions are extracted from a \code{\link[RstoxBase]{StratumPolygon}}:
-#'  Area is derived from the column 'polygonName' in 'StratumPolygon'.
-#'  Location is encoded as missing.
-#'  Latitude and Longitude are the coordinates set for each polygon in 'StratumPolygon'.
+#'  'Area' in \code{\link[RstoxFDA]{AreaPosition}} is derived from the column 'polygonName' in \code{\link[RstoxBase]{StratumPolygon}}.
+#'  'Location' in \code{\link[RstoxFDA]{AreaPosition}} is encoded as missing.
+#'  'Latitude' and 'Longitude' in \code{\link[RstoxFDA]{AreaPosition}} are the coordinates set for each polygon in \code{\link[RstoxBase]{StratumPolygon}}.
 #'  
-#' @param processData data.table() as returned from this function
+#' @param processData \code{\link[RstoxFDA]{AreaPosition}} as returned from this function.
 #' @param DefinitionMethod 'ResourceFile' or 'StratumPolygon', see details.
 #' @param FileName path to resource file
-#' @param StratumPolygon \code{\link[RstoxBase]{StratumPolygon}} to extract area positions from
-#' @param UseProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
+#' @param StratumPolygon \code{\link[RstoxBase]{StratumPolygon}} to extract area positions from.
+#' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{AreaPosition}}.
+#' @seealso \code{\link[RstoxFDA]{SetAreaPositionsBiotic}} and \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to data.
 #' @export
 DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "StratumPolygon"), FileName=character(), StratumPolygon, UseProcessData=F){
 
@@ -1048,9 +1125,17 @@ calculateCarNeighbours <- function(StratumPolygon){
 
 #' Define CAR neighbours
 #' @description
-#'  Define which spatial strata are to be considered neighbours,
-#'  when used as a CAR-variable (Conditional AutoRegressive variable).
+#'  Define which values of a categorical variable are to be considered neighbours,
+#'  when used as a CAR-variable (Conditional AutoRegressive variable) in Reca.
 #' @details
+#'  A CAR-variable (condititional autoregressive variable) in Reca is typically a spatial variable
+#'  reflecting location of a catch. \code{\link[RstoxFDA]{CarNeighbours}} defines
+#'  which values (e.g. areas) are to be considered neighbouts in parameterisation.
+#'  For spatial variables this is typically configured as geographic neighbours, but
+#'  other definitions are possible. Geomtric neighbour may be calcuated from
+#'  \code{\link[RstoxBase]{StratumPolygon}} if that is defines a spatial variable,
+#'  by selecting the appropriate 'DefinitionMethod'.
+#'  
 #'  For DefinitionMethod 'ResourceFile':
 #'  Definitions are read from a tab separated file with headers. Columns defined as:
 #'  \describe{
@@ -1059,18 +1144,18 @@ calculateCarNeighbours <- function(StratumPolygon){
 #'  }
 #'  The neighbour definition must be symmetric
 #'  If a is among the neighbours of b, b must also be among the neighbours of a.
-#'  Neighbours may be defined even if they are not geographic neighbours.
 #'  
 #'  For DefinitionMethod 'StratumPolygon':
 #'  A \code{\link[RstoxFDA]{CarNeighbours}} table will be calculated from the provided 'StratumPolygon'.
 #'  Strata that are geographic neighbours (touching each other) will be considered neighbours.
 #'  runing time and correctness of calcuation may depend on the quality and complexity of the 'StratumPolygon'.
-#' @param processData data.table() as returned from this function
-#' @param DefinitionMethod 'ResourceFile' or 'StratumPolygon'. See details
+#' @param processData \code{\link[RstoxFDA]{CarNeighbours}} as returned from this function
+#' @param DefinitionMethod 'ResourceFile' or 'StratumPolygon'. See details.
 #' @param FileName path to file for resource 
 #' @param StratumPolygon Definition of spatial strata that neighbours should be calculated for (\code{\link[RstoxBase]{StratumPolygon}}).
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Area Neighbour Definition, see: \code{\link[RstoxFDA]{CarNeighbours}}.
+#' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of the definition in Reca-estimates, and \code{\link[RstoxBase]{DefineStratumPolygon}} for how to define a spatial variable from a strata-definition.
 #' @export
 DefineCarNeighbours <- function(processData,
                                 DefinitionMethod = c("ResourceFile", "StratumPolygon"), 
@@ -1099,18 +1184,21 @@ DefineCarNeighbours <- function(processData,
 
 #' Define Age Error Matrix
 #' @description
-#'  StoX function.
 #'  Defines probabilities for misreading ages.
 #' @details
+#'  Defines probabilities for misreading ages, that is assumed probabilites for determining
+#'  a fish to be of age 'x' given that it actually is age 'y'.
+#'  
 #'  Definitions are read from a tab separated file with headers and row names in first column.
-#'  All row and column names should be integers.
-#'  The matrix encodes the probability of observing an age (rows), given true age (columns).
-#'  Columns must sum to 1.
-#' @param processData data.table() as returned from this function
+#'  All row and column names should be integers representing ages.
+#'  The matrix encodes the probability of observing an age (rows), given true age (columns),
+#'  and columns must sum to 1.
+#' @param processData \code{\link[RstoxFDA]{AgeErrorMatrix}} as returned from this function
 #' @param DefinitionMethod 'ResourceFile'. See details.
 #' @param FileName path to resource file
-#' @param UseProcessData Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'
+#' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.
+#' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of age-error matrices in Reca-estimation
 #' @export
 DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile"), FileName, UseProcessData=F){
   
@@ -1195,6 +1283,7 @@ checkProbabilities <- function(tab, tolerance=1e-10){
 #' @description
 #'  Defines parameters for the stock-splitting analysis in Reca, including
 #'  parameters for misclassifying when determining stock membership of a specimen.
+#'  
 #' @details
 #'  For DefinitionMethod 'ResourceFile', definitions are read from a UTF-8 encoded tab separated file with headers and one row
 #'  with headers corresponding to column names in \code{\link[RstoxFDA]{StockSplittingParamteres}}.
@@ -1215,8 +1304,9 @@ checkProbabilities <- function(tab, tolerance=1e-10){
 #' @param ProbabilityType4As4 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
 #' @param ProbabilityType1As5 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
 #' @param ProbabilityType5As5 Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}
-#' @param UseProcessData logical() Bypasses execution of function, and simply returns argument 'processData'
+#' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{StockSplittingParamteres}}.
+#' @seealso \code{\link[RstoxFDA]{PrepareReceEstimate}} for use of stock-splitting parameters in Reca-estimation.
 #' @export
 DefineStockSplittingParamteres <- function(processData, DefinitionMethod=c("ResourceFile", "FunctionParameters"), FileName=character(),
                                            StockNameCC=character(), StockNameS=character(), ProbabilityType1As1=numeric(),
@@ -1288,8 +1378,9 @@ DefineStockSplittingParamteres <- function(processData, DefinitionMethod=c("Reso
 #' @param processData \code{\link[RstoxFDA]{LengthConversionTable}} as returned from this function
 #' @param DefinitionMethod 'ResourceFile'. See details.
 #' @param FileName path to resource file
-#' @param UseProcessData Bypasses execution of function, if TRUE, and simply returns argument 'processData'
+#' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{LengthConversionTable}}
+#' @seealso \code{\link[RstoxFDA]{ConvertLengthBiotic}} for applying length conversion to data
 #' @export
 DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("ResourceFile"), FileName, UseProcessData=F){
   
@@ -1337,8 +1428,9 @@ DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("Re
 #' @param processData \code{\link[RstoxFDA]{WeightConversionTable}} as returned from this function
 #' @param DefinitionMethod 'ResourceFile'. See details.
 #' @param FileName path to resource file
-#' @param UseProcessData Bypasses execution of function, if TRUE, and simply returns argument 'processData'
+#' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{WeightConversionTable}}
+#' @seealso \code{\link[rstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.
 #' @export
 DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("ResourceFile"), FileName, UseProcessData=F){
   

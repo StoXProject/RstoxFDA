@@ -21,10 +21,12 @@ ConvertLengthBiotic(
 \code{\link[RstoxData]{BioticData}} with converted lengths.
 }
 \description{
-Convert lengths to approximate values for a desired length measurement. Typically 'total length'
+Convert lengths to approximate values for a desired length measurement. Typically 'total length'.
 }
 \details{
-Different length measurements may be defined for fish, such as 'total length' or 'fork length'.
+Different length measurements may be defined for fish, such as 'total length', 'standard length' or 'fork length'.
+ For partially processed fish, only some measurements may be available, such as 'head-length'.
+ When desired length measurment is not measured,
  'total length' or some other length measurement may be approximated by a regression model.
  
  For records where the variable 'catchcategory' on the table 'catchsample' matches the 'Species' variable in 'LengthConversionTable'
@@ -38,4 +40,7 @@ Different length measurements may be defined for fish, such as 'total length' or
  
  These variables are on these tables in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
  For bioticdata that does not conform to this, no modifications are done.
+}
+\seealso{
+\code{\link[RstoxFDA]{DefineLengthConversionParameters}} for configuration of length parameters.
 }

@@ -37,8 +37,14 @@ Runs prediction (catch-at-age estimate) for parameterized Reca models.
 \details{
 Parameters may be obtained with \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
  If the function-paramter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
- The parameter 'StoxLandingData' may differ from the landings used in parameterisation, 
- as long as all not additional level for the model covariates are introduced.
+ The parameter 'StoxLandingData' may differ from the landings used in parameterisation (passed to \code{\link[RstoxFDA]{ParameterizeRecaModels}}), 
+ as long as all not additional values / levels for the model covariates / effects are introduced.
  
  If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'AggregationVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
+}
+\seealso{
+\code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation,
+ \code{\link[RstoxFDA]{ReportRecaCatchAtAge}}, 
+ \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}, 
+ \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} for compiling reports of predictions / estimates.
 }

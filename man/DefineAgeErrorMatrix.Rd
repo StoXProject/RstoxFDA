@@ -12,24 +12,29 @@ DefineAgeErrorMatrix(
 )
 }
 \arguments{
-\item{processData}{data.table() as returned from this function}
+\item{processData}{\code{\link[RstoxFDA]{AgeErrorMatrix}} as returned from this function}
 
 \item{DefinitionMethod}{'ResourceFile'. See details.}
 
 \item{FileName}{path to resource file}
 
-\item{UseProcessData}{Bypasses execution of function, if TRUE, and simply returns argument 'ProcessData'}
+\item{UseProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
 }
 \value{
 Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.
 }
 \description{
-StoX function.
- Defines probabilities for misreading ages.
+Defines probabilities for misreading ages.
 }
 \details{
-Definitions are read from a tab separated file with headers and row names in first column.
- All row and column names should be integers.
- The matrix encodes the probability of observing an age (rows), given true age (columns).
- Columns must sum to 1.
+Defines probabilities for misreading ages, that is assumed probabilites for determining
+ a fish to be of age 'x' given that it actually is age 'y'.
+ 
+ Definitions are read from a tab separated file with headers and row names in first column.
+ All row and column names should be integers representing ages.
+ The matrix encodes the probability of observing an age (rows), given true age (columns),
+ and columns must sum to 1.
+}
+\seealso{
+\code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of age-error matrices in Reca-estimation
 }

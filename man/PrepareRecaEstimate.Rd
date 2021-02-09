@@ -26,25 +26,24 @@ PrepareRecaEstimate(
 }
 \arguments{
 \item{StoxBioticData}{\code{\link[RstoxData]{StoxBioticData}} data with samples from fisheries
-and approriate columns appended for identifying corresponding landings.}
+and approriate columns appended for specifying cells. See details.}
 
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
-and approriate columns appended for identifying corresponding samples}
+and approriate columns appended for specifying cells. See details.}
 
-\item{FixedEffects}{optional, vector identifying column names that should be treated as fixed effects. Defaults to no fixed effects.}
+\item{FixedEffects}{optional, vector identifying column names that should be treated as fixed effects. See details}
 
-\item{RandomEffects}{optional, vector identifying column names that should be treated as random effects. Defaults to no random effects.}
+\item{RandomEffects}{optional, vector identifying column names that should be treated as random effects. See details}
 
-\item{UseCarEffect}{logical indicating whether CAR-effect (conditional autoregressive effect) should be used.}
+\item{UseCarEffect}{if TRUE, CAR-effect (conditional autoregressive effect) will be used.}
 
 \item{CarEffect}{optional, character identifying the column name that should be treated as CAR-effect.
-Mandatory if CAR-effect is TRUE
-(conditional autoregressive effect).}
+Mandatory if 'UseCarEffect' is TRUE.}
 
 \item{CarNeighbours}{\code{\link[RstoxFDA]{CarNeighbours}}, mandatory if 'carEffect' is given.
 Identifies which values of the carEffect are to be considered as neighbours.}
 
-\item{UseAgingError}{If TRUE error-aging parameters will be incorporated in the model}
+\item{UseAgingError}{If TRUE, aging, error parameters will be incorporated in the models.}
 
 \item{AgeErrorMatrix}{\code{\link[RstoxFDA]{AgeErrorMatrix}}, optional, specifies the probabilities of misreading ages.
 mandatory if UseAgingError is TRUE.}
@@ -53,7 +52,7 @@ mandatory if UseAgingError is TRUE.}
 
 \item{StockSplittingParamteres}{Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParamteres}}.}
 
-\item{CellEffect}{Configures the cell effect. If 'All', an interaction term will be added with all covariates that exist in landings (whether they are fixed or random effects).
+\item{CellEffect}{Configures the cell effect. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
 Any CAR-effect is always included in the cell effect.}
 
 \item{MinAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
@@ -77,15 +76,45 @@ encoding the day of the year when fish is consider to transition from one age to
 \description{
 Performs data checks and data conversions,
  and stores some data-related parameters in preparation for running
- \code{\link[Reca]{eca.estimate}}
- via \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
+ \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
 }
 \details{
-A covariate indentifying haul or landing is always included in Reca. Do not add haul-identifiers as covariates.
+Parameters are obtained for 'cells' using \code{\link[RstoxFDA]{ParameterizeRecaModels}} 
+ and and applied to landings-data when predicting total catch-at-age using \code{\link[RstoxFDA]{RunRecaModels}}.
  
- Any variable provided as 'FixedEffects' or 'CarEffect' must exist and be coded coherently in
- bot 'StoxBioticData' and 'StoxLandingData'
+ 'Cells' are defined by all effects / covariates that are specified for both 'StoxLandingData' and 'StoxBioticData' 
+ (see parameters 'FixedEffects', 'RandomEffects', and 'CarEffect'). That is, any variable that are to be included in
+ the cell definition must always exist (not containing NAs) 
+ and be coded coherently in both 'StoxBioticData' and 'StoxLandingData'.
+ 
+ Only effects that are part of the cell definition may be specified as 'Fixed effect' or 'CAR effect'.
+ For fixed effect all values / levels of the effect must be sampled.
+ For CAR effect, cell or neighbouring cells ('CarNeighbours') must be sampled
+ 
+ Any variable in samples 'StoxBioticData' may be included as a random effect as long as it is always observed
+ (not containing NAs).
 
+ A random effect identifying haul / landing is always included in Reca. Do not add haul-identifiers as covariates.
+ 
  The option UseStockSplitting requires that a Variable 'otolithtype' is added to
  the table 'Individual' in StoxBioticData.
+}
+\seealso{
+\code{\link[RstoxFDA]{ReportFdaSampling}} for inspecting the data availability for potential
+ cell definitions.
+ \code{\link[RstoxFDA]{ParameterizeRecaModels}}, 
+ and \code{\link[RstoxFDA]{RunRecaModels}} for parameterising and running the Reca-analysis.
+ \code{\link[RstoxBase]{DefineStratumPolygon}}, 
+ \code{\link[RstoxFDA]{AddStratumStoxBiotic}},
+ and \code{\link[RstoxFDA]{AddStratumStoxLanding}} for making 'Stratum' part of the cell definition,
+ and #'  \code{\link[RstoxFDA]{DefineCarNeighbours}}, for maing 'Stratum' available as a CAR-effect
+ \code{\link[RstoxFDA]{DefinePeriod}}, 
+ \code{\link[RstoxFDA]{AddPeriodStoxBiotic}}, 
+ and \code{\link[RstoxFDA]{AddPeriodStoxLanding}} for making 'Period' part of the cell definition.
+ #'  \code{\link[RstoxData]{DefineTranslation}}, 
+ \code{\link[RstoxFDA]{AddGearGroupStoxBiotic}}, 
+ and \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for making 'GearGroup' part of the cell definition.
+ \code{\link[RstoxFDA]{DefineAgeErrorMatrix}} for making an age-error matrix available for the Reca-analysis.
+ \code{\link[RstoxFDA]{DefineStockSplittingParamteres}} for configuring stock-splitting parameters, 
+ and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
 }

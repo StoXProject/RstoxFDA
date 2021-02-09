@@ -21,3 +21,6 @@ Tabulates summary statistics for total catch at age from MCMC simulations using 
  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
  area, gear, stock, etc., summary statistics will be presented similarly.
 }
+\seealso{
+\code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
+}

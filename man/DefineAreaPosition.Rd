@@ -13,25 +13,31 @@ DefineAreaPosition(
 )
 }
 \arguments{
-\item{processData}{data.table() as returned from this function}
+\item{processData}{\code{\link[RstoxFDA]{AreaPosition}} as returned from this function.}
 
 \item{DefinitionMethod}{'ResourceFile' or 'StratumPolygon', see details.}
 
 \item{FileName}{path to resource file}
 
-\item{StratumPolygon}{\code{\link[RstoxBase]{StratumPolygon}} to extract area positions from}
+\item{StratumPolygon}{\code{\link[RstoxBase]{StratumPolygon}} to extract area positions from.}
 
-\item{UseProcessData}{logical() Bypasses execution of function, and simply returns argument 'processData'}
+\item{UseProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
 }
 \value{
 \code{\link[RstoxFDA]{AreaPosition}}.
 }
 \description{
-StoX function
- Define positions for areas of a spatial coding system.
+Define positions for areas of a spatial coding system.
 }
 \details{
-For DefinitionMethod ResourceFile:
+Defines an association between area codes and positions that represent that area code.
+ For example an area code could be associated with the centre of mass of the area, or
+ some other point within the area. This may be useful for providing approximate
+ coordinates when locations are identified by area codes. The soruce of the
+ area-position association may be a table or a appropriately formatted
+ polygon-definition (\code{\link[RstoxBase]{StratumPolygon}}). 
+
+ For DefinitionMethod 'ResourceFile':
  Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
  \describe{
  \item{Column 1: 'Area'}{Area code (key)}
@@ -40,9 +46,12 @@ For DefinitionMethod ResourceFile:
  \item{Column 4: 'Longitude'}{WGS84 Longitude, decimal degrees}
  }
  
- For DefinitionMethod StratumPolygon:
+ For DefinitionMethod 'StratumPolygon':
  Definitions are extracted from a \code{\link[RstoxBase]{StratumPolygon}}:
- Area is derived from the column 'polygonName' in 'StratumPolygon'.
- Location is encoded as missing.
- Latitude and Longitude are the coordinates set for each polygon in 'StratumPolygon'.
+ 'Area' in \code{\link[RstoxFDA]{AreaPosition}} is derived from the column 'polygonName' in \code{\link[RstoxBase]{StratumPolygon}}.
+ 'Location' in \code{\link[RstoxFDA]{AreaPosition}} is encoded as missing.
+ 'Latitude' and 'Longitude' in \code{\link[RstoxFDA]{AreaPosition}} are the coordinates set for each polygon in \code{\link[RstoxBase]{StratumPolygon}}.
+}
+\seealso{
+\code{\link[RstoxFDA]{SetAreaPositionsBiotic}} and \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to data.
 }

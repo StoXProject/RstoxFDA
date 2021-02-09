@@ -48,7 +48,7 @@ DefineStockSplittingParamteres(
 
 \item{ProbabilityType5As5}{Variable for \code{\link[RstoxFDA]{StockSplittingParamteres}}}
 
-\item{UseProcessData}{logical() Bypasses execution of function, and simply returns argument 'processData'}
+\item{UseProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
 }
 \value{
 \code{\link[RstoxFDA]{StockSplittingParamteres}}.
@@ -63,4 +63,7 @@ For DefinitionMethod 'ResourceFile', definitions are read from a UTF-8 encoded t
  see \code{\link[RstoxFDA]{StockSplittingParamteres}} for further explanation on the coding system.
  
  For DefinitionMethod 'FunctionParameters' defintions are constructed from parameters to this function.
+}
+\seealso{
+\code{\link[RstoxFDA]{PrepareReceEstimate}} for use of stock-splitting parameters in Reca-estimation
 }
