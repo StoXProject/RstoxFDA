@@ -34,4 +34,5 @@ Suggests:
     testthat,
     Reca,
     rnaturalearth
+Additional_repositories: https://stoxproject.github.io/repo
 RoxygenNote: 7.1.1
