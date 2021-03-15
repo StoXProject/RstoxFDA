@@ -21,7 +21,7 @@
 #' @param pointShape ggplot2 shape for any points to be plotted
 #' @param pointSize size for any points to be plotted
 #' @param title plot title
-#' @param projection proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}
+#' @param projection proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}. Defaults to mercator projection.
 #' @examples
 #'  # plot ICES areas with default projection
 #'  data(ICESareas)
@@ -29,13 +29,17 @@
 #'
 #'  data(mainareaFdir2018)
 #'  data(NAFOareas)
-#'  # plot mainarea and NAFO areas combined in mercator projection.
+#'  # plot mainarea and NAFO areas combined in a Lambert Conformal Conic projection.
 #'  plotArea(title="Main area + NAFO",
 #'           areaDef=rbind(mainareaFdir2018[,c("polygonName")],
 #'                   NAFOareas[,c("polygonName")]),
-#'           projection="+proj=merc +datum=WGS84")
+#'           projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 #' @export
-plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="polygonName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=102014){
+plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="polygonName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL){
+
+  if (is.null(projection)) {
+    projection <- "+proj=merc +datum=WGS84"
+  }
   
   if (!is.null(data)){
     if (!(latCol %in% names(data))){
@@ -128,7 +132,7 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 #' @param bubbleSize size for the bubbles
 #' @param bubbleShape shape of the "bubbles". Default to circle (21). Use e.g. 22 for squares (consult list of pch values)
 #' @param title plot title
-#' @param projection proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}
+#' @param projection proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}. Defaults to mercator projection
 #' @examples
 #'  data(landings)
 #'  data(ICESareas)
@@ -136,10 +140,14 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 #'        areaDef = ICESareas, areaNameCol = "Area_Full",
 #'        bubbleSize = 20, title="Landings on ICES areas")
 #' @export
-plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="polygonName", legendTitle=quantityCol, areaLabels=T, xlim=NULL, ylim=NULL, areaLabelSize=2, bubbleColor="darkred", bubbleSize=10, bubbleShape=21, title="", projection=102014){
+plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="polygonName", legendTitle=quantityCol, areaLabels=T, xlim=NULL, ylim=NULL, areaLabelSize=2, bubbleColor="darkred", bubbleSize=10, bubbleShape=21, title="", projection=NULL){
   requireNamespace("rnaturalearth")
   requireNamespace("sf")
-  
+
+  if (is.null(projection)) {
+    projection <- "+proj=merc +datum=WGS84"
+  }
+
   if (!(areaCol %in% names(data))){
     stop("'areaCol' not found in 'data'")
   }

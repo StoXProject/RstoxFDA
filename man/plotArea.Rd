@@ -19,7 +19,7 @@ plotArea(
   pointShape = 23,
   pointSize = 1,
   title = "",
-  projection = 102014
+  projection = NULL
 )
 }
 \arguments{

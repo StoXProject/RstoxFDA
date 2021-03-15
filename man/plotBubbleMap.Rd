@@ -19,7 +19,7 @@ plotBubbleMap(
   bubbleSize = 10,
   bubbleShape = 21,
   title = "",
-  projection = 102014
+  projection = NULL
 )
 }
 \arguments{
