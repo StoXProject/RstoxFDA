@@ -295,7 +295,7 @@ is.RecaData <- function(RecaData){
   if (!is.list(RecaData)){
     return(FALSE)
   }
-  if (!all(c("AgeLength", "WeightLength", "Landings", "GlobalParameters", "CovariateMaps") %in% names(RecaData))){
+  if (!all(c("AgeLength", "WeightLength", "Landings", "GlobalParameters") %in% names(RecaData))){
     return(FALSE)
   }
   if (!is.list(RecaData$AgeLength)){
@@ -310,10 +310,7 @@ is.RecaData <- function(RecaData){
   if (!is.list(RecaData$GlobalParameters)){
     return(FALSE)
   }
-  if (!is.list(RecaData$CovariateMaps)){
-    return(FALSE)
-  }
-  
+
   if (!all(c("DataMatrix", "CovariateMatrix", "info") %in% names(RecaData$AgeLength))){
     return(FALSE)
   }
@@ -392,7 +389,7 @@ is.RecaParameterData <- function(RecaParameterData){
   if (!is.list(RecaParameterData)){
     return(FALSE)
   }
-  if (!all(c("FitProportionAtAge", "FitLengthGivenAge", "FitWeightGivenLength", "AgeLength", "WeightLength", "Landings", "GlobalParameters", "CovariateMaps") %in% names(RecaParameterData))){
+  if (!all(c("FitProportionAtAge", "FitLengthGivenAge", "FitWeightGivenLength", "AgeLength", "WeightLength", "Landings", "GlobalParameters") %in% names(RecaParameterData))){
     return(FALSE)
   }
   if (!is.list(RecaParameterData$AgeLength)){
@@ -405,9 +402,6 @@ is.RecaParameterData <- function(RecaParameterData){
     return(FALSE)
   }
   if (!is.list(RecaParameterData$GlobalParameters)){
-    return(FALSE)
-  }
-  if (!is.list(RecaParameterData$CovariateMaps)){
     return(FALSE)
   }
   if (!is.list(RecaParameterData$FitProportionAtAge)){

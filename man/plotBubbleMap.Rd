@@ -51,7 +51,7 @@ plotBubbleMap(
 
 \item{title}{plot title}
 
-\item{projection}{proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}}
+\item{projection}{proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}. Defaults to mercator projection}
 }
 \description{
 Plots scalar nonegative quantities associated with an area code, as bubbles on a map.

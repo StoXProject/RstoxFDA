@@ -341,7 +341,9 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     recaObject$GlobalParameters$CCerror = TRUE
   }
   
-  return(convertPrepReca2stox(recaObject))
+  res <- convertPrepReca2stox(recaObject)
+  
+  return(res)
 }
 
 
@@ -490,11 +492,10 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
   GlobalParameters$seed <- Seed
   
   RecaData$GlobalParameters <- GlobalParameters
-  
   RecaData <- checkEcaObj(RecaData)
   
   fit <- Reca::eca.estimate(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters)
-
+  
   out <- recaFit2Stox(fit, RecaData$CovariateMaps)
   
   RecaData <- convertPrepReca2stox(RecaData)
