@@ -51,7 +51,7 @@ plotArea(
 
 \item{title}{plot title}
 
-\item{projection}{proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}}
+\item{projection}{proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}. Defaults to mercator projection.}
 }
 \description{
 Plots area polygons on a map, may point a set of positions as well.
@@ -69,9 +69,9 @@ Map ranges to plot are specified by 'xlim' and 'ylim'. These should always be gi
 
  data(mainareaFdir2018)
  data(NAFOareas)
- # plot mainarea and NAFO areas combined in mercator projection.
+ # plot mainarea and NAFO areas combined in a Lambert Conformal Conic projection.
  plotArea(title="Main area + NAFO",
           areaDef=rbind(mainareaFdir2018[,c("polygonName")],
                   NAFOareas[,c("polygonName")]),
-          projection="+proj=merc +datum=WGS84")
+          projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 }

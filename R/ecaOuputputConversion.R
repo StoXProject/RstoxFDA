@@ -1,4 +1,102 @@
 #' @noRd
+place <- function(item, nested, levels){
+  if (length(levels) == 1){
+    nested[[levels]] <- item
+    return(nested)
+  }
+  
+  if (!(levels[[1]] %in% names(nested))){
+    nested[[levels[[1]]]] <- list()
+  }
+  nested[[levels[[1]]]] <- place(item, nested[[levels[[1]]]], levels[2:length(levels)])
+
+  return(nested)
+}
+
+#' @noRd
+unpackCMlist <- function(flatlist){
+  nested <- list()
+  for (name in names(flatlist)){
+    levels <- strsplit(name, "_", T)[[1]]
+    levels <- levels[2:length(levels)]
+    nested <- place(flatlist[[name]], nested, levels)
+  }
+  return(nested)
+}
+
+#' Make covariate compatible with prepRECA
+#' @noRd
+convertCovariateMap2PrepReca <- function(stoxObj){
+  
+  CovariateMap <- list()
+  for (n in names(stoxObj$CovariateMaps)){
+    if (startsWith(n, "CovariateMaps")){
+      if (!("names" %in% names(stoxObj[[n]]))){
+        CovariateMap[[gsub("CovariateMaps", "", n)]] <- stoxObj$CovariateMaps[[n]]$values  
+        stoxObj[[n]] <- NULL
+      }
+      else if("integer" %in% class(stoxObj[[n]]$names) ){
+        l <- as.list(stoxObj$CovariateMaps[[n]]$values)
+        CovariateMap[[gsub("CovariateMaps", "", n)]] <- l
+        stoxObj[[n]] <- NULL
+      }
+      else{
+        l <- as.list(stoxObj$CovariateMaps[[n]]$values)
+        names(l) <- stoxObj$CovariateMaps[[n]]$names
+        CovariateMap[[gsub("CovariateMaps", "", n)]] <- l
+        stoxObj[[n]] <- NULL
+      }
+      
+    }
+  }
+  
+  stoxObj$CovariateMaps <- unpackCMlist(CovariateMap)
+  
+
+  return(stoxObj)
+}
+
+#' @noRd
+packCMlist <- function(member, name){
+  if (class(member) != "list" | is.null(names(member))){
+    res <- list()
+    res[[name]] <- member
+    return(res)
+  }
+
+  flat <- list()
+  for (m in names(member)){
+    subFlat <- packCMlist(member[[m]], paste(name, m, sep="_"))
+    flat <- append(flat, subFlat)
+  }
+
+  return(flat)  
+}
+
+#' Make covariate map conform to RstoxFramework restrictions
+#' @noRd
+convertCovariateMap2Stox <- function(prepObj){
+
+  newMap <- list()
+  CovariateMap <- packCMlist(prepObj$CovariateMaps, "CovariateMaps")
+  for (n in names(CovariateMap)){
+    if (class(CovariateMap[[n]]) != "list"){
+      newMap[[n]] <- data.table(values=CovariateMap[[n]])
+    }
+    else if (is.null(names(CovariateMap[[n]]))){
+      newMap[[n]] <- data.table(names=1:length(CovariateMap[[n]]), values=unlist(CovariateMap[[n]]))  
+    }else{
+      newMap[[n]] <- data.table(names=names(CovariateMap[[n]]), values=unlist(CovariateMap[[n]]))  
+    }
+    
+  }
+  
+  prepObj$CovariateMaps <- newMap
+  
+  return(prepObj)
+}
+
+#' @noRd
 convertModelFit2Stox <- function(paramfit, paramtype, covariate, covariateMaps){
   
   paramfit$cov[[covariate]]
@@ -336,12 +434,11 @@ convertCarNeighbours2reca <- function(stoxCar, covariateMap){
   if (is.null(stoxCar)){
     return(NULL)
   }
-  
   neighbourList <- lapply(stoxCar$Neighbours, FUN=function(x){
     nb <-strsplit(x, ",")[[1]];
     return(nb);})
   names(neighbourList) <- stoxCar$CarValue
-
+  
   return(getNeighbours(neighbourList, covariateMap$inLandings[[covariateMap$carEffect]]))
 }
 
@@ -404,6 +501,7 @@ convertPrepReca2stox <- function(prepRecaOutput){
                                                             )
   prepRecaOutput$GlobalParameters <- list()
   prepRecaOutput$GlobalParameters$GlobalParameters <-  GlobalParameters
+  prepRecaOutput <- convertCovariateMap2Stox(prepRecaOutput)
   
   return(prepRecaOutput)
 }
@@ -411,6 +509,8 @@ convertPrepReca2stox <- function(prepRecaOutput){
 #' reformats data.tables
 #' @noRd
 convertStox2PrepReca <- function(stoxPrep){
+  stoxPrep <- convertCovariateMap2PrepReca(stoxPrep)
+    
   stoxPrep$AgeLength$DataMatrix <- as.data.frame(stoxPrep$AgeLength$DataMatrix)
   stoxPrep$AgeLength$CovariateMatrix <- as.data.frame(stoxPrep$AgeLength$CovariateMatrix)
   

@@ -28,6 +28,16 @@ car$Neighbours[9] <- paste(car$Neighbours[9], "30", sep=",")
 car$Neighbours[29] <- paste(car$Neighbours[29], "08", sep=",")
 
 prepCar <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), CarEffect = "Area", UseCarEffect = T, CarNeighbours = car)
-recaNeib <- convertCarNeighbours2reca(prepCar$AgeLength$CARNeighbours, prepCar$CovariateMaps)
-stoxNeib <- convertCarNeighbours2stox(recaNeib, prepCar$CovariateMaps)
+context("Test convert covariate maps")
+ecaprepDummy <- list()
+ecaprepDummy <- convertCovariateMap2PrepReca(prepCar)
+mc <- convertCovariateMap2Stox(ecaprepDummy)
+
+expect_equal(sort(names(mc)), sort(names(prepCar[names(prepCar) %in% names(mc)])))
+
+context("Test convert car neigbours")
+recaNeib <- convertCarNeighbours2reca(prepCar$AgeLength$CARNeighbours, ecaprepDummy$CovariateMaps)
+stoxNeib <- convertCarNeighbours2stox(recaNeib, ecaprepDummy$CovariateMaps)
 expect_equal(prepCar$AgeLength$CARNeighbours, stoxNeib)
+
+
