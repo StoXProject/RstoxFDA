@@ -632,8 +632,9 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
     result$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
     
     if (RecaParameterData$GlobalParameters$CC){
-      stopifnot("Stock" %in% names(results$CatchAtAge))
-      if ("Stock" %in% names(results$AggregationVariables)){
+      
+      stopifnot("Stock" %in% names(result$CatchAtAge))
+      if ("Stock" %in% names(result$AggregationVariables)){
         stop("Cannot add 'Stock' to aggregation variables, when it already exists as an aggregation variable")
       }
       result$AggregationVariables <- c(result$AggregationVariables, "Stock")  
