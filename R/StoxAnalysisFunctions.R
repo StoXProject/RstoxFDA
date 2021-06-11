@@ -276,7 +276,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   flatbiotic$sampleId <- paste(flatbiotic$catchId, flatbiotic$SampleKey, sep="_")
   flatbiotic$Age <- flatbiotic$IndividualAge
   flatbiotic$Length <- flatbiotic$IndividualTotalLength
-  flatbiotic$Weight <- flatbiotic$IndividualRoundWeight
+  flatbiotic$Weight <- flatbiotic$IndividualRoundWeight/1000
   flatbiotic$date <- as.Date(flatbiotic$DateTime)
   
   if (UseStockSplitting){
