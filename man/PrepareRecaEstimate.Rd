@@ -15,6 +15,7 @@ PrepareRecaEstimate(
   UseAgingError = F,
   AgeErrorMatrix,
   UseStockSplitting = F,
+  UseStockSplittingError = F,
   StockSplittingParameters,
   CellEffect = c("Off", "All"),
   MinAge = integer(),

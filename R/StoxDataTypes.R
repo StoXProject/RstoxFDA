@@ -1121,6 +1121,9 @@ stoxFunctionAttributes <- list(
       ),
       StockSplittingParameters = list(
         UseStockSplitting = TRUE
+      ),
+      UseStockSplittingError = list(
+        UseStockSplitting = TRUE
       )
     )
   ),
