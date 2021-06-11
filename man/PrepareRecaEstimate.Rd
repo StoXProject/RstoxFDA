@@ -51,6 +51,8 @@ mandatory if UseAgingError is TRUE.}
 
 \item{UseStockSplitting}{If TRUE, models will be condigured to provide estimates for each of two stocks based on otholitt-typing. See \code{\link[RstoxFDA]{StockSplittingParameters}}.}
 
+\item{UseStockSplittingError}{If TRUE, the model for error in stock classification (otolithtypes) will be applied.}
+
 \item{StockSplittingParameters}{Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParameters}}.}
 
 \item{CellEffect}{Configures the cell effect. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).

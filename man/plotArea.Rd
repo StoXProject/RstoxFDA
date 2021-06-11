@@ -73,5 +73,6 @@ Map ranges to plot are specified by 'xlim' and 'ylim'. These should always be gi
  plotArea(title="Main area + NAFO",
           areaDef=rbind(mainareaFdir2018[,c("polygonName")],
                   NAFOareas[,c("polygonName")]),
-          projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
+          projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
+          +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 }

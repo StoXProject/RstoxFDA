@@ -43,7 +43,7 @@ expect_true(prep$GlobalParameters$GlobalParameters$CCerror)
 expect_true(is.StockSplittingParameters(prep$AgeLength$StockSplittingParameters))
 expect_true(is.null(prep$AgeLength$CCerrorList))
 fpath <- makeTempDirReca()
-param <- ParameterizeRecaModels(prep, 50, 300, ResultDirectory = fpath)
+param <- ParameterizeRecaModels(prep, 100, 500, ResultDirectory = fpath)
 
 result <- RunRecaModels(param, StoxLandingData = StoxLandingData)
 expect_true("Stock" %in% result$AggregationVariables$AggregationVariables)
