@@ -157,7 +157,7 @@ warnMissingCovariateStoxBiotic <- function(varnames, StoxBioticData){
 #'  \code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters, 
 #'  and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, UseStockSplitting=F, StockSplittingParameters, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, UseStockSplitting=F, UseStockSplittingError=F, StockSplittingParameters, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
   #expose as parameter when implemented
   ContinousEffect<-NULL
   
@@ -276,7 +276,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   flatbiotic$sampleId <- paste(flatbiotic$catchId, flatbiotic$SampleKey, sep="_")
   flatbiotic$Age <- flatbiotic$IndividualAge
   flatbiotic$Length <- flatbiotic$IndividualTotalLength
-  flatbiotic$Weight <- flatbiotic$IndividualRoundWeight
+  flatbiotic$Weight <- flatbiotic$IndividualRoundWeight/1000
   flatbiotic$date <- as.Date(flatbiotic$DateTime)
   
   if (UseStockSplitting){
@@ -327,7 +327,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
                          quarter=quarter, 
                          hatchDay=HatchDay,
                          interaction = interaction)
-  
+
   # stock splitting not handled by recawrap
   if (!is.null(StockSplittingParameters)){
     recaObject$CovariateMaps$StockSplitting <- list()
@@ -338,7 +338,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   
   if (UseStockSplitting){
     recaObject$GlobalParameters$CC = TRUE
-    recaObject$GlobalParameters$CCerror = TRUE
+    recaObject$GlobalParameters$CCerror = UseStockSplittingError
   }
   
   res <- convertPrepReca2stox(recaObject)
@@ -589,7 +589,7 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
       if ("Stock" %in% names(results$AggregationVariables)){
         stop("Cannot add 'Stock' to aggregation variables, when it already exists as an aggregation variable")
       }
-      results$AggregationVariables$AggregationVariables <- "Stock" 
+      results$AggregationVariables <- data.table::data.table(AggregationVariables=c(results$AggregationVariables$AggregationVariables, "Stock"))
     }
     return(results)
     
@@ -632,11 +632,12 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
     result$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
     
     if (RecaParameterData$GlobalParameters$CC){
-      stopifnot("Stock" %in% names(results$CatchAtAge))
-      if ("Stock" %in% names(results$AggregationVariables)){
+      
+      stopifnot("Stock" %in% names(result$CatchAtAge))
+      if ("Stock" %in% names(result$AggregationVariables)){
         stop("Cannot add 'Stock' to aggregation variables, when it already exists as an aggregation variable")
       }
-      result$AggregationVariables <- c(result$AggregationVariables, "Stock")  
+      result$AggregationVariables <- data.table::data.table(AggregationVariables=c(result$AggregationVariables$AggregationVariables, "Stock"))
     }
     
     return(result)
