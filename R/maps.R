@@ -33,7 +33,8 @@
 #'  plotArea(title="Main area + NAFO",
 #'           areaDef=rbind(mainareaFdir2018[,c("polygonName")],
 #'                   NAFOareas[,c("polygonName")]),
-#'           projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
+#'           projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
+#'           +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 #' @export
 plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="polygonName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL){
 

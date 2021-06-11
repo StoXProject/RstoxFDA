@@ -120,6 +120,8 @@ warnMissingCovariateStoxBiotic <- function(varnames, StoxBioticData){
 #'  mandatory if UseAgingError is TRUE.
 #' @param UseStockSplitting
 #'  If TRUE, models will be condigured to provide estimates for each of two stocks based on otholitt-typing. See \code{\link[RstoxFDA]{StockSplittingParameters}}.
+#' @param UseStockSplittingError
+#'  If TRUE, the model for error in stock classification (otolithtypes) will be applied.
 #' @param StockSplittingParameters
 #'  Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParameters}}.
 #' @param MinAge
