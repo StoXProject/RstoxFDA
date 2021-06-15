@@ -128,7 +128,8 @@ expect_true("Age" %in% names(results$CatchAtAge))
 expect_true(is.RecaCatchAtAge(results))
 
 context("test-StoxAnalysisFunctions: RunRecaModels with AggregationVariables")
-results <- RunRecaModels(paramOut, StoxLandingData, AggregationVariables = c("Gear"))
+results <- RunRecaModels(paramOut, StoxLandingData, AggregationVariables = c("Area", "Usage"))
+expect_equal(length(unique(paste(results$CatchAtAge$Area, results$CatchAtAge$Usage))), length(unique(paste(StoxLandingData$Landing$Area, StoxLandingData$Landing$Usage))))
 
 expect_true(is.RecaCatchAtAge(results))
 removeTempDirReca(fpath)
