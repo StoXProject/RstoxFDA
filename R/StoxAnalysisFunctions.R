@@ -600,6 +600,16 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
       }
       results$AggregationVariables <- data.table::data.table(AggregationVariables=c(results$AggregationVariables$AggregationVariables, "Stock"))
     }
+    
+    if (CollapseLength){
+      colNames <- names(results$CatchAtAge)
+      colNames <- colNames[!(colNames %in% c("Length", "CatchAtAge"))]
+      
+      results$CatchAtAge <- results$CatchAtAge[, list(CatchAtAge=sum(get("CatchAtAge"))), by=colNames]
+      results$CatchAtAge$Length <- RecaParameterData$GlobalParameters$maxlength
+    }
+    
+    
     return(results)
     
   }
