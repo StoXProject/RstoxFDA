@@ -159,7 +159,7 @@ warnMissingCovariateStoxBiotic <- function(varnames, StoxBioticData){
 #'  \code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters, 
 #'  and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
 #' @export
-PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=F, CarEffect=character(), CarNeighbours, UseAgingError=F, AgeErrorMatrix, UseStockSplitting=F, UseStockSplittingError=F, StockSplittingParameters, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
+PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=FALSE, CarEffect=character(), CarNeighbours, UseAgingError=FALSE, AgeErrorMatrix, UseStockSplitting=FALSE, UseStockSplittingError=FALSE, StockSplittingParameters, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
   #expose as parameter when implemented
   ContinousEffect<-NULL
   
@@ -548,7 +548,7 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  exhaust available computer memory.
 #'  
 #'  By default length groups are collapsed into one length group in the result. 
-#'  The full age-length prediction may be extracted by setting the parameter 'CollapseLength' to TRUE.
+#'  The full age-length prediction may be extracted by setting the parameter 'CollapseLength' to FALSE.
 #'  This will increase the risk of exhausting available computer memory.
 #' @param RecaParameterData Parameters for Reca models.
 #' @param StoxLandingData Landings data (\code{\link[RstoxData]{StoxLandingData}}).
@@ -566,11 +566,7 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}, 
 #'  \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} for compiling reports of predictions / estimates.
 #' @export
-RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric(), CollapseLength=logical()){
-  
-  if (length(CollapseLength)==0){
-    CollapseLength <- TRUE
-  }
+RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric(), CollapseLength=TRUE){
   
   #discard fit info and convert
   RecaParameterData$FitProportionAtAge <- NULL

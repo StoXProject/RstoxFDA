@@ -1,6 +1,6 @@
 Package: RstoxFDA
 Version: 1.0.2
-Date: 2021-06-11
+Date: 2021-09-15
 Title: Fisheries Dependent Analysis with RstoX
 Authors@R: c(
   person(given = "Arne Johannes", 
@@ -33,8 +33,5 @@ Imports:
 Suggests: 
     testthat,
     Reca,
-    rnaturalearth,
-    rgdal
-Additional_repositories: 
-	https://stoxproject.github.io/repo
+    rnaturalearth
 RoxygenNote: 7.1.1

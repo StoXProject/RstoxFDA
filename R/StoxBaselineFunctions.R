@@ -1113,8 +1113,13 @@ loadCarNeighboursFile <- function(FileName, encoding){
 #' @noRd
 calculateCarNeighbours <- function(StratumPolygon){
   sfpoly <- sf::st_as_sf(StratumPolygon)
-  neighbourIndecies <- sf::st_touches(sfpoly, sfpoly)
+  neighbourIndecies <- sf::st_is_within_distance(sfpoly, sfpoly, dist=0)
   
+  #remove self as neighbour
+  for (i in 1:length(neighbourIndecies)){
+    neighbourIndecies[[i]] <- neighbourIndecies[[i]][neighbourIndecies[[i]] != i]
+  }
+
   carValues <- sfpoly$polygonName
   neighbours <- unlist(lapply(neighbourIndecies, function(x){paste(sfpoly$polygonName[x],collapse=",")}))
   

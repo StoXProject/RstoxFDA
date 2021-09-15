@@ -10,7 +10,8 @@ RunRecaModels(
   AggregationVariables = character(),
   TemporalResolution = c("Quarter", "Month"),
   Caa.burnin = numeric(),
-  Seed = numeric()
+  Seed = numeric(),
+  CollapseLength = TRUE
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ Not to be confused with any temporal covariate.}
 \item{Caa.burnin}{see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.}
 
 \item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to seed stored in 'RecaParameterData'.}
+
+\item{CollapseLength}{indicates whether length groups should be collapsed in result. Defaults to TRUE}
 }
 \value{
 \code{\link[RstoxFDA]{RecaCatchAtAge}}
@@ -36,11 +39,18 @@ Runs prediction (catch-at-age estimate) for parameterized Reca models.
 }
 \details{
 Parameters may be obtained with \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
- If the function-paramter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
+ If the function-parameter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
  The parameter 'StoxLandingData' may differ from the landings used in parameterisation (passed to \code{\link[RstoxFDA]{ParameterizeRecaModels}}), 
  as long as all not additional values / levels for the model covariates / effects are introduced.
  
  If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'AggregationVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
+ 
+ If the 'AggregationVariables' specify a large number of partitions of the landings, this function may
+ exhaust available computer memory.
+ 
+ By default length groups are collapsed into one length group in the result. 
+ The full age-length prediction may be extracted by setting the parameter 'CollapseLength' to FALSE.
+ This will increase the risk of exhausting available computer memory.
 }
 \seealso{
 \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation,
