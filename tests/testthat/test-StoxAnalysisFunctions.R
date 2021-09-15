@@ -45,7 +45,7 @@ expect_true(is.null(prep$AgeLength$CCerrorList))
 fpath <- makeTempDirReca()
 param <- ParameterizeRecaModels(prep, 100, 500, ResultDirectory = fpath)
 
-result <- RunRecaModels(param, StoxLandingData = StoxLandingData)
+result <- RunRecaModels(param, StoxLandingData = StoxLandingData, Seed = 100)
 expect_true("Stock" %in% result$AggregationVariables$AggregationVariables)
 resultAgg <- RunRecaModels(param, StoxLandingData = StoxLandingData, AggregationVariables = c("Gear"))
 expect_true(all(c("Stock", "Gear") %in% resultAgg$AggregationVariables$AggregationVariables))
@@ -178,6 +178,8 @@ expect_equal(nrow(results$CatchAtAge)*2*results$CatchAtAge$Length[1], nrow(resul
 expect_equal(length(unique(results$CatchAtAge$Length)),1)
 expect_gt(length(unique(resultsWlength$CatchAtAge$Length)), 1)
 
+
+browser()
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate missing arguments")
 expect_error(ParameterizeRecaModels(prep, 10, 50, 1, fpath, Lgamodel = NULL), "Parameter 'Lgamodel' must be provided.")
