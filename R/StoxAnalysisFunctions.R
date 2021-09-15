@@ -436,7 +436,6 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #'  \code{\link[RstoxFDA]{RunRecaModels}} for obtaining predictions / estimates from the Reca-models.
 #' @export
 ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=character(), Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric()){
-  
   RecaData <- convertStox2PrepReca(RecaData)
   Lgamodel <- match.arg(Lgamodel, Lgamodel)
   if (!isGiven(Lgamodel)){
@@ -539,11 +538,18 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  Runs prediction (catch-at-age estimate) for parameterized Reca models.
 #' @details
 #'  Parameters may be obtained with \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
-#'  If the function-paramter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
+#'  If the function-parameter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
 #'  The parameter 'StoxLandingData' may differ from the landings used in parameterisation (passed to \code{\link[RstoxFDA]{ParameterizeRecaModels}}), 
 #'  as long as all not additional values / levels for the model covariates / effects are introduced.
 #'  
 #'  If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'AggregationVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
+#'  
+#'  If the 'AggregationVariables' specify a large number of partitions of the landings, this function may
+#'  exhaust available computer memory.
+#'  
+#'  By default length groups are collapsed into one length group in the result. 
+#'  The full age-length prediction may be extracted by setting the parameter 'CollapseLength' to TRUE.
+#'  This will increase the risk of exhausting available computer memory.
 #' @param RecaParameterData Parameters for Reca models.
 #' @param StoxLandingData Landings data (\code{\link[RstoxData]{StoxLandingData}}).
 #' @param AggregationVariables character vector identifying columns in 'StoxLandingData' that results should be provided for.
@@ -553,13 +559,18 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  Not to be confused with any temporal covariate.
 #' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to seed stored in 'RecaParameterData'.
+#' @param CollapseLength indicates whether length groups should be collapsed in result. Defaults to TRUE
 #' @return \code{\link[RstoxFDA]{RecaCatchAtAge}}
 #' @seealso \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation,
 #'  \code{\link[RstoxFDA]{ReportRecaCatchAtAge}}, 
 #'  \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}, 
 #'  \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} for compiling reports of predictions / estimates.
 #' @export
-RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric()){
+RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric(), CollapseLength=logical()){
+  
+  if (length(CollapseLength)==0){
+    CollapseLength <- TRUE
+  }
   
   #discard fit info and convert
   RecaParameterData$FitProportionAtAge <- NULL
@@ -614,6 +625,14 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
       Landing <- getLandingsFromStoxLandings(RecaParameterData, Sl, TemporalResolution)
       RecaParameterData$Landings <- Landing
       partitionresults <- ecaResult2Stox(Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters), RecaParameterData$CovariateMaps$StockSplitting)
+      
+      if (CollapseLength){
+        colNames <- names(partitionresults$CatchAtAge)
+        colNames <- colNames[!(colNames %in% c("Length", "CatchAtAge"))]
+        
+        partitionresults$CatchAtAge <- partitionresults$CatchAtAge[, list(CatchAtAge=sum(get("CatchAtAge"))), by=colNames]
+        partitionresults$CatchAtAge$Length <- RecaParameterData$GlobalParameters$maxlength
+      }
       
       for (a in AggregationVariables){
         stopifnot(length(unique(partition[[a]]))==1) # ensured by frame <- unique(StoxLandingData$Landing[,AggregationVariables, with=F])

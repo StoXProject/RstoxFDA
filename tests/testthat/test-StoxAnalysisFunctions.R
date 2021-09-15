@@ -158,6 +158,13 @@ expect_true("Gear" %in% names(paramOut$Landings$AgeLengthCov))
 expect_true("Age" %in% names(results$CatchAtAge))
 expect_true(is.RecaCatchAtAge(results))
 
+resultsWlength <- RunRecaModels(paramOut, StoxLandingData, AggregationVariables = "Gear", CollapseLength = F)
+expect_true("Age" %in% names(resultsWlength$CatchAtAge))
+expect_true(is.RecaCatchAtAge(resultsWlength))
+expect_equal(nrow(results$CatchAtAge)*2*results$CatchAtAge$Length[1], nrow(resultsWlength$CatchAtAge))
+expect_equal(length(unique(results$CatchAtAge$Length)),1)
+expect_gt(length(unique(resultsWlength$CatchAtAge$Length)), 1)
+
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate missing arguments")
 expect_error(ParameterizeRecaModels(prep, 10, 50, 1, fpath, Lgamodel = NULL), "Parameter 'Lgamodel' must be provided.")
 
