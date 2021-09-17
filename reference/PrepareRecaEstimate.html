@@ -74,7 +74,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RstoxFDA</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.2</span>
       </span>
     </div>
 
@@ -132,6 +132,7 @@
   UseAgingError <span class='op'>=</span> <span class='cn'>F</span>,
   <span class='va'>AgeErrorMatrix</span>,
   UseStockSplitting <span class='op'>=</span> <span class='cn'>F</span>,
+  UseStockSplittingError <span class='op'>=</span> <span class='cn'>F</span>,
   <span class='va'>StockSplittingParameters</span>,
   CellEffect <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Off"</span>, <span class='st'>"All"</span><span class='op'>)</span>,
   MinAge <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>integer</a></span><span class='op'>(</span><span class='op'>)</span>,
@@ -188,6 +189,10 @@ mandatory if UseAgingError is TRUE.</p></td>
     <tr>
       <th>UseStockSplitting</th>
       <td><p>If TRUE, models will be condigured to provide estimates for each of two stocks based on otholitt-typing. See <code><a href='StockSplittingParameters.html'>StockSplittingParameters</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>UseStockSplittingError</th>
+      <td><p>If TRUE, the model for error in stock classification (otolithtypes) will be applied.</p></td>
     </tr>
     <tr>
       <th>StockSplittingParameters</th>
