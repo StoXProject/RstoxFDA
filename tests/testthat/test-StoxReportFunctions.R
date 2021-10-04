@@ -60,3 +60,10 @@ expect_true(is.ReportRecaData(MeanWeightReportDecomp))
 MeanLengthReportDecomp <- ReportRecaLengthAtAge(catchAtAgeDecomp)
 expect_true(is.ReportRecaData(MeanLengthReportDecomp))
 
+# Report Mean length Plus gr
+MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5)
+
+browser()
+# Report SOP
+ReportFdaSOP(catchAtAgeReportDecompPlusGr, )
+

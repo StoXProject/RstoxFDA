@@ -158,12 +158,15 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
+#' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @return \code{\link[RstoxFDA]{ReportRecaWeightAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
-ReportRecaWeightAtAge <- function(RecaCatchAtAge){
+ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
-  RecaCatchAtAge$MeanWeight <- setAgeGroup(RecaCatchAtAge$MeanWeight)
+  
+  stop("Total age over length as for age report. Merge with meanweight. Add plusgroup. calculate mean(weight*number/sum(number)) for each group")
+  
   return(reportParameterAtAge(RecaCatchAtAge$MeanWeight, RecaCatchAtAge$AggregationVariables$AggregationVariables, "MeanIndividualWeight"))
 }
 

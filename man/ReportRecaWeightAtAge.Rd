@@ -4,10 +4,12 @@
 \alias{ReportRecaWeightAtAge}
 \title{Report weight at age}
 \usage{
-ReportRecaWeightAtAge(RecaCatchAtAge)
+ReportRecaWeightAtAge(RecaCatchAtAge, PlusGroup = integer())
 }
 \arguments{
 \item{RecaCatchAtAge}{Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).}
+
+\item{PlusGroup}{If given, ages 'PlusGroup' or older are included in a plus group.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportRecaWeightAtAgeData}}
