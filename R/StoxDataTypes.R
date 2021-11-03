@@ -98,7 +98,7 @@ NULL
 #' Checks if argument is \code{\link[RstoxFDA]{ReportFdaData}}
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaData}}
-#' @param ReportRecaData argument to be checked for data conformity
+#' @param ReportFdaData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaData}}
 #' @export
 is.ReportFdaData <- function(ReportFdaData){
