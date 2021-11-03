@@ -93,7 +93,7 @@ reportParameterAtAge <- function(table, aggVariables, parameter, digits=2){
   data.table::setorderv(result, c(aggVariables, "Age"))
   
   output <- list()
-  output$RecaReport <- result
+  output$FdaReport <- result
   
   output$AggregationVariables <- data.table::data.table(AggregationVariables=aggVariables)
   
@@ -115,12 +115,14 @@ setAgeGroup <- function(AgeReport){
 #' @description 
 #'  Tabulates summary statistics for total catch at age from MCMC simulations using Reca.
 #'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+#'  Summary statistics are obtained from the posterior distribution, and
+#'  credible intervals are equal-tailed intervals.
 #'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
-#' @return \code{\link[RstoxFDA]{ReportRecaCatchAtAgeData}}
+#' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
 ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
@@ -196,12 +198,14 @@ reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=int
 #' @description 
 #'  Tabulates summary statistics for mean weights at age from MCMC simulations using Reca.
 #'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+#'  Summary statistics are obtained from the posterior distribution, and
+#'  credible intervals are equal-tailed intervals.
 #'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
-#' @return \code{\link[RstoxFDA]{ReportRecaWeightAtAgeData}}
+#' @return \code{\link[RstoxFDA]{ReportFdaAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
 ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
@@ -214,12 +218,14 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
 #' @description 
 #'  Tabulates summary statistics for mean length at age from MCMC simulations using Reca.
 #'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+#'  Summary statistics are obtained from the posterior distribution, and
+#'  credible intervals are equal-tailed intervals.
 #'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
-#' @return \code{\link[RstoxFDA]{ReportRecaLengthAtAgeData}}
+#' @return \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
 ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){

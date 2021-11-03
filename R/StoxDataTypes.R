@@ -23,101 +23,102 @@ is.Date <- function(date){
 }
 
 
-#' Reca report (ReportRecaData)
+#' Fisheries dependent analysis report (ReportFdaData)
 #' 
 #' @description 
-#'  Results from Reca catch estimations. The results may be presented
+#'  Results from catch estimations. The results may be presented
 #'  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
 #'  
-#'  list with two members 'RecaReport' and 'AggregationVariables'.
-#'  'RecaReport' is a \code{\link[data.table]{data.table}} with the columns:
+#'  list with two members 'FdaReport' and 'AggregationVariables'.
+#'  'FdaReport' is a \code{\link[data.table]{data.table}} with the columns:
 #'  \describe{
 #'   \item{AgeGroup}{character. The age group the estimate is reported for. May be age or plus group}
 #'   \item{Age}{integer. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)}
-#'   \item{<Statistic>}{A reported statistic. Mean of the posterior distribution.}
-#'   \item{SD}{Standard deviation for the catch at age posterior distribution.}
-#'   \item{CI.05}{The lower limit of the 90\% Credible Interval. That is the 5\% quantile of the posterior distribution.}
-#'   \item{CI.95}{The higher limit of the 90\% Credible Interval. That is the 95\% quantile of the posterior distribution.}
+#'   \item{<Statistic>}{A reported statistic}
+#'   \item{SD}{Standard deviation for the reported statistic.}
+#'   \item{CI.05}{The lower limit of a 90\% Credible Interval or Confidence interval.}
+#'   \item{CI.95}{The higher limit of the 90\% Credible Interval or Confidence interval.}
 #'   \item{...}{Any aggregation variables. The names of these are listed in 'AggregationVariables'}
 #'  }
 #'  'AggregationVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
-#' @name ReportRecaData
+#' @name ReportFdaData
 #' 
 NULL
 
-#' Reca Catch At Age Report (ReportRecaCatchAtAgeData)
+#' Fisheries dependent Catch At Age Report (ReportFdaCatchAtAgeData)
 #' 
 #' @description 
-#'  A \code{\link[RstoxFDA]{ReportRecaData}} object with the reported <Statistic> being:
+#'  A \code{\link[RstoxFDA]{ReportFdaData}} object with the reported <Statistic> being:
 #'  
 #'  \describe{
 #'   \item{CacthAtAge}{The total catch at age in numbers.}
 #'  }
 #' 
-#' @name ReportRecaCatchAtAgeData
+#' @name ReportFdaCatchAtAgeData
 #' 
 NULL
 
-#' Reca Length At Age Report (ReportRecaLengthAtAgeData)
+#' Fisheries dependent Length At Age Report (ReportFdaLengthAtAgeData)
 #' 
 #' @description 
-#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportRecaData}} object
+#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaData}} object
 #'  with the reported <Statistic> being:
 #'  
 #'  \describe{
 #'   \item{MeanIndividualLength}{The mean length at age in cm.}
 #'  }
 #'  
-#'  Note that the summary statistics are reported for posterior distributions
-#'  of mean lengths, so that e.g. SD report the standard deviation of the means,
-#'  and does not charachterize the length distribution of fish.
+#'  Note that the summary statistics are reported for summaries of mean lengths, 
+#'  so that e.g. SD report the standard deviation of the means,
+#'  and does not characterize the length distribution of fish.
 #' 
-#' @name ReportRecaLengthAtAgeData
+#' @name ReportFdaLengthAtAgeData
 #' 
 NULL
 
-#' Reca Weight At Age Report (ReportRecaWeightAtAgeData)
+#' Reca Weight At Age Report (ReportFdaWeightAtAgeData)
 #' 
 #' @description 
-#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportRecaData}} object
+#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaData}} object
 #'  with the reported <Statistic> being:
 #'  
 #'  \describe{
 #'   \item{MeanIndividualWeight}{The mean weight at age in grammes}
 #'  }
 #'  
-#'  Note that the summary statistics are reported for posterior distributions
+#'  Note that the summary statistics are reported for summaries
 #'  of mean weights, so that e.g. SD report the standard deviation of the means,
-#'  and does not charachterize the weight distribution of fish.
+#'  and does not characterize the weight distribution of fish.
 #' 
-#' @name ReportRecaWeightAtAgeData
+#' @name ReportFdaWeightAtAgeData
 #' 
 NULL
 
-#' Checks if argument is \code{\link[RstoxFDA]{ReportRecaData}}
+#' Checks if argument is \code{\link[RstoxFDA]{ReportFdaData}}
 #' @description
-#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportRecaData}}
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaData}}
 #' @param ReportRecaData argument to be checked for data conformity
-#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportRecaData}}
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaData}}
 #' @export
-is.ReportRecaData <- function(ReportRecaData){
-  if (!is.list(ReportRecaData)){
+is.ReportFdaData <- function(ReportFdaData){
+  
+  if (!is.list(ReportFdaData)){
     return(FALSE)
   }
-  if (!all(c("AggregationVariables", "RecaReport") %in% names(ReportRecaData))){
+  if (!all(c("AggregationVariables", "FdaReport") %in% names(ReportFdaData))){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportRecaData$RecaReport)){
+  if (!data.table::is.data.table(ReportFdaData$FdaReport)){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportRecaData$AggregationVariables)){
+  if (!data.table::is.data.table(ReportFdaData$AggregationVariables)){
     return(FALSE)
   }
-  if (!all(c("Age", "CI.05", "CI.95", "SD") %in% names(ReportRecaData$RecaReport))){
+  if (!all(c("Age", "CI.05", "CI.95", "SD") %in% names(ReportFdaData$FdaReport))){
     return(FALSE)
   }
-  if (!all(c("AggregationVariables") %in% names(ReportRecaData$AggregationVariables))){
+  if (!all(c("AggregationVariables") %in% names(ReportFdaData$AggregationVariables))){
     return(FALSE)
   }
   return(TRUE)
