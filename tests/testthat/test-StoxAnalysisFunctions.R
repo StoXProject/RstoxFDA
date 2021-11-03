@@ -45,7 +45,7 @@ expect_true(is.null(prep$AgeLength$CCerrorList))
 fpath <- makeTempDirReca()
 param <- ParameterizeRecaModels(prep, 100, 500, ResultDirectory = fpath)
 
-result <- RunRecaModels(param, StoxLandingData = StoxLandingData)
+result <- RunRecaModels(param, StoxLandingData = StoxLandingData, Seed = 100)
 expect_true("Stock" %in% result$AggregationVariables$AggregationVariables)
 resultAgg <- RunRecaModels(param, StoxLandingData = StoxLandingData, AggregationVariables = c("Gear"))
 expect_true(all(c("Stock", "Gear") %in% resultAgg$AggregationVariables$AggregationVariables))
@@ -128,7 +128,8 @@ expect_true("Age" %in% names(results$CatchAtAge))
 expect_true(is.RecaCatchAtAge(results))
 
 context("test-StoxAnalysisFunctions: RunRecaModels with AggregationVariables")
-results <- RunRecaModels(paramOut, StoxLandingData, AggregationVariables = c("Gear"))
+results <- RunRecaModels(paramOut, StoxLandingData, AggregationVariables = c("Area", "Usage"))
+expect_equal(length(unique(paste(results$CatchAtAge$Area, results$CatchAtAge$Usage))), length(unique(paste(StoxLandingData$Landing$Area, StoxLandingData$Landing$Usage))))
 
 expect_true(is.RecaCatchAtAge(results))
 removeTempDirReca(fpath)
@@ -156,6 +157,29 @@ results <- RunRecaModels(paramOut, StoxLandingData, AggregationVariables = "Gear
 expect_true("Gear" %in% names(paramOut$Landings$AgeLengthCov))
 expect_true("Age" %in% names(results$CatchAtAge))
 expect_true(is.RecaCatchAtAge(results))
+
+context("RunRecaModels: Test collapse Length")
+resultsWlength <- RunRecaModels(paramOut, StoxLandingData, AggregationVariables = "Gear", CollapseLength = F)
+expect_true("Age" %in% names(resultsWlength$CatchAtAge))
+expect_true(is.RecaCatchAtAge(resultsWlength))
+expect_equal(nrow(results$CatchAtAge)*2*results$CatchAtAge$Length[1], nrow(resultsWlength$CatchAtAge))
+expect_equal(length(unique(results$CatchAtAge$Length)),1)
+expect_gt(length(unique(resultsWlength$CatchAtAge$Length)), 1)
+
+context("RunRecaModels: Test collapse Length wo Aggregation")
+results <- RunRecaModels(paramOut, StoxLandingData)
+expect_true("Age" %in% names(results$CatchAtAge))
+expect_true(is.RecaCatchAtAge(results))
+
+resultsWlength <- RunRecaModels(paramOut, StoxLandingData, CollapseLength = F)
+expect_true("Age" %in% names(resultsWlength$CatchAtAge))
+expect_true(is.RecaCatchAtAge(resultsWlength))
+expect_equal(nrow(results$CatchAtAge)*2*results$CatchAtAge$Length[1], nrow(resultsWlength$CatchAtAge))
+expect_equal(length(unique(results$CatchAtAge$Length)),1)
+expect_gt(length(unique(resultsWlength$CatchAtAge$Length)), 1)
+
+
+browser()
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate missing arguments")
 expect_error(ParameterizeRecaModels(prep, 10, 50, 1, fpath, Lgamodel = NULL), "Parameter 'Lgamodel' must be provided.")

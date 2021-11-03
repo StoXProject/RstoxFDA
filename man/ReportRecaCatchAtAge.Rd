@@ -12,11 +12,13 @@ ReportRecaCatchAtAge(RecaCatchAtAge, PlusGroup = integer())
 \item{PlusGroup}{If given, ages 'PlusGroup' or older are included in a plus group.}
 }
 \value{
-\code{\link[RstoxFDA]{ReportRecaCatchAtAgeData}}
+\code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
 }
 \description{
 Tabulates summary statistics for total catch at age from MCMC simulations using Reca.
  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+ Summary statistics are obtained from the posterior distribution, and
+ credible intervals are equal-tailed intervals.
  
  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
  area, gear, stock, etc., summary statistics will be presented similarly.

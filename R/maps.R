@@ -109,7 +109,7 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
   pl <- pl + ggplot2::ylab("Latitude")
   pl <- pl + ggplot2::theme_bw()
   pl <- pl + ggplot2::ggtitle(title)
-
+  
   pl
 }
 
@@ -145,6 +145,11 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="poly
   requireNamespace("rnaturalearth")
   requireNamespace("sf")
 
+  #force planar geometry for sf operations, for compability reasons
+  sphergeom <- sf::sf_use_s2()
+  sf::sf_use_s2(FALSE)
+  
+  
   if (is.null(projection)) {
     projection <- "+proj=merc +datum=WGS84"
   }
@@ -213,6 +218,8 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="poly
   pl <- pl + ggplot2::theme_bw()
   pl <- pl + ggplot2::ggtitle(title)
 
+  sf::sf_use_s2(sphergeom)
+  
   pl
 
 }

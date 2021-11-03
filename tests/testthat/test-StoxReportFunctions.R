@@ -26,37 +26,120 @@ catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.r
 catchAtAgeReportDecomp <- ReportRecaCatchAtAge(catchAtAgeDecomp)
 catchAtAgeReportFlat <- ReportRecaCatchAtAge(catchAtAgeFlat)
 
-expect_true(is.ReportRecaData(catchAtAgeReportDecomp))
-expect_true(is.ReportRecaData(catchAtAgeReportFlat))
+expect_true(is.ReportFdaData(catchAtAgeReportDecomp))
+expect_true(is.ReportFdaData(catchAtAgeReportFlat))
 
-diff <- sum(catchAtAgeReportFlat$RecaReport$CatchAtAge) - sum(catchAtAgeReportDecomp$RecaReport$CatchAtAge)
-reldiff <- abs(diff/sum(catchAtAgeReportFlat$RecaReport$CatchAtAge))
+diff <- sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtAgeReportDecomp$FdaReport$CatchAtAge)
+reldiff <- abs(diff/sum(catchAtAgeReportFlat$FdaReport$CatchAtAge))
+
 expect_lt(reldiff, .001)
 expect_equal(length(catchAtAgeReportFlat$AggregationVariables$AggregationVariables), 0)
-expect_equal(ncol(catchAtAgeReportFlat$RecaReport), 6)
+expect_equal(ncol(catchAtAgeReportFlat$FdaReport), 6)
 
 expect_equal(length(catchAtAgeReportDecomp$AggregationVariables$AggregationVariables), 2)
-expect_equal(ncol(catchAtAgeReportDecomp$RecaReport), 8)
+expect_equal(ncol(catchAtAgeReportDecomp$FdaReport), 8)
 
 #test plusgroup
 catchAtAgeReportDecompPlusGr <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5)
-diff <- sum(catchAtAgeReportDecomp$RecaReport$CatchAtAge) - sum(catchAtAgeReportDecompPlusGr$RecaReport$CatchAtAge)
-reldiff <- abs(diff/sum(catchAtAgeReportDecompPlusGr$RecaReport$CatchAtAge))
+diff <- sum(catchAtAgeReportDecomp$FdaReport$CatchAtAge) - sum(catchAtAgeReportDecompPlusGr$FdaReport$CatchAtAge)
+reldiff <- abs(diff/sum(catchAtAgeReportDecompPlusGr$FdaReport$CatchAtAge))
 expect_lt(reldiff, .001)
-expect_equal(nrow(catchAtAgeReportDecompPlusGr$RecaReport), 40)
+expect_equal(nrow(catchAtAgeReportDecompPlusGr$FdaReport), 40)
 expect_equal(nrow(catchAtAgeReportDecompPlusGr$AggregationVariables), 2)
 
 catchAtAgeReportFlatPlusGr <- ReportRecaCatchAtAge(catchAtAgeFlat, PlusGroup=5)
-diff <- sum(catchAtAgeReportFlat$RecaReport$CatchAtAge) - sum(catchAtAgeReportFlatPlusGr$RecaReport$CatchAtAge)
-reldiff <- abs(diff/sum(catchAtAgeReportFlatPlusGr$RecaReport$CatchAtAge))
+diff <- sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge)
+reldiff <- abs(diff/sum(catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge))
 expect_lt(reldiff, .001)
-expect_equal(nrow(catchAtAgeReportFlatPlusGr$RecaReport), 4)
+expect_equal(nrow(catchAtAgeReportFlatPlusGr$FdaReport), 4)
 expect_equal(nrow(catchAtAgeReportFlatPlusGr$AggregationVariables), 0)
+
+# Report Mean weight
+MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp)
+expect_true(is.ReportFdaData(MeanWeightReportDecomp))
+
+# Report Mean weight Plus gr
+MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5)
+
+expect_lt(nrow(MeanWeightReportDecompPlusGr$FdaReport), nrow(MeanWeightReportDecomp$FdaReport))
+
+#ages not in plusgroup should be equal for calculation w and wo plusgroups
+expect_equal(MeanWeightReportDecomp$FdaReport$MeanIndividualWeight[MeanWeightReportDecomp$FdaReport$Age<5],
+             MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$FdaReport$Age<5])
+
+# mean for plus group should be larger than oldes age not in plus group
+expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$FdaReport$Age==5] >
+          MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$FdaReport$Age==4]))
+
+#mean for plusgr should be larger than lowest age in plusgr
+expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$FdaReport$Age==5] >
+          MeanWeightReportDecomp$FdaReport$MeanIndividualWeight[MeanWeightReportDecomp$FdaReport$Age==5]))
+#mean for plusgr should be smaller than largest age in plusgr
+# beware of artifacts for small age groups (convergence or data issues). Using age group 13, rather than 14
+expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$FdaReport$Age==5] <
+          MeanWeightReportDecomp$FdaReport$MeanIndividualWeight[MeanWeightReportDecomp$FdaReport$Age==13]))
+
 
 
 # Report Mean length
-MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp)
-expect_true(is.ReportRecaData(MeanWeightReportDecomp))
 MeanLengthReportDecomp <- ReportRecaLengthAtAge(catchAtAgeDecomp)
-expect_true(is.ReportRecaData(MeanLengthReportDecomp))
+expect_true(is.ReportFdaData(MeanLengthReportDecomp))
 
+# Report Mean length Plus gr
+MeanLengthReportDecompPlusGr <- ReportRecaLengthAtAge(catchAtAgeDecomp, PlusGroup=5)
+
+expect_lt(nrow(MeanLengthReportDecompPlusGr$FdaReport), nrow(MeanLengthReportDecomp$FdaReport))
+
+#ages not in plusgroup should be equal for calculation w and wo plusgroups
+expect_equal(MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age<5],
+             MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age<5])
+
+# mean for plus group should be larger than oldes age not in plus group
+expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age==5] >
+                  MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age==4]))
+
+#mean for plusgr should be larger than lowest age in plusgr
+expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age==5] >
+                  MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age==5]))
+#mean for plusgr should be smaller than largest age in plusgr
+# beware of artifacts for small age groups (convergence or data issues). Using age group 13, rather than 14
+expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age==5] <
+                  MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age==13]))
+
+
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, AggregationVariables = c("Gear", "Area"))
+expect_true(is.ReportFdaSOP(sopTab))
+sopTab <- sopTab$SopReport
+expect_true(all(sopTab$RelativeDifference < 0.001))
+
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, AggregationVariables = c("Gear"))
+expect_true(is.ReportFdaSOP(sopTab))
+sopTab <- sopTab$SopReport
+expect_true(all(sopTab$RelativeDifference < 0.001))
+
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData)
+expect_true(is.ReportFdaSOP(sopTab))
+sopTab <- sopTab$SopReport
+expect_true(all(sopTab$RelativeDifference < 0.001))
+expect_true(nrow(sopTab) == 1)
+
+# Check that NAs are reported for incomplete landings
+SL <- StoxLandingData
+SL$Landing <- SL$Landing[SL$Landing$Gear != 53,]
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, SL, AggregationVariables = c("Gear", "Area"))
+expect_true(is.ReportFdaSOP(sopTab))
+sopTab <- sopTab$SopReport
+expect_true(all(is.na(sopTab$RelativeDifference[sopTab$Gear==53])))
+expect_true(all(!is.na(sopTab$RelativeDifference[sopTab$Gear==11])))
+
+# Check that NAs are reported for incomplete estimates (and incomplete landings)
+catchAtAgeReportDecompPlusGr$FdaReport$Gear[catchAtAgeReportDecompPlusGr$FdaReport$Gear==53] <- 52
+MeanWeightReportDecompPlusGr$FdaReport$Gear[MeanWeightReportDecompPlusGr$FdaReport$Gear==53] <- 52
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, AggregationVariables = c("Gear", "Area"))
+expect_true(is.ReportFdaSOP(sopTab))
+sopTab <- sopTab$SopReport
+expect_true(all(is.na(sopTab$RelativeDifference[sopTab$Gear==52])))
+expect_true(all(is.na(sopTab$LandedWeight[sopTab$Gear==52])))
+expect_true(all(is.na(sopTab$RelativeDifference[sopTab$Gear==53])))
+expect_true(all(is.na(sopTab$TotalWeightEstimated[sopTab$Gear==53])))
+expect_true(all(!is.na(sopTab$RelativeDifference[sopTab$Gear==11])))

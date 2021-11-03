@@ -1112,13 +1112,21 @@ loadCarNeighboursFile <- function(FileName, encoding){
 #' Calculate CAR neighbours from stratum polygon
 #' @noRd
 calculateCarNeighbours <- function(StratumPolygon){
+  
+  #force planar geometry for sf operations, for compability reasons
+  sphergeom <- sf::sf_use_s2()
+  sf::sf_use_s2(FALSE)
+  
   sfpoly <- sf::st_as_sf(StratumPolygon)
   neighbourIndecies <- sf::st_touches(sfpoly, sfpoly)
   
+
   carValues <- sfpoly$polygonName
   neighbours <- unlist(lapply(neighbourIndecies, function(x){paste(sfpoly$polygonName[x],collapse=",")}))
   
   carTable <- data.table::data.table(CarValues=carValues, Neighbours=neighbours)
+  
+  sf::sf_use_s2(sphergeom)
   
   return(carTable)
 }
