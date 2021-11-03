@@ -90,11 +90,13 @@ reportParameterAtAge <- function(table, aggVariables, parameter, digits=2){
   
   data.table::setcolorder(result ,c("AgeGroup", "Age", "par", "SD", "CI.05", "CI.95", aggVariables))
   names(result) <- c("AgeGroup", "Age", parameter, "SD", "CI.05", "CI.95", aggVariables)
-    
+  data.table::setorderv(result, c(aggVariables, "Age"))
+  
   output <- list()
   output$RecaReport <- result
   
   output$AggregationVariables <- data.table::data.table(AggregationVariables=aggVariables)
+  
   return(output)
 }
 
@@ -150,6 +152,46 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
   
 }
 
+#' Calcualtes means for RecaCatchAtAge with plusgroups
+#' @noRd
+reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=integer()){
+  stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  mw <- setAgeGroup(RecaCatchAtAge[[table]])
+  
+  # handle plusggroup
+  if (isGiven(PlusGroup)){
+    
+    if (PlusGroup > max(mw$Age)){
+      stop("'PlusGroup' is larger than the oldest age in the model.")
+    }
+    if (PlusGroup < min(mw$Age)){
+      stop("'PlusGroup' is smaller than the smallest age in the model.")
+    }
+    
+    #total over length, all ages
+    aggNames <- c("Iteration", "Age", RecaCatchAtAge$AggregationVariables$AggregationVariables)
+    stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
+    totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
+    totalOverLength <- setAgeGroup(totalOverLength)
+    
+    # mean weights, all ages
+    mw <- merge(mw, totalOverLength)
+    
+    # add plussgroup and aggregate
+    aggNames <- c("Iteration", "AgeGroup", RecaCatchAtAge$AggregationVariables$AggregationVariables)
+    mw$AgeGroup[mw$Age>=PlusGroup] <- paste("Age ", PlusGroup, "+", sep="")
+    mw <- mw[, list(Age=min(get("Age")), Total=sum(get(parameter)*get("CatchAtAge")), CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
+    mw[[parameter]] <- mw$Total / mw$CatchAtAge
+    mw$Total <- NULL
+    mw$CatchAtAge <- NULL
+    
+  }
+  
+  aggNames <- c(RecaCatchAtAge$AggregationVariables$AggregationVariables)
+  
+  return(reportParameterAtAge(mw, RecaCatchAtAge$AggregationVariables$AggregationVariables, parameter))
+}
+
 #' Report weight at age
 #' @description 
 #'  Tabulates summary statistics for mean weights at age from MCMC simulations using Reca.
@@ -164,10 +206,8 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
 #' @export
 ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
-  
-  stop("Total age over length as for age report. Merge with meanweight. Add plusgroup. calculate mean(weight*number/sum(number)) for each group")
-  
-  return(reportParameterAtAge(RecaCatchAtAge$MeanWeight, RecaCatchAtAge$AggregationVariables$AggregationVariables, "MeanIndividualWeight"))
+
+  reportPlusGroupMeans(RecaCatchAtAge, "MeanWeight", "MeanIndividualWeight", PlusGroup)
 }
 
 #' Report length at age
@@ -178,12 +218,11 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
+#' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @return \code{\link[RstoxFDA]{ReportRecaLengthAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
-ReportRecaLengthAtAge <- function(RecaCatchAtAge){
-  stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
-  RecaCatchAtAge$MeanLength <- setAgeGroup(RecaCatchAtAge$MeanLength)
-  return(reportParameterAtAge(RecaCatchAtAge$MeanLength, RecaCatchAtAge$AggregationVariables$AggregationVariables, "MeanIndividualLength"))
+ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
+  reportPlusGroupMeans(RecaCatchAtAge, "MeanLength", "MeanIndividualLength", PlusGroup)
 }
 

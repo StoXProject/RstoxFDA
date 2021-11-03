@@ -53,15 +53,60 @@ expect_lt(reldiff, .001)
 expect_equal(nrow(catchAtAgeReportFlatPlusGr$RecaReport), 4)
 expect_equal(nrow(catchAtAgeReportFlatPlusGr$AggregationVariables), 0)
 
-
-# Report Mean length
+# Report Mean weight
 MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp)
 expect_true(is.ReportRecaData(MeanWeightReportDecomp))
+
+# Report Mean weight Plus gr
+MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5)
+
+expect_lt(nrow(MeanWeightReportDecompPlusGr$RecaReport), nrow(MeanWeightReportDecomp$RecaReport))
+
+#ages not in plusgroup should be equal for calculation w and wo plusgroups
+expect_equal(MeanWeightReportDecomp$RecaReport$MeanIndividualWeight[MeanWeightReportDecomp$RecaReport$Age<5],
+             MeanWeightReportDecompPlusGr$RecaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$RecaReport$Age<5])
+
+# mean for plus group should be larger than oldes age not in plus group
+expect_true(all(MeanWeightReportDecompPlusGr$RecaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$RecaReport$Age==5] >
+          MeanWeightReportDecompPlusGr$RecaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$RecaReport$Age==4]))
+
+#mean for plusgr should be larger than lowest age in plusgr
+expect_true(all(MeanWeightReportDecompPlusGr$RecaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$RecaReport$Age==5] >
+          MeanWeightReportDecomp$RecaReport$MeanIndividualWeight[MeanWeightReportDecomp$RecaReport$Age==5]))
+#mean for plusgr should be smaller than largest age in plusgr
+# beware of artifacts for small age groups (convergence or data issues). Using age group 13, rather than 14
+expect_true(all(MeanWeightReportDecompPlusGr$RecaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$RecaReport$Age==5] <
+          MeanWeightReportDecomp$RecaReport$MeanIndividualWeight[MeanWeightReportDecomp$RecaReport$Age==13]))
+
+
+
+# Report Mean length
 MeanLengthReportDecomp <- ReportRecaLengthAtAge(catchAtAgeDecomp)
 expect_true(is.ReportRecaData(MeanLengthReportDecomp))
 
 # Report Mean length Plus gr
-MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5)
+MeanLengthReportDecompPlusGr <- ReportRecaLengthAtAge(catchAtAgeDecomp, PlusGroup=5)
+
+expect_lt(nrow(MeanLengthReportDecompPlusGr$RecaReport), nrow(MeanLengthReportDecomp$RecaReport))
+
+#ages not in plusgroup should be equal for calculation w and wo plusgroups
+expect_equal(MeanLengthReportDecomp$RecaReport$MeanIndividualWeight[MeanLengthReportDecomp$RecaReport$Age<5],
+             MeanLengthReportDecompPlusGr$RecaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$RecaReport$Age<5])
+
+# mean for plus group should be larger than oldes age not in plus group
+expect_true(all(MeanLengthReportDecompPlusGr$RecaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$RecaReport$Age==5] >
+                  MeanLengthReportDecompPlusGr$RecaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$RecaReport$Age==4]))
+
+#mean for plusgr should be larger than lowest age in plusgr
+expect_true(all(MeanLengthReportDecompPlusGr$RecaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$RecaReport$Age==5] >
+                  MeanLengthReportDecomp$RecaReport$MeanIndividualWeight[MeanLengthReportDecomp$RecaReport$Age==5]))
+#mean for plusgr should be smaller than largest age in plusgr
+# beware of artifacts for small age groups (convergence or data issues). Using age group 13, rather than 14
+expect_true(all(MeanLengthReportDecompPlusGr$RecaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$RecaReport$Age==5] <
+                  MeanLengthReportDecomp$RecaReport$MeanIndividualWeight[MeanLengthReportDecomp$RecaReport$Age==13]))
+
+
+
 
 browser()
 # Report SOP
