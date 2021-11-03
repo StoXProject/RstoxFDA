@@ -134,36 +134,37 @@ Some gear assignments are done with assumptions, and considering the exact metie
 The code example below annotates an activity census of COD-catches with FAO-gearcode declarations and target sepcies declarations, and compares the annotated metiers with the codes used for reporting catch where shrimp was declared as target.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>metier6table</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>)</span>
-<span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'><a href='appendMetier.html'>appendMetier</a></span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>[</span><span class='va'>activityCensus</span><span class='op'>$</span><span class='va'>species</span><span class='op'>==</span><span class='st'>"COD"</span><span class='op'>]</span>,
-        <span class='va'>metier6table</span>,
-        <span class='st'>"gearNS"</span>,
-        meshSizeColumn <span class='op'>=</span> <span class='st'>"meshSize"</span>,
-        metierColName <span class='op'>=</span> <span class='st'>"metier6"</span><span class='op'>)</span>
-<span class='va'>annotatedShrimp</span> <span class='op'>&lt;-</span> <span class='va'>annotated</span><span class='op'>[</span><span class='va'>annotated</span><span class='op'>$</span><span class='va'>targetFAO</span> <span class='op'>%in%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"PAN"</span>, <span class='st'>"PRA"</span><span class='op'>)</span>,<span class='op'>]</span>
-<span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>gearFAO</span>, <span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>targetFAO</span>, sep<span class='op'>=</span><span class='st'>"/"</span><span class='op'>)</span>,
-     <span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>metier6</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;          
-#&gt;           OTB_CRU_16-31_0_0_all OTB_CRU_32-69_0_0_all OTB_DEF_&gt;=120_0_0_all
-#&gt;   OTB/PRA                     0                    16                     5
-#&gt;   PTB/PRA                     0                     1                     0
-#&gt;   TB/PRA                      0                     1                     0
-#&gt;   TBN/PAN                     0                     0                     0
-#&gt;   TBS/PAN                     0                     2                     0
-#&gt;   TBS/PRA                     2                    19                     1
-#&gt;   TM/PRA                      0                     1                     0
-#&gt;   TMS/PRA                     0                     1                     0
-#&gt;          
-#&gt;           OTB_SPF_32-69_0_0_all
-#&gt;   OTB/PRA                     0
-#&gt;   PTB/PRA                     0
-#&gt;   TB/PRA                      0
-#&gt;   TBN/PAN                     1
-#&gt;   TBS/PAN                     0
-#&gt;   TBS/PRA                     0
-#&gt;   TM/PRA                      0
-#&gt;   TMS/PRA                     0</div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>metier6table</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'><a href='appendMetier.html'>appendMetier</a></span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>[</span><span class='va'>activityCensus</span><span class='op'>$</span><span class='va'>species</span><span class='op'>==</span><span class='st'>"COD"</span><span class='op'>]</span>,</span>
+<span class='r-in'>        <span class='va'>metier6table</span>,</span>
+<span class='r-in'>        <span class='st'>"gearNS"</span>,</span>
+<span class='r-in'>        meshSizeColumn <span class='op'>=</span> <span class='st'>"meshSize"</span>,</span>
+<span class='r-in'>        metierColName <span class='op'>=</span> <span class='st'>"metier6"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>annotatedShrimp</span> <span class='op'>&lt;-</span> <span class='va'>annotated</span><span class='op'>[</span><span class='va'>annotated</span><span class='op'>$</span><span class='va'>targetFAO</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"PAN"</span>, <span class='st'>"PRA"</span><span class='op'>)</span>,<span class='op'>]</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>gearFAO</span>, <span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>targetFAO</span>, sep<span class='op'>=</span><span class='st'>"/"</span><span class='op'>)</span>,</span>
+<span class='r-in'>     <span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>metier6</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           OTB_CRU_16-31_0_0_all OTB_CRU_32-69_0_0_all OTB_DEF_&gt;=120_0_0_all</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   OTB/PRA                     0                    16                     5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   PTB/PRA                     0                     1                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TB/PRA                      0                     1                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TBN/PAN                     0                     0                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TBS/PAN                     0                     2                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TBS/PRA                     2                    19                     1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TM/PRA                      0                     1                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TMS/PRA                     0                     1                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           OTB_SPF_32-69_0_0_all</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   OTB/PRA                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   PTB/PRA                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TB/PRA                      0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TBN/PAN                     1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TBS/PAN                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TBS/PRA                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TM/PRA                      0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TMS/PRA                     0</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

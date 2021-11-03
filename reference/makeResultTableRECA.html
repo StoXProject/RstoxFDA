@@ -129,7 +129,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>prediction</th>
-      <td><p>as returned by <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code> or <code><a href='runRECA.html'>runRECA</a></code>.</p></td>
+      <td><p>as returned by <code>eca.predict</code> or <code><a href='runRECA.html'>runRECA</a></code>.</p></td>
     </tr>
     <tr>
       <th>unit</th>
@@ -173,21 +173,22 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>recaPrediction</span><span class='op'>)</span>
- <span class='fu'>makeResultTableRECA</span><span class='op'>(</span><span class='va'>recaPrediction</span>, plusGroup<span class='op'>=</span><span class='fl'>13</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;     age        total     unit upperQuantile lowerQuantile alpha
-#&gt;  1:   2 5.057110e-03 millions  6.554199e-03  3.443560e-03  0.05
-#&gt;  2:   3 6.329060e-02 millions  7.207373e-02  5.327617e-02  0.05
-#&gt;  3:   4 1.496392e-01 millions  1.655559e-01  1.372012e-01  0.05
-#&gt;  4:   5 4.836352e-02 millions  5.687389e-02  4.118642e-02  0.05
-#&gt;  5:   6 1.893061e-02 millions  2.280652e-02  1.474727e-02  0.05
-#&gt;  6:   7 7.291836e-03 millions  1.002825e-02  4.801351e-03  0.05
-#&gt;  7:   8 2.623102e-03 millions  3.854532e-03  1.840897e-03  0.05
-#&gt;  8:   9 1.247685e-03 millions  2.113743e-03  6.097544e-04  0.05
-#&gt;  9:  10 0.000000e+00 millions  0.000000e+00  0.000000e+00  0.05
-#&gt; 10:  11 5.370901e-05 millions  1.378734e-04  5.786410e-06  0.05
-#&gt; 11:  12 1.712547e-04 millions  5.977538e-04  6.152361e-07  0.05
-#&gt; 12: 13+ 1.406165e-05 millions  9.260425e-05  0.000000e+00  0.05</div></pre>
+    <pre class="examples"><span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>recaPrediction</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='fu'>makeResultTableRECA</span><span class='op'>(</span><span class='va'>recaPrediction</span>, plusGroup<span class='op'>=</span><span class='fl'>13</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     age        total     unit upperQuantile lowerQuantile alpha</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:   2 5.057110e-03 millions  6.554199e-03  3.443560e-03  0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:   3 6.329060e-02 millions  7.207373e-02  5.327617e-02  0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:   4 1.496392e-01 millions  1.655559e-01  1.372012e-01  0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:   5 4.836352e-02 millions  5.687389e-02  4.118642e-02  0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5:   6 1.893061e-02 millions  2.280652e-02  1.474727e-02  0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6:   7 7.291836e-03 millions  1.002825e-02  4.801351e-03  0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7:   8 2.623102e-03 millions  3.854532e-03  1.840897e-03  0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:   9 1.247685e-03 millions  2.113743e-03  6.097544e-04  0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9:  10 0.000000e+00 millions  0.000000e+00  0.000000e+00  0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10:  11 5.370901e-05 millions  1.378734e-04  5.786410e-06  0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:  12 1.712547e-04 millions  5.977538e-04  6.152361e-07  0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12: 13+ 1.406165e-05 millions  9.260425e-05  0.000000e+00  0.05</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

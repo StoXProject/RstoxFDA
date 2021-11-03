@@ -208,25 +208,33 @@
  To allow for flexible projection, some space will be added around 'xlim' and 'ylim'.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'> <span class='co'># plot ICES areas with default projection</span>
- <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ICESareas</span><span class='op'>)</span>
- <span class='fu'>plotArea</span><span class='op'>(</span>areaDef<span class='op'>=</span><span class='va'>ICESareas</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>The rnaturalearthdata package needs to be installed.</span></div><div class='output co'>#&gt; <span class='message'>Installing the rnaturalearthdata package.</span></div><div class='output co'>#&gt; <span class='message'>Installing package into ‘/Users/runner/work/_temp/Library’</span>
-#&gt; <span class='message'>(as ‘lib’ is unspecified)</span></div><div class='output co'>#&gt; <span class='error'>Error in value[[3L]](cond): Failed to install the rnaturalearthdata package.</span>
-#&gt; <span class='error'> Please try installing the package for yourself using the following command: </span>
-#&gt; <span class='error'> install.packages("rnaturalearthdata")</span></div><div class='input'>
- <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>mainareaFdir2018</span><span class='op'>)</span>
- <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>NAFOareas</span><span class='op'>)</span>
- <span class='co'># plot mainarea and NAFO areas combined in a Lambert Conformal Conic projection.</span>
- <span class='fu'>plotArea</span><span class='op'>(</span>title<span class='op'>=</span><span class='st'>"Main area + NAFO"</span>,
-          areaDef<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>mainareaFdir2018</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"polygonName"</span><span class='op'>)</span><span class='op'>]</span>,
-                  <span class='va'>NAFOareas</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"polygonName"</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>,
-          projection<span class='op'>=</span><span class='st'>"+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
-          +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>The rnaturalearthdata package needs to be installed.</span></div><div class='output co'>#&gt; <span class='message'>Installing the rnaturalearthdata package.</span></div><div class='output co'>#&gt; <span class='message'>Installing package into ‘/Users/runner/work/_temp/Library’</span>
-#&gt; <span class='message'>(as ‘lib’ is unspecified)</span></div><div class='output co'>#&gt; <span class='error'>Error in value[[3L]](cond): Failed to install the rnaturalearthdata package.</span>
-#&gt; <span class='error'> Please try installing the package for yourself using the following command: </span>
-#&gt; <span class='error'> install.packages("rnaturalearthdata")</span></div></pre>
+    <pre class="examples"><span class='r-in'> <span class='co'># plot ICES areas with default projection</span></span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ICESareas</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='fu'>plotArea</span><span class='op'>(</span>areaDef<span class='op'>=</span><span class='va'>ICESareas</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> The rnaturalearthdata package needs to be installed.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Installing the rnaturalearthdata package.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Installing package into ‘/Users/runner/work/_temp/Library’</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> (as ‘lib’ is unspecified)</span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in value[[3L]](cond):</span> Failed to install the rnaturalearthdata package.</span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span>  Please try installing the package for yourself using the following command: </span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span>  install.packages("rnaturalearthdata")</span>
+<span class='r-in'></span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>mainareaFdir2018</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>NAFOareas</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='co'># plot mainarea and NAFO areas combined in a Lambert Conformal Conic projection.</span></span>
+<span class='r-in'> <span class='fu'>plotArea</span><span class='op'>(</span>title<span class='op'>=</span><span class='st'>"Main area + NAFO"</span>,</span>
+<span class='r-in'>          areaDef<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>mainareaFdir2018</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"polygonName"</span><span class='op'>)</span><span class='op'>]</span>,</span>
+<span class='r-in'>                  <span class='va'>NAFOareas</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"polygonName"</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>,</span>
+<span class='r-in'>          projection<span class='op'>=</span><span class='st'>"+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 </span>
+<span class='r-in'>          +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs"</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> The rnaturalearthdata package needs to be installed.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Installing the rnaturalearthdata package.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Installing package into ‘/Users/runner/work/_temp/Library’</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> (as ‘lib’ is unspecified)</span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in value[[3L]](cond):</span> Failed to install the rnaturalearthdata package.</span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span>  Please try installing the package for yourself using the following command: </span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span>  install.packages("rnaturalearthdata")</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

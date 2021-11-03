@@ -125,51 +125,52 @@
     <p><code><a href='MetierTable.html'>MetierTable</a></code> with column 'gearcode' identifying gear codes used in Norwegian fisheries data (derived from NS 9400)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>GearGroupFdirTable</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>)</span>
-<span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'><a href='appendMetier.html'>appendMetier</a></span><span class='op'>(</span><span class='va'>activityCensus</span>,
-                          <span class='va'>GearGroupFdirTable</span>,
-                          <span class='st'>"gearNS"</span>,
-                          metierColName <span class='op'>=</span> <span class='st'>"Hovedgruppe Redskap"</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>annotated</span><span class='op'>$</span><span class='va'>gearFAO</span>, <span class='va'>annotated</span><span class='op'>$</span><span class='st'>"Hovedgruppe Redskap"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;      
-#&gt;       D.SEINE GILLNET HOOKS  MIS OTHER SEINE TRAPS TRAWL
-#&gt;   DRB       0       0     0    0     2     0     0     0
-#&gt;   FPO       0       0     0    0     0     0    12     0
-#&gt;   GEN       0    1080     0    0     0     0     0     0
-#&gt;   GN        0     571     0    0     0     0     0     0
-#&gt;   GNC       0      39     0    0     0     0     0     0
-#&gt;   GNS       0     252     0    0     0     0     0     0
-#&gt;   HAR       0       0     0    0     4     0     0     0
-#&gt;   HMP       0       0     0    0     1     0     0     0
-#&gt;   LA        0       0     0    0     0     3     0     0
-#&gt;   LHM       0       0     4    0     0     0     0     0
-#&gt;   LHP       0       0     2    0     0     0     0     0
-#&gt;   LL        0       0   358    0     0     0     0     0
-#&gt;   LLD       0       0    10    0     0     0     0     0
-#&gt;   LLS       0       0   454    0     0     0     0     0
-#&gt;   LTL       0       0     2    0     0     0     0     0
-#&gt;   OT        0       0     0    0     0     0     0    12
-#&gt;   OTB       0       0     0    0     0     0     0  2069
-#&gt;   OTM       0       0     0    0     0     0     0   282
-#&gt;   OTT       0       0     0    0     0     0     0   144
-#&gt;   PS        0       0     0    0     0   228     0     0
-#&gt;   PS1       0       0     0    0     0   558     0     0
-#&gt;   PS2       0       0     0    0     0    69     0     0
-#&gt;   PT        0       0     0    0     0     0     0    48
-#&gt;   PTB       0       0     0    0     0     0     0   324
-#&gt;   PTM       0       0     0    0     0     0     0   239
-#&gt;   SDN       9       0     0   24     0     0     0     0
-#&gt;   SPR     105       0     0    0     0     0     0     0
-#&gt;   SSC    1342       0     0    0     0     0     0     0
-#&gt;   SV      567       0     0    0     0     0     0     0
-#&gt;   SX        0       0     0    0     0     3     0     0
-#&gt;   TB        0       0     0    0     0     0     0  1057
-#&gt;   TBN       0       0     0    0     0     0     0    50
-#&gt;   TBS       0       0     0    0     0     0     0   896
-#&gt;   TM        0       0     0    0     0     0     0   333
-#&gt;   TMS       0       0     0    0     0     0     0    26
-#&gt;   TX        0       0     0    0     0     0     0    58</div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>GearGroupFdirTable</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'><a href='appendMetier.html'>appendMetier</a></span><span class='op'>(</span><span class='va'>activityCensus</span>,</span>
+<span class='r-in'>                          <span class='va'>GearGroupFdirTable</span>,</span>
+<span class='r-in'>                          <span class='st'>"gearNS"</span>,</span>
+<span class='r-in'>                          metierColName <span class='op'>=</span> <span class='st'>"Hovedgruppe Redskap"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>annotated</span><span class='op'>$</span><span class='va'>gearFAO</span>, <span class='va'>annotated</span><span class='op'>$</span><span class='st'>"Hovedgruppe Redskap"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       D.SEINE GILLNET HOOKS  MIS OTHER SEINE TRAPS TRAWL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   DRB       0       0     0    0     2     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   FPO       0       0     0    0     0     0    12     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   GEN       0    1080     0    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   GN        0     571     0    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   GNC       0      39     0    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   GNS       0     252     0    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   HAR       0       0     0    0     4     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   HMP       0       0     0    0     1     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   LA        0       0     0    0     0     3     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   LHM       0       0     4    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   LHP       0       0     2    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   LL        0       0   358    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   LLD       0       0    10    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   LLS       0       0   454    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   LTL       0       0     2    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   OT        0       0     0    0     0     0     0    12</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   OTB       0       0     0    0     0     0     0  2069</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   OTM       0       0     0    0     0     0     0   282</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   OTT       0       0     0    0     0     0     0   144</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   PS        0       0     0    0     0   228     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   PS1       0       0     0    0     0   558     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   PS2       0       0     0    0     0    69     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   PT        0       0     0    0     0     0     0    48</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   PTB       0       0     0    0     0     0     0   324</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   PTM       0       0     0    0     0     0     0   239</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   SDN       9       0     0   24     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   SPR     105       0     0    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   SSC    1342       0     0    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   SV      567       0     0    0     0     0     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   SX        0       0     0    0     0     3     0     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TB        0       0     0    0     0     0     0  1057</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TBN       0       0     0    0     0     0     0    50</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TBS       0       0     0    0     0     0     0   896</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TM        0       0     0    0     0     0     0   333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TMS       0       0     0    0     0     0     0    26</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TX        0       0     0    0     0     0     0    58</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

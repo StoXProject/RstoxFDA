@@ -166,16 +166,16 @@
 <p>Runnning time is proportional to the number of trips in 'logbooks', so it is advantagous to annotate after other relevant filtering.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'> <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-   <span class='co'>#make trip ids from landings and assign them to logbooks</span>
-   <span class='va'>lssfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span>
-   <span class='va'>logbfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span>
-   <span class='va'>landings</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readLssFile.html'>readLssFile</a></span><span class='op'>(</span><span class='va'>lssfile</span><span class='op'>)</span>
-   <span class='va'>logbooks</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readErsFile.html'>readErsFile</a></span><span class='op'>(</span><span class='va'>logbfile</span><span class='op'>)</span>
-   <span class='va'>tripIds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='makeTripIds.html'>makeTripIds</a></span><span class='op'>(</span><span class='va'>landings</span><span class='op'>)</span>
-   <span class='va'>logbooksWtripIds</span> <span class='op'>&lt;-</span> <span class='fu'>appendTripIdLogbooks</span><span class='op'>(</span><span class='va'>logbooks</span>, <span class='va'>tripIds</span><span class='op'>)</span>
- <span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'> <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>   <span class='co'>#make trip ids from landings and assign them to logbooks</span></span>
+<span class='r-in'>   <span class='va'>lssfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span></span>
+<span class='r-in'>   <span class='va'>logbfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span></span>
+<span class='r-in'>   <span class='va'>landings</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readLssFile.html'>readLssFile</a></span><span class='op'>(</span><span class='va'>lssfile</span><span class='op'>)</span></span>
+<span class='r-in'>   <span class='va'>logbooks</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readErsFile.html'>readErsFile</a></span><span class='op'>(</span><span class='va'>logbfile</span><span class='op'>)</span></span>
+<span class='r-in'>   <span class='va'>tripIds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='makeTripIds.html'>makeTripIds</a></span><span class='op'>(</span><span class='va'>landings</span><span class='op'>)</span></span>
+<span class='r-in'>   <span class='va'>logbooksWtripIds</span> <span class='op'>&lt;-</span> <span class='fu'>appendTripIdLogbooks</span><span class='op'>(</span><span class='va'>logbooks</span>, <span class='va'>tripIds</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

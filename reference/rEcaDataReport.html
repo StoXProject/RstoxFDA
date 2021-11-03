@@ -173,47 +173,48 @@ The covariates in landings define the cells.
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>catchsamples</span><span class='op'>)</span>
- <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>catchId</span> <span class='op'>&lt;-</span> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>LEid</span>
- <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>sampleId</span> <span class='op'>&lt;-</span> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>SAid</span>
- <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>date</span> <span class='op'>&lt;-</span> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>LEdate</span>
- <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>Metier5</span> <span class='op'>&lt;-</span> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>LEmetier5</span>
-
- <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>landings</span><span class='op'>)</span>
- <span class='va'>landings</span><span class='op'>$</span><span class='va'>LiveWeightKG</span> <span class='op'>&lt;-</span> <span class='va'>landings</span><span class='op'>$</span><span class='va'>OfficialLandingsWeight</span>
- <span class='va'>landings</span><span class='op'>$</span><span class='va'>Metier5</span> <span class='op'>&lt;-</span> <span class='va'>landings</span><span class='op'>$</span><span class='va'>FishingActivityCategoryEuropeanLvl5</span>
-
- <span class='fu'>rEcaDataReport</span><span class='op'>(</span><span class='va'>catchsamples</span>, <span class='va'>landings</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Metier5"</span>, <span class='st'>"VDencrCode"</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;     Metier5 LiveWeightKG LiveWeightCumFraction NVDencrCode Ndate Ncatch Nsample
-#&gt;  1: OTB_DEF     39822917             0.4175925           1     1      1       1
-#&gt;  2: LLS_DEF     26807800             0.6987055          34    16     34      35
-#&gt;  3: SSC_DEF     14299890             0.8486575          29    23     29      29
-#&gt;  4:  LX_DEF      9328848             0.9464820           0     0      0       0
-#&gt;  5: GNS_DEF      2754654             0.9753680          17     9     17      17
-#&gt;  6: LLD_DEF      2063217             0.9970034           0     0      0       0
-#&gt;  7: PTB_DEF       118092             0.9982417           0     0      0       0
-#&gt;  8: LHM_DEF        83410             0.9991164           0     0      0       0
-#&gt;  9: OTM_DEF        63339             0.9997806           0     0      0       0
-#&gt; 10: FPO_DEF         9051             0.9998755           0     0      0       0
-#&gt; 11:  PS_DEF         5267             0.9999307           0     0      0       0
-#&gt; 12: OTT_DEF         5155             0.9999848           0     0      0       0
-#&gt; 13: GND_DEF         1202             0.9999974           0     0      0       0
-#&gt; 14: MIS_DEF          251             1.0000000           0     0      0       0
-#&gt;     Nage Nweight Nlength
-#&gt;  1:   29      29      29
-#&gt;  2:  962     962     962
-#&gt;  3:  721     721     721
-#&gt;  4:    0       0       0
-#&gt;  5:  338     338     338
-#&gt;  6:    0       0       0
-#&gt;  7:    0       0       0
-#&gt;  8:    0       0       0
-#&gt;  9:    0       0       0
-#&gt; 10:    0       0       0
-#&gt; 11:    0       0       0
-#&gt; 12:    0       0       0
-#&gt; 13:    0       0       0
-#&gt; 14:    0       0       0</div></pre>
+    <pre class="examples"><span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>catchsamples</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>catchId</span> <span class='op'>&lt;-</span> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>LEid</span></span>
+<span class='r-in'> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>sampleId</span> <span class='op'>&lt;-</span> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>SAid</span></span>
+<span class='r-in'> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>date</span> <span class='op'>&lt;-</span> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>LEdate</span></span>
+<span class='r-in'> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>Metier5</span> <span class='op'>&lt;-</span> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>LEmetier5</span></span>
+<span class='r-in'></span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>landings</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='va'>landings</span><span class='op'>$</span><span class='va'>LiveWeightKG</span> <span class='op'>&lt;-</span> <span class='va'>landings</span><span class='op'>$</span><span class='va'>OfficialLandingsWeight</span></span>
+<span class='r-in'> <span class='va'>landings</span><span class='op'>$</span><span class='va'>Metier5</span> <span class='op'>&lt;-</span> <span class='va'>landings</span><span class='op'>$</span><span class='va'>FishingActivityCategoryEuropeanLvl5</span></span>
+<span class='r-in'></span>
+<span class='r-in'> <span class='fu'>rEcaDataReport</span><span class='op'>(</span><span class='va'>catchsamples</span>, <span class='va'>landings</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Metier5"</span>, <span class='st'>"VDencrCode"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     Metier5 LiveWeightKG LiveWeightCumFraction NVDencrCode Ndate Ncatch Nsample</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1: OTB_DEF     39822917             0.4175925           1     1      1       1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2: LLS_DEF     26807800             0.6987055          34    16     34      35</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3: SSC_DEF     14299890             0.8486575          29    23     29      29</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:  LX_DEF      9328848             0.9464820           0     0      0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5: GNS_DEF      2754654             0.9753680          17     9     17      17</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6: LLD_DEF      2063217             0.9970034           0     0      0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7: PTB_DEF       118092             0.9982417           0     0      0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8: LHM_DEF        83410             0.9991164           0     0      0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9: OTM_DEF        63339             0.9997806           0     0      0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10: FPO_DEF         9051             0.9998755           0     0      0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:  PS_DEF         5267             0.9999307           0     0      0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12: OTT_DEF         5155             0.9999848           0     0      0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13: GND_DEF         1202             0.9999974           0     0      0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14: MIS_DEF          251             1.0000000           0     0      0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     Nage Nweight Nlength</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:   29      29      29</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:  962     962     962</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:  721     721     721</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:    0       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5:  338     338     338</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6:    0       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7:    0       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:    0       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9:    0       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10:    0       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:    0       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:    0       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13:    0       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14:    0       0       0</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

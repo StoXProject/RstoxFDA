@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Run Reca Models — RunRecaModels • RstoxFDA</title>
+<title>Sum of Products report (ReportFdaSOP) — ReportFdaSOP • RstoxFDA</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,27 @@
 
 
 
-<meta property="og:title" content="Run Reca Models — RunRecaModels" />
-<meta property="og:description" content="Runs prediction (catch-at-age estimate) for parameterized Reca models." />
+<meta property="og:title" content="Sum of Products report (ReportFdaSOP) — ReportFdaSOP" />
+<meta property="og:description" content="Sum of Products report (SOP-report), comparing the total landed weight of fish
+ with the product of mean weight at age estimates and total number 
+ at age estimates 
+list with two members 'SopReport' and 'AggregationVariables'.
+ 'SopReport' is a data.table with the columns:
+  TotalWeightEstimatedTotal round weight (kg) estimated
+  LandedWeightLanded round weight (kg) reported
+  DifferenceThe difference between estimated and reported landed weight
+  RelativeDifferenceThe difference between estimated and reported landed weight relative to reported weight
+  ...Any aggregation variables. The names of these are listed in 'AggregationVariables'
+ 
+'AggregationVariables' is a data.table with a column containing the names of any aggregation variables.
+Report sum-of-product test (SOP-test) for catch estimates
+Mean weight at age and estimated catch at age is used to compute total catches
+ and the relative difference to reported landings are reported. 
+The report will be generated for landings decomposed on the provided 'AggregationVariables'
+ which must be available in both 'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData'
+ and 'StoxLandingData'. 
+'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same
+ 'AggregationVariables' and must be reported for the same age groups" />
 
 
 
@@ -108,81 +127,69 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Run Reca Models</h1>
-    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxAnalysisFunctions.R'><code>R/StoxAnalysisFunctions.R</code></a></small>
-    <div class="hidden name"><code>RunRecaModels.Rd</code></div>
+    <h1>Sum of Products report (ReportFdaSOP)</h1>
+    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxDataTypes.R'><code>R/StoxDataTypes.R</code></a>, <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxReportFunctions.R'><code>R/StoxReportFunctions.R</code></a></small>
+    <div class="hidden name"><code>ReportFdaSOP.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Runs prediction (catch-at-age estimate) for parameterized Reca models.</p>
+    <p>Sum of Products report (SOP-report), comparing the total landed weight of fish
+ with the product of mean weight at age estimates and total number 
+ at age estimates</p> 
+<p>list with two members 'SopReport' and 'AggregationVariables'.
+ 'SopReport' is a <code><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></code> with the columns:</p><dl>
+  <dt>TotalWeightEstimated</dt><dd><p>Total round weight (kg) estimated</p></dd>
+  <dt>LandedWeight</dt><dd><p>Landed round weight (kg) reported</p></dd>
+  <dt>Difference</dt><dd><p>The difference between estimated and reported landed weight</p></dd>
+  <dt>RelativeDifference</dt><dd><p>The difference between estimated and reported landed weight relative to reported weight</p></dd>
+  <dt>...</dt><dd><p>Any aggregation variables. The names of these are listed in 'AggregationVariables'</p></dd>
+ 
+</dl><p>'AggregationVariables' is a <code><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></code> with a column containing the names of any aggregation variables.</p>
+<p>Report sum-of-product test (SOP-test) for catch estimates</p>
+<p>Mean weight at age and estimated catch at age is used to compute total catches
+ and the relative difference to reported landings are reported.</p> 
+<p>The report will be generated for landings decomposed on the provided 'AggregationVariables'
+ which must be available in both 'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData'
+ and 'StoxLandingData'.</p> 
+<p>'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same
+ 'AggregationVariables' and must be reported for the same age groups</p>
     </div>
 
-    <pre class="usage"><span class='fu'>RunRecaModels</span><span class='op'>(</span>
-  <span class='va'>RecaParameterData</span>,
+    <pre class="usage"><span class='fu'>ReportFdaSOP</span><span class='op'>(</span>
+  <span class='va'>ReportFdaCatchAtAgeData</span>,
+  <span class='va'>ReportFdaWeightAtAgeData</span>,
   <span class='va'>StoxLandingData</span>,
-  AggregationVariables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span><span class='op'>(</span><span class='op'>)</span>,
-  TemporalResolution <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Quarter"</span>, <span class='st'>"Month"</span><span class='op'>)</span>,
-  Caa.burnin <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>numeric</a></span><span class='op'>(</span><span class='op'>)</span>,
-  Seed <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>numeric</a></span><span class='op'>(</span><span class='op'>)</span>,
-  CollapseLength <span class='op'>=</span> <span class='cn'>TRUE</span>
+  AggregationVariables <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>RecaParameterData</th>
-      <td><p>Parameters for Reca models.</p></td>
+      <th>ReportFdaCatchAtAgeData</th>
+      <td><p><code><a href='ReportFdaCatchAtAgeData.html'>ReportFdaCatchAtAgeData</a></code> with estimates of total catch at age</p></td>
+    </tr>
+    <tr>
+      <th>ReportFdaWeightAtAgeData</th>
+      <td><p><code><a href='ReportFdaWeightAtAgeData.html'>ReportFdaWeightAtAgeData</a></code> with estimates of mean weight at age for individual fish</p></td>
     </tr>
     <tr>
       <th>StoxLandingData</th>
-      <td><p>Landings data (<code><a href='https://rdrr.io/pkg/RstoxData/man/StoxLandingData.html'>StoxLandingData</a></code>).</p></td>
+      <td><p><code><a href='https://rdrr.io/pkg/RstoxData/man/StoxLandingData.html'>StoxLandingData</a></code> data with landings from fisheries</p></td>
     </tr>
     <tr>
       <th>AggregationVariables</th>
-      <td><p>character vector identifying columns in 'StoxLandingData' that results should be provided for.</p></td>
-    </tr>
-    <tr>
-      <th>TemporalResolution</th>
-      <td><p>default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
-Regulates temporal resolution for calculating fractional ages of fish.
-Not to be confused with any temporal covariate.</p></td>
-    </tr>
-    <tr>
-      <th>Caa.burnin</th>
-      <td><p>see documentation for <code>eca.predict</code>. Defaults to 0.</p></td>
-    </tr>
-    <tr>
-      <th>Seed</th>
-      <td><p>see documentation for <code>eca.estimate</code>. Defaults to seed stored in 'RecaParameterData'.</p></td>
-    </tr>
-    <tr>
-      <th>CollapseLength</th>
-      <td><p>indicates whether length groups should be collapsed in result. Defaults to TRUE</p></td>
+      <td><p>Columns of 'StoxLandingData' that partitions the landings into groups SOP tests should be reported for.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code><a href='RecaCatchAtAge.html'>RecaCatchAtAge</a></code></p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Parameters may be obtained with <code><a href='ParameterizeRecaModels.html'>ParameterizeRecaModels</a></code>.
- If the function-parameter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
- The parameter 'StoxLandingData' may differ from the landings used in parameterisation (passed to <code><a href='ParameterizeRecaModels.html'>ParameterizeRecaModels</a></code>), 
- as long as all not additional values / levels for the model covariates / effects are introduced.</p> 
-<p>If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'AggregationVariables' in the return value (<code><a href='RecaCatchAtAge.html'>RecaCatchAtAge</a></code>)</p> 
-<p>If the 'AggregationVariables' specify a large number of partitions of the landings, this function may
- exhaust available computer memory.</p> 
-<p>By default length groups are collapsed into one length group in the result. 
- The full age-length prediction may be extracted by setting the parameter 'CollapseLength' to FALSE.
- This will increase the risk of exhausting available computer memory.</p>
+    <p><code>ReportFdaSOP</code></p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='ParameterizeRecaModels.html'>ParameterizeRecaModels</a></code> for model parameterisation,
- <code><a href='ReportRecaCatchAtAge.html'>ReportRecaCatchAtAge</a></code>, 
- <code><a href='ReportRecaLengthAtAge.html'>ReportRecaLengthAtAge</a></code>, 
- <code><a href='ReportRecaWeightAtAge.html'>ReportRecaWeightAtAge</a></code> for compiling reports of predictions / estimates.</p></div>
+    <div class='dont-index'><p><code><a href='ReportRecaWeightAtAge.html'>ReportRecaWeightAtAge</a></code> and <code><a href='ReportRecaCatchAtAge.html'>ReportRecaCatchAtAge</a></code> for some ways of preparing 'ReportFdaWeightAtAgeData' and 'ReportFdaCatchAtAgeData'.
+ <code><a href='https://rdrr.io/pkg/RstoxData/man/StoxLanding.html'>StoxLanding</a></code> and <code><a href='https://rdrr.io/pkg/RstoxData/man/FilterStoxLanding.html'>FilterStoxLanding</a></code> for ways of preparing 'StoxLandingData'.</p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

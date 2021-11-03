@@ -178,67 +178,70 @@
  will be annotated to otherwise matching data which has a missing value in the 'targetColumn'.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>metier4table</span><span class='op'>)</span>
- <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>)</span>
-
- <span class='co'># annotate metier lvl 4 on the cencus based on gear, and compare with finer gear declaration.</span>
- <span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'>appendMetier</span><span class='op'>(</span><span class='va'>activityCensus</span>,
-          <span class='va'>metier4table</span>,
-          <span class='st'>"gearNS"</span>,
-          metierColName <span class='op'>=</span> <span class='st'>"metier4"</span><span class='op'>)</span>
- <span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>annotated</span><span class='op'>$</span><span class='va'>metier4</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt;  FPO   GN  GNS  HAR  LHM   LL  LLD  LTL  MIS  OTB  OTM  OTT   PS  PTB  PTM  SSC 
-#&gt;   12 1690  252    4    6  812   10    2   27 2069  282  144  855  324  239 2023 
-#&gt;   SX  TBN  TBS   TX 
-#&gt;    6   50  922 1508 </div><div class='input'>
- <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>metier5table</span><span class='op'>)</span>
- <span class='co'># annotate metier lvl 5 on COD-catches based on only gear,</span>
- <span class='co'># and compare with declarations for shrimp fisheries</span>
- <span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'>appendMetier</span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>[</span><span class='va'>activityCensus</span><span class='op'>$</span><span class='va'>species</span><span class='op'>==</span><span class='st'>"COD"</span><span class='op'>]</span>,
-          <span class='va'>metier5table</span>,
-          <span class='st'>"gearNS"</span>,
-          metierColName <span class='op'>=</span> <span class='st'>"metier5"</span><span class='op'>)</span>
- <span class='va'>annotatedShrimp</span> <span class='op'>&lt;-</span> <span class='va'>annotated</span><span class='op'>[</span><span class='va'>annotated</span><span class='op'>$</span><span class='va'>targetFAO</span> <span class='op'>%in%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"PAN"</span>, <span class='st'>"PRA"</span><span class='op'>)</span>,<span class='op'>]</span>
- <span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>gearFAO</span>, <span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>targetFAO</span>, sep<span class='op'>=</span><span class='st'>"/"</span><span class='op'>)</span>,
-      <span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>metier5</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;          
-#&gt;           MIS_MIS OTB_CRU OTB_DEF PTB_DEF
-#&gt;   OTB/PRA       0       0      21       0
-#&gt;   PTB/PRA       0       0       0       1
-#&gt;   TB/PRA        1       0       0       0
-#&gt;   TBN/PAN       0       1       0       0
-#&gt;   TBS/PAN       0       2       0       0
-#&gt;   TBS/PRA       0      22       0       0
-#&gt;   TM/PRA        1       0       0       0
-#&gt;   TMS/PRA       0       1       0       0</div><div class='input'>
- <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>metier6table</span><span class='op'>)</span>
- <span class='co'># annotate metier lvl 6 on COD-catches based on gear and mesh size,</span>
- <span class='co'># and compare with lvl 5 annotations from last example</span>
- <span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'>appendMetier</span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>[</span><span class='va'>activityCensus</span><span class='op'>$</span><span class='va'>species</span><span class='op'>==</span><span class='st'>"COD"</span><span class='op'>]</span>,
-          <span class='va'>metier6table</span>,
-          <span class='st'>"gearNS"</span>,
-          meshSizeColumn <span class='op'>=</span> <span class='st'>"meshSize"</span>,
-          metierColName <span class='op'>=</span> <span class='st'>"metier6"</span><span class='op'>)</span>
- <span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'>appendMetier</span><span class='op'>(</span><span class='va'>annotated</span>,
-           <span class='va'>metier5table</span>,
-           <span class='st'>"gearNS"</span>,
-           metierColName <span class='op'>=</span> <span class='st'>"metier5"</span><span class='op'>)</span>
- <span class='va'>annotatedShrimp</span> <span class='op'>&lt;-</span> <span class='va'>annotated</span><span class='op'>[</span><span class='va'>annotated</span><span class='op'>$</span><span class='va'>targetFAO</span> <span class='op'>%in%</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"PAN"</span>, <span class='st'>"PRA"</span><span class='op'>)</span>,<span class='op'>]</span>
- <span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>metier5</span>, <span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>metier6</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;          
-#&gt;           OTB_CRU_16-31_0_0_all OTB_CRU_32-69_0_0_all OTB_DEF_&gt;=120_0_0_all
-#&gt;   MIS_MIS                     0                     2                     0
-#&gt;   OTB_CRU                     2                    22                     1
-#&gt;   OTB_DEF                     0                    16                     5
-#&gt;   PTB_DEF                     0                     1                     0
-#&gt;          
-#&gt;           OTB_SPF_32-69_0_0_all
-#&gt;   MIS_MIS                     0
-#&gt;   OTB_CRU                     1
-#&gt;   OTB_DEF                     0
-#&gt;   PTB_DEF                     0</div><div class='input'>
-</div></pre>
+    <pre class="examples"><span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>metier4table</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'> <span class='co'># annotate metier lvl 4 on the cencus based on gear, and compare with finer gear declaration.</span></span>
+<span class='r-in'> <span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'>appendMetier</span><span class='op'>(</span><span class='va'>activityCensus</span>,</span>
+<span class='r-in'>          <span class='va'>metier4table</span>,</span>
+<span class='r-in'>          <span class='st'>"gearNS"</span>,</span>
+<span class='r-in'>          metierColName <span class='op'>=</span> <span class='st'>"metier4"</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>annotated</span><span class='op'>$</span><span class='va'>metier4</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  FPO   GN  GNS  HAR  LHM   LL  LLD  LTL  MIS  OTB  OTM  OTT   PS  PTB  PTM  SSC </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   12 1690  252    4    6  812   10    2   27 2069  282  144  855  324  239 2023 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   SX  TBN  TBS   TX </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    6   50  922 1508 </span>
+<span class='r-in'></span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>metier5table</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='co'># annotate metier lvl 5 on COD-catches based on only gear,</span></span>
+<span class='r-in'> <span class='co'># and compare with declarations for shrimp fisheries</span></span>
+<span class='r-in'> <span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'>appendMetier</span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>[</span><span class='va'>activityCensus</span><span class='op'>$</span><span class='va'>species</span><span class='op'>==</span><span class='st'>"COD"</span><span class='op'>]</span>,</span>
+<span class='r-in'>          <span class='va'>metier5table</span>,</span>
+<span class='r-in'>          <span class='st'>"gearNS"</span>,</span>
+<span class='r-in'>          metierColName <span class='op'>=</span> <span class='st'>"metier5"</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='va'>annotatedShrimp</span> <span class='op'>&lt;-</span> <span class='va'>annotated</span><span class='op'>[</span><span class='va'>annotated</span><span class='op'>$</span><span class='va'>targetFAO</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"PAN"</span>, <span class='st'>"PRA"</span><span class='op'>)</span>,<span class='op'>]</span></span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>gearFAO</span>, <span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>targetFAO</span>, sep<span class='op'>=</span><span class='st'>"/"</span><span class='op'>)</span>,</span>
+<span class='r-in'>      <span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>metier5</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           MIS_MIS OTB_CRU OTB_DEF PTB_DEF</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   OTB/PRA       0       0      21       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   PTB/PRA       0       0       0       1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TB/PRA        1       0       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TBN/PAN       0       1       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TBS/PAN       0       2       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TBS/PRA       0      22       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TM/PRA        1       0       0       0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   TMS/PRA       0       1       0       0</span>
+<span class='r-in'></span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>metier6table</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='co'># annotate metier lvl 6 on COD-catches based on gear and mesh size,</span></span>
+<span class='r-in'> <span class='co'># and compare with lvl 5 annotations from last example</span></span>
+<span class='r-in'> <span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'>appendMetier</span><span class='op'>(</span><span class='va'>activityCensus</span><span class='op'>[</span><span class='va'>activityCensus</span><span class='op'>$</span><span class='va'>species</span><span class='op'>==</span><span class='st'>"COD"</span><span class='op'>]</span>,</span>
+<span class='r-in'>          <span class='va'>metier6table</span>,</span>
+<span class='r-in'>          <span class='st'>"gearNS"</span>,</span>
+<span class='r-in'>          meshSizeColumn <span class='op'>=</span> <span class='st'>"meshSize"</span>,</span>
+<span class='r-in'>          metierColName <span class='op'>=</span> <span class='st'>"metier6"</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='va'>annotated</span> <span class='op'>&lt;-</span> <span class='fu'>appendMetier</span><span class='op'>(</span><span class='va'>annotated</span>,</span>
+<span class='r-in'>           <span class='va'>metier5table</span>,</span>
+<span class='r-in'>           <span class='st'>"gearNS"</span>,</span>
+<span class='r-in'>           metierColName <span class='op'>=</span> <span class='st'>"metier5"</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='va'>annotatedShrimp</span> <span class='op'>&lt;-</span> <span class='va'>annotated</span><span class='op'>[</span><span class='va'>annotated</span><span class='op'>$</span><span class='va'>targetFAO</span> <span class='op'><a href='https://rdrr.io/r/base/match.html'>%in%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"PAN"</span>, <span class='st'>"PRA"</span><span class='op'>)</span>,<span class='op'>]</span></span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>metier5</span>, <span class='va'>annotatedShrimp</span><span class='op'>$</span><span class='va'>metier6</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           OTB_CRU_16-31_0_0_all OTB_CRU_32-69_0_0_all OTB_DEF_&gt;=120_0_0_all</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   MIS_MIS                     0                     2                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   OTB_CRU                     2                    22                     1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   OTB_DEF                     0                    16                     5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   PTB_DEF                     0                     1                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           OTB_SPF_32-69_0_0_all</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   MIS_MIS                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   OTB_CRU                     1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   OTB_DEF                     0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   PTB_DEF                     0</span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

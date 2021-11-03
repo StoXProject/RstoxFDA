@@ -161,19 +161,19 @@
 <p>For other partitionings of logbooks, consider <code><a href='tabulateFisheries.html'>tabulateFisheries</a></code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'> <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='co'>#make calculate fractions in each area for each trip</span>
-  <span class='va'>lssfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span>
-  <span class='va'>logbfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span>
-  <span class='va'>landings</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readLssFile.html'>readLssFile</a></span><span class='op'>(</span><span class='va'>lssfile</span><span class='op'>)</span>
-  <span class='va'>logbooks</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readErsFile.html'>readErsFile</a></span><span class='op'>(</span><span class='va'>logbfile</span><span class='op'>)</span>
-  <span class='va'>tripIds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='makeTripIds.html'>makeTripIds</a></span><span class='op'>(</span><span class='va'>landings</span><span class='op'>)</span>
-  <span class='va'>logbooksWtripIds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='appendTripIdLogbooks.html'>appendTripIdLogbooks</a></span><span class='op'>(</span><span class='va'>logbooks</span>, <span class='va'>tripIds</span><span class='op'>)</span>
-
-  <span class='va'>logbooksWtripIds</span><span class='op'>$</span><span class='va'>mainArea</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/substr.html'>substring</a></span><span class='op'>(</span><span class='va'>logbooksWtripIds</span><span class='op'>$</span><span class='va'>LOKASJON_START</span>,<span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span>
-  <span class='va'>fractions</span> <span class='op'>&lt;-</span> <span class='fu'>calculateLogbookPartitionByTrip</span><span class='op'>(</span><span class='va'>logbooksWtripIds</span>, <span class='st'>"mainArea"</span><span class='op'>)</span>
- <span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'> <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='co'>#make calculate fractions in each area for each trip</span></span>
+<span class='r-in'>  <span class='va'>lssfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span></span>
+<span class='r-in'>  <span class='va'>logbfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span></span>
+<span class='r-in'>  <span class='va'>landings</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readLssFile.html'>readLssFile</a></span><span class='op'>(</span><span class='va'>lssfile</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='va'>logbooks</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readErsFile.html'>readErsFile</a></span><span class='op'>(</span><span class='va'>logbfile</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='va'>tripIds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='makeTripIds.html'>makeTripIds</a></span><span class='op'>(</span><span class='va'>landings</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='va'>logbooksWtripIds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='appendTripIdLogbooks.html'>appendTripIdLogbooks</a></span><span class='op'>(</span><span class='va'>logbooks</span>, <span class='va'>tripIds</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='va'>logbooksWtripIds</span><span class='op'>$</span><span class='va'>mainArea</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/substr.html'>substring</a></span><span class='op'>(</span><span class='va'>logbooksWtripIds</span><span class='op'>$</span><span class='va'>LOKASJON_START</span>,<span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='va'>fractions</span> <span class='op'>&lt;-</span> <span class='fu'>calculateLogbookPartitionByTrip</span><span class='op'>(</span><span class='va'>logbooksWtripIds</span>, <span class='st'>"mainArea"</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -114,7 +114,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Runs estimation of parameters for Reca models. Invokes <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code>.</p>
+    <p>Runs estimation of parameters for Reca models. Invokes <code>eca.estimate</code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>ParameterizeRecaModels</span><span class='op'>(</span>
@@ -137,31 +137,31 @@
     </tr>
     <tr>
       <th>Nsamples</th>
-      <td><p>number of MCMC samples that will be made available for <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code>. See documentation for <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code>,</p></td>
+      <td><p>number of MCMC samples that will be made available for <code>eca.predict</code>. See documentation for <code>eca.estimate</code>,</p></td>
     </tr>
     <tr>
       <th>Burnin</th>
-      <td><p>number of MCMC samples run and discarded by <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code> before any samples are saved. See documentation for <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code>.</p></td>
+      <td><p>number of MCMC samples run and discarded by <code>eca.estimate</code> before any samples are saved. See documentation for <code>eca.estimate</code>.</p></td>
     </tr>
     <tr>
       <th>Thin</th>
-      <td><p>controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code></p></td>
+      <td><p>controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for <code>eca.estimate</code></p></td>
     </tr>
     <tr>
       <th>ResultDirectory</th>
-      <td><p>a directory where Reca may store temp-files <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code> and <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code>.</p></td>
+      <td><p>a directory where Reca may store temp-files <code>eca.estimate</code> and <code>eca.predict</code>.</p></td>
     </tr>
     <tr>
       <th>Lgamodel</th>
-      <td><p>The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code>.</p></td>
+      <td><p>The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for <code>eca.estimate</code>.</p></td>
     </tr>
     <tr>
       <th>Delta.age</th>
-      <td><p>see documentation for <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code>. Defaults to 0.001.</p></td>
+      <td><p>see documentation for <code>eca.estimate</code>. Defaults to 0.001.</p></td>
     </tr>
     <tr>
       <th>Seed</th>
-      <td><p>see documentation for <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code>. Defaults to random seed.</p></td>
+      <td><p>see documentation for <code>eca.estimate</code>. Defaults to random seed.</p></td>
     </tr>
     </table>
 
@@ -170,14 +170,14 @@
     <p><code><a href='RecaParameterData.html'>RecaParameterData</a></code> results from Reca Model Parameterization.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code> performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
+    <p><code>eca.estimate</code> performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
  This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.</p>
     <h2 class="hasAnchor" id="temporary-files"><a class="anchor" href="#temporary-files"></a>temporary files</h2>
 
     
 
-<p>Various report functions may use output of this function with the function <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code> which samples the posterior distributions of parameters.
- Communication between <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code> and <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code> is managed by writing and reading files, 
+<p>Various report functions may use output of this function with the function <code>eca.predict</code> which samples the posterior distributions of parameters.
+ Communication between <code>eca.estimate</code> and <code>eca.predict</code> is managed by writing and reading files, 
  and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 

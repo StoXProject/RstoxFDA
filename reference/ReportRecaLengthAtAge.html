@@ -41,7 +41,9 @@
 
 <meta property="og:title" content="Report length at age — ReportRecaLengthAtAge" />
 <meta property="og:description" content="Tabulates summary statistics for mean length at age from MCMC simulations using Reca.
- MCMC simulations are typically obtained with RunRecaModels. 
+ MCMC simulations are typically obtained with RunRecaModels.
+ Summary statistics are obtained from the posterior distribution, and
+ credible intervals are equal-tailed intervals. 
 If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
  area, gear, stock, etc., summary statistics will be presented similarly." />
 
@@ -118,12 +120,14 @@ If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such a
 
     <div class="ref-description">
     <p>Tabulates summary statistics for mean length at age from MCMC simulations using Reca.
- MCMC simulations are typically obtained with <code><a href='RunRecaModels.html'>RunRecaModels</a></code>.</p> 
+ MCMC simulations are typically obtained with <code><a href='RunRecaModels.html'>RunRecaModels</a></code>.
+ Summary statistics are obtained from the posterior distribution, and
+ credible intervals are equal-tailed intervals.</p> 
 <p>If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
  area, gear, stock, etc., summary statistics will be presented similarly.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ReportRecaLengthAtAge</span><span class='op'>(</span><span class='va'>RecaCatchAtAge</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>ReportRecaLengthAtAge</span><span class='op'>(</span><span class='va'>RecaCatchAtAge</span>, PlusGroup <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/integer.html'>integer</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -132,11 +136,15 @@ If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such a
       <th>RecaCatchAtAge</th>
       <td><p>Results from MCMC simulations (<code><a href='RecaCatchAtAge.html'>RecaCatchAtAge</a></code>).</p></td>
     </tr>
+    <tr>
+      <th>PlusGroup</th>
+      <td><p>If given, ages 'PlusGroup' or older are included in a plus group.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code><a href='ReportRecaLengthAtAgeData.html'>ReportRecaLengthAtAgeData</a></code></p>
+    <p><code><a href='ReportFdaLengthAtAgeData.html'>ReportFdaLengthAtAgeData</a></code></p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='RunRecaModels.html'>RunRecaModels</a></code> for running Reca-analysis</p></div>

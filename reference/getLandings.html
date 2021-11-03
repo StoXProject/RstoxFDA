@@ -114,7 +114,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Prepares a Landings object as required by <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code>.</p>
+    <p>Prepares a Landings object as required by <code>eca.predict</code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>getLandings</span><span class='op'>(</span>
@@ -161,7 +161,7 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Landings object as required by <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code></p>
+    <p>Landings object as required by <code>eca.predict</code></p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The parameters 'date', 'month', and 'quarter' are used to set the temporal resolution for catch at age prediction.
@@ -170,58 +170,59 @@
  One can for example run with month, even if Quarter is a covariate in the model.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>catchsamples</span><span class='op'>)</span>
- <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>landings</span><span class='op'>)</span>
- <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>Metier5</span> <span class='op'>&lt;-</span> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>LEmetier5</span>
- <span class='va'>landings</span><span class='op'>$</span><span class='va'>Metier5</span> <span class='op'>&lt;-</span> <span class='va'>landings</span><span class='op'>$</span><span class='va'>FishingActivityCategoryEuropeanLvl5</span>
- <span class='va'>covMap</span> <span class='op'>&lt;-</span> <span class='fu'><a href='getCovariateMap.html'>getCovariateMap</a></span><span class='op'>(</span><span class='st'>"Metier5"</span>, <span class='va'>catchsamples</span>, <span class='va'>landings</span><span class='op'>)</span>
- <span class='fu'>getLandings</span><span class='op'>(</span><span class='va'>landings</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Metier5"</span><span class='op'>)</span>, <span class='va'>covMap</span>, month<span class='op'>=</span><span class='va'>landings</span><span class='op'>$</span><span class='va'>Month</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $AgeLengthCov
-#&gt;      constant Metier5  midseason
-#&gt;   1:        1      NA 0.04166667
-#&gt;   2:        1      NA 0.04166667
-#&gt;   3:        1      NA 0.04166667
-#&gt;   4:        1      NA 0.04166667
-#&gt;   5:        1      NA 0.04166667
-#&gt;  ---                            
-#&gt; 136:        1      NA 0.95833333
-#&gt; 137:        1      NA 0.95833333
-#&gt; 138:        1      NA 0.95833333
-#&gt; 139:        1      NA 0.95833333
-#&gt; 140:        1      NA 0.95833333
-#&gt; 
-#&gt; $WeightLengthCov
-#&gt;      constant Metier5  midseason
-#&gt;   1:        1      NA 0.04166667
-#&gt;   2:        1      NA 0.04166667
-#&gt;   3:        1      NA 0.04166667
-#&gt;   4:        1      NA 0.04166667
-#&gt;   5:        1      NA 0.04166667
-#&gt;  ---                            
-#&gt; 136:        1      NA 0.95833333
-#&gt; 137:        1      NA 0.95833333
-#&gt; 138:        1      NA 0.95833333
-#&gt; 139:        1      NA 0.95833333
-#&gt; 140:        1      NA 0.95833333
-#&gt; 
-#&gt; $LiveWeightKG
-#&gt;   [1]     286      25  250036    1830  194018 3273227 1748348      50 4185134
-#&gt;  [10]     431   47688  396872    5392       2  476648    3346  227733 3834393
-#&gt;  [19] 2074242 9918271     576     182    1502  517766     256      59  816156
-#&gt;  [28]    1722   42750 1708199  401854       9 8097981   28918    1487  949050
-#&gt;  [37]     284      56  644914   10132    6942 1941510   85133     164 4581130
-#&gt;  [46]   18510    2436       2       6 1446977      20   86741   10093    6660
-#&gt;  [55] 2252695  159199  952184    7145    1050      31    7610 3004477     403
-#&gt;  [64]   39027    5667   43964  878267  195451 1453760      90     809    3697
-#&gt;  [73] 1194960     106   46192   33292 1089375  667459  670795 1718245    5049
-#&gt;  [82]     412   10907 2680842     312   77216    9135  250326  553660  285489
-#&gt;  [91]  599404     145   14485 2040036     217     762   68714     990   31878
-#&gt; [100]  631597  374483  474991    1655     114    2714 1124215     257     286
-#&gt; [109]   97397    2543   44809 2217342  792741      28 2872604    1576    1850
-#&gt; [118]  464053     394      12  108891    4177   71908 4586319 1469352 1613570
-#&gt; [127]     965     216   14420  269620    1124   42722     483   52854 4263132
-#&gt; [136] 1071761 3355643     460   14715  211022
-#&gt; </div></pre>
+    <pre class="examples"><span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>catchsamples</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>landings</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>Metier5</span> <span class='op'>&lt;-</span> <span class='va'>catchsamples</span><span class='op'>$</span><span class='va'>LEmetier5</span></span>
+<span class='r-in'> <span class='va'>landings</span><span class='op'>$</span><span class='va'>Metier5</span> <span class='op'>&lt;-</span> <span class='va'>landings</span><span class='op'>$</span><span class='va'>FishingActivityCategoryEuropeanLvl5</span></span>
+<span class='r-in'> <span class='va'>covMap</span> <span class='op'>&lt;-</span> <span class='fu'><a href='getCovariateMap.html'>getCovariateMap</a></span><span class='op'>(</span><span class='st'>"Metier5"</span>, <span class='va'>catchsamples</span>, <span class='va'>landings</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='fu'>getLandings</span><span class='op'>(</span><span class='va'>landings</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Metier5"</span><span class='op'>)</span>, <span class='va'>covMap</span>, month<span class='op'>=</span><span class='va'>landings</span><span class='op'>$</span><span class='va'>Month</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $AgeLengthCov</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      constant Metier5  midseason</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1:        1      NA 0.04166667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   2:        1      NA 0.04166667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   3:        1      NA 0.04166667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   4:        1      NA 0.04166667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   5:        1      NA 0.04166667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  ---                            </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 136:        1      NA 0.95833333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 137:        1      NA 0.95833333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 138:        1      NA 0.95833333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 139:        1      NA 0.95833333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 140:        1      NA 0.95833333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $WeightLengthCov</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      constant Metier5  midseason</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   1:        1      NA 0.04166667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   2:        1      NA 0.04166667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   3:        1      NA 0.04166667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   4:        1      NA 0.04166667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   5:        1      NA 0.04166667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  ---                            </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 136:        1      NA 0.95833333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 137:        1      NA 0.95833333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 138:        1      NA 0.95833333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 139:        1      NA 0.95833333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 140:        1      NA 0.95833333</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $LiveWeightKG</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   [1]     286      25  250036    1830  194018 3273227 1748348      50 4185134</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [10]     431   47688  396872    5392       2  476648    3346  227733 3834393</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [19] 2074242 9918271     576     182    1502  517766     256      59  816156</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [28]    1722   42750 1708199  401854       9 8097981   28918    1487  949050</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [37]     284      56  644914   10132    6942 1941510   85133     164 4581130</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [46]   18510    2436       2       6 1446977      20   86741   10093    6660</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [55] 2252695  159199  952184    7145    1050      31    7610 3004477     403</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [64]   39027    5667   43964  878267  195451 1453760      90     809    3697</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [73] 1194960     106   46192   33292 1089375  667459  670795 1718245    5049</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [82]     412   10907 2680842     312   77216    9135  250326  553660  285489</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [91]  599404     145   14485 2040036     217     762   68714     990   31878</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [100]  631597  374483  474991    1655     114    2714 1124215     257     286</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [109]   97397    2543   44809 2217342  792741      28 2872604    1576    1850</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [118]  464053     394      12  108891    4177   71908 4586319 1469352 1613570</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [127]     965     216   14420  269620    1124   42722     483   52854 4263132</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [136] 1071761 3355643     460   14715  211022</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

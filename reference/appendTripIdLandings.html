@@ -158,23 +158,23 @@
     <p>if 'tripIds' is NULL, trip IDs will be constructed from landings using <code><a href='makeTripIds.html'>makeTripIds</a></code></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'> <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-   <span class='co'>#merge mesh size from first operation on a trip into landings</span>
-   <span class='va'>lssfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span>
-   <span class='va'>logbfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span>
-   <span class='va'>landings</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readLssFile.html'>readLssFile</a></span><span class='op'>(</span><span class='va'>lssfile</span><span class='op'>)</span>
-   <span class='va'>logbooks</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readErsFile.html'>readErsFile</a></span><span class='op'>(</span><span class='va'>logbfile</span><span class='op'>)</span>
-   <span class='va'>tripIds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='makeTripIds.html'>makeTripIds</a></span><span class='op'>(</span><span class='va'>landings</span><span class='op'>)</span>
-   <span class='va'>logbooksWtripIds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='appendTripIdLogbooks.html'>appendTripIdLogbooks</a></span><span class='op'>(</span><span class='va'>logbooks</span>, <span class='va'>tripIds</span><span class='op'>)</span>
-   <span class='va'>landingsWtripIds</span> <span class='op'>&lt;-</span> <span class='fu'>appendTripIdLandings</span><span class='op'>(</span><span class='va'>landings</span>, <span class='va'>tripIds</span><span class='op'>)</span>
-
-   <span class='va'>firstCatch</span> <span class='op'>&lt;-</span> <span class='va'>logbooksWtripIds</span><span class='op'>[</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span><span class='op'>(</span><span class='va'>logbooksWtripIds</span><span class='op'>$</span><span class='va'>tripid</span><span class='op'>)</span>,<span class='op'>]</span>
-   <span class='va'>landingsWmeshSize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span><span class='op'>(</span><span class='va'>landingsWtripIds</span>,
-                              <span class='va'>firstCatch</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"tripid"</span>, <span class='st'>"MASKEVIDDE"</span><span class='op'>)</span><span class='op'>]</span>,
-                              by<span class='op'>=</span><span class='st'>"tripid"</span>,
-                              all.x<span class='op'>=</span><span class='cn'>T</span><span class='op'>)</span>
- <span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'> <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>   <span class='co'>#merge mesh size from first operation on a trip into landings</span></span>
+<span class='r-in'>   <span class='va'>lssfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span></span>
+<span class='r-in'>   <span class='va'>logbfile</span> <span class='op'>&lt;-</span> <span class='st'>""</span> <span class='co'>#set appropriately</span></span>
+<span class='r-in'>   <span class='va'>landings</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readLssFile.html'>readLssFile</a></span><span class='op'>(</span><span class='va'>lssfile</span><span class='op'>)</span></span>
+<span class='r-in'>   <span class='va'>logbooks</span> <span class='op'>&lt;-</span> <span class='fu'>RstoxData</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RstoxData/man/readErsFile.html'>readErsFile</a></span><span class='op'>(</span><span class='va'>logbfile</span><span class='op'>)</span></span>
+<span class='r-in'>   <span class='va'>tripIds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='makeTripIds.html'>makeTripIds</a></span><span class='op'>(</span><span class='va'>landings</span><span class='op'>)</span></span>
+<span class='r-in'>   <span class='va'>logbooksWtripIds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='appendTripIdLogbooks.html'>appendTripIdLogbooks</a></span><span class='op'>(</span><span class='va'>logbooks</span>, <span class='va'>tripIds</span><span class='op'>)</span></span>
+<span class='r-in'>   <span class='va'>landingsWtripIds</span> <span class='op'>&lt;-</span> <span class='fu'>appendTripIdLandings</span><span class='op'>(</span><span class='va'>landings</span>, <span class='va'>tripIds</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>   <span class='va'>firstCatch</span> <span class='op'>&lt;-</span> <span class='va'>logbooksWtripIds</span><span class='op'>[</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/duplicated.html'>duplicated</a></span><span class='op'>(</span><span class='va'>logbooksWtripIds</span><span class='op'>$</span><span class='va'>tripid</span><span class='op'>)</span>,<span class='op'>]</span></span>
+<span class='r-in'>   <span class='va'>landingsWmeshSize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span><span class='op'>(</span><span class='va'>landingsWtripIds</span>,</span>
+<span class='r-in'>                              <span class='va'>firstCatch</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"tripid"</span>, <span class='st'>"MASKEVIDDE"</span><span class='op'>)</span><span class='op'>]</span>,</span>
+<span class='r-in'>                              by<span class='op'>=</span><span class='st'>"tripid"</span>,</span>
+<span class='r-in'>                              all.x<span class='op'>=</span><span class='cn'>T</span><span class='op'>)</span></span>
+<span class='r-in'> <span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
