@@ -124,6 +124,58 @@ is.ReportFdaData <- function(ReportFdaData){
   return(TRUE)
 }
 
+#' Sum of Products report (ReportFdaSOP)
+#' 
+#' @description 
+#'  Sum of Products report (SOP-report), comparing the total landed weight of fish
+#'  with the product of mean weight at age estimates and total number 
+#'  at age estimates 
+#'  
+#'  list with two members 'SopReport' and 'AggregationVariables'.
+#'  'SopReport' is a \code{\link[data.table]{data.table}} with the columns:
+#'  \describe{
+#'   \item{TotalWeightEstimated}{Total round weight (kg) estimated}
+#'   \item{LandedWeight}{Landed round weight (kg) reported}
+#'   \item{Difference}{The difference between estimated and reported landed weight}
+#'   \item{RelativeDifference}{The difference between estimated and reported landed weight relative to reported weight}
+#'   \item{...}{Any aggregation variables. The names of these are listed in 'AggregationVariables'}
+#'  }
+#'  'AggregationVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
+#' 
+#' @name ReportFdaSOP
+#' 
+NULL
+
+#' Checks if argument is \code{\link[RstoxFDA]{ReportFdaSOP}}
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSOP}}
+#' @param ReportFdaSOP argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSOP}}
+#' @export
+is.ReportFdaSOP <- function(ReportFdaSOP){
+  
+  if (!is.list(ReportFdaSOP)){
+    return(FALSE)
+  }
+  if (!all(c("AggregationVariables", "SopReport") %in% names(ReportFdaSOP))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(ReportFdaSOP$SopReport)){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(ReportFdaSOP$AggregationVariables)){
+    return(FALSE)
+  }
+  if (!all(c("TotalWeightEstimated", "LandedWeight", "Difference", "RelativeDifference") %in% names(ReportFdaSOP$SopReport))){
+    return(FALSE)
+  }
+  if (!all(c("AggregationVariables") %in% names(ReportFdaSOP$AggregationVariables))){
+    return(FALSE)
+  }
+  return(TRUE)
+  
+}
+
 #' Checks if argument is \code{\link[RstoxData]{Translation}}
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxData]{Translation}}

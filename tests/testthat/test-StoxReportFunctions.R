@@ -107,9 +107,39 @@ expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
                   MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age==13]))
 
 
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, AggregationVariables = c("Gear", "Area"))
+expect_true(is.ReportFdaSOP(sopTab))
+sopTab <- sopTab$SopReport
+expect_true(all(sopTab$RelativeDifference < 0.001))
 
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, AggregationVariables = c("Gear"))
+expect_true(is.ReportFdaSOP(sopTab))
+sopTab <- sopTab$SopReport
+expect_true(all(sopTab$RelativeDifference < 0.001))
 
-#browser()
-# Report SOP
-#ReportFdaSOP(catchAtAgeReportDecompPlusGr, )
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData)
+expect_true(is.ReportFdaSOP(sopTab))
+sopTab <- sopTab$SopReport
+expect_true(all(sopTab$RelativeDifference < 0.001))
+expect_true(nrow(sopTab) == 1)
 
+# Check that NAs are reported for incomplete landings
+SL <- StoxLandingData
+SL$Landing <- SL$Landing[SL$Landing$Gear != 53,]
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, SL, AggregationVariables = c("Gear", "Area"))
+expect_true(is.ReportFdaSOP(sopTab))
+sopTab <- sopTab$SopReport
+expect_true(all(is.na(sopTab$RelativeDifference[sopTab$Gear==53])))
+expect_true(all(!is.na(sopTab$RelativeDifference[sopTab$Gear==11])))
+
+# Check that NAs are reported for incomplete estimates (and incomplete landings)
+catchAtAgeReportDecompPlusGr$FdaReport$Gear[catchAtAgeReportDecompPlusGr$FdaReport$Gear==53] <- 52
+MeanWeightReportDecompPlusGr$FdaReport$Gear[MeanWeightReportDecompPlusGr$FdaReport$Gear==53] <- 52
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, AggregationVariables = c("Gear", "Area"))
+expect_true(is.ReportFdaSOP(sopTab))
+sopTab <- sopTab$SopReport
+expect_true(all(is.na(sopTab$RelativeDifference[sopTab$Gear==52])))
+expect_true(all(is.na(sopTab$LandedWeight[sopTab$Gear==52])))
+expect_true(all(is.na(sopTab$RelativeDifference[sopTab$Gear==53])))
+expect_true(all(is.na(sopTab$TotalWeightEstimated[sopTab$Gear==53])))
+expect_true(all(!is.na(sopTab$RelativeDifference[sopTab$Gear==11])))

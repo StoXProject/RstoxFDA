@@ -205,7 +205,7 @@ reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=int
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
-#' @return \code{\link[RstoxFDA]{ReportFdaAtAgeData}}
+#' @return \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
 ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
@@ -230,5 +230,102 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
 #' @export
 ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
   reportPlusGroupMeans(RecaCatchAtAge, "MeanLength", "MeanIndividualLength", PlusGroup)
+}
+
+#' Report SOP test
+#' @description 
+#'  Report sum-of-product test (SOP-test) for catch estimates
+#' 
+#'  Mean weight at age and estimated catch at age is used to compute total catches
+#'  and the relative difference to reported landings are reported.
+#'  
+#'  The report will be generated for landings decomposed on the provided 'AggregationVariables'
+#'  which must be available in both 'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData'
+#'  and 'StoxLandingData'.
+#'  
+#'  'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same
+#'  'AggregationVariables' and must be reported for the same age groups
+#' @param ReportFdaCatchAtAgeData \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}} with estimates of total catch at age
+#' @param ReportFdaWeightAtAgeData \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}} with estimates of mean weight at age for individual fish
+#' @param StoxLandingData
+#'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
+#' @param AggregationVariables Columns of 'StoxLandingData' that partitions the landings into groups SOP tests should be reported for.
+#' @return \code{\link[RstoxFDA]{ReportFdaSOP}}
+#' @seealso 
+#'  \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for some ways of preparing 'ReportFdaWeightAtAgeData' and 'ReportFdaCatchAtAgeData'.
+#'  \code{\link[RstoxData]{StoxLanding}} and \code{\link[RstoxData]{FilterStoxLanding}} for ways of preparing 'StoxLandingData'.
+#' @export
+ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, StoxLandingData, AggregationVariables=NULL){
+  
+  aggVars <- AggregationVariables
+  
+  # set a temporary aggregationvariable if none is requested.
+  if (is.null(aggVars)){
+    aggVars <- c("DummyAgg")
+    stopifnot(!("DummyAgg" %in% names(ReportFdaWeightAtAgeData$FdaReport)))
+    stopifnot(!("DummyAgg" %in% names(ReportFdaCatchAtAgeData$FdaReport)))
+    stopifnot(!("DummyAgg" %in% names(StoxLandingData$Landing)))
+    ReportFdaWeightAtAgeData$FdaReport$DummyAgg <- "1"
+    ReportFdaWeightAtAgeData$AggregationVariables <- data.table::data.table(AggregationVariables=c("DummyAgg", ReportFdaWeightAtAgeData$AggregationVariables$AggregationVariables))
+    ReportFdaCatchAtAgeData$FdaReport$DummyAgg <- "1"
+    ReportFdaCatchAtAgeData$AggregationVariables <- data.table::data.table(AggregationVariables=c("DummyAgg", ReportFdaCatchAtAgeData$AggregationVariables$AggregationVariables))
+    StoxLandingData$Landing$DummyAgg <- "1"
+  }
+  
+  msg <- "All 'AggregationVariables' must be present in both 'ReportFdaCatchAtAgeData', 'ReportFdaWeightAtAgeData' and 'StoxLandingData'"
+  if (!all(aggVars %in% names(ReportFdaCatchAtAgeData$FdaReport))){
+    stop(msg)
+  }
+  if (!all(aggVars %in% names(ReportFdaWeightAtAgeData$FdaReport))){
+    stop(msg)
+  }
+  if (!all(aggVars %in% names(StoxLandingData$Landing))){
+    stop(msg)
+  }
+  
+  msg <- "'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same 'AggregationVariables'"
+  
+  if (!all(ReportFdaWeightAtAgeData$AggregationVariables$AggregationVariables %in% ReportFdaCatchAtAgeData$AggregationVariables$AggregationVariables)){
+    stop(msg)
+  }
+  if (!all(ReportFdaCatchAtAgeData$AggregationVariables$AggregationVariables %in% ReportFdaWeightAtAgeData$AggregationVariables$AggregationVariables)){
+    stop(msg)
+  }
+  
+  msg <- "'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same age groups"
+  
+  if (!all(ReportFdaWeightAtAgeData$FdaReport$AgeGroup %in% ReportFdaCatchAtAgeData$FdaReport$AgeGroup)){
+    stop(msg)
+  }
+  if (!all(ReportFdaCatchAtAgeData$FdaReport$AgeGroup %in% ReportFdaWeightAtAgeData$FdaReport$AgeGroup)){
+    stop(msg)
+  }
+
+  #merge reports and estimate total for their aggragtion variables
+  jointTab <- merge(ReportFdaCatchAtAgeData$FdaReport, ReportFdaWeightAtAgeData$FdaReport, by=c("Age", "AgeGroup", ReportFdaCatchAtAgeData$AggregationVariables$AggregationVariables), suffixes = c("mw", "caa"))
+  stopifnot(nrow(jointTab) == nrow(ReportFdaCatchAtAgeData$FdaReport))
+  
+  jointTab$TotalWeightEstimated <- jointTab$CatchAtAge*jointTab$MeanIndividualWeight
+  
+  # aggregate on requested variables and merge with landings
+  estTab <- jointTab[, list(TotalWeightEstimated=sum(get("TotalWeightEstimated"))), by=aggVars]
+  landTab <- StoxLandingData$Landing[, list(LandedWeight=sum(get("RoundWeight"))), by=aggVars]
+  
+  # calculate differences
+  reportTab <- merge(estTab, landTab, all=T)
+  reportTab$Difference <- reportTab$TotalWeightEstimated - reportTab$LandedWeight
+  reportTab$RelativeDifference <- reportTab$Difference / reportTab$LandedWeight
+  
+  #remove dummy aggregation variable
+  if (is.null(AggregationVariables)){
+    reportTab$DummyAgg <- NULL
+    AggregationVariables <- character()
+  }
+  
+  output <- list()
+  output$SopReport <- reportTab
+  output$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
+  
+  return(output)
 }
 
