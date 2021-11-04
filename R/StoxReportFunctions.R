@@ -17,7 +17,7 @@
 #' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @export
-ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=NULL){
+ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character()){
   
   flatlandings <- StoxLandingData$Landing
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData)
@@ -161,7 +161,7 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
 
 #' Calcualtes means for RecaCatchAtAge with plusgroups
 #' @noRd
-reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=integer(), IntervalWidth=numeric()){
+reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=integer(), IntervalWidth=numeric(), digits=2){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   mw <- setAgeGroup(RecaCatchAtAge[[table]])
   
@@ -196,7 +196,7 @@ reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=int
   
   aggNames <- c(RecaCatchAtAge$GroupingVariables$GroupingVariables)
   
-  return(reportParameterAtAge(mw, RecaCatchAtAge$GroupingVariables$GroupingVariables, parameter, alpha = 1 - IntervalWidth))
+  return(reportParameterAtAge(mw, RecaCatchAtAge$GroupingVariables$GroupingVariables, parameter, alpha = 1 - IntervalWidth, digits=digits))
 }
 
 #' Report weight at age
@@ -221,7 +221,7 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
     IntervalWidth <- 0.9
   }
 
-  return(reportPlusGroupMeans(RecaCatchAtAge, "MeanWeight", "MeanIndividualWeight", PlusGroup, IntervalWidth))
+  return(reportPlusGroupMeans(RecaCatchAtAge, "MeanWeight", "MeanIndividualWeight", PlusGroup, IntervalWidth, digits = 3))
 }
 
 #' Report length at age

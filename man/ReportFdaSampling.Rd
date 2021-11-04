@@ -4,7 +4,11 @@
 \alias{ReportFdaSampling}
 \title{Report FDA sampling}
 \usage{
-ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = NULL)
+ReportFdaSampling(
+  StoxBioticData,
+  StoxLandingData,
+  GroupingVariables = character()
+)
 }
 \arguments{
 \item{StoxBioticData}{\code{\link[RstoxData]{StoxBioticData}} data with samples from fisheries
