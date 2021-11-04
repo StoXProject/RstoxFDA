@@ -117,7 +117,11 @@
     <p>Report sampling of fisheries against landings in partitions of the fisheries.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ReportFdaSampling</span><span class='op'>(</span><span class='va'>StoxBioticData</span>, <span class='va'>StoxLandingData</span>, AggregationVariables <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>ReportFdaSampling</span><span class='op'>(</span>
+  <span class='va'>StoxBioticData</span>,
+  <span class='va'>StoxLandingData</span>,
+  GroupingVariables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -133,7 +137,7 @@ and approriate columns added for identifying corresponding landings.</p></td>
 and approriate columns added for identifying corresponding samples</p></td>
     </tr>
     <tr>
-      <th>AggregationVariables</th>
+      <th>GroupingVariables</th>
       <td><p>Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.</p></td>
     </tr>
     </table>
@@ -143,7 +147,7 @@ and approriate columns added for identifying corresponding samples</p></td>
     <p><code><a href='ReportFdaSamplingData.html'>ReportFdaSamplingData</a></code></p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Sampling is reported partitioned on the provided 'AggregationVariables'.
+    <p>Sampling is reported partitioned on the provided 'GroupingVariables'.
  If samples are encoded in partitions of the fisheries with no landings. 'LandedRoundWeight' will be NA.
  This may be due to recording errors or filtering errors, but it may also be due to comparison of similar
  but unequal category-definitios. For instance area are coded in landings as dominant area for a fishing trip,

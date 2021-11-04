@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Adds Stratum to StoxBioticData — AddStratumStoxBiotic • RstoxFDA</title>
+<title>Sum of Products report (ReportFdaSopData) — ReportFdaSopData • RstoxFDA</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,19 @@
 
 
 
-<meta property="og:title" content="Adds Stratum to StoxBioticData — AddStratumStoxBiotic" />
-<meta property="og:description" content="Adds a column to StoxBioticData with the spatial strata each row belongs to." />
+<meta property="og:title" content="Sum of Products report (ReportFdaSopData) — ReportFdaSopData" />
+<meta property="og:description" content="Sum of Products report (SOP-report), comparing the total landed weight of fish
+ with the product of mean weight at age estimates and total number 
+ at age estimates 
+list with two members 'SopReport' and 'GroupingVariables'.
+ 'SopReport' is a data.table with the columns:
+  TotalWeightEstimatedTotal round weight (kg) estimated
+  LandedWeightLanded round weight (kg) reported
+  DifferenceThe difference between estimated and reported landed weight
+  RelativeDifferenceThe difference between estimated and reported landed weight relative to reported weight
+  ...Any aggregation variables. The names of these are listed in 'GroupingVariables'
+ 
+'GroupingVariables' is a data.table with a column containing the names of any aggregation variables." />
 
 
 
@@ -108,43 +119,28 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Adds Stratum to StoxBioticData</h1>
-    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxBaselineFunctions.R'><code>R/StoxBaselineFunctions.R</code></a></small>
-    <div class="hidden name"><code>AddStratumStoxBiotic.Rd</code></div>
+    <h1>Sum of Products report (ReportFdaSopData)</h1>
+    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxDataTypes.R'><code>R/StoxDataTypes.R</code></a></small>
+    <div class="hidden name"><code>ReportFdaSopData.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Adds a column to StoxBioticData with the spatial strata each row belongs to.</p>
+    <p>Sum of Products report (SOP-report), comparing the total landed weight of fish
+ with the product of mean weight at age estimates and total number 
+ at age estimates</p> 
+<p>list with two members 'SopReport' and 'GroupingVariables'.
+ 'SopReport' is a <code><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></code> with the columns:</p><dl>
+  <dt>TotalWeightEstimated</dt><dd><p>Total round weight (kg) estimated</p></dd>
+  <dt>LandedWeight</dt><dd><p>Landed round weight (kg) reported</p></dd>
+  <dt>Difference</dt><dd><p>The difference between estimated and reported landed weight</p></dd>
+  <dt>RelativeDifference</dt><dd><p>The difference between estimated and reported landed weight relative to reported weight</p></dd>
+  <dt>...</dt><dd><p>Any aggregation variables. The names of these are listed in 'GroupingVariables'</p></dd>
+ 
+</dl><p>'GroupingVariables' is a <code><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></code> with a column containing the names of any aggregation variables.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>AddStratumStoxBiotic</span><span class='op'>(</span><span class='va'>StoxBioticData</span>, <span class='va'>StratumPolygon</span><span class='op'>)</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>StoxBioticData</th>
-      <td><p><code><a href='https://rdrr.io/pkg/RstoxData/man/StoxBioticData.html'>StoxBioticData</a></code> data which will be annotated. Needs postions appended. See details.</p></td>
-    </tr>
-    <tr>
-      <th>StratumPolygon</th>
-      <td><p>Definition of spatial strata. See <code><a href='https://rdrr.io/pkg/RstoxBase/man/StratumPolygon.html'>StratumPolygon</a></code></p></td>
-    </tr>
-    </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>StoxBioticData with column appended to data.table 'Station'. See <code><a href='https://rdrr.io/pkg/RstoxData/man/StoxBioticData.html'>StoxBioticData</a></code>.</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The strata are added to the new column 'Stratum'.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/RstoxBase/man/DefineStratumPolygon.html'>DefineStratumPolygon</a></code> for configuring stratum definitions.
- <code><a href='AddStratumStoxLanding.html'>AddStratumStoxLanding</a></code> for similar function for landing data, 
- <code><a href='PrepareRecaEstimate.html'>PrepareRecaEstimate</a></code> for use of 'Stratum' as an effect in Reca-estimation,
- <code><a href='DefineCarNeighbours.html'>DefineCarNeighbours</a></code> for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
- and <code><a href='ReportFdaSampling.html'>ReportFdaSampling</a></code> for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.</p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

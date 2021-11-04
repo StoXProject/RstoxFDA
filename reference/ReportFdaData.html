@@ -42,17 +42,17 @@
 <meta property="og:title" content="Fisheries dependent analysis report (ReportFdaData) — ReportFdaData" />
 <meta property="og:description" content="Results from catch estimations. The results may be presented
  decomposed on combinations of aggregation variables, such as gear, area, stock etc. 
-list with two members 'FdaReport' and 'AggregationVariables'.
+list with two members 'FdaReport' and 'GroupingVariables'.
  'FdaReport' is a data.table with the columns:
   AgeGroupcharacter. The age group the estimate is reported for. May be age or plus group
   Ageinteger. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)
   &amp;lt;Statistic&amp;gt;A reported statistic
   SDStandard deviation for the reported statistic.
-  CI.05The lower limit of a 90% Credible Interval or Confidence interval.
-  CI.95The higher limit of the 90% Credible Interval or Confidence interval.
-  ...Any aggregation variables. The names of these are listed in 'AggregationVariables'
+  LowThe lower limit of the estimated interval for the reported statistic.
+  HighThe higher limit of the estimated interval for the reported statistic.
+  ...Any aggregation variables. The names of these are listed in 'GroupingVariables'
  
-'AggregationVariables' is a data.table with a column containing the names of any aggregation variables." />
+'GroupingVariables' is a data.table with a column containing the names of any aggregation variables." />
 
 
 
@@ -128,17 +128,17 @@ list with two members 'FdaReport' and 'AggregationVariables'.
     <div class="ref-description">
     <p>Results from catch estimations. The results may be presented
  decomposed on combinations of aggregation variables, such as gear, area, stock etc.</p> 
-<p>list with two members 'FdaReport' and 'AggregationVariables'.
+<p>list with two members 'FdaReport' and 'GroupingVariables'.
  'FdaReport' is a <code><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></code> with the columns:</p><dl>
   <dt>AgeGroup</dt><dd><p>character. The age group the estimate is reported for. May be age or plus group</p></dd>
   <dt>Age</dt><dd><p>integer. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)</p></dd>
   <dt>&lt;Statistic&gt;</dt><dd><p>A reported statistic</p></dd>
   <dt>SD</dt><dd><p>Standard deviation for the reported statistic.</p></dd>
-  <dt>CI.05</dt><dd><p>The lower limit of a 90% Credible Interval or Confidence interval.</p></dd>
-  <dt>CI.95</dt><dd><p>The higher limit of the 90% Credible Interval or Confidence interval.</p></dd>
-  <dt>...</dt><dd><p>Any aggregation variables. The names of these are listed in 'AggregationVariables'</p></dd>
+  <dt>Low</dt><dd><p>The lower limit of the estimated interval for the reported statistic.</p></dd>
+  <dt>High</dt><dd><p>The higher limit of the estimated interval for the reported statistic.</p></dd>
+  <dt>...</dt><dd><p>Any aggregation variables. The names of these are listed in 'GroupingVariables'</p></dd>
  
-</dl><p>'AggregationVariables' is a <code><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></code> with a column containing the names of any aggregation variables.</p>
+</dl><p>'GroupingVariables' is a <code><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></code> with a column containing the names of any aggregation variables.</p>
     </div>
 
 

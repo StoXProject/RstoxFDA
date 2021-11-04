@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Sum of Products report (ReportFdaSOP) — ReportFdaSOP • RstoxFDA</title>
+<title>Report SOP test — ReportFdaSOP • RstoxFDA</title>
 
 
 <!-- jquery -->
@@ -39,27 +39,15 @@
 
 
 
-<meta property="og:title" content="Sum of Products report (ReportFdaSOP) — ReportFdaSOP" />
-<meta property="og:description" content="Sum of Products report (SOP-report), comparing the total landed weight of fish
- with the product of mean weight at age estimates and total number 
- at age estimates 
-list with two members 'SopReport' and 'AggregationVariables'.
- 'SopReport' is a data.table with the columns:
-  TotalWeightEstimatedTotal round weight (kg) estimated
-  LandedWeightLanded round weight (kg) reported
-  DifferenceThe difference between estimated and reported landed weight
-  RelativeDifferenceThe difference between estimated and reported landed weight relative to reported weight
-  ...Any aggregation variables. The names of these are listed in 'AggregationVariables'
- 
-'AggregationVariables' is a data.table with a column containing the names of any aggregation variables.
-Report sum-of-product test (SOP-test) for catch estimates
+<meta property="og:title" content="Report SOP test — ReportFdaSOP" />
+<meta property="og:description" content="Report sum-of-product test (SOP-test) for catch estimates
 Mean weight at age and estimated catch at age is used to compute total catches
  and the relative difference to reported landings are reported. 
-The report will be generated for landings decomposed on the provided 'AggregationVariables'
+The report will be generated for landings decomposed on the provided 'GroupingVariables'
  which must be available in both 'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData'
  and 'StoxLandingData'. 
 'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same
- 'AggregationVariables' and must be reported for the same age groups" />
+ 'GroupingVariables' and must be reported for the same age groups" />
 
 
 
@@ -127,39 +115,27 @@ The report will be generated for landings decomposed on the provided 'Aggregatio
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Sum of Products report (ReportFdaSOP)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxDataTypes.R'><code>R/StoxDataTypes.R</code></a>, <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxReportFunctions.R'><code>R/StoxReportFunctions.R</code></a></small>
+    <h1>Report SOP test</h1>
+    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxReportFunctions.R'><code>R/StoxReportFunctions.R</code></a></small>
     <div class="hidden name"><code>ReportFdaSOP.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Sum of Products report (SOP-report), comparing the total landed weight of fish
- with the product of mean weight at age estimates and total number 
- at age estimates</p> 
-<p>list with two members 'SopReport' and 'AggregationVariables'.
- 'SopReport' is a <code><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></code> with the columns:</p><dl>
-  <dt>TotalWeightEstimated</dt><dd><p>Total round weight (kg) estimated</p></dd>
-  <dt>LandedWeight</dt><dd><p>Landed round weight (kg) reported</p></dd>
-  <dt>Difference</dt><dd><p>The difference between estimated and reported landed weight</p></dd>
-  <dt>RelativeDifference</dt><dd><p>The difference between estimated and reported landed weight relative to reported weight</p></dd>
-  <dt>...</dt><dd><p>Any aggregation variables. The names of these are listed in 'AggregationVariables'</p></dd>
- 
-</dl><p>'AggregationVariables' is a <code><a href='https://Rdatatable.gitlab.io/data.table/reference/data.table.html'>data.table</a></code> with a column containing the names of any aggregation variables.</p>
-<p>Report sum-of-product test (SOP-test) for catch estimates</p>
+    <p>Report sum-of-product test (SOP-test) for catch estimates</p>
 <p>Mean weight at age and estimated catch at age is used to compute total catches
  and the relative difference to reported landings are reported.</p> 
-<p>The report will be generated for landings decomposed on the provided 'AggregationVariables'
+<p>The report will be generated for landings decomposed on the provided 'GroupingVariables'
  which must be available in both 'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData'
  and 'StoxLandingData'.</p> 
 <p>'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same
- 'AggregationVariables' and must be reported for the same age groups</p>
+ 'GroupingVariables' and must be reported for the same age groups</p>
     </div>
 
     <pre class="usage"><span class='fu'>ReportFdaSOP</span><span class='op'>(</span>
   <span class='va'>ReportFdaCatchAtAgeData</span>,
   <span class='va'>ReportFdaWeightAtAgeData</span>,
   <span class='va'>StoxLandingData</span>,
-  AggregationVariables <span class='op'>=</span> <span class='cn'>NULL</span>
+  GroupingVariables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span><span class='op'>(</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -178,14 +154,14 @@ The report will be generated for landings decomposed on the provided 'Aggregatio
       <td><p><code><a href='https://rdrr.io/pkg/RstoxData/man/StoxLandingData.html'>StoxLandingData</a></code> data with landings from fisheries</p></td>
     </tr>
     <tr>
-      <th>AggregationVariables</th>
+      <th>GroupingVariables</th>
       <td><p>Columns of 'StoxLandingData' that partitions the landings into groups SOP tests should be reported for.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code>ReportFdaSOP</code></p>
+    <p><code><a href='ReportFdaSopData.html'>ReportFdaSopData</a></code></p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='ReportRecaWeightAtAge.html'>ReportRecaWeightAtAge</a></code> and <code><a href='ReportRecaCatchAtAge.html'>ReportRecaCatchAtAge</a></code> for some ways of preparing 'ReportFdaWeightAtAgeData' and 'ReportFdaCatchAtAgeData'.
