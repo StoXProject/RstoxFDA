@@ -4,12 +4,18 @@
 \alias{ReportRecaCatchAtAge}
 \title{Report catch at age}
 \usage{
-ReportRecaCatchAtAge(RecaCatchAtAge, PlusGroup = integer())
+ReportRecaCatchAtAge(
+  RecaCatchAtAge,
+  PlusGroup = integer(),
+  IntervalWidth = numeric()
+)
 }
 \arguments{
 \item{RecaCatchAtAge}{Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).}
 
 \item{PlusGroup}{If given, ages 'PlusGroup' or older are included in a plus group.}
+
+\item{IntervalWidth}{The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
@@ -18,7 +24,7 @@ ReportRecaCatchAtAge(RecaCatchAtAge, PlusGroup = integer())
 Tabulates summary statistics for total catch at age from MCMC simulations using Reca.
  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
  Summary statistics are obtained from the posterior distribution, and
- credible intervals are equal-tailed intervals.
+ the interval is reported as equal-tailed credible intervals.
  
  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
  area, gear, stock, etc., summary statistics will be presented similarly.

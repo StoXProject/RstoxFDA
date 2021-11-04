@@ -538,13 +538,13 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  Runs prediction (catch-at-age estimate) for parameterized Reca models.
 #' @details
 #'  Parameters may be obtained with \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
-#'  If the function-parameter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
+#'  If the function-parameter 'GroupingVariables' is provided, predictions will be provided for corresponding partitions of landings.
 #'  The parameter 'StoxLandingData' may differ from the landings used in parameterisation (passed to \code{\link[RstoxFDA]{ParameterizeRecaModels}}), 
 #'  as long as all not additional values / levels for the model covariates / effects are introduced.
 #'  
-#'  If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'AggregationVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
+#'  If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'GroupingVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
 #'  
-#'  If the 'AggregationVariables' specify a large number of partitions of the landings, this function may
+#'  If the 'GroupingVariables' specify a large number of partitions of the landings, this function may
 #'  exhaust available computer memory.
 #'  
 #'  By default length groups are collapsed into one length group in the result. 
@@ -552,7 +552,7 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  This will increase the risk of exhausting available computer memory.
 #' @param RecaParameterData Parameters for Reca models.
 #' @param StoxLandingData Landings data (\code{\link[RstoxData]{StoxLandingData}}).
-#' @param AggregationVariables character vector identifying columns in 'StoxLandingData' that results should be provided for.
+#' @param GroupingVariables character vector identifying columns in 'StoxLandingData' that results should be provided for.
 #' @param TemporalResolution
 #'  default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
 #'  Regulates temporal resolution for calculating fractional ages of fish.
@@ -566,7 +566,7 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}, 
 #'  \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} for compiling reports of predictions / estimates.
 #' @export
-RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric(), CollapseLength=TRUE){
+RunRecaModels <- function(RecaParameterData, StoxLandingData, GroupingVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric(), CollapseLength=TRUE){
   
   #discard fit info and convert
   RecaParameterData$FitProportionAtAge <- NULL
@@ -587,18 +587,18 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
   
   RecaParameterData$GlobalParameters$caa.burnin <- Caa.burnin
   
-  if (!isGiven(AggregationVariables)){
+  if (!isGiven(GroupingVariables)){
     landings <- getLandingsFromStoxLandings(RecaParameterData, StoxLandingData, TemporalResolution)
     RecaParameterData$Landings <- landings
     results <- Reca::eca.predict(RecaParameterData$AgeLength, RecaParameterData$WeightLength, RecaParameterData$Landings, RecaParameterData$GlobalParameters)
     results <- ecaResult2Stox(results, RecaParameterData$CovariateMaps$StockSplitting)
-    results$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
+    results$GroupingVariables <- data.table::data.table(GroupingVariables=GroupingVariables)
     if (RecaParameterData$GlobalParameters$CC){
       stopifnot("Stock" %in% names(results$CatchAtAge))
-      if ("Stock" %in% names(results$AggregationVariables)){
+      if ("Stock" %in% names(results$GroupingVariables)){
         stop("Cannot add 'Stock' to aggregation variables, when it already exists as an aggregation variable")
       }
-      results$AggregationVariables <- data.table::data.table(AggregationVariables=c(results$AggregationVariables$AggregationVariables, "Stock"))
+      results$GroupingVariables <- data.table::data.table(GroupingVariables=c(results$GroupingVariables$GroupingVariables, "Stock"))
     }
     
     if (CollapseLength){
@@ -614,13 +614,13 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
     
   }
   else{
-    if (!all(AggregationVariables %in% names(StoxLandingData$Landing))){
-      missing <- AggregationVariables[!(AggregationVariables %in% names(StoxLandingData$Landing))]
-      stop(paste("Parameter 'AggregationVariables' contain some variables not found as columns in 'StoxLandingData':", paste(missing, collapse=",")))
+    if (!all(GroupingVariables %in% names(StoxLandingData$Landing))){
+      missing <- GroupingVariables[!(GroupingVariables %in% names(StoxLandingData$Landing))]
+      stop(paste("Parameter 'GroupingVariables' contain some variables not found as columns in 'StoxLandingData':", paste(missing, collapse=",")))
     }
     
     result <- NULL
-    frame <- unique(StoxLandingData$Landing[,AggregationVariables, with=F])
+    frame <- unique(StoxLandingData$Landing[,GroupingVariables, with=F])
     frame$aggregationId <- 1:nrow(frame)
     
     l <- merge(StoxLandingData$Landing, frame, by=names(frame)[names(frame) %in% names(StoxLandingData$Landing)])
@@ -640,8 +640,8 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
         partitionresults$CatchAtAge$Length <- RecaParameterData$GlobalParameters$maxlength
       }
       
-      for (a in AggregationVariables){
-        stopifnot(length(unique(partition[[a]]))==1) # ensured by frame <- unique(StoxLandingData$Landing[,AggregationVariables, with=F])
+      for (a in GroupingVariables){
+        stopifnot(length(unique(partition[[a]]))==1) # ensured by frame <- unique(StoxLandingData$Landing[,GroupingVariables, with=F])
         partitionresults$CatchAtAge[[a]] <- partition[[a]][1]
         partitionresults$MeanLength[[a]] <- partition[[a]][1]
         partitionresults$MeanWeight[[a]] <- partition[[a]][1]
@@ -656,15 +656,15 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, AggregationVariabl
         result$MeanWeight <- rbind(result$MeanWeight, partitionresults$MeanWeight)
       }
     }
-    result$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
+    result$GroupingVariables <- data.table::data.table(GroupingVariables=GroupingVariables)
     
     if (RecaParameterData$GlobalParameters$CC){
       
       stopifnot("Stock" %in% names(result$CatchAtAge))
-      if ("Stock" %in% names(result$AggregationVariables)){
+      if ("Stock" %in% names(result$GroupingVariables)){
         stop("Cannot add 'Stock' to aggregation variables, when it already exists as an aggregation variable")
       }
-      result$AggregationVariables <- data.table::data.table(AggregationVariables=c(result$AggregationVariables$AggregationVariables, "Stock"))
+      result$GroupingVariables <- data.table::data.table(GroupingVariables=c(result$GroupingVariables$GroupingVariables, "Stock"))
     }
     
     return(result)

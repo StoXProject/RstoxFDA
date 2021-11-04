@@ -7,7 +7,7 @@
 RunRecaModels(
   RecaParameterData,
   StoxLandingData,
-  AggregationVariables = character(),
+  GroupingVariables = character(),
   TemporalResolution = c("Quarter", "Month"),
   Caa.burnin = numeric(),
   Seed = numeric(),
@@ -19,7 +19,7 @@ RunRecaModels(
 
 \item{StoxLandingData}{Landings data (\code{\link[RstoxData]{StoxLandingData}}).}
 
-\item{AggregationVariables}{character vector identifying columns in 'StoxLandingData' that results should be provided for.}
+\item{GroupingVariables}{character vector identifying columns in 'StoxLandingData' that results should be provided for.}
 
 \item{TemporalResolution}{default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
 Regulates temporal resolution for calculating fractional ages of fish.
@@ -39,13 +39,13 @@ Runs prediction (catch-at-age estimate) for parameterized Reca models.
 }
 \details{
 Parameters may be obtained with \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
- If the function-parameter 'AggregationVariables' is provided, predictions will be provided for corresponding partitions of landings.
+ If the function-parameter 'GroupingVariables' is provided, predictions will be provided for corresponding partitions of landings.
  The parameter 'StoxLandingData' may differ from the landings used in parameterisation (passed to \code{\link[RstoxFDA]{ParameterizeRecaModels}}), 
  as long as all not additional values / levels for the model covariates / effects are introduced.
  
- If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'AggregationVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
+ If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'GroupingVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
  
- If the 'AggregationVariables' specify a large number of partitions of the landings, this function may
+ If the 'GroupingVariables' specify a large number of partitions of the landings, this function may
  exhaust available computer memory.
  
  By default length groups are collapsed into one length group in the result. 

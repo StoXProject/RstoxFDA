@@ -7,16 +7,16 @@
 Results from catch estimations. The results may be presented
  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
  
- list with two members 'FdaReport' and 'AggregationVariables'.
+ list with two members 'FdaReport' and 'GroupingVariables'.
  'FdaReport' is a \code{\link[data.table]{data.table}} with the columns:
  \describe{
   \item{AgeGroup}{character. The age group the estimate is reported for. May be age or plus group}
   \item{Age}{integer. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)}
   \item{<Statistic>}{A reported statistic}
   \item{SD}{Standard deviation for the reported statistic.}
-  \item{CI.05}{The lower limit of a 90\% Credible Interval or Confidence interval.}
-  \item{CI.95}{The higher limit of the 90\% Credible Interval or Confidence interval.}
-  \item{...}{Any aggregation variables. The names of these are listed in 'AggregationVariables'}
+  \item{Low}{The lower limit of the estimated interval for the reported statistic.}
+  \item{High}{The higher limit of the estimated interval for the reported statistic.}
+  \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
  }
- 'AggregationVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
+ 'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 }

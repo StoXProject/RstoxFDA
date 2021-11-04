@@ -4,12 +4,18 @@
 \alias{ReportRecaWeightAtAge}
 \title{Report weight at age}
 \usage{
-ReportRecaWeightAtAge(RecaCatchAtAge, PlusGroup = integer())
+ReportRecaWeightAtAge(
+  RecaCatchAtAge,
+  PlusGroup = integer(),
+  IntervalWidth = numeric()
+)
 }
 \arguments{
 \item{RecaCatchAtAge}{Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).}
 
 \item{PlusGroup}{If given, ages 'PlusGroup' or older are included in a plus group.}
+
+\item{IntervalWidth}{The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}}
@@ -18,7 +24,7 @@ ReportRecaWeightAtAge(RecaCatchAtAge, PlusGroup = integer())
 Tabulates summary statistics for mean weights at age from MCMC simulations using Reca.
  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
  Summary statistics are obtained from the posterior distribution, and
- credible intervals are equal-tailed intervals.
+ the interval is reported as 90% equal-tailed credible intervals.
  
  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
  area, gear, stock, etc., summary statistics will be presented similarly.

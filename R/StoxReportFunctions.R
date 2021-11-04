@@ -2,7 +2,7 @@
 #' @description 
 #'  Report sampling of fisheries against landings in partitions of the fisheries.
 #' @details 
-#'  Sampling is reported partitioned on the provided 'AggregationVariables'.
+#'  Sampling is reported partitioned on the provided 'GroupingVariables'.
 #'  If samples are encoded in partitions of the fisheries with no landings. 'LandedRoundWeight' will be NA.
 #'  This may be due to recording errors or filtering errors, but it may also be due to comparison of similar
 #'  but unequal category-definitios. For instance area are coded in landings as dominant area for a fishing trip,
@@ -14,69 +14,69 @@
 #' @param StoxLandingData
 #'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 #'  and approriate columns added for identifying corresponding samples
-#' @param AggregationVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.
+#' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @export
-ReportFdaSampling <- function(StoxBioticData, StoxLandingData, AggregationVariables=NULL){
+ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=NULL){
   
   flatlandings <- StoxLandingData$Landing
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData)
   
-  if (!isGiven(AggregationVariables)){
-    AggregationVariables <- names(flatbiotic)[names(flatbiotic) %in% names(flatlandings)]
+  if (!isGiven(GroupingVariables)){
+    GroupingVariables <- names(flatbiotic)[names(flatbiotic) %in% names(flatlandings)]
   }
   
-  if (length(AggregationVariables) == 0){
-    stop("No variables to stats::aggregate and compare. Provide parameter 'AggregationVariables'")
+  if (length(GroupingVariables) == 0){
+    stop("No variables to stats::aggregate and compare. Provide parameter 'GroupingVariables'")
   }
   
-  if (!all(AggregationVariables %in% names(flatlandings))){
-    missing <- AggregationVariables[!(AggregationVariables %in% names(flatlandings))]
-    stop(paste("All 'AggregationVariables' must be present in 'StoxLandingData'. Missing:", paste(missing, sep=",")))
+  if (!all(GroupingVariables %in% names(flatlandings))){
+    missing <- GroupingVariables[!(GroupingVariables %in% names(flatlandings))]
+    stop(paste("All 'GroupingVariables' must be present in 'StoxLandingData'. Missing:", paste(missing, sep=",")))
   }
-  if (!all(AggregationVariables %in% names(flatbiotic))){
-    missing <- AggregationVariables[!(AggregationVariables %in% names(flatbiotic))]
-    stop(paste("All 'AggregationVariables' must be present in 'StoxBioticData'. Missing:", paste(missing, sep=",")))
+  if (!all(GroupingVariables %in% names(flatbiotic))){
+    missing <- GroupingVariables[!(GroupingVariables %in% names(flatbiotic))]
+    stop(paste("All 'GroupingVariables' must be present in 'StoxBioticData'. Missing:", paste(missing, sep=",")))
   }
   
   
   bioticAggList <- list()
-  for (v in AggregationVariables){
+  for (v in GroupingVariables){
     bioticAggList[[v]] <- flatbiotic[[v]]
   }
 
-  samples <- flatbiotic[,c(AggregationVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "StationKey", "IndividualKey"), with=F]
+  samples <- flatbiotic[,c(GroupingVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "StationKey", "IndividualKey"), with=F]
   sampledTab <- data.table::data.table(stats::aggregate(list(Catches=samples$StationKey), by=bioticAggList, FUN=function(x){length(unique(x))}))
   vessels <- data.table::data.table(stats::aggregate(list(Vessels=samples$CatchPlatform), by=bioticAggList, FUN=function(x){length(unique(x))}))
-  sampledTab <- merge(sampledTab, vessels, by=AggregationVariables)
+  sampledTab <- merge(sampledTab, vessels, by=GroupingVariables)
   weights <- data.table::data.table(stats::aggregate(list(WeightMeasurments=samples$IndividualRoundWeight), by=bioticAggList, FUN=function(x){sum(!is.na(x))}))
-  sampledTab <- merge(sampledTab, weights, by=AggregationVariables)
+  sampledTab <- merge(sampledTab, weights, by=GroupingVariables)
   lengths <- data.table::data.table(stats::aggregate(list(LengthMeasurments=samples$IndividualTotalLength), by=bioticAggList, FUN=function(x){sum(!is.na(x))}))
-  sampledTab <- merge(sampledTab, lengths, by=AggregationVariables)
+  sampledTab <- merge(sampledTab, lengths, by=GroupingVariables)
   ages <- data.table::data.table(stats::aggregate(list(AgeReadings=samples$IndividualAge), by=bioticAggList, FUN=function(x){sum(!is.na(x))}))
-  sampledTab <- merge(sampledTab, ages, by=AggregationVariables)
+  sampledTab <- merge(sampledTab, ages, by=GroupingVariables)
   sampledWeights <- data.table::data.table(stats::aggregate(list(WeightOfSampledCatches=samples$CatchFractionWeight), by=bioticAggList, FUN=function(x){sum(x, na.rm=T)}))
-  sampledTab <- merge(sampledTab, sampledWeights, by=AggregationVariables)
+  sampledTab <- merge(sampledTab, sampledWeights, by=GroupingVariables)
   
   landingsAggList <- list()
-  for (v in AggregationVariables){
+  for (v in GroupingVariables){
     landingsAggList[[v]] <- flatlandings[[v]]
   }
-  landings <- flatlandings[,c(AggregationVariables, "RoundWeight"), with=F]
+  landings <- flatlandings[,c(GroupingVariables, "RoundWeight"), with=F]
   landingsTab <- data.table::data.table(stats::aggregate(list(LandedRoundWeight=landings$RoundWeight), by=landingsAggList, FUN=function(x){sum(x, na.rm=T)}))
   
-  tab <- merge(landingsTab, sampledTab, by=AggregationVariables, all=T)
+  tab <- merge(landingsTab, sampledTab, by=GroupingVariables, all=T)
   tab <- tab[order(tab$LandedRoundWeight),]
   
   output <- list()
   output$FisheriesSampling <- tab
-  output$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
+  output$GroupingVariables <- data.table::data.table(GroupingVariables=GroupingVariables)
   
   return(output)
 }
 
 #' @noRd
-reportParameterAtAge <- function(table, aggVariables, parameter, digits=2){
+reportParameterAtAge <- function(table, aggVariables, parameter, digits=2, alpha=.1){
   
   stopifnot(all(c("Age", "AgeGroup") %in% names(table)))
   
@@ -86,16 +86,16 @@ reportParameterAtAge <- function(table, aggVariables, parameter, digits=2){
   aggNames <- c("Age", "AgeGroup", aggNames)
   stopifnot(length(aggNames) == (ncol(table)-2))
   
-  result <- table[,list(par=round(mean(get(parameter)), digits=digits), SD=round(stats::sd(get(parameter)), digits=digits), CI.05=round(stats::quantile(get(parameter), probs = .05), digits=digits), CI.95=round(stats::quantile(get(parameter), probs = .95), digits=digits)), by=aggNames]
+  result <- table[,list(par=round(mean(get(parameter)), digits=digits), SD=round(stats::sd(get(parameter)), digits=digits), Low=round(stats::quantile(get(parameter), probs = alpha/2.0), digits=digits), High=round(stats::quantile(get(parameter), probs = 1-(alpha/2.0)), digits=digits)), by=aggNames]
   
-  data.table::setcolorder(result ,c("AgeGroup", "Age", "par", "SD", "CI.05", "CI.95", aggVariables))
-  names(result) <- c("AgeGroup", "Age", parameter, "SD", "CI.05", "CI.95", aggVariables)
+  data.table::setcolorder(result ,c("AgeGroup", "Age", "par", "SD", "Low", "High", aggVariables))
+  names(result) <- c("AgeGroup", "Age", parameter, "SD", "Low", "High", aggVariables)
   data.table::setorderv(result, c(aggVariables, "Age"))
   
   output <- list()
   output$FdaReport <- result
   
-  output$AggregationVariables <- data.table::data.table(AggregationVariables=aggVariables)
+  output$GroupingVariables <- data.table::data.table(GroupingVariables=aggVariables)
   
   return(output)
 }
@@ -116,20 +116,25 @@ setAgeGroup <- function(AgeReport){
 #'  Tabulates summary statistics for total catch at age from MCMC simulations using Reca.
 #'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
 #'  Summary statistics are obtained from the posterior distribution, and
-#'  credible intervals are equal-tailed intervals.
+#'  the interval is reported as equal-tailed credible intervals.
 #'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
+#' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
-ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
+ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric()){
   
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   
-  aggNames <- c("Iteration", "Age", RecaCatchAtAge$AggregationVariables$AggregationVariables)
+  if (length(IntervalWidth) == 0){
+    IntervalWidth <- 0.9
+  }
+  
+  aggNames <- c("Iteration", "Age", RecaCatchAtAge$GroupingVariables$GroupingVariables)
   stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
   totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
   
@@ -143,20 +148,20 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
       stop("'PlusGroup' is smaller than the smallest age in the model.")
     }
     
-    aggNames <- c("Iteration", "AgeGroup", RecaCatchAtAge$AggregationVariables$AggregationVariables)
+    aggNames <- c("Iteration", "AgeGroup", RecaCatchAtAge$GroupingVariables$GroupingVariables)
     totalOverLength$AgeGroup[totalOverLength$Age>=PlusGroup] <- paste("Age ", PlusGroup, "+", sep="")
     totalOverLength <- totalOverLength[, list(Age=min(get("Age")), CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
   }
   
-  aggNames <- c(RecaCatchAtAge$AggregationVariables$AggregationVariables)
+  aggNames <- c(RecaCatchAtAge$GroupingVariables$GroupingVariables)
   
-  return(reportParameterAtAge(totalOverLength, aggNames, "CatchAtAge"))
+  return(reportParameterAtAge(totalOverLength, aggNames, "CatchAtAge", alpha = 1-IntervalWidth))
   
 }
 
 #' Calcualtes means for RecaCatchAtAge with plusgroups
 #' @noRd
-reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=integer()){
+reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=integer(), IntervalWidth=numeric()){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   mw <- setAgeGroup(RecaCatchAtAge[[table]])
   
@@ -171,7 +176,7 @@ reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=int
     }
     
     #total over length, all ages
-    aggNames <- c("Iteration", "Age", RecaCatchAtAge$AggregationVariables$AggregationVariables)
+    aggNames <- c("Iteration", "Age", RecaCatchAtAge$GroupingVariables$GroupingVariables)
     stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
     totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
     totalOverLength <- setAgeGroup(totalOverLength)
@@ -180,7 +185,7 @@ reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=int
     mw <- merge(mw, totalOverLength)
     
     # add plussgroup and aggregate
-    aggNames <- c("Iteration", "AgeGroup", RecaCatchAtAge$AggregationVariables$AggregationVariables)
+    aggNames <- c("Iteration", "AgeGroup", RecaCatchAtAge$GroupingVariables$GroupingVariables)
     mw$AgeGroup[mw$Age>=PlusGroup] <- paste("Age ", PlusGroup, "+", sep="")
     mw <- mw[, list(Age=min(get("Age")), Total=sum(get(parameter)*get("CatchAtAge")), CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
     mw[[parameter]] <- mw$Total / mw$CatchAtAge
@@ -189,9 +194,9 @@ reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=int
     
   }
   
-  aggNames <- c(RecaCatchAtAge$AggregationVariables$AggregationVariables)
+  aggNames <- c(RecaCatchAtAge$GroupingVariables$GroupingVariables)
   
-  return(reportParameterAtAge(mw, RecaCatchAtAge$AggregationVariables$AggregationVariables, parameter))
+  return(reportParameterAtAge(mw, RecaCatchAtAge$GroupingVariables$GroupingVariables, parameter, alpha = 1 - IntervalWidth))
 }
 
 #' Report weight at age
@@ -199,19 +204,24 @@ reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=int
 #'  Tabulates summary statistics for mean weights at age from MCMC simulations using Reca.
 #'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
 #'  Summary statistics are obtained from the posterior distribution, and
-#'  credible intervals are equal-tailed intervals.
+#'  the interval is reported as 90% equal-tailed credible intervals.
 #'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
+#' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
 #' @return \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
-ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
+ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric()){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  
+  if (length(IntervalWidth) == 0){
+    IntervalWidth <- 0.9
+  }
 
-  reportPlusGroupMeans(RecaCatchAtAge, "MeanWeight", "MeanIndividualWeight", PlusGroup)
+  return(reportPlusGroupMeans(RecaCatchAtAge, "MeanWeight", "MeanIndividualWeight", PlusGroup, IntervalWidth))
 }
 
 #' Report length at age
@@ -219,17 +229,24 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
 #'  Tabulates summary statistics for mean length at age from MCMC simulations using Reca.
 #'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
 #'  Summary statistics are obtained from the posterior distribution, and
-#'  credible intervals are equal-tailed intervals.
+#'  the interval is reported as 90% equal-tailed credible intervals are reported.
 #'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
+#' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
 #' @return \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
-ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
-  reportPlusGroupMeans(RecaCatchAtAge, "MeanLength", "MeanIndividualLength", PlusGroup)
+ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric()){
+  stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  
+  if (length(IntervalWidth) == 0){
+    IntervalWidth <- 0.9
+  }
+  
+  return(reportPlusGroupMeans(RecaCatchAtAge, "MeanLength", "MeanIndividualLength", PlusGroup, IntervalWidth))
 }
 
 #' Report SOP test
@@ -239,25 +256,29 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer()){
 #'  Mean weight at age and estimated catch at age is used to compute total catches
 #'  and the relative difference to reported landings are reported.
 #'  
-#'  The report will be generated for landings decomposed on the provided 'AggregationVariables'
+#'  The report will be generated for landings decomposed on the provided 'GroupingVariables'
 #'  which must be available in both 'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData'
 #'  and 'StoxLandingData'.
 #'  
 #'  'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same
-#'  'AggregationVariables' and must be reported for the same age groups
+#'  'GroupingVariables' and must be reported for the same age groups
 #' @param ReportFdaCatchAtAgeData \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}} with estimates of total catch at age
 #' @param ReportFdaWeightAtAgeData \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}} with estimates of mean weight at age for individual fish
 #' @param StoxLandingData
 #'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
-#' @param AggregationVariables Columns of 'StoxLandingData' that partitions the landings into groups SOP tests should be reported for.
-#' @return \code{\link[RstoxFDA]{ReportFdaSOP}}
+#' @param GroupingVariables Columns of 'StoxLandingData' that partitions the landings into groups SOP tests should be reported for.
+#' @return \code{\link[RstoxFDA]{ReportFdaSopData}}
 #' @seealso 
 #'  \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for some ways of preparing 'ReportFdaWeightAtAgeData' and 'ReportFdaCatchAtAgeData'.
 #'  \code{\link[RstoxData]{StoxLanding}} and \code{\link[RstoxData]{FilterStoxLanding}} for ways of preparing 'StoxLandingData'.
 #' @export
-ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, StoxLandingData, AggregationVariables=NULL){
+ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, StoxLandingData, GroupingVariables=character()){
   
-  aggVars <- AggregationVariables
+  if (length(GroupingVariables)==0){
+    GroupingVariables <- NULL
+  }
+  
+  aggVars <- GroupingVariables
   
   # set a temporary aggregationvariable if none is requested.
   if (is.null(aggVars)){
@@ -266,13 +287,13 @@ ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, Stox
     stopifnot(!("DummyAgg" %in% names(ReportFdaCatchAtAgeData$FdaReport)))
     stopifnot(!("DummyAgg" %in% names(StoxLandingData$Landing)))
     ReportFdaWeightAtAgeData$FdaReport$DummyAgg <- "1"
-    ReportFdaWeightAtAgeData$AggregationVariables <- data.table::data.table(AggregationVariables=c("DummyAgg", ReportFdaWeightAtAgeData$AggregationVariables$AggregationVariables))
+    ReportFdaWeightAtAgeData$GroupingVariables <- data.table::data.table(GroupingVariables=c("DummyAgg", ReportFdaWeightAtAgeData$GroupingVariables$GroupingVariables))
     ReportFdaCatchAtAgeData$FdaReport$DummyAgg <- "1"
-    ReportFdaCatchAtAgeData$AggregationVariables <- data.table::data.table(AggregationVariables=c("DummyAgg", ReportFdaCatchAtAgeData$AggregationVariables$AggregationVariables))
+    ReportFdaCatchAtAgeData$GroupingVariables <- data.table::data.table(GroupingVariables=c("DummyAgg", ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables))
     StoxLandingData$Landing$DummyAgg <- "1"
   }
   
-  msg <- "All 'AggregationVariables' must be present in both 'ReportFdaCatchAtAgeData', 'ReportFdaWeightAtAgeData' and 'StoxLandingData'"
+  msg <- "All 'GroupingVariables' must be present in both 'ReportFdaCatchAtAgeData', 'ReportFdaWeightAtAgeData' and 'StoxLandingData'"
   if (!all(aggVars %in% names(ReportFdaCatchAtAgeData$FdaReport))){
     stop(msg)
   }
@@ -283,12 +304,12 @@ ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, Stox
     stop(msg)
   }
   
-  msg <- "'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same 'AggregationVariables'"
+  msg <- "'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same 'GroupingVariables'"
   
-  if (!all(ReportFdaWeightAtAgeData$AggregationVariables$AggregationVariables %in% ReportFdaCatchAtAgeData$AggregationVariables$AggregationVariables)){
+  if (!all(ReportFdaWeightAtAgeData$GroupingVariables$GroupingVariables %in% ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables)){
     stop(msg)
   }
-  if (!all(ReportFdaCatchAtAgeData$AggregationVariables$AggregationVariables %in% ReportFdaWeightAtAgeData$AggregationVariables$AggregationVariables)){
+  if (!all(ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables %in% ReportFdaWeightAtAgeData$GroupingVariables$GroupingVariables)){
     stop(msg)
   }
   
@@ -302,7 +323,7 @@ ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, Stox
   }
 
   #merge reports and estimate total for their aggragtion variables
-  jointTab <- merge(ReportFdaCatchAtAgeData$FdaReport, ReportFdaWeightAtAgeData$FdaReport, by=c("Age", "AgeGroup", ReportFdaCatchAtAgeData$AggregationVariables$AggregationVariables), suffixes = c("mw", "caa"))
+  jointTab <- merge(ReportFdaCatchAtAgeData$FdaReport, ReportFdaWeightAtAgeData$FdaReport, by=c("Age", "AgeGroup", ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables), suffixes = c("mw", "caa"))
   stopifnot(nrow(jointTab) == nrow(ReportFdaCatchAtAgeData$FdaReport))
   
   jointTab$TotalWeightEstimated <- jointTab$CatchAtAge*jointTab$MeanIndividualWeight
@@ -317,14 +338,14 @@ ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, Stox
   reportTab$RelativeDifference <- reportTab$Difference / reportTab$LandedWeight
   
   #remove dummy aggregation variable
-  if (is.null(AggregationVariables)){
+  if (is.null(GroupingVariables)){
     reportTab$DummyAgg <- NULL
-    AggregationVariables <- character()
+    GroupingVariables <- character()
   }
   
   output <- list()
   output$SopReport <- reportTab
-  output$AggregationVariables <- data.table::data.table(AggregationVariables=AggregationVariables)
+  output$GroupingVariables <- data.table::data.table(GroupingVariables=GroupingVariables)
   
   return(output)
 }

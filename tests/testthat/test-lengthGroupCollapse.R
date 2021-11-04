@@ -11,8 +11,8 @@ prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(),
 paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, fpath)
 
 context("RunRecaModels: Test collapse Length")
-resultsWlength <- RunRecaModels(paramOut, StoxLandingData, AggregationVariables = "Gear", CollapseLength = F)
-results <- RunRecaModels(paramOut, AggregationVariables = "Gear", StoxLandingData)
+resultsWlength <- RunRecaModels(paramOut, StoxLandingData, GroupingVariables = "Gear", CollapseLength = F)
+results <- RunRecaModels(paramOut, GroupingVariables = "Gear", StoxLandingData)
 
 removeTempDirReca(fpath)
 

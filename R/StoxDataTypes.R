@@ -29,18 +29,18 @@ is.Date <- function(date){
 #'  Results from catch estimations. The results may be presented
 #'  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
 #'  
-#'  list with two members 'FdaReport' and 'AggregationVariables'.
+#'  list with two members 'FdaReport' and 'GroupingVariables'.
 #'  'FdaReport' is a \code{\link[data.table]{data.table}} with the columns:
 #'  \describe{
 #'   \item{AgeGroup}{character. The age group the estimate is reported for. May be age or plus group}
 #'   \item{Age}{integer. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)}
 #'   \item{<Statistic>}{A reported statistic}
 #'   \item{SD}{Standard deviation for the reported statistic.}
-#'   \item{CI.05}{The lower limit of a 90\% Credible Interval or Confidence interval.}
-#'   \item{CI.95}{The higher limit of the 90\% Credible Interval or Confidence interval.}
-#'   \item{...}{Any aggregation variables. The names of these are listed in 'AggregationVariables'}
+#'   \item{Low}{The lower limit of the estimated interval for the reported statistic.}
+#'   \item{High}{The higher limit of the estimated interval for the reported statistic.}
+#'   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
 #'  }
-#'  'AggregationVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
+#'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaData
 #' 
@@ -106,43 +106,43 @@ is.ReportFdaData <- function(ReportFdaData){
   if (!is.list(ReportFdaData)){
     return(FALSE)
   }
-  if (!all(c("AggregationVariables", "FdaReport") %in% names(ReportFdaData))){
+  if (!all(c("GroupingVariables", "FdaReport") %in% names(ReportFdaData))){
     return(FALSE)
   }
   if (!data.table::is.data.table(ReportFdaData$FdaReport)){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportFdaData$AggregationVariables)){
+  if (!data.table::is.data.table(ReportFdaData$GroupingVariables)){
     return(FALSE)
   }
-  if (!all(c("Age", "CI.05", "CI.95", "SD") %in% names(ReportFdaData$FdaReport))){
+  if (!all(c("Age", "Low", "High", "SD") %in% names(ReportFdaData$FdaReport))){
     return(FALSE)
   }
-  if (!all(c("AggregationVariables") %in% names(ReportFdaData$AggregationVariables))){
+  if (!all(c("GroupingVariables") %in% names(ReportFdaData$GroupingVariables))){
     return(FALSE)
   }
   return(TRUE)
 }
 
-#' Sum of Products report (ReportFdaSOP)
+#' Sum of Products report (ReportFdaSopData)
 #' 
 #' @description 
 #'  Sum of Products report (SOP-report), comparing the total landed weight of fish
 #'  with the product of mean weight at age estimates and total number 
 #'  at age estimates 
 #'  
-#'  list with two members 'SopReport' and 'AggregationVariables'.
+#'  list with two members 'SopReport' and 'GroupingVariables'.
 #'  'SopReport' is a \code{\link[data.table]{data.table}} with the columns:
 #'  \describe{
 #'   \item{TotalWeightEstimated}{Total round weight (kg) estimated}
 #'   \item{LandedWeight}{Landed round weight (kg) reported}
 #'   \item{Difference}{The difference between estimated and reported landed weight}
 #'   \item{RelativeDifference}{The difference between estimated and reported landed weight relative to reported weight}
-#'   \item{...}{Any aggregation variables. The names of these are listed in 'AggregationVariables'}
+#'   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
 #'  }
-#'  'AggregationVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
+#'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
-#' @name ReportFdaSOP
+#' @name ReportFdaSopData
 #' 
 NULL
 
@@ -157,19 +157,19 @@ is.ReportFdaSOP <- function(ReportFdaSOP){
   if (!is.list(ReportFdaSOP)){
     return(FALSE)
   }
-  if (!all(c("AggregationVariables", "SopReport") %in% names(ReportFdaSOP))){
+  if (!all(c("GroupingVariables", "SopReport") %in% names(ReportFdaSOP))){
     return(FALSE)
   }
   if (!data.table::is.data.table(ReportFdaSOP$SopReport)){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportFdaSOP$AggregationVariables)){
+  if (!data.table::is.data.table(ReportFdaSOP$GroupingVariables)){
     return(FALSE)
   }
   if (!all(c("TotalWeightEstimated", "LandedWeight", "Difference", "RelativeDifference") %in% names(ReportFdaSOP$SopReport))){
     return(FALSE)
   }
-  if (!all(c("AggregationVariables") %in% names(ReportFdaSOP$AggregationVariables))){
+  if (!all(c("GroupingVariables") %in% names(ReportFdaSOP$GroupingVariables))){
     return(FALSE)
   }
   return(TRUE)
@@ -273,7 +273,7 @@ is.WeightConversionTable <- function(WeightConversionTable){
 #' @description 
 #'  list with tow members:
 #'  \describe{
-#'   \item{AggregationVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FishereisSampling' stored in the column 'AggregationVariables'}
+#'   \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FishereisSampling' stored in the column 'GroupingVariables'}
 #'   \item{FisheriesSampling}{a \code{\link[data.table]{data.table}} described below.}
 #'  }
 #'  
@@ -304,7 +304,7 @@ is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
   if (!is.list(ReportFdaSamplingData)){
     return(FALSE)
   }
-  if (!all(c("AggregationVariables", "FisheriesSampling") %in% names(ReportFdaSamplingData))){
+  if (!all(c("GroupingVariables", "FisheriesSampling") %in% names(ReportFdaSamplingData))){
     return(FALSE)
   }
   if (!data.table::is.data.table(ReportFdaSamplingData$FisheriesSampling)){
@@ -509,11 +509,11 @@ is.RecaParameterData <- function(RecaParameterData){
 #'  \item{CatchAtAge}{\code{\link[data.table]{data.table}} tabulating the estimated catch-at-age by length group for each Reca iteration (MCMC sample)}
 #'  \item{MeanLength}{\code{\link[data.table]{data.table}} tabulating the mean length in cm by age for each Reca iteration (MCMC sample)}
 #'  \item{MeanWeight}{\code{\link[data.table]{data.table}} tabulating the mean weight in g by age for each Reca iteration (MCMC sample)}
-#'  \item{AggregationVariables}{\code{\link[data.table]{data.table}} with any variables that catch-at-age estimates are partitioned on 
-#'            in the column 'AggregationVariables'. These may correspond to variables in the landings, or maye be the variable 'Stock' if
+#'  \item{GroupingVariables}{\code{\link[data.table]{data.table}} with any variables that catch-at-age estimates are partitioned on 
+#'            in the column 'GroupingVariables'. These may correspond to variables in the landings, or maye be the variable 'Stock' if
 #'            stock-splitting analysis have been perfomred.}
 #' }
-#' In addition to columns for the variables in 'AggregationVariables', the data tables 'CatchAtAge', 'MeanLength', and 'MeanWeight' have the following variables:
+#' In addition to columns for the variables in 'GroupingVariables', the data tables 'CatchAtAge', 'MeanLength', and 'MeanWeight' have the following variables:
 #' \describe{
 #'  \item{Age}{Age in number of years.}
 #'  \item{Iteration}{The Reca iteration (MCMC sample) that estimates are calculated for}
@@ -1194,7 +1194,7 @@ stoxFunctionAttributes <- list(
     functionCategory = "analysis",
     functionOutputDataType = "RecaCatchAtAge",
     functionParameterFormat = list(
-      AggregationVariables = "aggregationvariables"
+      GroupingVariables = "GroupingVariables"
     )
   ),
   ReportFdaSampling = list(
@@ -1202,23 +1202,31 @@ stoxFunctionAttributes <- list(
     functionCategory = "report",
     functionOutputDataType = "ReportFdaSamplingData",
     functionParameterFormat = list(
-      AggregationVariables = "samplereportvariables"
+      GroupingVariables = "samplereportvariables"
     )
   ),
   ReportRecaCatchAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportRecaCatchAtAgeData"
+    functionOutputDataType = "ReportFdaCatchAtAgeData"
   ),
   ReportRecaLengthAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportRecaLengthAtAgeData"
+    functionOutputDataType = "ReportFdaLengthAtAgeData"
   ),
   ReportRecaWeightAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportRecaWeightAtAgeData"
+    functionOutputDataType = "ReportFdaWeightAtAgeData"
+  ),
+  ReportFdaSOP = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaSopData",
+    functionParameterFormat = list(
+      GroupingVariables = "GroupingVariablesSop"
+    )
   )
 )
 
@@ -1255,7 +1263,17 @@ processPropertyFormats <- list(
     }, 
     variableTypes = "character"
   ),
-  aggregationvariables = list(
+  GroupingVariablesSOP = list(
+    class = "vector", 
+    title = "One or more variables to use as aggregation variables.", 
+    possibleValues = function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, StoxLandingData) {
+      possibleValues <- names(StoxLandingData$Landing)[(names(StoxLandingData$Landing) %in% ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables) &
+                                                         (names(StoxLandingData$Landing) %in% ReportFdaWeightAtAgeData$GroupingVariables$GroupingVariables)]
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  GroupingVariables = list(
     class = "vector", 
     title = "One or more variables to use as aggregation variables.", 
     possibleValues = function(StoxLandingData) {
