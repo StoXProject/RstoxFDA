@@ -1,5 +1,5 @@
 #
-# obtain example files for testing Reca
+# regenerate example files used in unit tests (testthat)
 #
 
 bioticfile <- "../resource_raw_data/biotic_kolmule_2018.xml"
@@ -41,14 +41,13 @@ usethis::use_data(recaPrediction, overwrite = T)
 usethis::use_data(recaDataExample, overwrite = T)
 
 #' example results for testing reporting
-fpath <- makeTempDirReca()
-param <- ParameterizeRecaModels(prep, 10, 100, ResultDirectory = fpath)
-recaParam <- RstoxFDA::ParameterizeRecaModels(recaDataExample, 10, 200, 10, ResultDirectory = fpath)
+fpath <- RstoxFDA:::makeTempDirReca()
+recaParam <- RstoxFDA::ParameterizeRecaModels(recaDataExample, 10, 5000, 10, ResultDirectory = fpath)
 recaPredictionFlat <- RstoxFDA::RunRecaModels(recaParam, StoxLandingData)
-recaPredictionFlatAggvar <- RstoxFDA::RunRecaModels(recaParam, StoxLandingData, AggregationVariables = c("Gear", "Area"))
+recaPredictionFlatAggvar <- RstoxFDA::RunRecaModels(recaParam, StoxLandingData, GroupingVariables = c("Gear", "Area"))
 saveRDS(recaPredictionFlat, "inst/testresources/recaPredictionFlat.rds")
 saveRDS(recaPredictionFlatAggvar, "inst/testresources/recaPredictionDecomp.rds")
-removeTempDirReca(fpath)
+RstoxFDA:::removeTempDirReca(fpath)
 
 #
 # make test data with delprøve

@@ -4,7 +4,11 @@
 \alias{ReportFdaSampling}
 \title{Report FDA sampling}
 \usage{
-ReportFdaSampling(StoxBioticData, StoxLandingData, AggregationVariables = NULL)
+ReportFdaSampling(
+  StoxBioticData,
+  StoxLandingData,
+  GroupingVariables = character()
+)
 }
 \arguments{
 \item{StoxBioticData}{\code{\link[RstoxData]{StoxBioticData}} data with samples from fisheries
@@ -13,7 +17,7 @@ and approriate columns added for identifying corresponding landings.}
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 and approriate columns added for identifying corresponding samples}
 
-\item{AggregationVariables}{Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.}
+\item{GroupingVariables}{Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSamplingData}}
@@ -22,7 +26,7 @@ and approriate columns added for identifying corresponding samples}
 Report sampling of fisheries against landings in partitions of the fisheries.
 }
 \details{
-Sampling is reported partitioned on the provided 'AggregationVariables'.
+Sampling is reported partitioned on the provided 'GroupingVariables'.
  If samples are encoded in partitions of the fisheries with no landings. 'LandedRoundWeight' will be NA.
  This may be due to recording errors or filtering errors, but it may also be due to comparison of similar
  but unequal category-definitios. For instance area are coded in landings as dominant area for a fishing trip,

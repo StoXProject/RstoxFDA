@@ -1,23 +1,28 @@
 #' read tab separated file
 #' @noRd
-readTabSepFile <- function(filepath, encoding="ascii", col_types = NULL, col_names = NULL, trim_ws=T){
-  loc <- readr::default_locale()
-  loc$encoding <- encoding
-  tab <- readr::read_delim(filepath, delim = "\t", locale = loc, col_types = col_types, comment = "#", trim_ws = trim_ws)
-  tab <- data.table::as.data.table(tab)
-
-  for (n in names(tab)){
-    if (is.Date(tab[[n]])){
-      tab[[n]] <- as.POSIXct(tab[[n]])
-    }
-  }
-
+readTabSepFile <- function(filepath, encoding="UTF-8", col_classes = NULL, col_names = NULL, trim_ws=T){
+  
+  
+  #check headers
+  header <- utils::read.table(filepath, sep="\t", fileEncoding = encoding, comment.char = "#", strip.white = trim_ws, header=T, na.strings = c("", " "))
+  
   if (length(col_names)>0){
-    missing <- col_names[!(col_names %in% names(tab))]
+    missing <- col_names[!(col_names %in% names(header))]
     if (length(missing)>0){
       stop(paste("Resource file does not have required columns:", paste(missing, collapse=", ")))
     }
   }
+  
+    
+  tab <- utils::read.table(filepath, sep="\t", fileEncoding = encoding, colClasses = col_classes, comment.char = "#", strip.white = trim_ws, header=T, na.strings = c("", " "))
+  tab <- data.table::as.data.table(tab)
+
+  for (n in names(tab)){
+    if (length(date) == 1 & ("Date" %in% class(date))){
+      stop("Date is not supported, use POSIXct")
+    }
+  }
+
 
   return(tab)
 }

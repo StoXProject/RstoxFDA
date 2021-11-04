@@ -6,7 +6,7 @@
 \description{
 list with tow members:
  \describe{
-  \item{AggregationVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FishereisSampling' stored in the column 'AggregationVariables'}
+  \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FishereisSampling' stored in the column 'GroupingVariables'}
   \item{FisheriesSampling}{a \code{\link[data.table]{data.table}} described below.}
  }
  

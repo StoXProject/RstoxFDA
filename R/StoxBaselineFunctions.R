@@ -1064,7 +1064,7 @@ DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "
   }
 
   if (DefinitionMethod == "ResourceFile"){
-    tab <- readTabSepFile(FileName, col_types = "ccdd", col_names = c("Area", "Location",	"Latitude",	"Longitude"), encoding = encoding)
+    tab <- readTabSepFile(FileName, col_classes = c("character", "character", "numeric", "numeric"), col_names = c("Area", "Location",	"Latitude",	"Longitude"), encoding = encoding)
     
     missingLoc <- tab[is.na(tab[["Location"]]),]
     
@@ -1097,7 +1097,7 @@ DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "
 #' Read CAR neighbours from file
 #' @noRd
 loadCarNeighboursFile <- function(FileName, encoding){
-  tab <- readTabSepFile(FileName, col_types = "cc", col_names = c("CarValue", "Neighbours"), encoding = encoding)
+  tab <- readTabSepFile(FileName, col_classes = c("character", "character"), col_names = c("CarValue", "Neighbours"), encoding = encoding)
   
   checkSymmetry(tab)
   
@@ -1245,7 +1245,7 @@ DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile")
 #' @noRd
 readStockSplittingParameters <- function(resourceFilePath, encoding){
   tab <- readTabSepFile(resourceFilePath,
-                        col_types = "ccdddddddd",
+                        col_classes = c(rep("character", 2), rep("numeric", 8)),
                         col_names = c("StockNameCC", "StockNameS", "ProbabilityType1As1",
                                       "ProbabilityType1As5", "ProbabilityType2As2",
                                       "ProbabilityType2As4",	"ProbabilityType4As2",
@@ -1400,7 +1400,7 @@ DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("Re
   
   if (DefinitionMethod == "ResourceFile"){
     tab <- readTabSepFile(FileName,
-                          col_types = "cccdd",
+                          col_classes = c(rep("character", 3), rep("numeric", 2)),
                           col_names = c("Description", "Species", "MeasurementType", "Alpha", "Beta"),
                           encoding = encoding)
     
@@ -1450,7 +1450,7 @@ DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("Resour
   
   if (DefinitionMethod == "ResourceFile"){
     tab <- readTabSepFile(FileName,
-                          col_types = "cccd",
+                          col_classes =  c(rep("character", 3), "numeric"),
                           col_names = c("Description", "Species", "ProductType", "WeightFactor"),
                           encoding = encoding)
     

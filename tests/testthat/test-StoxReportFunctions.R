@@ -7,16 +7,16 @@ StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="R
 StoxLandingData <- readRDS(StoxLandingFile)
 StoxLandingData$Landing$Quarter <- quarters(StoxLandingData$Landing$CatchDate)
 
-SamplingReport <- ReportFdaSampling(StoxBioticData, StoxLandingData, AggregationVariables = c("Quarter"))
+SamplingReport <- ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"))
 expect_true(is.ReportFdaSamplingData(SamplingReport))
 expect_true(all(!is.na(SamplingReport$FisheriesSampling$LandedRoundWeight)))
 
 #Default gear is different coding system for stoxbiotic and landing
 unlanded <- ReportFdaSampling(StoxBioticData, StoxLandingData)
-expect_true(is.data.table(unlanded$AggregationVariables))
-expect_true("Gear" %in% unlanded$AggregationVariables$AggregationVariables)
+expect_true(is.data.table(unlanded$GroupingVariables))
+expect_true("Gear" %in% unlanded$GroupingVariables$GroupingVariables)
 expect_true(any(is.na(unlanded$FisheriesSampling$LandedRoundWeight)))
-expect_error(ReportFdaSampling(StoxBioticData, StoxLandingData, AggregationVariables = c("Quarter", "Nonesene")), "All 'AggregationVariables' must be present in 'StoxLandingData'. Missing: Nonesene")
+expect_error(ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter", "Nonesene")), "All 'GroupingVariables' must be present in 'StoxLandingData'. Missing: Nonesene")
 
 
 # Report Catch at age
@@ -33,10 +33,10 @@ diff <- sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtAgeReportDec
 reldiff <- abs(diff/sum(catchAtAgeReportFlat$FdaReport$CatchAtAge))
 
 expect_lt(reldiff, .001)
-expect_equal(length(catchAtAgeReportFlat$AggregationVariables$AggregationVariables), 0)
+expect_equal(length(catchAtAgeReportFlat$GroupingVariables$GroupingVariables), 0)
 expect_equal(ncol(catchAtAgeReportFlat$FdaReport), 6)
 
-expect_equal(length(catchAtAgeReportDecomp$AggregationVariables$AggregationVariables), 2)
+expect_equal(length(catchAtAgeReportDecomp$GroupingVariables$GroupingVariables), 2)
 expect_equal(ncol(catchAtAgeReportDecomp$FdaReport), 8)
 
 #test plusgroup
@@ -45,14 +45,14 @@ diff <- sum(catchAtAgeReportDecomp$FdaReport$CatchAtAge) - sum(catchAtAgeReportD
 reldiff <- abs(diff/sum(catchAtAgeReportDecompPlusGr$FdaReport$CatchAtAge))
 expect_lt(reldiff, .001)
 expect_equal(nrow(catchAtAgeReportDecompPlusGr$FdaReport), 40)
-expect_equal(nrow(catchAtAgeReportDecompPlusGr$AggregationVariables), 2)
+expect_equal(nrow(catchAtAgeReportDecompPlusGr$GroupingVariables), 2)
 
 catchAtAgeReportFlatPlusGr <- ReportRecaCatchAtAge(catchAtAgeFlat, PlusGroup=5)
 diff <- sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge)
 reldiff <- abs(diff/sum(catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge))
 expect_lt(reldiff, .001)
 expect_equal(nrow(catchAtAgeReportFlatPlusGr$FdaReport), 4)
-expect_equal(nrow(catchAtAgeReportFlatPlusGr$AggregationVariables), 0)
+expect_equal(nrow(catchAtAgeReportFlatPlusGr$GroupingVariables), 0)
 
 # Report Mean weight
 MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp)
@@ -76,6 +76,7 @@ expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
           MeanWeightReportDecomp$FdaReport$MeanIndividualWeight[MeanWeightReportDecomp$FdaReport$Age==5]))
 #mean for plusgr should be smaller than largest age in plusgr
 # beware of artifacts for small age groups (convergence or data issues). Using age group 13, rather than 14
+
 expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$FdaReport$Age==5] <
           MeanWeightReportDecomp$FdaReport$MeanIndividualWeight[MeanWeightReportDecomp$FdaReport$Age==13]))
 
@@ -106,30 +107,31 @@ expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
 expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age==5] <
                   MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age==13]))
 
-
-
 context("Test SOP")
 
-sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, AggregationVariables = c("Gear", "Area"))
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"))
 expect_true(is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport
-expect_true(all(sopTab$RelativeDifference < 0.001))
+expect_true(all(abs(sopTab$RelativeDifference) < 0.02))
 
-sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, AggregationVariables = c("Gear"))
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear"))
 expect_true(is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport
-expect_true(all(sopTab$RelativeDifference < 0.001))
+
+expect_true(all(abs(sopTab$RelativeDifference) < 0.006))
 
 sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData)
 expect_true(is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport
-expect_true(all(sopTab$RelativeDifference < 0.001))
+
+expect_true(all(abs(sopTab$RelativeDifference) < 0.005))
 expect_true(nrow(sopTab) == 1)
 
 # Check that NAs are reported for incomplete landings
 SL <- StoxLandingData
 SL$Landing <- SL$Landing[SL$Landing$Gear != 53,]
-sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, SL, AggregationVariables = c("Gear", "Area"))
+
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, SL, GroupingVariables = c("Gear", "Area"))
 expect_true(is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport
 expect_true(all(is.na(sopTab$RelativeDifference[sopTab$Gear==53])))
@@ -138,7 +140,7 @@ expect_true(all(!is.na(sopTab$RelativeDifference[sopTab$Gear==11])))
 # Check that NAs are reported for incomplete estimates (and incomplete landings)
 catchAtAgeReportDecompPlusGr$FdaReport$Gear[catchAtAgeReportDecompPlusGr$FdaReport$Gear==53] <- 52
 MeanWeightReportDecompPlusGr$FdaReport$Gear[MeanWeightReportDecompPlusGr$FdaReport$Gear==53] <- 52
-sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, AggregationVariables = c("Gear", "Area"))
+sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"))
 expect_true(is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport
 expect_true(all(is.na(sopTab$RelativeDifference[sopTab$Gear==52])))

@@ -8,7 +8,7 @@ Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaDat
  with the reported <Statistic> being:
  
  \describe{
-  \item{MeanIndividualWeight}{The mean weight at age in grammes}
+  \item{MeanIndividualWeight}{The mean weight at age in kg}
  }
  
  Note that the summary statistics are reported for summaries
