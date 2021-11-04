@@ -4,7 +4,7 @@ readTabSepFile <- function(filepath, encoding="UTF-8", col_classes = NULL, col_n
   
   
   #check headers
-  header <- read.table(filepath, sep="\t", fileEncoding = encoding, comment.char = "#", strip.white = trim_ws, header=T, na.strings = c("", " "))
+  header <- utils::read.table(filepath, sep="\t", fileEncoding = encoding, comment.char = "#", strip.white = trim_ws, header=T, na.strings = c("", " "))
   
   if (length(col_names)>0){
     missing <- col_names[!(col_names %in% names(header))]
@@ -14,7 +14,7 @@ readTabSepFile <- function(filepath, encoding="UTF-8", col_classes = NULL, col_n
   }
   
     
-  tab <- read.table(filepath, sep="\t", fileEncoding = encoding, colClasses = col_classes, comment.char = "#", strip.white = trim_ws, header=T, na.strings = c("", " "))
+  tab <- utils::read.table(filepath, sep="\t", fileEncoding = encoding, colClasses = col_classes, comment.char = "#", strip.white = trim_ws, header=T, na.strings = c("", " "))
   tab <- data.table::as.data.table(tab)
 
   for (n in names(tab)){

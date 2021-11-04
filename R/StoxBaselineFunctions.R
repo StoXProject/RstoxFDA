@@ -1064,7 +1064,7 @@ DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "
   }
 
   if (DefinitionMethod == "ResourceFile"){
-    tab <- readTabSepFile(FileName, col_class = c("character", "character", "numeric", "numeric"), col_names = c("Area", "Location",	"Latitude",	"Longitude"), encoding = encoding)
+    tab <- readTabSepFile(FileName, col_classes = c("character", "character", "numeric", "numeric"), col_names = c("Area", "Location",	"Latitude",	"Longitude"), encoding = encoding)
     
     missingLoc <- tab[is.na(tab[["Location"]]),]
     
