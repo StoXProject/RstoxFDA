@@ -107,6 +107,9 @@ expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
                   MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age==13]))
 
 
+
+context("Test SOP")
+
 sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, AggregationVariables = c("Gear", "Area"))
 expect_true(is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport

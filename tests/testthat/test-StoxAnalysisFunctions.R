@@ -179,8 +179,6 @@ expect_equal(length(unique(results$CatchAtAge$Length)),1)
 expect_gt(length(unique(resultsWlength$CatchAtAge$Length)), 1)
 
 
-browser()
-
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate missing arguments")
 expect_error(ParameterizeRecaModels(prep, 10, 50, 1, fpath, Lgamodel = NULL), "Parameter 'Lgamodel' must be provided.")
 

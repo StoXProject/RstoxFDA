@@ -208,7 +208,7 @@ expect_equal(SetStartDateBiotic(BioticData)$biotic_v3_example.xml$fishstation$st
 expect_equal(SetStartDateBiotic(BioticData, Overwrite = T)$biotic_v3_example.xml$fishstation$stationstartdate[1], "2018-04-04Z")
 
 context("test-StoxBaselineFunctions: AddGearGroupStoxLanding")
-gearDef <- RstoxData::DefineTranslation(NULL, F, "ResourceFile", NULL, F, system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))
+gearDef <- RstoxData::DefineTranslation(DefinitionMethod = "ResourceFile", FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"), ValueColumn = "Value", NewValueColumn = "NewValue")
 landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
 stoxLandingPre <- RstoxData:::StoxLanding(landingH)
 stoxLandingPost <- AddGearGroupStoxLanding(stoxLandingPre, gearDef)
@@ -216,7 +216,7 @@ expect_true("GearGroup" %in% names(stoxLandingPost$Landing))
 expect_true(all(!is.na(stoxLandingPost$Landing$GearGroup)))
 
 context("test-StoxBaselineFunctions: AddGearGroupStoxBiotic")
-gearDef <- RstoxData::DefineTranslation(NULL, F, "ResourceFile", NULL, F, system.file("testresources","geargroupsBiotic.txt", package="RstoxFDA"))
+gearDef <- RstoxData::DefineTranslation(DefinitionMethod = "ResourceFile", FileName=system.file("testresources","geargroupsBiotic.txt", package="RstoxFDA"), ValueColumn = "Value", NewValueColumn = "NewValue")
 stoxbiotic <- readRDS(system.file("testresources","StoxBioticData.rds", package="RstoxFDA"))
 stoxbioticPost <- AddGearGroupStoxBiotic(stoxbiotic, gearDef)
 expect_true("GearGroup" %in% names(stoxbioticPost$Haul))
