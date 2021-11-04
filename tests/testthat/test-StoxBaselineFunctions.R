@@ -33,7 +33,7 @@ tab <- DefineWeightConversionFactor(FileName=conversionfile)
 expect_true(is.WeightConversionTable(tab))
 expect_true(is.na(tab$WeightFactor[7]))
 expect_equal(sum(!is.na(tab$WeightFactor)), 6)
-expect_error(suppressWarnings(DefineWeightConversionFactor(FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))), "Resource file does not have required columns: Description, Species, ProductType, WeightFactor")
+expect_error(suppressWarnings(DefineWeightConversionFactor(FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))))
 expect_error(DefineWeightConversionFactor(FileName=system.file("testresources","conversionFactorsDuplicates.txt", package="RstoxFDA")), regexp="File contains duplicate definitions ")
 
 context("test-StoxBaselineFunctions: ConvertWeightBiotic")
@@ -382,7 +382,8 @@ expect_true(is.StockSplittingParameters(manual))
 context("test-StoxBaselineFunctions: appendTemporal")
 temp <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10","01-12"))
 tabExampleFile <- system.file("testresources","startStopExample.txt", package="RstoxFDA")
-tabExamplePre <- readTabSepFile(tabExampleFile, col_types = "ccccDD")
+
+tabExamplePre <- readTabSepFile(tabExampleFile, col_classes = c("character", "character", "character", "character", "POSIXct", "POSIXct"))
 tabExamplePost <- appendTemporal(tabExamplePre, "period", temp, datecolumns = c("startD", "stopD"))
 
 expect_equal(tabExamplePost$period[1], "[01-12, 01-10>")

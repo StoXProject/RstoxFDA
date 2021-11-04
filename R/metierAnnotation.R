@@ -208,9 +208,8 @@ is.MetierTable <- function(table, throwError=F){
 #' @return \code{\link[RstoxFDA]{MetierTable}} containing metier definitons.
 #' @export
 readMetierTable <- function(filename, encoding="UTF8"){
-  loc <- readr::locale()
-  loc$encoding <- encoding
-  suppressWarnings(suppressMessages(mettab <- readr::read_delim(filename, delim="\t", comment = "#", locale = loc, trim_ws = T, skip_empty_rows = T, na = c(""), col_types = "cccccccccccccccccccccccccccccccc")))
+  
+  mettab <- data.table::as.data.table(read.table(filename, sep = "\t", comment.char = "#", fileEncoding = "UTF-8", strip.white = T, stringsAsFactors = F, na.strings = "", colClasses = c("character"), header = T, blank.lines.skip = T))
 
   columns <- c("metier", "gearcode", "target", "meshedGear", "lowerMeshSize", "upperMeshSize", "selectivityDevice", "meshedSelectivityDevice", "selDevLowerMeshSize", "selDevUpperMeshSize")
   for (co in columns){
