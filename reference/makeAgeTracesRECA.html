@@ -114,7 +114,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Compiles traces for age groups. That is the value for total catch at age in each iteration of <code>eca.predict</code></p>
+    <p>Compiles traces for age groups. That is the value for total catch at age in each iteration of <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code></p>
     </div>
 
     <pre class="usage"><span class='fu'>makeAgeTracesRECA</span><span class='op'>(</span><span class='va'>prediction</span>, unit <span class='op'>=</span> <span class='st'>"millions"</span>, plusGroup <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
@@ -124,7 +124,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>prediction</th>
-      <td><p>as returned by <code>eca.predict</code> or <code><a href='runRECA.html'>runRECA</a></code>.</p></td>
+      <td><p>as returned by <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code> or <code><a href='runRECA.html'>runRECA</a></code>.</p></td>
     </tr>
     <tr>
       <th>unit</th>
@@ -138,12 +138,12 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>data.table() with one column for each age (or plus group), and one row for each iteration of <code>eca.predict</code>.</p>
+    <p>data.table() with one column for each age (or plus group), and one row for each iteration of <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code>.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The number of iterations of <code>eca.predict</code>
- is determined by the parameter 'nSamples' to <code>eca.estimate</code> or <code><a href='runRECA.html'>runRECA</a></code>
- and the parameter 'caa.burnin' (different from parameter 'burnin') to <code>eca.predict</code> or <code><a href='runRECA.html'>runRECA</a></code></p>
+    <p>The number of iterations of <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code>
+ is determined by the parameter 'nSamples' to <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code> or <code><a href='runRECA.html'>runRECA</a></code>
+ and the parameter 'caa.burnin' (different from parameter 'burnin') to <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code> or <code><a href='runRECA.html'>runRECA</a></code></p>
 <p>parameter 'unit' supports:</p><dl>
   <dt>number</dt><dd><p>Catch at age as number of fish</p></dd>
   <dt>thousands</dt><dd><p>Catch at age as number of fish in thousands</p></dd>

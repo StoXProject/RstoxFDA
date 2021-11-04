@@ -211,13 +211,7 @@
     <pre class="examples"><span class='r-in'> <span class='co'># plot ICES areas with default projection</span></span>
 <span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ICESareas</span><span class='op'>)</span></span>
 <span class='r-in'> <span class='fu'>plotArea</span><span class='op'>(</span>areaDef<span class='op'>=</span><span class='va'>ICESareas</span><span class='op'>)</span></span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> The rnaturalearthdata package needs to be installed.</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> Installing the rnaturalearthdata package.</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> Installing package into ‘/Users/runner/work/_temp/Library’</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> (as ‘lib’ is unspecified)</span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in value[[3L]](cond):</span> Failed to install the rnaturalearthdata package.</span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span>  Please try installing the package for yourself using the following command: </span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span>  install.packages("rnaturalearthdata")</span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in st_as_sfc.SpatialPolygons(sp::geometry(x), ...):</span> package rgeos required for finding out which hole belongs to which exterior ring</span>
 <span class='r-in'></span>
 <span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>mainareaFdir2018</span><span class='op'>)</span></span>
 <span class='r-in'> <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>NAFOareas</span><span class='op'>)</span></span>
@@ -227,13 +221,7 @@
 <span class='r-in'>                  <span class='va'>NAFOareas</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"polygonName"</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>,</span>
 <span class='r-in'>          projection<span class='op'>=</span><span class='st'>"+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 </span>
 <span class='r-in'>          +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs"</span><span class='op'>)</span></span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> The rnaturalearthdata package needs to be installed.</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> Installing the rnaturalearthdata package.</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> Installing package into ‘/Users/runner/work/_temp/Library’</span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> (as ‘lib’ is unspecified)</span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in value[[3L]](cond):</span> Failed to install the rnaturalearthdata package.</span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span>  Please try installing the package for yourself using the following command: </span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span>  install.packages("rnaturalearthdata")</span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in st_as_sfc.SpatialPolygons(sp::geometry(x), ...):</span> package rgeos required for finding out which hole belongs to which exterior ring</span>
 </pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
