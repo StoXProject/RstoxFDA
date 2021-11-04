@@ -32,6 +32,7 @@ Imports:
     RstoxData (>= 1.0.25)
 Suggests: 
     rnaturalearth,
+    rnaturalearthdata,
     Reca,
     testthat
 Additional_repositories: 
