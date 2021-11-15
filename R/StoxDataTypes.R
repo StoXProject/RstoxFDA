@@ -1263,7 +1263,7 @@ processPropertyFormats <- list(
     }, 
     variableTypes = "character"
   ),
-  GroupingVariablesSOP = list(
+  GroupingVariablesSop = list(
     class = "vector", 
     title = "One or more variables to use as aggregation variables.", 
     possibleValues = function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, StoxLandingData) {
