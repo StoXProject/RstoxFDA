@@ -1,8 +1,11 @@
 # RstoxFDA
+![R-CMD-check](https://github.com/StoXProject/RstoxFDA/workflows/R-CMD-check/badge.svg)
+
 Fisheries Dependent Analysis with Rstox.
 
 Install from github with:
 devtools::install_github("https://github.com/StoXProject/RstoxFDA").
+Precompiled versions at https://stoxproject.github.io/repo/ may also be considered.
 
 ## Reca
 RstoxFDA contains functions for adapting data to Reca, running estimates, and plotting or tabulating results. These functions are formulated to be adaptable to other data formats than just the ones supported by Rstox.

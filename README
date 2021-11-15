@@ -1,17 +1,12 @@
-# RstoxFDA version: 1.0 (latest beta, 2020-06-26)
-# R version: 3.6
+## RstoxFDA 
 
-# Fisheries dependent analysis, including running the Estimated Catch at Age model through the Reca package developed by the Norwegian Computing Center.
+# Fisheries dependent analysis, including running the ECA model (Estimating Catch at Age) through the Reca package developed by the Norwegian Computing Center.
 
-# The estimated catch at age (ECA) model uses the correlation structure in fisheries dependent data to distribute age readings from cathes (samples) onto the total reported landings. The ECA model is described in Hirst, D., Aanes, S., Storvik, G., Huseby, R. B., & Tvete, I. F. (2004). Estimating catch at age from market sampling data by using a Bayesian hierarchical model. Journal of the Royal Statistical Society: Series C (Applied Statistics), 53(1), 1-14.
+# The ECA model uses the correlation structure in fisheries dependent data to distribute age readings from cathes (samples) onto the total reported landings. The ECA model is described in Hirst, D., Aanes, S., Storvik, G., Huseby, R. B., & Tvete, I. F. (2004). Estimating catch at age from market sampling data by using a Bayesian hierarchical model. Journal of the Royal Statistical Society: Series C (Applied Statistics), 53(1), 1-14.
 
 # Install the latest GitHub release:
 devtools::install_github("https://github.com/StoXProject/RstoxFDA", ref = "RstoxFDA-v1.0")
 # ... or install the develop version from GitHub:
 # devtools::install_github("https://github.com/StoXProject/RstoxFDA", ref = "develop")
 
-# Release notes for RstoxFDA_1.0:
-# 1.  Created this file.
-
-# For historical release notes see https://github.com/StoXProject/RstoxFDA/blob/master/NEWS
 
