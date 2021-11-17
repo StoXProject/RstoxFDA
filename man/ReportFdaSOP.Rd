@@ -24,9 +24,9 @@ ReportFdaSOP(
 \code{\link[RstoxFDA]{ReportFdaSopData}}
 }
 \description{
-Report sum-of-product test (SOP-test) for catch estimates
+Report sum-of-product test (SOP-test) for catch estimates.
 
- Mean weight at age and estimated catch at age is used to compute total catches
+ Mean weight (kg) at age and estimated catch (numbers) at age is used to compute total catches
  and the relative difference to reported landings are reported.
  
  The report will be generated for landings decomposed on the provided 'GroupingVariables'

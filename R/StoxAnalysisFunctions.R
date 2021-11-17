@@ -286,6 +286,9 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
       stop("The column 'otolithtype' must exist on the table 'Individual' of 'StoxBioticData' when the option 'UseStockSplitting' is used.")
     }
     flatbiotic$Otolithtype <- flatbiotic$otolithtype
+    if(!all(flatbiotic$Otolithtype %in% c(1,2,4,5))){
+      stoxWarning("Some fish does not have Otolithtype set, or have it set to an unrecognized value. This may slow down analysis.")
+    }
   }
   
   nFish = NULL

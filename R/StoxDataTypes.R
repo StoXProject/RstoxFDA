@@ -23,10 +23,10 @@ is.Date <- function(date){
 }
 
 
-#' Fisheries dependent analysis report (ReportFdaData)
+#' Age group statistics (ReportFdaByAgeData)
 #' 
 #' @description 
-#'  Results from catch estimations. The results may be presented
+#'  Results from catch at age estimations. The results may be presented
 #'  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
 #'  
 #'  list with two members 'FdaReport' and 'GroupingVariables'.
@@ -42,14 +42,36 @@ is.Date <- function(date){
 #'  }
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
-#' @name ReportFdaData
+#' @name ReportFdaByAgeData
 #' 
+NULL
+
+
+#' Total catch statistics (ReportFdaSummaryData)
+#' @description 
+#'  Results from catch estimations. The results may be presented
+#'  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
+#'  
+#'  list with six members 'MeanAge', 'MeanWeight', 'MeanLength', 'TotalWeight',
+#'  'TotalNumber', and 'GroupingVariables'.
+#'  'MeanAge', 'MeanWeight', 'MeanLength', 'TotalWeight',
+#'  'TotalNumber' are \code{\link[data.table]{data.table}}s with the columns:
+#'  \describe{
+#'   \item{<Statistic>}{The reported statistic, either 'MeanIndividualAge', 'MeanIndividualWeight', 'MeanIndividualLength', 'TotalWeight', or 'TotalNumber'}
+#'   \item{SD}{Standard deviation for the reported statistic.}
+#'   \item{Low}{The lower limit of the estimated interval for the reported statistic.}
+#'   \item{High}{The higher limit of the estimated interval for the reported statistic.}
+#'   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
+#'  }
+#'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
+#' 
+#' @name ReportFdaSummaryData
 NULL
 
 #' Fisheries dependent Catch At Age Report (ReportFdaCatchAtAgeData)
 #' 
 #' @description 
-#'  A \code{\link[RstoxFDA]{ReportFdaData}} object with the reported <Statistic> being:
+#'  A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object with the reported <Statistic> being:
 #'  
 #'  \describe{
 #'   \item{CacthAtAge}{The total catch at age in numbers.}
@@ -62,7 +84,7 @@ NULL
 #' Fisheries dependent Length At Age Report (ReportFdaLengthAtAgeData)
 #' 
 #' @description 
-#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaData}} object
+#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object
 #'  with the reported <Statistic> being:
 #'  
 #'  \describe{
@@ -80,7 +102,7 @@ NULL
 #' Reca Weight At Age Report (ReportFdaWeightAtAgeData)
 #' 
 #' @description 
-#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaData}} object
+#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object
 #'  with the reported <Statistic> being:
 #'  
 #'  \describe{
@@ -95,30 +117,30 @@ NULL
 #' 
 NULL
 
-#' Checks if argument is \code{\link[RstoxFDA]{ReportFdaData}}
+#' Checks if argument is \code{\link[RstoxFDA]{ReportFdaByAgeData}}
 #' @description
-#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaData}}
-#' @param ReportFdaData argument to be checked for data conformity
-#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaData}}
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
+#' @param ReportFdaByAgeData argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
 #' @export
-is.ReportFdaData <- function(ReportFdaData){
+is.ReportFdaByAgeData <- function(ReportFdaByAgeData){
   
-  if (!is.list(ReportFdaData)){
+  if (!is.list(ReportFdaByAgeData)){
     return(FALSE)
   }
-  if (!all(c("GroupingVariables", "FdaReport") %in% names(ReportFdaData))){
+  if (!all(c("GroupingVariables", "FdaReport") %in% names(ReportFdaByAgeData))){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportFdaData$FdaReport)){
+  if (!data.table::is.data.table(ReportFdaByAgeData$FdaReport)){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportFdaData$GroupingVariables)){
+  if (!data.table::is.data.table(ReportFdaByAgeData$GroupingVariables)){
     return(FALSE)
   }
-  if (!all(c("Age", "Low", "High", "SD") %in% names(ReportFdaData$FdaReport))){
+  if (!all(c("Age", "Low", "High", "SD") %in% names(ReportFdaByAgeData$FdaReport))){
     return(FALSE)
   }
-  if (!all(c("GroupingVariables") %in% names(ReportFdaData$GroupingVariables))){
+  if (!all(c("GroupingVariables") %in% names(ReportFdaByAgeData$GroupingVariables))){
     return(FALSE)
   }
   return(TRUE)
@@ -1161,6 +1183,7 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "RecaData",
     functionParameterFormat = list(
       RandomEffects = "randomcovariates",
+      CarEffect = "randomcovariates",
       FixedEffects = "fixedcovariates"),
     functionArgumentHierarchy = list(
       AgeErrorMatrix = list(
@@ -1184,7 +1207,7 @@ stoxFunctionAttributes <- list(
     functionType = "modelData",
     functionCategory = "analysis",
     functionOutputDataType = "RecaParameterData"
-    #doesnt work for directory
+    #doesnt work for directory ?
     #functionParameterFormat = list(
     #  ResultDirectory = "filePath"
     #)
@@ -1220,6 +1243,11 @@ stoxFunctionAttributes <- list(
     functionCategory = "report",
     functionOutputDataType = "ReportFdaWeightAtAgeData"
   ),
+  ReportRecaCatchStatistics = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaCatchSummaryData"
+  ),
   ReportFdaSOP = list(
     functionType = "modelData",
     functionCategory = "report",
@@ -1244,7 +1272,6 @@ processPropertyFormats <- list(
     title = "Period defintinions. Start date on the form \"DD-MM\" or \"DD-MM-YYYY\"", 
     variableTypes = "character"
   ),
-  
   randomcovariates = list(
     class = "vector", 
     title = "One or more variables to use as covariates in Reca", 

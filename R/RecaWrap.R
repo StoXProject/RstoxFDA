@@ -70,9 +70,10 @@ checkSamplesInFrame <- function(samples, landings, covariates){
 #' Check that all fixed effects are sampled in combination with carEffect or neighbour
 #' @noRd
 checkAllSampledCar <- function(landings, samples, fixedEffects, carEffect, neighbours){
+  
   for (l in unique(landings[[carEffect]])){
     landcar <- landings[landings[[carEffect]] == l,]
-    sampcar <- samples[samples[[carEffect]] %in% c(l, neighbours[l]),]
+    sampcar <- samples[samples[[carEffect]] %in% c(l, neighbours[[l]]),]
     if (nrow(sampcar) > 0){
       sampcar[[carEffect]] <- rep(l, nrow(sampcar))
       if (!checkAllSampled(landcar, sampcar, c(fixedEffects, carEffect))){

@@ -21,10 +21,10 @@ ReportRecaLengthAtAge(
 \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}}
 }
 \description{
-Tabulates summary statistics for mean length at age from MCMC simulations using Reca.
+Tabulates summary statistics for mean length (cm) at age from MCMC simulations using Reca.
  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
  Summary statistics are obtained from the posterior distribution, and
- the interval is reported as 90% equal-tailed credible intervals are reported.
+ the interval is reported as equal-tailed credible intervals are reported.
  
  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
  area, gear, stock, etc., summary statistics will be presented similarly.
