@@ -1183,6 +1183,7 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "RecaData",
     functionParameterFormat = list(
       RandomEffects = "randomcovariates",
+      CarEffect = "randomcovariates",
       FixedEffects = "fixedcovariates"),
     functionArgumentHierarchy = list(
       AgeErrorMatrix = list(
@@ -1206,7 +1207,7 @@ stoxFunctionAttributes <- list(
     functionType = "modelData",
     functionCategory = "analysis",
     functionOutputDataType = "RecaParameterData"
-    #doesnt work for directory
+    #doesnt work for directory ?
     #functionParameterFormat = list(
     #  ResultDirectory = "filePath"
     #)
@@ -1271,7 +1272,6 @@ processPropertyFormats <- list(
     title = "Period defintinions. Start date on the form \"DD-MM\" or \"DD-MM-YYYY\"", 
     variableTypes = "character"
   ),
-  
   randomcovariates = list(
     class = "vector", 
     title = "One or more variables to use as covariates in Reca", 
