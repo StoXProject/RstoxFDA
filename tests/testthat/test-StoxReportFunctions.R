@@ -1,4 +1,21 @@
 
+context("Test StoxReportFunctions: ReportRecaCatchStatistics")
+predictiondatafile <- system.file("testresources","stocksplitpred.rds", package="RstoxFDA")
+catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
+catchAtAgeDecomp <- readRDS(predictiondatafile)
+
+catchReportDecomp <- ReportRecaCatchStatistics(catchAtAgeDecomp)
+expect_true(!any(duplicated(catchReportDecomp$MeanAge$MeanIndividualAge)))
+expect_equal(nrow(catchReportDecomp$MeanAge), nrow(catchReportDecomp$MeanWeight))
+expect_equal(nrow(catchReportDecomp$MeanAge), nrow(catchReportDecomp$MeanLength))
+expect_equal(nrow(catchReportDecomp$GroupingVariables), 3)
+catchReportFlat <- ReportRecaCatchStatistics(catchAtAgeFlat)
+expect_true(nrow(catchReportFlat$MeanAge) == 1)
+expect_true(nrow(catchReportFlat$MeanWeight) == 1)
+expect_true(nrow(catchReportFlat$MeanLength) == 1)
+expect_true(nrow(catchReportFlat$GroupingVariables) == 0)
+
+
 context("Test StoxReportFunctions: ReportFdaSampling")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
