@@ -184,7 +184,7 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
     # mean weights, all ages
     mw <- merge(mw, totalOverLength)
     
-    # add plussgroup and aggregate
+    # add plusgroup and aggregate
     aggNames <- c("Iteration", "AgeGroup", RecaCatchAtAge$GroupingVariables$GroupingVariables)
     mw$AgeGroup[mw$Age>=PlusGroup] <- paste("Age ", PlusGroup, "+", sep="")
     

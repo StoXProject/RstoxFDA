@@ -45,5 +45,6 @@ saveRDS(est, "inst/testresources/ecaResult.rds")
 #
 exampleProject <- "~/workspace/stox3examples/StoxRecaCoastalCodMini"
 RstoxAPI::runModel(projectPath = exampleProject, modelName = "baseline")
+#set nSamples to a low number in the project in order to keep file size small
 ss<-RstoxAPI::runModel(projectPath = exampleProject, modelName = "analysis")
 saveRDS(ss$PreredictAreaQuarter, "inst/testresources/stocksplitpred.rds")
