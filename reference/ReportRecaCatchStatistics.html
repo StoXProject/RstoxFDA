@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Set startdate Biotic — SetStartDateBiotic • RstoxFDA</title>
+<title>Report catch statistics — ReportRecaCatchStatistics • RstoxFDA</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,13 @@
 
 
 
-<meta property="og:title" content="Set startdate Biotic — SetStartDateBiotic" />
-<meta property="og:description" content="Set start date to stop date." />
+<meta property="og:title" content="Report catch statistics — ReportRecaCatchStatistics" />
+<meta property="og:description" content="Report summary statistics for landed catches from MCMC simulations using Reca.
+ Summary statistics are obtained from the posterior distribution, and
+ the interval is reported as equal-tailed credible intervals are reported. 
+Weights are reported in kg, lengths in cm. 
+If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
+ area, gear, stock, etc., summary statistics will be presented similarly." />
 
 
 
@@ -108,45 +113,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Set startdate Biotic</h1>
-    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxBaselineFunctions.R'><code>R/StoxBaselineFunctions.R</code></a></small>
-    <div class="hidden name"><code>SetStartDateBiotic.Rd</code></div>
+    <h1>Report catch statistics</h1>
+    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxReportFunctions.R'><code>R/StoxReportFunctions.R</code></a></small>
+    <div class="hidden name"><code>ReportRecaCatchStatistics.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Set start date to stop date.</p>
+    <p>Report summary statistics for landed catches from MCMC simulations using Reca.
+ Summary statistics are obtained from the posterior distribution, and
+ the interval is reported as equal-tailed credible intervals are reported.</p> 
+<p>Weights are reported in kg, lengths in cm.</p> 
+<p>If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
+ area, gear, stock, etc., summary statistics will be presented similarly.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>SetStartDateBiotic</span><span class='op'>(</span><span class='va'>BioticData</span>, Overwrite <span class='op'>=</span> <span class='cn'>F</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>ReportRecaCatchStatistics</span><span class='op'>(</span><span class='va'>RecaCatchAtAge</span>, IntervalWidth <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>numeric</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>BioticData</th>
-      <td><p><code><a href='https://rdrr.io/pkg/RstoxData/man/BioticData.html'>BioticData</a></code> data for which time should be set</p></td>
+      <th>RecaCatchAtAge</th>
+      <td><p>Results from MCMC simulations (<code><a href='RecaCatchAtAge.html'>RecaCatchAtAge</a></code>).</p></td>
     </tr>
     <tr>
-      <th>Overwrite</th>
-      <td><p>if True any existing values in stationstartdate will be overwritten.</p></td>
+      <th>IntervalWidth</th>
+      <td><p>The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code><a href='https://rdrr.io/pkg/RstoxData/man/BioticData.html'>BioticData</a></code></p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Set the column 'stationstartdate' on the table 'fishstation' in <code><a href='https://rdrr.io/pkg/RstoxData/man/BioticData.html'>BioticData</a></code>
- to the value of 'stationstopdate'.</p> 
-<p>Setting stationstartdate facilitates conversion to <code><a href='https://rdrr.io/pkg/RstoxData/man/StoxBioticData.html'>StoxBioticData</a></code> 
- using <code><a href='https://rdrr.io/pkg/RstoxData/man/StoxBiotic.html'>StoxBiotic</a></code>, and is applicable if daily resolution of date and time is not critical
- for subsequent analysis.</p> 
-<p>These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
- For bioticdata that does not conform to this, no modifications are done.</p>
+    <p><code><a href='ReportFdaSummaryData.html'>ReportFdaSummaryData</a></code></p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code>RstoxData{RstoxData::StoxBiotic}</code> For converting <code><a href='https://rdrr.io/pkg/RstoxData/man/BioticData.html'>BioticData</a></code> to <code><a href='https://rdrr.io/pkg/RstoxData/man/StoxBioticData.html'>StoxBioticData</a></code>.</p></div>
+    <div class='dont-index'><p><code><a href='RunRecaModels.html'>RunRecaModels</a></code> for running Reca-analysis</p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Set startdate Biotic — SetStartDateBiotic • RstoxFDA</title>
+<title>Checks if argument is ReportFdaByAgeData — is.ReportFdaByAgeData • RstoxFDA</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Set startdate Biotic — SetStartDateBiotic" />
-<meta property="og:description" content="Set start date to stop date." />
+<meta property="og:title" content="Checks if argument is ReportFdaByAgeData — is.ReportFdaByAgeData" />
+<meta property="og:description" content="Checks if argument conforms to specification for ReportFdaByAgeData" />
 
 
 
@@ -108,45 +108,29 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Set startdate Biotic</h1>
-    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxBaselineFunctions.R'><code>R/StoxBaselineFunctions.R</code></a></small>
-    <div class="hidden name"><code>SetStartDateBiotic.Rd</code></div>
+    <h1>Checks if argument is <code><a href='ReportFdaByAgeData.html'>ReportFdaByAgeData</a></code></h1>
+    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxDataTypes.R'><code>R/StoxDataTypes.R</code></a></small>
+    <div class="hidden name"><code>is.ReportFdaByAgeData.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Set start date to stop date.</p>
+    <p>Checks if argument conforms to specification for <code><a href='ReportFdaByAgeData.html'>ReportFdaByAgeData</a></code></p>
     </div>
 
-    <pre class="usage"><span class='fu'>SetStartDateBiotic</span><span class='op'>(</span><span class='va'>BioticData</span>, Overwrite <span class='op'>=</span> <span class='cn'>F</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>is.ReportFdaByAgeData</span><span class='op'>(</span><span class='va'>ReportFdaByAgeData</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>BioticData</th>
-      <td><p><code><a href='https://rdrr.io/pkg/RstoxData/man/BioticData.html'>BioticData</a></code> data for which time should be set</p></td>
-    </tr>
-    <tr>
-      <th>Overwrite</th>
-      <td><p>if True any existing values in stationstartdate will be overwritten.</p></td>
+      <th>ReportFdaByAgeData</th>
+      <td><p>argument to be checked for data conformity</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code><a href='https://rdrr.io/pkg/RstoxData/man/BioticData.html'>BioticData</a></code></p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Set the column 'stationstartdate' on the table 'fishstation' in <code><a href='https://rdrr.io/pkg/RstoxData/man/BioticData.html'>BioticData</a></code>
- to the value of 'stationstopdate'.</p> 
-<p>Setting stationstartdate facilitates conversion to <code><a href='https://rdrr.io/pkg/RstoxData/man/StoxBioticData.html'>StoxBioticData</a></code> 
- using <code><a href='https://rdrr.io/pkg/RstoxData/man/StoxBiotic.html'>StoxBiotic</a></code>, and is applicable if daily resolution of date and time is not critical
- for subsequent analysis.</p> 
-<p>These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
- For bioticdata that does not conform to this, no modifications are done.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code>RstoxData{RstoxData::StoxBiotic}</code> For converting <code><a href='https://rdrr.io/pkg/RstoxData/man/BioticData.html'>BioticData</a></code> to <code><a href='https://rdrr.io/pkg/RstoxData/man/StoxBioticData.html'>StoxBioticData</a></code>.</p></div>
+    <p>logical, TRUE if argument conforms to specification for <code><a href='ReportFdaByAgeData.html'>ReportFdaByAgeData</a></code></p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
