@@ -161,7 +161,7 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
 
 #' Calcualtes means for RecaCatchAtAge with plusgroups
 #' @noRd
-reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=integer(), IntervalWidth=numeric(), digits=2){
+getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=integer()){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   mw <- setAgeGroup(RecaCatchAtAge[[table]])
   
@@ -201,10 +201,7 @@ reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=int
     
   }
   
-  
-  aggNames <- c(RecaCatchAtAge$GroupingVariables$GroupingVariables)
-  
-  return(reportParameterAtAge(mw, RecaCatchAtAge$GroupingVariables$GroupingVariables, parameter, alpha = 1 - IntervalWidth, digits=digits))
+  return(mw)
 }
 
 #' Report weight at age
@@ -229,7 +226,9 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
     IntervalWidth <- 0.9
   }
 
-  return(reportPlusGroupMeans(RecaCatchAtAge, "MeanWeight", "MeanIndividualWeight", PlusGroup, IntervalWidth, digits = 3))
+  meanWeightAtAge <- getPlusGroupMeans(RecaCatchAtAge, "MeanWeight", "MeanIndividualWeight", PlusGroup)
+  return(reportParameterAtAge(meanWeightAtAge, RecaCatchAtAge$GroupingVariables$GroupingVariables, "MeanIndividualWeight", alpha = 1 - IntervalWidth, digits=3))
+
 }
 
 #' Report length at age
@@ -254,7 +253,9 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
     IntervalWidth <- 0.9
   }
   
-  return(reportPlusGroupMeans(RecaCatchAtAge, "MeanLength", "MeanIndividualLength", PlusGroup, IntervalWidth))
+  meanLengthAtAge <- getPlusGroupMeans(RecaCatchAtAge, "MeanLength", "MeanIndividualLength", PlusGroup)
+  
+  return(reportParameterAtAge(meanLengthAtAge, RecaCatchAtAge$GroupingVariables$GroupingVariables, "MeanIndividualLength", alpha = 1 - IntervalWidth, digits=2))
 }
 
 #' Report SOP test
