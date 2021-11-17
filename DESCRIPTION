@@ -1,6 +1,6 @@
 Package: RstoxFDA
 Version: 1.0.3
-Date: 2021-11-15
+Date: 2021-11-17
 Title: Fisheries Dependent Analysis with RstoX
 Authors@R: c(
   person(given = "Arne Johannes", 
@@ -30,8 +30,8 @@ Imports:
     sf (>= 0.9.0),
     rgdal (>= 1.5.0),
     rgeos (>= 0.5),
-    RstoxData (>= 1.2.15),
-    RstoxBase (>= 1.4.22)
+    RstoxData (>= 1.2.16),
+    RstoxBase (>= 1.4.23)
 Suggests: 
     rnaturalearth,
     Reca,
