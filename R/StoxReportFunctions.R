@@ -76,7 +76,7 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
 }
 
 #' @noRd
-reportParameterAtAge <- function(table, aggVariables, parameter, digits=2, alpha=.1){
+reportParameterAtAge <- function(table, aggVariables, parameter, digits=6, alpha=.1){
   
   stopifnot(all(c("Age", "AgeGroup") %in% names(table)))
   
@@ -113,7 +113,7 @@ setAgeGroup <- function(AgeReport){
 
 #' Report catch at age
 #' @description 
-#'  Tabulates summary statistics for total catch at age from MCMC simulations using Reca.
+#'  Tabulates summary statistics for total catch (number) at age from MCMC simulations using Reca.
 #'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
 #'  Summary statistics are obtained from the posterior distribution, and
 #'  the interval is reported as equal-tailed credible intervals.
@@ -206,7 +206,7 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
 
 #' Report weight at age
 #' @description 
-#'  Tabulates summary statistics for mean weights at age from MCMC simulations using Reca.
+#'  Tabulates summary statistics for mean weights (kg) at age from MCMC simulations using Reca.
 #'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
 #'  Summary statistics are obtained from the posterior distribution, and
 #'  the interval is reported as 90% equal-tailed credible intervals.
@@ -233,7 +233,7 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 
 #' Report length at age
 #' @description 
-#'  Tabulates summary statistics for mean length at age from MCMC simulations using Reca.
+#'  Tabulates summary statistics for mean length (cm) at age from MCMC simulations using Reca.
 #'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
 #'  Summary statistics are obtained from the posterior distribution, and
 #'  the interval is reported as equal-tailed credible intervals are reported.
@@ -264,11 +264,13 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #'  Summary statistics are obtained from the posterior distribution, and
 #'  the interval is reported as equal-tailed credible intervals are reported.
 #'  
+#'  Weights are reported in kg, lengths in cm.
+#'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
-#' @return \code{\link[RstoxFDA]{ReportFdaCatchData}}
+#' @return \code{\link[RstoxFDA]{ReportFdaSummaryData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
 ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric()){
@@ -303,11 +305,33 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric()){
   meanLength$FdaReport$AgeGroup <- NULL
   meanLength$FdaReport$Age <- NULL
   
+  
+  
+  # total weight
+  # hack to use ReportRecaCatchAtAge
+  mm <- merge(RecaCatchAtAge$CatchAtAge, RecaCatchAtAge$MeanWeight)
+  mm$CatchAtAge <- mm$CatchAtAge*mm$MeanIndividualWeight
+  mm$MeanIndividualWeight <- NULL
+  ss <- RecaCatchAtAge
+  ss$CatchAtAge <- mm
+  TotalWeight<-ReportRecaCatchAtAge(ss, PlusGroup = min(RecaCatchAtAge$CatchAtAge$Age))
+  names(TotalWeight$FdaReport)[names(TotalWeight$FdaReport)=="CatchAtAge"] <- "TotalWeight"
+  TotalWeight$FdaReport$AgeGroup <- NULL
+  TotalWeight$FdaReport$Age <- NULL
+  
+  # total number
+  TotalNumber<-ReportRecaCatchAtAge(RecaCatchAtAge, PlusGroup = min(RecaCatchAtAge$CatchAtAge$Age))
+  names(TotalNumber$FdaReport)[names(TotalNumber$FdaReport)=="CatchAtAge"] <- "TotalNumber"
+  TotalNumber$FdaReport$AgeGroup <- NULL
+  TotalNumber$FdaReport$Age <- NULL
+  
   # combine
   output <- list()
   output$MeanAge <- meanAge$FdaReport
   output$MeanWeight <- meanWeight$FdaReport
   output$MeanLength <- meanLength$FdaReport
+  output$TotalWeight <- TotalWeight$FdaReport
+  output$TotalNumber <- TotalNumber$FdaReport
   output$GroupingVariables <- meanAge$GroupingVariables
   
   return(output)
@@ -315,9 +339,9 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric()){
 
 #' Report SOP test
 #' @description 
-#'  Report sum-of-product test (SOP-test) for catch estimates
+#'  Report sum-of-product test (SOP-test) for catch estimates.
 #' 
-#'  Mean weight at age and estimated catch at age is used to compute total catches
+#'  Mean weight (kg) at age and estimated catch (numbers) at age is used to compute total catches
 #'  and the relative difference to reported landings are reported.
 #'  
 #'  The report will be generated for landings decomposed on the provided 'GroupingVariables'

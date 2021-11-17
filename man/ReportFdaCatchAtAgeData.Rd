@@ -4,7 +4,7 @@
 \alias{ReportFdaCatchAtAgeData}
 \title{Fisheries dependent Catch At Age Report (ReportFdaCatchAtAgeData)}
 \description{
-A \code{\link[RstoxFDA]{ReportFdaData}} object with the reported <Statistic> being:
+A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object with the reported <Statistic> being:
  
  \describe{
   \item{CacthAtAge}{The total catch at age in numbers.}

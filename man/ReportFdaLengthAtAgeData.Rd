@@ -4,7 +4,7 @@
 \alias{ReportFdaLengthAtAgeData}
 \title{Fisheries dependent Length At Age Report (ReportFdaLengthAtAgeData)}
 \description{
-Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaData}} object
+Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object
  with the reported <Statistic> being:
  
  \describe{

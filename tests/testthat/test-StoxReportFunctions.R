@@ -8,13 +8,17 @@ catchReportDecomp <- ReportRecaCatchStatistics(catchAtAgeDecomp)
 expect_true(!any(duplicated(catchReportDecomp$MeanAge$MeanIndividualAge)))
 expect_equal(nrow(catchReportDecomp$MeanAge), nrow(catchReportDecomp$MeanWeight))
 expect_equal(nrow(catchReportDecomp$MeanAge), nrow(catchReportDecomp$MeanLength))
+expect_equal(nrow(catchReportDecomp$TotalWeight), nrow(catchReportDecomp$MeanLength))
+expect_equal(nrow(catchReportDecomp$TotalNumber), nrow(catchReportDecomp$MeanLength))
 expect_equal(nrow(catchReportDecomp$GroupingVariables), 3)
+expect_true(all(((catchReportDecomp$TotalWeight$TotalWeight / catchReportDecomp$TotalNumber$TotalNumber) - catchReportDecomp$MeanWeight$MeanIndividualWeight) <.02))
 catchReportFlat <- ReportRecaCatchStatistics(catchAtAgeFlat)
 expect_true(nrow(catchReportFlat$MeanAge) == 1)
 expect_true(nrow(catchReportFlat$MeanWeight) == 1)
 expect_true(nrow(catchReportFlat$MeanLength) == 1)
+expect_true(nrow(catchReportFlat$TotalWeight) == 1)
+expect_true(nrow(catchReportFlat$TotalNumber) == 1)
 expect_true(nrow(catchReportFlat$GroupingVariables) == 0)
-
 
 context("Test StoxReportFunctions: ReportFdaSampling")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
@@ -44,8 +48,8 @@ catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.r
 catchAtAgeReportDecomp <- ReportRecaCatchAtAge(catchAtAgeDecomp)
 catchAtAgeReportFlat <- ReportRecaCatchAtAge(catchAtAgeFlat)
 
-expect_true(is.ReportFdaData(catchAtAgeReportDecomp))
-expect_true(is.ReportFdaData(catchAtAgeReportFlat))
+expect_true(is.ReportFdaByAgeData(catchAtAgeReportDecomp))
+expect_true(is.ReportFdaByAgeData(catchAtAgeReportFlat))
 
 diff <- sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtAgeReportDecomp$FdaReport$CatchAtAge)
 reldiff <- abs(diff/sum(catchAtAgeReportFlat$FdaReport$CatchAtAge))
@@ -74,7 +78,7 @@ expect_equal(nrow(catchAtAgeReportFlatPlusGr$GroupingVariables), 0)
 
 # Report Mean weight
 MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp)
-expect_true(is.ReportFdaData(MeanWeightReportDecomp))
+expect_true(is.ReportFdaByAgeData(MeanWeightReportDecomp))
 
 # Report Mean weight Plus gr
 MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5)
@@ -102,7 +106,7 @@ expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
 
 # Report Mean length
 MeanLengthReportDecomp <- ReportRecaLengthAtAge(catchAtAgeDecomp)
-expect_true(is.ReportFdaData(MeanLengthReportDecomp))
+expect_true(is.ReportFdaByAgeData(MeanLengthReportDecomp))
 
 # Report Mean length Plus gr
 MeanLengthReportDecompPlusGr <- ReportRecaLengthAtAge(catchAtAgeDecomp, PlusGroup=5)
