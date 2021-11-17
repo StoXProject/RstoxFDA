@@ -85,7 +85,7 @@ reportParameterAtAge <- function(table, aggVariables, parameter, digits=2, alpha
   aggNames <- aggVariables
   aggNames <- c("Age", "AgeGroup", aggNames)
   stopifnot(length(aggNames) == (ncol(table)-2))
-  
+
   result <- table[,list(par=round(mean(get(parameter)), digits=digits), SD=round(stats::sd(get(parameter)), digits=digits), Low=round(stats::quantile(get(parameter), probs = alpha/2.0), digits=digits), High=round(stats::quantile(get(parameter), probs = 1-(alpha/2.0)), digits=digits)), by=aggNames]
   
   data.table::setcolorder(result ,c("AgeGroup", "Age", "par", "SD", "Low", "High", aggVariables))
@@ -187,12 +187,20 @@ reportPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=int
     # add plussgroup and aggregate
     aggNames <- c("Iteration", "AgeGroup", RecaCatchAtAge$GroupingVariables$GroupingVariables)
     mw$AgeGroup[mw$Age>=PlusGroup] <- paste("Age ", PlusGroup, "+", sep="")
-    mw <- mw[, list(Age=min(get("Age")), Total=sum(get(parameter)*get("CatchAtAge")), CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
-    mw[[parameter]] <- mw$Total / mw$CatchAtAge
+    
+    mw <- mw[, list(Age=min(get("Age")), Total=sum(get(parameter)*get("CatchAtAge")), CatchAtAge=sum(get("CatchAtAge")), meanparam=get(parameter)), by=aggNames]
+    
+    # in order to avoid uneccessary problems with caa estimated to zero, 
+    # and to keep calculation consistent with the case when PlusGroup is not set:
+    # set to the mean returned from ECA for non-plusgroups
+    mw[[parameter]][mw$Age>=PlusGroup] <- mw$Total[mw$Age>=PlusGroup] / mw$CatchAtAge[mw$Age>=PlusGroup]
+    mw[[parameter]][mw$Age<PlusGroup] <- mw$meanparam[mw$Age<PlusGroup]
     mw$Total <- NULL
     mw$CatchAtAge <- NULL
+    mw$meanparam <- NULL
     
   }
+  
   
   aggNames <- c(RecaCatchAtAge$GroupingVariables$GroupingVariables)
   

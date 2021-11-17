@@ -1,3 +1,4 @@
+
 context("Test StoxReportFunctions: ReportFdaSampling")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
@@ -148,3 +149,13 @@ expect_true(all(is.na(sopTab$LandedWeight[sopTab$Gear==52])))
 expect_true(all(is.na(sopTab$RelativeDifference[sopTab$Gear==53])))
 expect_true(all(is.na(sopTab$TotalWeightEstimated[sopTab$Gear==53])))
 expect_true(all(!is.na(sopTab$RelativeDifference[sopTab$Gear==11])))
+
+
+#
+# check reports with stock splitting
+#
+predictiondatafile <- system.file("testresources","stocksplitpred.rds", package="RstoxFDA")
+predictiondata <- readRDS(predictiondatafile)
+resultPlusgr<-ReportRecaWeightAtAge(predictiondata, PlusGroup = 10)
+result<-ReportRecaWeightAtAge(predictiondata)
+expect_true(all(result$FdaReport[result$FdaReport$Age<10,] == resultPlusgr$FdaReport[resultPlusgr$FdaReport$Age<10,]))
