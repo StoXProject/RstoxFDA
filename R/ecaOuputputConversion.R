@@ -128,7 +128,6 @@ convertModelFit2Stox <- function(paramfit, paramtype, covariate, covariateMaps){
 #' @noRd
 convertModelFit <- function(modelfit, covariateMaps, model){
   output <- list()
-  
   output$LogLikelihood <- as.data.table(modelfit$LogLikelihood)
   names(output$LogLikelihood) <- "LogLikelihood"
   output$LogLikelihood$Iteration <- 1:nrow(output$LogLikelihood)

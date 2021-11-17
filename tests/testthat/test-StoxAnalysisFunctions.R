@@ -147,6 +147,7 @@ fpath <- makeTempDirReca()
 
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Gear"))
 paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, fpath)
+
 results <- RunRecaModels(paramOut, StoxLandingData)
 expect_true("Gear" %in% names(paramOut$Landings$AgeLengthCov))
 expect_true("Age" %in% names(results$CatchAtAge))

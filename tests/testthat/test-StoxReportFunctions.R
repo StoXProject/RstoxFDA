@@ -1,4 +1,31 @@
 
+context("Test StoxReportFunctions: ReportRecaParameterStatistics")
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+StoxBioticData$Haul$Gear <- StoxLandingData$Landing$Gear[sample.int(20,45, replace=T)]
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Gear"))
+
+fpath1 <- makeTempDirReca("chain1")
+fpath2 <- makeTempDirReca("chain2")
+fpath3 <- makeTempDirReca("chain3")
+
+paramOut1 <- ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = fpath1)
+paramOut2 <- ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = fpath2)
+paramOut3 <- ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = fpath3)
+
+paramSummary <- ReportRecaParameterStatistics(paramOut1, NULL)
+paramSummary <- ReportRecaParameterStatistics(paramOut2, paramSummary)
+paramSummary <- ReportRecaParameterStatistics(paramOut3, paramSummary)
+
+removeTempDirReca(fpath1)
+removeTempDirReca(fpath2)
+removeTempDirReca(fpath3)
+
+convergence <- ReportRecaConvergence(paramSummary)
+
+
 context("Test StoxReportFunctions: ReportRecaCatchStatistics")
 predictiondatafile <- system.file("testresources","stocksplitpred.rds", package="RstoxFDA")
 catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
