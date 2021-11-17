@@ -425,6 +425,7 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #'  Various report functions may use output of this function with the function \code{\link[Reca]{eca.predict}} which samples the posterior distributions of parameters.
 #'  Communication between \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}} is managed by writing and reading files, 
 #'  and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
+#'  For multi-chain analysis, a different directory should be provided for each chain.
 #'
 #' @param RecaData \code{\link[RstoxFDA]{RecaData}} as returned from \code{\link[RstoxFDA]{PrepareRecaEstimate}}
 #' @param Nsamples number of MCMC samples that will be made available for \code{\link[Reca]{eca.predict}}. See documentation for \code{\link[Reca]{eca.estimate}},
@@ -466,8 +467,11 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
       ") ."
     ))
   }
-  fitfile="fit"
-  predictfile="pred"
+  
+  timestring <- gsub("-", "", gsub(":", "-", gsub(" ", ".", Sys.time())))
+  
+  fitfile=paste("fit", timestring, sep=".")
+  predictfile=paste("pred", timestring, sep=".")
   
   if (!isGiven(Nsamples)){
     stop("Parameter 'Nsamples' must be provided.")
