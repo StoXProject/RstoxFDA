@@ -178,7 +178,8 @@
 
 <p>Various report functions may use output of this function with the function <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code> which samples the posterior distributions of parameters.
  Communication between <code><a href='https://rdrr.io/pkg/Reca/man/eca.estimate.html'>eca.estimate</a></code> and <code><a href='https://rdrr.io/pkg/Reca/man/eca.predict.html'>eca.predict</a></code> is managed by writing and reading files, 
- and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.</p>
+ and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
+ For multi-chain analysis, a different directory should be provided for each chain.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='PrepareRecaEstimate.html'>PrepareRecaEstimate</a></code> for model configuration, and data preparation for this function, and
