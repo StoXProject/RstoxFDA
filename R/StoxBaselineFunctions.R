@@ -8,9 +8,6 @@ stoxWarning <- function(msg){
 #' Check if parameter is given
 #' @noRd
 isGiven <- function(value){
-  if (is.null(value)){
-    return(FALSE)
-  }
   if (length(value) == 0){
     return(FALSE)
   }
@@ -19,6 +16,9 @@ isGiven <- function(value){
     if (value == ""){
       return(FALSE)
     }
+  }
+  if (is.null(value)){
+    return(FALSE)
   }
   return(TRUE)
 }
@@ -1042,7 +1042,7 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
 #'  
 #'  For DefinitionMethod 'StratumPolygon':
 #'  Definitions are extracted from a \code{\link[RstoxBase]{StratumPolygon}}:
-#'  'Area' in \code{\link[RstoxFDA]{AreaPosition}} is derived from the column 'polygonName' in \code{\link[RstoxBase]{StratumPolygon}}.
+#'  'Area' in \code{\link[RstoxFDA]{AreaPosition}} is derived from the column 'StratumName' in \code{\link[RstoxBase]{StratumPolygon}}.
 #'  'Location' in \code{\link[RstoxFDA]{AreaPosition}} is encoded as missing.
 #'  'Latitude' and 'Longitude' in \code{\link[RstoxFDA]{AreaPosition}} are the coordinates set for each polygon in \code{\link[RstoxBase]{StratumPolygon}}.
 #'  
@@ -1076,7 +1076,7 @@ DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "
   }
   
   if (DefinitionMethod == "StratumPolygon"){
-    if (!("polygonName" %in% names(StratumPolygon))){
+    if (!("StratumName" %in% names(StratumPolygon))){
       stop("'StratumPolygon' must be an RstoxBase::StratumPolygon object.")
     }
     pos <- data.table::data.table(sp::coordinates(StratumPolygon))
@@ -1084,7 +1084,7 @@ DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "
     
     stopifnot(nrow(pos)==nrow(StratumPolygon))
     
-    pos$Area <- StratumPolygon$polygonName
+    pos$Area <- StratumPolygon$StratumName
     pos$Location <- as.character(NA)
     return(pos)
     
@@ -1121,8 +1121,8 @@ calculateCarNeighbours <- function(StratumPolygon){
   neighbourIndecies <- sf::st_touches(sfpoly, sfpoly)
   
 
-  carValues <- sfpoly$polygonName
-  neighbours <- unlist(lapply(neighbourIndecies, function(x){paste(sfpoly$polygonName[x],collapse=",")}))
+  carValues <- sfpoly$StratumName
+  neighbours <- unlist(lapply(neighbourIndecies, function(x){paste(sfpoly$StratumName[x],collapse=",")}))
   
   carTable <- data.table::data.table(CarValues=carValues, Neighbours=neighbours)
   

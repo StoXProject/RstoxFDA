@@ -48,7 +48,7 @@ Defines an association between area codes and positions that represent that area
  
  For DefinitionMethod 'StratumPolygon':
  Definitions are extracted from a \code{\link[RstoxBase]{StratumPolygon}}:
- 'Area' in \code{\link[RstoxFDA]{AreaPosition}} is derived from the column 'polygonName' in \code{\link[RstoxBase]{StratumPolygon}}.
+ 'Area' in \code{\link[RstoxFDA]{AreaPosition}} is derived from the column 'StratumName' in \code{\link[RstoxBase]{StratumPolygon}}.
  'Location' in \code{\link[RstoxFDA]{AreaPosition}} is encoded as missing.
  'Latitude' and 'Longitude' in \code{\link[RstoxFDA]{AreaPosition}} are the coordinates set for each polygon in \code{\link[RstoxBase]{StratumPolygon}}.
 }

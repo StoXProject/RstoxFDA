@@ -45,7 +45,7 @@ locationsFdir2018 <- rgdal::readOGR("~/shapefiles/fdir/fdir_annotated/Lokasjoner
 for (i in 1:nrow(locationsFdir2018)){
   slot(slot(locationsFdir2018, "polygons")[[i]], "ID") <- locationsFdir2018$LOKREF[i]
 }
-locationsFdir2018$polygonName <- locationsFdir2018$LOKREF
+locationsFdir2018$StratumName <- locationsFdir2018$LOKREF
 locationsFdir2018 <- sp::spTransform(locationsFdir2018, commonCRS)
 usethis::use_data(locationsFdir2018, overwrite = T, compress = "xz")
 
@@ -57,7 +57,7 @@ locationsFdir2017 <- rgdal::readOGR("~/shapefiles/fdir/fdir_annotated/Lokasjoner
 for (i in 1:nrow(locationsFdir2017)){
   slot(slot(locationsFdir2017, "polygons")[[i]], "ID") <- locationsFdir2017$LOKREF[i]
 }
-locationsFdir2017$polygonName <- locationsFdir2017$LOKREF
+locationsFdir2017$StratumName <- locationsFdir2017$LOKREF
 locationsFdir2017 <- sp::spTransform(locationsFdir2017, commonCRS)
 usethis::use_data(locationsFdir2017, overwrite = T, compress = "xz")
 
@@ -70,7 +70,7 @@ NAFOareas <- rgdal::readOGR("~/shapefiles/NAFO_hovedomr_2017_WGS84/", stringsAsF
 for (i in 1:nrow(NAFOareas)){
   slot(slot(NAFOareas, "polygons")[[i]], "ID") <- NAFOareas$homr[i]
 }
-NAFOareas$polygonName <- NAFOareas$homr
+NAFOareas$StratumName <- NAFOareas$homr
 NAFOareas$nafo_names <- NAFOareas$nafo_norsk
 NAFOareas$first_nafo <- NULL
 NAFOareas$nafo_norsk <- NULL
@@ -88,7 +88,7 @@ ICESareas <- sp::spTransform(ICESareas, sp::CRS("+proj=longlat +datum=WGS84"))
 for (i in 1:nrow(ICESareas)){
   slot(slot(ICESareas, "polygons")[[i]], "ID") <- ICESareas$Area_Full[i]
 }
-ICESareas$polygonName <- ICESareas$Area_27
+ICESareas$StratumName <- ICESareas$Area_27
 ICESareas$OBJECTID_1 <- NULL
 ICESareas$OBJECTID <- NULL
 names(ICESareas)[names(ICESareas) == "SubDivisio"] <- "SubDivision"
@@ -102,7 +102,7 @@ ICESrectangles <- rgdal::readOGR("~/shapefiles/ICES_rectangles//", stringsAsFact
 for (i in 1:nrow(ICESrectangles)){
   slot(slot(ICESrectangles, "polygons")[[i]], "ID") <- ICESrectangles$ICESNAME[i]
 }
-ICESrectangles$polygonName <- ICESrectangles$ICESNAME
+ICESrectangles$StratumName <- ICESrectangles$ICESNAME
 ICESrectangles@data$OBJECTID <- NULL
 ICESrectangles@data$OBJECTID_1 <- NULL
 ICESrectangles@data$ICESNAME_2 <- NULL

@@ -493,7 +493,7 @@ expect_error(AddAreaPositionStoxLanding(stoxLandingPre, areaPos), "Column Latitu
 context("test-StoxBaselineFunctions: AppendStratumStoxLanding")
 
 strp <- mainareaFdir2018
-sp::proj4string(strp) <- sp::CRS("+proj=longlat +datum=WGS84")
+#sp::proj4string(strp) <- sp::CRS("+proj=longlat +datum=WGS84")
 
 areafile <- system.file("testresources","mainarea_fdir_from_2018_compl.txt", package="RstoxFDA")
 areaPos <- DefineAreaPosition(NULL, FileName = areafile, StratumPolygon = NULL)

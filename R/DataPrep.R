@@ -144,10 +144,10 @@ convertCodes <- function(code, conversionTable){
 #' @param latName name of WGS84 lat column in 'table'
 #' @param lonName name of WGS84 lon column in 'table
 #' @param colName name of column to be appended to 'table'
-#' @param polygonName name of column in 'areaPolygons' that identify the area name
+#' @param StratumName name of column in 'areaPolygons' that identify the area name
 #' @return 'table' with the area appended in the column 'colName'
 #' @export
-appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, polygonName="polygonName"){
+appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, StratumName="StratumName"){
   if (!data.table::is.data.table(table)){
     stop("Paramter 'table' must be a data.table")
   }
@@ -180,7 +180,7 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, polyg
 
 
   location_codes <- sp::over(pos, areaPolygons)
-  table[[colName]] <- location_codes[[polygonName]]
+  table[[colName]] <- location_codes[[StratumName]]
 
   return(table)
 }
@@ -200,10 +200,10 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, polyg
 #' @param areaName name of column that identifies the area in 'table'
 #' @param latColName name of the latitdue column to be appended to 'table'
 #' @param lonColName name of the longitude column to be appended to 'table'
-#' @param polygonName name of the column in 'areaPolygons' that identifies the area.
+#' @param StratumName name of the column in 'areaPolygons' that identifies the area.
 #' @return 'table' with the positions appended in the columns 'latColName' and 'lonColName'.
 #' @export
-appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName, polygonName="polygonName"){
+appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName, StratumName="StratumName"){
   if (latColName %in% names(table)){
     stop(paste("Column name", latColName, "already exists."))
   }
@@ -217,7 +217,7 @@ appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName
   if (length(grep("proj=longlat", sp::proj4string(areaPolygons)))==0){
     warning("could not verify projection of 'areaPolygons'")
   }
-  mapping <- cbind(data.table::as.data.table(sp::coordinates(areaPolygons)), areaPolygons[[polygonName]])
+  mapping <- cbind(data.table::as.data.table(sp::coordinates(areaPolygons)), areaPolygons[[StratumName]])
   names(mapping) <- c(lonColName, latColName, areaName)
 
   newTab <- merge(table, mapping, by=areaName, all.x=T)

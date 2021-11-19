@@ -6,8 +6,8 @@
 #' Make tempdir for Reca results
 #' returns path
 #' @noRd
-makeTempDirReca <- function(){
-  fpath <- file.path(tempdir(), "Recadir")
+makeTempDirReca <- function(dirname="Recadir"){
+  fpath <- file.path(tempdir(), dirname)
   if (dir.exists(fpath)){
     unlink(fpath, recursive = T)
   }

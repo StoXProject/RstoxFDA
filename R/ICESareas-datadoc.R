@@ -12,7 +12,7 @@
 #'
 #' @usage data(ICESareas)
 #'
-#' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'polygonName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+#' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 #'
 #' @keywords datasets
 #'

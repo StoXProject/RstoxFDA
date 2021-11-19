@@ -31,12 +31,12 @@
 #'  data(NAFOareas)
 #'  # plot mainarea and NAFO areas combined in a Lambert Conformal Conic projection.
 #'  plotArea(title="Main area + NAFO",
-#'           areaDef=rbind(mainareaFdir2018[,c("polygonName")],
-#'                   NAFOareas[,c("polygonName")]),
+#'           areaDef=rbind(mainareaFdir2018[,c("StratumName")],
+#'                   NAFOareas[,c("StratumName")]),
 #'           projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
 #'           +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 #' @export
-plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="polygonName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL){
+plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="StratumName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL){
 
   if (is.null(projection)) {
     projection <- "+proj=merc +datum=WGS84"
@@ -141,7 +141,7 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 #'        areaDef = ICESareas, areaNameCol = "Area_Full",
 #'        bubbleSize = 20, title="Landings on ICES areas")
 #' @export
-plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="polygonName", legendTitle=quantityCol, areaLabels=T, xlim=NULL, ylim=NULL, areaLabelSize=2, bubbleColor="darkred", bubbleSize=10, bubbleShape=21, title="", projection=NULL){
+plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="StratumName", legendTitle=quantityCol, areaLabels=T, xlim=NULL, ylim=NULL, areaLabelSize=2, bubbleColor="darkred", bubbleSize=10, bubbleShape=21, title="", projection=NULL){
   requireNamespace("rnaturalearth")
   requireNamespace("sf")
 
