@@ -9,7 +9,7 @@ defining neighbours for a CAR-variable (Conditional autoregressive variable).
 }
 \details{
 \describe{
-  \item{CarVariable}{Values for a variable used as CAR-variable}
+  \item{CarValue}{Values for a variable used as CAR-variable}
   \item{Neighbours}{Comma-separated list of neighbours}
  }
 

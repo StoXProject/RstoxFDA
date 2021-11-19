@@ -62,6 +62,7 @@ expect_true("Stock" %in% names(result$MeanWeight))
 context("PrepRecaEstimate: AgerrorMatrix")
 ageerorfile <- system.file("testresources","AgeErrorHirstEtAl2012.txt", package="RstoxFDA")
 ageerror <- DefineAgeErrorMatrix(FileName = ageerorfile)
+expect_true(is.AgeErrorMatrix(ageerror))
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
 
@@ -94,6 +95,7 @@ expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects =
 #check CAR value cehcks
 carfile <- system.file("testresources","mainarea_neighbour_correct_codes.txt", package="RstoxFDA")
 car <- DefineCarNeighbours(NULL, FileName = carfile)
+expect_true(is.CarNeighbours(car))
 car$Neighbours[9] <- paste(car$Neighbours[9], "30", sep=",")
 car$Neighbours[29] <- paste(car$Neighbours[29], "08", sep=",")
 prepCar <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), CarEffect = "Area", UseCarEffect = T, CarNeighbours = car)

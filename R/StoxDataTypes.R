@@ -658,37 +658,6 @@ is.RecaResult <- function(RecaResult){
   return(TRUE)
 }
 
-#' Unified Variable Definition (UnifiedVariableDefinition)
-#'
-#' Table (\code{\link[data.table]{data.table}}) defining a unified variable for different data formats
-#'
-#' @details
-#'  \describe{
-#'   \item{UnifiedVariable}{Unified code}
-#'   \item{Source}{Format for which the unified variable has corresponding codes}
-#'   \item{Definition}{The codes defining the unified code in the 'source'. Comma-separated list of codes.}
-#'  }
-#'
-#' @name UnifiedVariableDefinition
-#'
-NULL
-
-#' Check if argument is UnifiedVariableDefinition
-#' @description
-#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{UnifiedVariableDefinition}}
-#' @param UnifiedVariableDefinition argument to be checked for data conformity
-#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{UnifiedVariableDefinition}}
-#' @export
-is.UnifiedVariableDefinition <- function(UnifiedVariableDefinition){
-  if (!data.table::is.data.table(UnifiedVariableDefinition)){
-    return(FALSE)
-  }
-  if (!all(c("UnifiedVariable", "Source", "Definition") %in% names(UnifiedVariableDefinition))){
-    return(FALSE)
-  }
-  
-  return(TRUE)
-}
 
 #' Temporal Categories (TemporalDefinition)
 #'
@@ -768,7 +737,7 @@ is.AreaPosition <- function(AreaPosition){
 #'
 #' @details
 #'  \describe{
-#'   \item{CarVariable}{Values for a variable used as CAR-variable}
+#'   \item{CarValue}{Values for a variable used as CAR-variable}
 #'   \item{Neighbours}{Comma-separated list of neighbours}
 #'  }
 #'
@@ -788,7 +757,7 @@ is.CarNeighbours <- function(CarNeighbours){
   if (!data.table::is.data.table(CarNeighbours)){
     return(FALSE)
   }
-  if (!all(c("CarVariable", "Neighbours") %in% names(CarNeighbours))){
+  if (!all(c("CarValue", "Neighbours") %in% names(CarNeighbours))){
     return(FALSE)
   }
   
