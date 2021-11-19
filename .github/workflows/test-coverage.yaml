@@ -10,7 +10,7 @@ name: test-coverage
 
 jobs:
   test-coverage:
-    runs-on: ubuntu-18.04
+    runs-on: macOS-latest
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
@@ -22,30 +22,18 @@ jobs:
       - uses: r-lib/actions/setup-r@v1
         id: install-r
 
-      - name: Install pak and query dependencies and set up environment
+      - name: Install query dependencies
         run: |
-          install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
 
-      - name: Restore R package cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ${{ env.R_LIBS_USER }}
-            !${{ env.R_LIBS_USER }}/pak
-          key: ubuntu-18.04-${{ steps.install-r.outputs.installed-r-version }}-1-${{ hashFiles('.github/depends.rds') }}
-          restore-keys: ubuntu-18.04-${{ steps.install-r.outputs.installed-r-version }}-1-
-
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
+      - name: Install MacOS dependencies
+        if: runner.os == 'macOS'
         run: |
-          sudo apt-get install -y libproj-dev
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "18.04"))')
+          rm '/usr/local/bin/gfortran'
+          brew install gdal udunits proj
+        shell: bash
 
       - name: Install dependencies
         run: |
