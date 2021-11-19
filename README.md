@@ -1,5 +1,6 @@
 # RstoxFDA
 ![R-CMD-check](https://github.com/StoXProject/RstoxFDA/workflows/R-CMD-check/badge.svg)
+[![Codecov test coverage](https://codecov.io/gh/StoxProject/RstoxFDA/branch/master/graph/badge.svg)](https://codecov.io/gh/StoxProject/RstoxFDA?branch=master)
 
 Fisheries Dependent Analysis with Rstox.
 
