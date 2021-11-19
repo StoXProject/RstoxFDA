@@ -9,7 +9,7 @@ plotBubbleMap(
   areaCol,
   quantityCol,
   areaDef,
-  areaNameCol = "polygonName",
+  areaNameCol = "StratumName",
   legendTitle = quantityCol,
   areaLabels = T,
   xlim = NULL,

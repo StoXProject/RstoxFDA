@@ -448,9 +448,9 @@ summaryPaaPar <- function(modelFit){
       modelFit$constant$interceptname <- paste(modelFit$constant$varname, "Intercept")
       modelFit$constant$tauinterceptname <- paste(modelFit$constant$varname, "tau_Intercept")
       modelFit$constant$arinterceptname <- paste(modelFit$constant$varname, "ar_Intercept")
-      intercept <- modelFit$constant[, list(Mean=mean(get("Intercept")), Variance=var(get("Intercept"))), by=list(Parameter=get("interceptname"))]
-      tau_intercept <- modelFit$constant[, list(Mean=mean(get("tau_Intercept")), Variance=var(get("tau_Intercept"))), by=list(Parameter=get("tauinterceptname"))]
-      ar_intercept <- modelFit$constant[, list(Mean=mean(get("ar_Intercept")), Variance=var(get("ar_Intercept"))), by=list(Parameter=get("arinterceptname"))]
+      intercept <- modelFit$constant[, list(Mean=mean(get("Intercept")), Variance=stats::var(get("Intercept"))), by=list(Parameter=get("interceptname"))]
+      tau_intercept <- modelFit$constant[, list(Mean=mean(get("tau_Intercept")), Variance=stats::var(get("tau_Intercept"))), by=list(Parameter=get("tauinterceptname"))]
+      ar_intercept <- modelFit$constant[, list(Mean=mean(get("ar_Intercept")), Variance=stats::var(get("ar_Intercept"))), by=list(Parameter=get("arinterceptname"))]
       
       summary <- rbind(summary, intercept)
       summary <- rbind(summary, tau_intercept)
@@ -477,13 +477,13 @@ summaryLgaPar <- function(modelFit){
       modelFit$constant$tauslopename <- paste(modelFit$constant$varname, "tau_Slope")
       modelFit$constant$arslopename <- paste(modelFit$constant$varname, "ar_Slope")
       
-      intercept <- modelFit$constant[, list(Mean=mean(get("Intercept")), Variance=var(get("Intercept"))), by=list(Parameter=get("interceptname"))]
-      tau_intercept <- modelFit$constant[, list(Mean=mean(get("tau_Intercept")), Variance=var(get("tau_Intercept"))), by=list(Parameter=get("tauinterceptname"))]
-      ar_intercept <- modelFit$constant[, list(Mean=mean(get("ar_Intercept")), Variance=var(get("ar_Intercept"))), by=list(Parameter=get("arinterceptname"))]
+      intercept <- modelFit$constant[, list(Mean=mean(get("Intercept")), Variance=stats::var(get("Intercept"))), by=list(Parameter=get("interceptname"))]
+      tau_intercept <- modelFit$constant[, list(Mean=mean(get("tau_Intercept")), Variance=stats::var(get("tau_Intercept"))), by=list(Parameter=get("tauinterceptname"))]
+      ar_intercept <- modelFit$constant[, list(Mean=mean(get("ar_Intercept")), Variance=stats::var(get("ar_Intercept"))), by=list(Parameter=get("arinterceptname"))]
       
-      slope <- modelFit$constant[, list(Mean=mean(get("Slope")), Variance=var(get("Slope"))), by=list(Parameter=get("slopename"))]
-      tau_slope <- modelFit$constant[, list(Mean=mean(get("tau_Slope")), Variance=var(get("tau_Slope"))), by=list(Parameter=get("tauslopename"))]
-      ar_slope <- modelFit$constant[, list(Mean=mean(get("ar_Slope")), Variance=var(get("ar_Slope"))), by=list(Parameter=get("arslopename"))]
+      slope <- modelFit$constant[, list(Mean=mean(get("Slope")), Variance=stats::var(get("Slope"))), by=list(Parameter=get("slopename"))]
+      tau_slope <- modelFit$constant[, list(Mean=mean(get("tau_Slope")), Variance=stats::var(get("tau_Slope"))), by=list(Parameter=get("tauslopename"))]
+      ar_slope <- modelFit$constant[, list(Mean=mean(get("ar_Slope")), Variance=stats::var(get("ar_Slope"))), by=list(Parameter=get("arslopename"))]
       
       summary <- rbind(summary, intercept)
       summary <- rbind(summary, tau_intercept)
@@ -580,7 +580,7 @@ crossChainConvergence <- function(modelSummary, iterations, tolerance){
 #'  is reported. The accepted deviation is controlled by the argument 'Tolerance'.
 #'  Parameters are reported if they differ from 1 by 'Tolerance' or more,
 #'  so that a Tolerance of 0 reports all parameters.
-#' @param RecaParameterSummaryData
+#' @param RecaParameterSummaryData summary statistics for Reca parameters
 #' @param Tolerance threshold for reporting parameters. See details
 #' @noRd
 ReportRecaConvergence <- function(RecaParameterSummaryData, Tolerance=0){

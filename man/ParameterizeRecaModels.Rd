@@ -47,6 +47,7 @@ Runs estimation of parameters for Reca models. Invokes \code{\link[Reca]{eca.est
  Various report functions may use output of this function with the function \code{\link[Reca]{eca.predict}} which samples the posterior distributions of parameters.
  Communication between \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}} is managed by writing and reading files, 
  and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
+ For multi-chain analysis, a different directory should be provided for each chain.
 }
 
 \seealso{

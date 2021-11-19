@@ -5,7 +5,7 @@
 \alias{NAFOareas}
 \title{NAFO areas}
 \format{
-\code{\link[sp]{SpatialPolygonsDataFrame}} with location names identified in the column 'polygonName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+\code{\link[sp]{SpatialPolygonsDataFrame}} with location names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 }
 \usage{
 data(NAFOareas)
@@ -13,7 +13,7 @@ data(NAFOareas)
 \description{
 Definition for FAO Northwest Atlantic (Major Fishing Area 21) area coding system. NAFO areas as used in Norwegian fisheries reporting.
 A coding convention for reporting these areas as an extention of the main areas defined by the Norwegian Directorate of Fisheries
-identifies the areas in the columns 'polygonName' and 'homr'. International convetion is identified in the column 'nafo_names'.
+identifies the areas in the columns 'StratumName' and 'homr'. International convetion is identified in the column 'nafo_names'.
 }
 \details{
 Polygons are defined for all Divisions of Major Fishing Area 21, except Subarea 21.0, Subarea 21.5 and subarea 21.6.

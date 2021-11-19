@@ -10,7 +10,7 @@ appendPosition(
   areaName,
   latColName,
   lonColName,
-  polygonName = "polygonName"
+  StratumName = "StratumName"
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ appendPosition(
 
 \item{lonColName}{name of the longitude column to be appended to 'table'}
 
-\item{polygonName}{name of the column in 'areaPolygons' that identifies the area.}
+\item{StratumName}{name of the column in 'areaPolygons' that identifies the area.}
 }
 \value{
 'table' with the positions appended in the columns 'latColName' and 'lonColName'.

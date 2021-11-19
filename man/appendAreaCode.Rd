@@ -10,7 +10,7 @@ appendAreaCode(
   latName,
   lonName,
   colName,
-  polygonName = "polygonName"
+  StratumName = "StratumName"
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ appendAreaCode(
 
 \item{colName}{name of column to be appended to 'table'}
 
-\item{polygonName}{name of column in 'areaPolygons' that identify the area name}
+\item{StratumName}{name of column in 'areaPolygons' that identify the area name}
 }
 \value{
 'table' with the area appended in the column 'colName'

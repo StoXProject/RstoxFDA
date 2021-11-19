@@ -23,7 +23,7 @@
 #'
 #' @usage data(ICESrectangles)
 #'
-#' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with rectange names identified in the column 'polygonName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+#' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with rectange names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 #'
 #' @keywords datasets
 #'

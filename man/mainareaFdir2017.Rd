@@ -5,7 +5,7 @@
 \alias{mainareaFdir2017}
 \title{Main areas}
 \format{
-\code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'polygonName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+\code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 }
 \usage{
 data(mainareaFdir2017)
