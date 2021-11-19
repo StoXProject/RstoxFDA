@@ -62,6 +62,7 @@ expect_true("Stock" %in% names(result$MeanWeight))
 context("PrepRecaEstimate: AgerrorMatrix")
 ageerorfile <- system.file("testresources","AgeErrorHirstEtAl2012.txt", package="RstoxFDA")
 ageerror <- DefineAgeErrorMatrix(FileName = ageerorfile)
+expect_true(is.AgeErrorMatrix(ageerror))
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
 
@@ -94,6 +95,7 @@ expect_error(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects =
 #check CAR value cehcks
 carfile <- system.file("testresources","mainarea_neighbour_correct_codes.txt", package="RstoxFDA")
 car <- DefineCarNeighbours(NULL, FileName = carfile)
+expect_true(is.CarNeighbours(car))
 car$Neighbours[9] <- paste(car$Neighbours[9], "30", sep=",")
 car$Neighbours[29] <- paste(car$Neighbours[29], "08", sep=",")
 prepCar <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), CarEffect = "Area", UseCarEffect = T, CarNeighbours = car)
@@ -146,7 +148,9 @@ StoxBioticData$Haul$Gear <- StoxLandingData$Landing$Gear[sample.int(20,45, repla
 fpath <- makeTempDirReca()
 
 prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Gear"))
-paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, fpath)
+paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=100)
+
+results <- RunRecaModels(paramOut, StoxLandingData, Seed=100)
 
 results <- RunRecaModels(paramOut, StoxLandingData)
 expect_true("Gear" %in% names(paramOut$Landings$AgeLengthCov))
