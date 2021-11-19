@@ -22,10 +22,11 @@ jobs:
       - uses: r-lib/actions/setup-r@v1
         id: install-r
 
-      - name: Install pak and query dependencies
+      - name: Install pak and query dependencies and set up environment
         run: |
           install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
           saveRDS(pak::pkg_deps("local::.", dependencies = TRUE), ".github/r-depends.rds")
+          echo "PKG_REPO=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
         shell: Rscript {0}
 
       - name: Restore R package cache
