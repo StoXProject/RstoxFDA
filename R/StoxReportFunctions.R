@@ -66,7 +66,7 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   landingsTab <- data.table::data.table(stats::aggregate(list(LandedRoundWeight=landings$RoundWeight), by=landingsAggList, FUN=function(x){sum(x, na.rm=T)}))
   
   tab <- merge(landingsTab, sampledTab, by=GroupingVariables, all=T)
-  tab <- tab[order(tab$LandedRoundWeight),]
+  tab <- tab[order(tab$LandedRoundWeight, decreasing = T),]
   
   output <- list()
   output$FisheriesSampling <- tab
