@@ -41,14 +41,15 @@ jobs:
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
-          pak::local_system_requirements(execute = TRUE)
-          pak::pkg_system_requirements("covr", execute = TRUE)
-        shell: Rscript {0}
+          sudo apt-get install -y libproj-dev
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "18.04"))')
 
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("git2r")
           remotes::install_cran("drat")
           pak::pkg_install("covr")
         shell: Rscript {0}
@@ -56,5 +57,4 @@ jobs:
       - name: Test coverage
         run: |
           R CMD INSTALL .
-          source shim_package.sh
           Rscript -e 'covr::codecov()'
