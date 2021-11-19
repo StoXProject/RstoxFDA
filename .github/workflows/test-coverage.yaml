@@ -25,7 +25,6 @@ jobs:
       - name: Install pak and query dependencies and set up environment
         run: |
           install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
-          echo "PKG_REPO=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
@@ -36,7 +35,7 @@ jobs:
           path: |
             ${{ env.R_LIBS_USER }}
             !${{ env.R_LIBS_USER }}/pak
-          key: ubuntu-18.04-${{ steps.install-r.outputs.installed-r-version }}-1-${{ hashFiles('.github/r-depends.rds') }}
+          key: ubuntu-18.04-${{ steps.install-r.outputs.installed-r-version }}-1-${{ hashFiles('.github/depends.rds') }}
           restore-keys: ubuntu-18.04-${{ steps.install-r.outputs.installed-r-version }}-1-
 
       - name: Install system dependencies
