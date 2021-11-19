@@ -47,7 +47,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pak::local_install_dev_deps(upgrade = TRUE)
+          remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("git2r")
+          remotes::install_cran("drat")
           pak::pkg_install("covr")
         shell: Rscript {0}
 
