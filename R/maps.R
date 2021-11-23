@@ -223,3 +223,28 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="Stra
   pl
 
 }
+
+#' Writes \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)
+#' @param shape \code{\link[RstoxBase]{StratumPolygon}} stratadefinition to convert
+#' @param output filename to save output to
+#' @export
+writeSpDataFrameAsWKT <- function(shape, output){
+  namecol="StratumName"
+  requireNamespace("rgeos", quietly = TRUE)
+  requireNamespace("sp", quietly = TRUE)
+  if (file.exists(output)){
+    stop(paste("File", output, "exists already."))
+  }
+  
+  projection="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
+  shp <- sp::spTransform(shape, sp::CRS(projection))
+  
+  f<-file(output, open="w")
+  
+  for (i in 1:nrow(shp)){
+    poly <- shp[i,]
+    write(paste(as.character(poly[[namecol]]), rgeos::writeWKT(poly, byid = F),sep="\t"), f)
+  }
+  close(f)
+  
+}

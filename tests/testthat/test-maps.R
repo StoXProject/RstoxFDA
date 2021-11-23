@@ -32,3 +32,12 @@ plotBubbleMap(landings, "Area", "LiveWeightKG",
 plotBubbleMap(landings, "Area", "LiveWeightKG",
               areaDef = ICESareas, areaNameCol = "Area_Full",
               bubbleSize = 20, title="Landings on ICES areas")
+
+
+tempfile <- tempfile(fileext = ".txt")
+writeSpDataFrameAsWKT(RstoxFDA::ICESareas, tempfile)
+ia <- RstoxBase::DefineStratumPolygon(DefinitionMethod = "ResourceFile", FileName=tempfile)
+unlink(tempfile, recursive = T)
+expect_true("StratumName" %in% names(ia))
+
+
