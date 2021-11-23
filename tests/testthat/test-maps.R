@@ -34,10 +34,28 @@ plotBubbleMap(landings, "Area", "LiveWeightKG",
               bubbleSize = 20, title="Landings on ICES areas")
 
 
+context("Test writeSpDataFrameAsWKT")
 tempfile <- tempfile(fileext = ".txt")
 writeSpDataFrameAsWKT(RstoxFDA::ICESareas, tempfile)
 ia <- RstoxBase::DefineStratumPolygon(DefinitionMethod = "ResourceFile", FileName=tempfile)
 unlink(tempfile, recursive = T)
 expect_true("StratumName" %in% names(ia))
+
+context("Test mergepolygons")
+ia <- RstoxFDA::ICESareas
+ia$StratumName <- paste(ia$Major_FA, ia$StratumName, sep=".")
+
+ib <- ia
+ib$StratumName <- paste(ib$Major_FA, ib$SubArea, sep=".")
+expect_error(mergePolygons(ib, "StratumName"), "All columns must have the same value for polygons that are to be merged")
+
+
+df <- ia@data
+ia <- rgeos::gSimplify(ia, tol=.4)
+ia <- sp::SpatialPolygonsDataFrame(ia, df, match.ID = "StratumName")
+ia$StratumName <- paste(ia$Major_FA, ia$SubArea, sep=".")
+ia@data <- ia@data[,c("StratumName","Major_FA")]
+
+merged <- mergePolygons(ia, "StratumName")
 
 
