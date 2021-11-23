@@ -258,41 +258,33 @@ writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
 #'  All columns must have the same value for all polygons that are to be merged. If columns are not consistent in this regard, an error is raised.
 #' @param shape \code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert
 #' @param mergeCol name of column that should be used for merging, all polygons with the same value in this column will be merged into one.
-#' @value \code{\link[sp]{SpatialPolygonsDataFrame}} with polygons merged
-#' @noRd
+#' @return \code{\link[sp]{SpatialPolygonsDataFrame}} with polygons merged
+#' @export
 mergePolygons <- function(shape, mergeCol){
   
   if (nrow(unique(shape@data)) != length(unique(shape@data[[mergeCol]]))){
     stop("All columns must have the same value for polygons that are to be merged")
   }
   
-  newPolygon <- NULL
+  dd<-sf::st_as_sf(shape)
+  
+  newPolygons <- NULL
   for (newName in unique(shape@data[[mergeCol]])){
-    mergedPolygon <- NULL
+    ff<-sf::st_union(dd[dd$StratumName==newName,])
+    spat <- sf::as_Spatial(ff)
+    stopifnot(length(spat@polygons)==1)
+    spat@polygons[[1]]@ID <- newName
     
-    for (i in (1:nrow(shape))[shape@data[[mergeCol]] == newName]){
-      
-      if (is.null(mergedPolygon)){
-        mergedPolygon <- shape[i,]
-      }
-      else{
-        mergedPolygon <- rgeos::gUnion(shape[i,], mergedPolygon)        
-      }
-
-    }
-    mergedPolygon@polygons[[1]]@ID <- newName
-    
-    if (is.null(newPolygon)){
-      newPolygon <- mergedPolygon
+    if (is.null(newPolygons)){
+      newPolygons <- spat
     }
     else{
-      newPolygon <- rbind(mergedPolygon, newPolygon)
+      newPolygons <- rbind(newPolygons, spat)      
     }
-
   }
   
-  newPolygon <- sp::SpatialPolygonsDataFrame(newPolygon, shape@data[!duplicated(shape@data[[mergeCol]]),], match.ID = mergeCol)
+  newPolygons <- sp::SpatialPolygonsDataFrame(newPolygons, shape@data[!duplicated(shape@data[[mergeCol]]),], match.ID = mergeCol)
   
-  return(newPolygon)
+  return(newPolygons)
   
 }

@@ -52,10 +52,13 @@ expect_error(mergePolygons(ib, "StratumName"), "All columns must have the same v
 
 df <- ia@data
 ia <- rgeos::gSimplify(ia, tol=.4)
+suppressWarnings(ia <- rgeos::gBuffer(ia, byid = T, width=.03))
 ia <- sp::SpatialPolygonsDataFrame(ia, df, match.ID = "StratumName")
 ia$StratumName <- paste(ia$Major_FA, ia$SubArea, sep=".")
 ia@data <- ia@data[,c("StratumName","Major_FA")]
 
 merged <- mergePolygons(ia, "StratumName")
+expect_true("SpatialPolygonsDataFrame" %in% class(merged))
+expect_equal(length(merged), length(unique(ia$StratumName)))
 
 
