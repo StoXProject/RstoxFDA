@@ -2,15 +2,17 @@
 % Please edit documentation in R/maps.R
 \name{writeSpDataFrameAsWKT}
 \alias{writeSpDataFrameAsWKT}
-\title{Writes \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)}
+\title{Writes shape files as WKT files}
 \usage{
-writeSpDataFrameAsWKT(shape, output)
+writeSpDataFrameAsWKT(shape, output, namecol = "StratumName")
 }
 \arguments{
-\item{shape}{\code{\link[RstoxBase]{StratumPolygon}} stratadefinition to convert}
+\item{shape}{\code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert}
 
 \item{output}{filename to save output to}
+
+\item{namecol}{name of column in 'shape' that are to be used as strata names. Defaults to 'StratumName' pr the definition of \code{\link[RstoxBase]{StratumPolygon}}}
 }
 \description{
-Writes \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)
+Writes \code{\link[sp]{SpatialPolygonsDataFrame}}, such as \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)
 }

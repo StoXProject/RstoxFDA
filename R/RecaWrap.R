@@ -634,6 +634,14 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   samples <- data.table::as.data.table(samples)
   landings <- data.table::as.data.table(landings)
 
+  if (!isGiven(neighbours) & isGiven(carEffect)){
+    stop("carEffect specified, but argument 'neighbours' is not provided.")
+  }
+  
+  if (isGiven(neighbours) & !isGiven(carEffect)){
+    stop("carEffect not specified, but argument 'neighbours' is provided.")
+  }
+  
   # check interaction
   if (!all(interaction %in% c(fixedEffects, randomEffects, carEffect))){
     missing <- interaction[!(interaction %in% c(fixedEffects, randomEffects, carEffect))]
