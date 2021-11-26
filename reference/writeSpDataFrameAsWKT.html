@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Define Weight Conversion Factors — DefineWeightConversionFactor • RstoxFDA</title>
+<title>Writes shape files as WKT files — writeSpDataFrameAsWKT • RstoxFDA</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,8 @@
 
 
 
-<meta property="og:title" content="Define Weight Conversion Factors — DefineWeightConversionFactor" />
-<meta property="og:description" content="Define weight conversion factors for calculating approximate weights for a product type (e.g. round fish)
- from the weight of other fish products, such as gutted fish." />
+<meta property="og:title" content="Writes shape files as WKT files — writeSpDataFrameAsWKT" />
+<meta property="og:description" content="Writes SpatialPolygonsDataFrame, such as StratumPolygon as Stox-WKT files (stratafiles)" />
 
 
 
@@ -109,62 +108,34 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Define Weight Conversion Factors</h1>
-    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/StoxBaselineFunctions.R'><code>R/StoxBaselineFunctions.R</code></a></small>
-    <div class="hidden name"><code>DefineWeightConversionFactor.Rd</code></div>
+    <h1>Writes shape files as WKT files</h1>
+    <small class="dont-index">Source: <a href='https://github.com/StoXProject/RstoxFDA/blob/master/R/maps.R'><code>R/maps.R</code></a></small>
+    <div class="hidden name"><code>writeSpDataFrameAsWKT.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Define weight conversion factors for calculating approximate weights for a product type (e.g. round fish)
- from the weight of other fish products, such as gutted fish.</p>
+    <p>Writes <code><a href='https://rdrr.io/pkg/sp/man/SpatialPolygons.html'>SpatialPolygonsDataFrame</a></code>, such as <code><a href='https://rdrr.io/pkg/RstoxBase/man/StratumPolygon.html'>StratumPolygon</a></code> as Stox-WKT files (stratafiles)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>DefineWeightConversionFactor</span><span class='op'>(</span>
-  <span class='va'>processData</span>,
-  DefinitionMethod <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ResourceFile"</span><span class='op'>)</span>,
-  FileName <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span><span class='op'>(</span><span class='op'>)</span>,
-  UseProcessData <span class='op'>=</span> <span class='cn'>F</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>writeSpDataFrameAsWKT</span><span class='op'>(</span><span class='va'>shape</span>, <span class='va'>output</span>, namecol <span class='op'>=</span> <span class='st'>"StratumName"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>processData</th>
-      <td><p><code><a href='WeightConversionTable.html'>WeightConversionTable</a></code> as returned from this function</p></td>
+      <th>shape</th>
+      <td><p><code><a href='https://rdrr.io/pkg/sp/man/SpatialPolygons.html'>SpatialPolygonsDataFrame</a></code> stratadefinition to convert</p></td>
     </tr>
     <tr>
-      <th>DefinitionMethod</th>
-      <td><p>'ResourceFile'. See details.</p></td>
+      <th>output</th>
+      <td><p>filename to save output to</p></td>
     </tr>
     <tr>
-      <th>FileName</th>
-      <td><p>path to resource file</p></td>
-    </tr>
-    <tr>
-      <th>UseProcessData</th>
-      <td><p>If TRUE, bypasses execution of function and returns existing 'processData'</p></td>
+      <th>namecol</th>
+      <td><p>name of column in 'shape' that are to be used as strata names. Defaults to 'StratumName' pr the definition of <code><a href='https://rdrr.io/pkg/RstoxBase/man/StratumPolygon.html'>StratumPolygon</a></code></p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p><code><a href='WeightConversionTable.html'>WeightConversionTable</a></code></p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>For DefinitionMethod 'ResourceFile':
- Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:</p><dl>
- <dt>Column 1: 'Description'</dt><dd><p>Free-text description of the product</p></dd>
- <dt>Column 2: 'Species'</dt><dd><p>Identifier for the species that the conversion applies to</p></dd>
- <dt>Column 3: 'ProductType'</dt><dd><p>Identifier for the type of product that the conversion applies to</p></dd>
- <dt>Column 4: 'WeightFactor'</dt><dd><p>scalar value that weights for the given 'ProductType' can be multiplied with to approximate the desired product type (w.g. round fish).</p></dd>
- 
-</dl>
- 
-<p>Missing values for WeightFactor are interpreted as NA, and will result in NA for weights after conversion.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='ConvertWeightBiotic.html'>ConvertWeightBiotic</a></code> for applying weight conversion to data.</p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
