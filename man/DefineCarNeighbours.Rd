@@ -7,7 +7,7 @@
 DefineCarNeighbours(
   processData,
   DefinitionMethod = c("ResourceFile", "StratumPolygon"),
-  FileName,
+  FileName = character(),
   StratumPolygon,
   UseProcessData = FALSE
 )

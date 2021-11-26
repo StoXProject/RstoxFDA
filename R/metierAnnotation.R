@@ -209,7 +209,9 @@ is.MetierTable <- function(table, throwError=F){
 #' @export
 readMetierTable <- function(filename, encoding="UTF8"){
   
-  mettab <- data.table::as.data.table(utils::read.table(filename, sep = "\t", comment.char = "#", fileEncoding = "UTF-8", strip.white = T, stringsAsFactors = F, na.strings = "", colClasses = c("character"), header = T, blank.lines.skip = T))
+  mettab <- tryCatch(
+    data.table::as.data.table(utils::read.table(filename, sep = "\t", comment.char = "#", fileEncoding = "UTF-8", strip.white = T, stringsAsFactors = F, na.strings = "", colClasses = c("character"), header = T, blank.lines.skip = T)),
+    error = function(msg){stop(msg, " This is a format error in the file: \'", filename, "\'. Note that linenumbers in error messages does not count blank lines and comment characters.")})
 
   columns <- c("metier", "gearcode", "target", "meshedGear", "lowerMeshSize", "upperMeshSize", "selectivityDevice", "meshedSelectivityDevice", "selDevLowerMeshSize", "selDevUpperMeshSize")
   for (co in columns){

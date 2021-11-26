@@ -1167,7 +1167,7 @@ calculateCarNeighbours <- function(StratumPolygon){
 #' @export
 DefineCarNeighbours <- function(processData,
                                 DefinitionMethod = c("ResourceFile", "StratumPolygon"), 
-                                FileName, StratumPolygon, UseProcessData = FALSE){
+                                FileName=character(), StratumPolygon, UseProcessData = FALSE){
   if (UseProcessData){
     return(processData)
   }
@@ -1208,7 +1208,7 @@ DefineCarNeighbours <- function(processData,
 #' @return Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of age-error matrices in Reca-estimation
 #' @export
-DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile"), FileName, UseProcessData=F){
+DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile"), FileName = character(), UseProcessData=F){
   
   encoding="UTF-8"
 
@@ -1390,7 +1390,7 @@ DefineStockSplittingParameters <- function(processData, DefinitionMethod=c("Reso
 #' @return \code{\link[RstoxFDA]{LengthConversionTable}}
 #' @seealso \code{\link[RstoxFDA]{ConvertLengthBiotic}} for applying length conversion to data
 #' @export
-DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("ResourceFile"), FileName, UseProcessData=F){
+DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("ResourceFile"), FileName = character(), UseProcessData=F){
   
   if (UseProcessData){
     return(processData)
@@ -1440,7 +1440,7 @@ DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("Re
 #' @return \code{\link[RstoxFDA]{WeightConversionTable}}
 #' @seealso \code{\link[RstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.
 #' @export
-DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("ResourceFile"), FileName, UseProcessData=F){
+DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("ResourceFile"), FileName = character(), UseProcessData=F){
   
   if (UseProcessData){
     return(processData)

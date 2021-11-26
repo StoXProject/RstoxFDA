@@ -22,6 +22,11 @@ errorfile <- system.file("testresources","metiermapping_example_error.txt", pack
 expect_error(readMetierTable(errorfile), "Some column names are not recognized: area")
 
 
+context("Test variant used in intercatch export")
+icfile <- system.file("testresources","metiertable_unmeshed.txt", package="RstoxFDA")
+expect_error(readMetierTable(icfile))
+
+
 context("Test annotation")
 
 testdata <- data.table::data.table(id=seq(1,6), gear=as.character(c(51,51,22,22,35,35)),

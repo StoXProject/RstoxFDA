@@ -25,6 +25,7 @@ expect_true("constant" %in% names(minRobj$Landings$WeightLengthCov))
 expect_equal(max(minRobj$AgeLength$DataMatrix$samplingID), nrow(minRobj$AgeLength$CovariateMatrix))
 expect_equal(max(minRobj$WeightLength$DataMatrix$samplingID), nrow(minRobj$WeightLength$CovariateMatrix))
 expect_error(prepRECA(fishdata[1:1000,], landings, c("Metier5"), c("vessel"), NULL, month=landings$Month)) #fixed effect issue
+expect_error(prepRECA(fishdata[1:1000,], landings, c("Metier5", "quarter"), c("vessel"), NULL, month=landings$Month)) #fixed effect issue
 
 #check with sampled cells not in landings
 stopifnot("Q2" %in% fishdata[1:1000,]$quarter)
@@ -154,7 +155,12 @@ expect_true(all(RECAobj$AgeLength$CovariateMatrix$dummyArea %in% c(1,2,3)))
 
 context("test prepRECA: CAR effect errors")
 expect_error(prepRECA(carefftest, landings, NULL, c("Metier5", "vessel"), "dummyArea", neighbours = neighbours, month=landings$Month)) #CAR not in landings
-expect_error(prepRECA(carefftest, landings, NULL, c("Metier5", "vessel"), NULL, neighbours = neighbours, month=landings$Month)) #neighbours with no CAR
+expect_error(prepRECA(carefftest, carefftestland, NULL, c("Metier5", "vessel"), NULL, neighbours = neighbours, month=landings$Month)) #neighbours with no CAR
+expect_error(prepRECA(carefftest, carefftestland, NULL, c("Metier5", "vessel"), "dummyArea", month=landings$Month)) #CAR with no neighbours
+
+carefftestland$dummyArea[1] <- "dd"
+expect_error(prepRECA(carefftest, carefftestland, NULL, c("Metier5", "vessel"), "dummyArea", neighbours = neighbours, month=landings$Month), "Not all combinations of fixed effects are sampled together with CAR effect or neighbours for Age") #CAR not sampled
+
 
 context("test prepRECA: age error simple run")
 ageErr <- matrix(c(.8,.2,.2,.8), nrow=2, dimnames=list(c(1,2), c(1,2)))

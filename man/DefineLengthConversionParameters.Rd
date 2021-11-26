@@ -7,7 +7,7 @@
 DefineLengthConversionParameters(
   processData,
   DefinitionMethod = c("ResourceFile"),
-  FileName,
+  FileName = character(),
   UseProcessData = F
 )
 }

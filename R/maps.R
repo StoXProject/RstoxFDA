@@ -223,3 +223,68 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="Stra
   pl
 
 }
+
+#' Writes shape files as WKT files
+#' @description
+#'  Writes \code{\link[sp]{SpatialPolygonsDataFrame}}, such as \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)
+#' @param shape \code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert
+#' @param output filename to save output to
+#' @param namecol name of column in 'shape' that are to be used as strata names. Defaults to 'StratumName' pr the definition of \code{\link[RstoxBase]{StratumPolygon}}
+#' @export
+writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
+  requireNamespace("rgeos", quietly = TRUE)
+  requireNamespace("sp", quietly = TRUE)
+  if (file.exists(output)){
+    stop(paste("File", output, "exists already."))
+  }
+  
+  projection="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
+  shp <- sp::spTransform(shape, sp::CRS(projection))
+  
+  f<-file(output, open="w")
+  
+  for (i in 1:nrow(shp)){
+    poly <- shp[i,]
+    write(paste(as.character(poly[[namecol]]), rgeos::writeWKT(poly, byid = F),sep="\t"), f)
+  }
+  close(f)
+  
+}
+
+#' Merges polygons
+#' @description
+#'  Merge \code{\link[sp]{SpatialPolygonsDataFrame}}, such as \code{\link[RstoxBase]{StratumPolygon}}
+#' @details 
+#'  All columns must have the same value for all polygons that are to be merged. If columns are not consistent in this regard, an error is raised.
+#' @param shape \code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert
+#' @param mergeCol name of column that should be used for merging, all polygons with the same value in this column will be merged into one.
+#' @return \code{\link[sp]{SpatialPolygonsDataFrame}} with polygons merged
+#' @export
+mergePolygons <- function(shape, mergeCol){
+  
+  if (nrow(unique(shape@data)) != length(unique(shape@data[[mergeCol]]))){
+    stop("All columns must have the same value for polygons that are to be merged")
+  }
+  
+  dd<-sf::st_as_sf(shape)
+  
+  newPolygons <- NULL
+  for (newName in unique(shape@data[[mergeCol]])){
+    ff<-sf::st_union(dd[dd$StratumName==newName,])
+    spat <- sf::as_Spatial(ff)
+    stopifnot(length(spat@polygons)==1)
+    spat@polygons[[1]]@ID <- newName
+    
+    if (is.null(newPolygons)){
+      newPolygons <- spat
+    }
+    else{
+      newPolygons <- rbind(newPolygons, spat)      
+    }
+  }
+  
+  newPolygons <- sp::SpatialPolygonsDataFrame(newPolygons, shape@data[!duplicated(shape@data[[mergeCol]]),], match.ID = mergeCol)
+  
+  return(newPolygons)
+  
+}
