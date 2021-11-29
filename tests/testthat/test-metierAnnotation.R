@@ -17,6 +17,10 @@ commafile <- system.file("testresources","metiermapping_example_commanot.txt", p
 metiertable <- readMetierTable(commafile)
 expect_equal(nrow(metiertable), 2)
 
+commafile <- system.file("testresources","metiermapping_example_commanot_target.txt", package="RstoxFDA")
+metiertable <- readMetierTable(commafile)
+expect_equal(nrow(metiertable), 4)
+
 
 errorfile <- system.file("testresources","metiermapping_example_error.txt", package="RstoxFDA")
 expect_error(readMetierTable(errorfile), "Some column names are not recognized: area")
@@ -85,13 +89,15 @@ expect_true(is.MetierTable(metiertableMissingMS))
 
 metiertableMissingMS <- metiertable
 metiertableMissingMS$meshedGear[2] <- F
-expect_error(is.MetierTable(metiertableMissingMS, T))
+expect_error(is.MetierTable(metiertableMissingMS, T)) #mesh size provided for unmeshed gears
 
 metiertableMissingMS <- metiertable
 metiertableMissingMS$meshedSelectivityDevice[2] <- NA
 expect_error(is.MetierTable(metiertableMissingMS, T), "The column 'meshedSelectivityDevice' has a value for some gears, but not all")
+expect_false(is.MetierTable(metiertableMissingMS, F))
 metiertableMissingMS$meshedSelectivityDevice <- NA
 expect_error(is.MetierTable(metiertableMissingMS, T))
+expect_false(is.MetierTable(metiertableMissingMS, F))
 metiertableMissingMS$selDevLowerMeshSize <- NA
 metiertableMissingMS$selDevUpperMeshSize <- NA
 expect_true(is.MetierTable(metiertableMissingMS))
@@ -99,9 +105,15 @@ expect_true(is.MetierTable(metiertableMissingMS))
 metiertableMissingMS <- metiertable
 metiertableMissingMS$lowerMeshSize <- NA
 expect_error(is.MetierTable(metiertableMissingMS, T))
+expect_false(is.MetierTable(metiertableMissingMS, F))
+metiertableMissingMS <- metiertable
+metiertableMissingMS$upperMeshSize <- NA
+expect_error(is.MetierTable(metiertableMissingMS, T))
+expect_false(is.MetierTable(metiertableMissingMS, F))
 metiertableMissingMS <- metiertable
 metiertableMissingMS$selDevLowerMeshSize <- NA
 expect_error(is.MetierTable(metiertableMissingMS, T))
+expect_false(is.MetierTable(metiertableMissingMS))
 
 metiertableMissingMS <- metiertable
 metiertableMissingMS$selectivityDevice[2] <- NA
