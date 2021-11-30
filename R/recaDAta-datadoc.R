@@ -12,5 +12,5 @@
 #'
 #' @examples
 #' data(recaDataExample)
-#' \dontrun{recaResult <- runRECA(recaData, 500, 5000)}
+#' \dontrun{recaResult <- RunRecaEstimate(recaDataExample, 500, 5000)}
 "recaDataExample"
