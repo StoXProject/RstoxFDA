@@ -131,3 +131,70 @@ expect_error(checkMetierTable(metiertableMissingMS, meshSize = T, selDevMeshSize
 metiertableMissingMS <- metiertable
 metiertableMissingMS$upperMeshSize[4] <- 101
 expect_error(checkMetierTable(metiertableMissingMS, meshSize = T, selDevMeshSize = T), "Mesh sizes have overlapping ranges for gear 22")
+
+metiertableMissingMS <- metiertable
+metiertableMissingMS$gearcode <- NULL
+expect_false(is.MetierTable(metiertableMissingMS))
+expect_error(is.MetierTable(metiertableMissingMS, T), "Metiertable does not have the required columns")
+
+metiertableMissingMS <- metiertable
+metiertableMissingMS <- as.data.frame(metiertableMissingMS)
+expect_false(is.MetierTable(metiertableMissingMS))
+expect_error(is.MetierTable(metiertableMissingMS, T), "A metiertable must be a data.table")
+
+
+metiertableMissingMS <- metiertable
+metiertableMissingMS$metier <- 1
+metiertableMissingMS$metier <- as.integer(metiertableMissingMS$metier)
+expect_false(is.MetierTable(metiertableMissingMS))
+expect_error(is.MetierTable(metiertableMissingMS, T), "The column 'metier' must be a character")
+
+metiertableMissingMS <- metiertable
+metiertableMissingMS$gearcode <- 1
+metiertableMissingMS$gearcode <- as.integer(metiertableMissingMS$gearcode)
+expect_false(is.MetierTable(metiertableMissingMS))
+expect_error(is.MetierTable(metiertableMissingMS, T), "The column 'gearcode' must be a character")
+
+metiertableMissingMS <- metiertable
+metiertableMissingMS$meshedGear <- NULL
+metiertableMissingMS$meshedGear <- as.integer(metiertableMissingMS$gearcode)
+expect_false(is.MetierTable(metiertableMissingMS))
+expect_error(is.MetierTable(metiertableMissingMS, T), "The column 'meshedGear' must be a logical")
+
+metiertableMissingMS <- metiertable
+metiertableMissingMS$lowerMeshSize <- NULL
+metiertableMissingMS$lowerMeshSize <- "ss"
+expect_false(is.MetierTable(metiertableMissingMS))
+expect_error(is.MetierTable(metiertableMissingMS, T), "The column 'lowerMeshSize' must be an integer")
+
+metiertableMissingMS <- metiertable
+metiertableMissingMS$upperMeshSize <- NULL
+metiertableMissingMS$upperMeshSize <- "ss"
+expect_false(is.MetierTable(metiertableMissingMS))
+expect_error(is.MetierTable(metiertableMissingMS, T), "The column 'upperMeshSize' must be an integer")
+
+metiertableMissingMS <- metiertable
+metiertableMissingMS$selectivityDevice <- 1
+metiertableMissingMS$selectivityDevice <- as.integer(metiertableMissingMS$gearcode)
+expect_false(is.MetierTable(metiertableMissingMS))
+expect_error(is.MetierTable(metiertableMissingMS, T), "The column 'selectivityDevice' must be a character")
+
+metiertableMissingMS <- metiertable
+metiertableMissingMS$meshedSelectivityDevice <- NULL
+metiertableMissingMS$meshedSelectivityDevice <- as.integer(metiertableMissingMS$gearcode)
+expect_false(is.MetierTable(metiertableMissingMS))
+expect_error(is.MetierTable(metiertableMissingMS, T), "The column 'meshedSelectivityDevice' must be a logical")
+
+metiertableMissingMS <- metiertable
+metiertableMissingMS$selDevLowerMeshSize <- NULL
+metiertableMissingMS$selDevLowerMeshSize <- "ss"
+expect_false(is.MetierTable(metiertableMissingMS))
+expect_error(is.MetierTable(metiertableMissingMS, T), "The column 'selDevLowerMeshSize' must be an integer")
+
+metiertableMissingMS <- metiertable
+metiertableMissingMS$selDevUpperMeshSize <- NULL
+metiertableMissingMS$selDevUpperMeshSize <- "ss"
+expect_false(is.MetierTable(metiertableMissingMS))
+expect_error(is.MetierTable(metiertableMissingMS, T), "The column 'selDevUpperMeshSize' must be an integer")
+
+

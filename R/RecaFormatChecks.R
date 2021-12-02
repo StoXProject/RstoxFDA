@@ -188,11 +188,16 @@ checkWeightLength<-function(weightlength, landings){
 checkCovariateConsistency <- function(modelobj, landingscov){
   inlandings <- rownames(modelobj$info[modelobj$info[,"in.landings"]==1,])
   if (any(!(inlandings %in% names(landingscov)))){
+    browser()
     stop("some covariates labeled as in.landings are not found in corresponding covariate matrix in landings")
   }
 
   landingscoovariates <- names(landingscov)[names(landingscov) %in% inlandings]
   if (!all(inlandings==landingscoovariates)){
+    stop("Covariates are not ordered consistently in info matrix and landings")
+  }
+  modelcoovariates <- names(modelobj$CovariateMatrix)[names(modelobj$CovariateMatrix) %in% inlandings]
+  if (!all(modelcoovariates==landingscoovariates)){
     stop("Covariates are not ordered consistently in model and landings")
   }
 
@@ -243,8 +248,9 @@ check_landings_cov <- function(cov){
     stop("midseason must be in <0,1]")
   }
   naerrors <- c()
+
   for (i in 1:ncol(cov)){
-    if (any(is.na(cov[,1]))){
+    if (any(is.na(cov[,i]))){
       naerrors <- c(naerrors, names(cov)[i])
     }
     if (length(naerrors)>0){
@@ -257,7 +263,7 @@ check_landings_cov <- function(cov){
 #' @noRd
 checkLandings <- function(landings){
   if (nrow(landings$AgeLengthCov) != nrow(landings$WeightLengthCov)){
-    stop("number of rows landings covariate matrices does not match")
+    stop("number of rows in landings covariate matrices does not match")
   }
   if (nrow(landings$AgeLengthCov) != length(landings$LiveWeightKG)){
     stop("length of weight vector does not match number of rows in covariate matrices in landings.")
@@ -268,14 +274,14 @@ checkLandings <- function(landings){
 
 #' @noRd
 checkGlobalParameters <- function(globalparameters, agelength, weightlength){
-  if (is.na(globalparameters$lengthresCM)){
+  if (length(globalparameters$lengthresCM)==0 || is.na(globalparameters$lengthresCM)){
     stop("Length resolution not set (lengthresCM)")
   }
   if (max(agelength$DataMatrix$age, na.rm=T)>globalparameters$maxage){ #ages is checked for nas elsewere
     stop(paste("Parameter maxage", globalparameters$maxage, "is smaller than maximal age in samples (", max(agelength$DataMatrix$age, na.rm=T), ")"))
   }
   if (min(agelength$DataMatrix$age, na.rm=T)<globalparameters$minage){ #ages is checked for nas elsewere
-    stop(paste("Parameter minage", globalparameters$minage, " is larger than minimal age in samples (", min(agelength$DataMatrix$age, na.rm=T), ")"))
+    stop(paste("Parameter minage", globalparameters$minage, "is larger than minimal age in samples (", min(agelength$DataMatrix$age, na.rm=T), ")"))
   }
   if (max(weightlength$DataMatrix$lengthCM, na.rm=T)>globalparameters$maxlength){ #lengths are checked for nas elsewere
     stop(paste("Parameter maxlength (", globalparameters$maxlength, ") is smaller than maximal length in samples (", max(weightlength$DataMatrix$lengthCM, na.rm=T), ")"))
