@@ -29,10 +29,10 @@
 appendTripIdLogbooks <- function(logbooks, tripIds, timeCol="STARTTIDSPUNKT", vesselIdCol="RC", tripIdCol="tripid", verbose=T){
 
   if (tripIdCol %in% names(logbooks)){
-    stop("The column", tripIdCol,"already exist in 'logbooks'.")
+    stop("The column ", tripIdCol," already exist in 'logbooks'.")
   }
   if (!all(c(timeCol, vesselIdCol) %in% names(logbooks))){
-    stop("The columns identified by 'datecol' or 'vesselIdCol' are not found in 'logbooks'.")
+    stop("The columns identified by 'timeCol' or 'vesselIdCol' are not found in 'logbooks'.")
   }
   if (!all(c("vesselId", "time") %in% names(tripIds))){
     stop("The columns 'vesselId' or 'time' are not found in 'tripIds'.")
@@ -122,20 +122,20 @@ calculateLogbookPartitionByTrip <- function(logbooks, groupCols, tripCol="tripid
     stop("Not all columns in 'groupCols' found in 'logbooks'")
   }
   if (!(tripCol %in% names(logbooks))){
-    stop("'tripCol' not found in 'logbooks'")
+    stop("Column 'tripCol' not found in 'logbooks'")
   }
   if (!(speciesCol %in% names(logbooks))){
-    stop("'speciesCol' not found in 'logbooks'")
+    stop("Column 'speciesCol' not found in 'logbooks'")
   }
   if (!(weightCol %in% names(logbooks))){
-    stop("'weightCol' not found in 'logbooks'")
+    stop("Column 'weightCol' not found in 'logbooks'")
   }
 
   if (any(is.na(logbooks[[tripCol]]))){
-    stop("'tripCol' in 'logbooks' have some missing values.")
+    stop("Column 'tripCol' in 'logbooks' have some missing values.")
   }
   if (any(is.na(logbooks[[speciesCol]]))){
-    stop("'speciesCol' in 'logbooks' have some missing values.")
+    stop("Column 'speciesCol' in 'logbooks' have some missing values.")
   }
   for (co in groupCols){
     if (any(is.na(logbooks[[co]]))){

@@ -1,24 +1,18 @@
 #' @noRd
 is.POSIXct <- function(date){
-  if (length(date) > 1 & "POSIXct" %in% class(date)){
+  if ("POSIXct" %in% class(date)){
     return(TRUE)
   }
-  if (length(date) == 1 & class(date) == "POSIXct"){
-    return(TRUE)
-  }
-  
+
   return(FALSE)
 }
 
 #' @noRd
 is.Date <- function(date){
-  if (length(date) > 1 & "Date" %in% class(date)){
+  if ("Date" %in% class(date)){
     return(TRUE)
   }
-  if (length(date) == 1 & class(date) == "Date"){
-    return(TRUE)
-  }
-  
+
   return(FALSE)
 }
 

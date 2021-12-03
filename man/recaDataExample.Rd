@@ -15,6 +15,6 @@ Example is produced by \code{\link[RstoxFDA]{prepRECA}} and is suited for input 
 }
 \examples{
 data(recaDataExample)
-\dontrun{recaResult <- runRECA(recaData, 500, 5000)}
+\dontrun{recaResult <- RunRecaEstimate(recaDataExample, 500, 5000)}
 }
 \keyword{datasets}
