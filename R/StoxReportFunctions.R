@@ -439,21 +439,12 @@ ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, Stox
 }
 
 #' @noRd
-summaryLgaPar <- function(modelFit){
+summaryLgaPar <- function(modelFit, modelname="LengthGivenAgeModel"){
   
   summary <- NULL
   for (n in names(modelFit)){
     if (n == "LogLikelihood"){
       # include LogLikelihood ?
-    }
-    else if (n == "fish"){
-      stopifnot(ncol(modelFit[[n]]) == 2)
-      modelFit$fish$varname <- n
-      modelFit$fish$tauinterceptname <- paste(modelFit$fish$varname, "tau_Intercept")
-      
-      tau_intercept <- modelFit$fish[,list(Mean=mean(get("tau_Intercept")), Variance=stats::var(get("tau_Intercept"))), by=list(Parameter=get("tauinterceptname"))]
-      
-      summary <- rbind(summary, tau_intercept)
     }
     else {
       if (!all(names(modelFit[[n]]) %in% c("Age", "Level", "Iteration", "AgeIndex", "LevelIndex", "Slope", "tau_Slope", "ar_Slope", "Intercept", "tau_Intercept", "ar_Intercept"))){
@@ -461,16 +452,16 @@ summaryLgaPar <- function(modelFit){
       }
       
       if (length(unique(modelFit[[n]]$AgeIndex))<=1 & length(unique(modelFit[[n]]$LevelIndex))<=1){
-        modelFit[[n]]$varname <- n
+        modelFit[[n]]$varname <- paste(modelname, n, sep="-")
       }
       else if (length(unique(modelFit[[n]]$AgeIndex))>1 & length(unique(modelFit[[n]]$LevelIndex))<=1){
-        modelFit[[n]]$varname <- paste(n, paste("Age", modelFit[[n]]$Age, sep=":"), sep="-")
+        modelFit[[n]]$varname <- paste(modelname, n, paste("Age", modelFit[[n]]$Age, sep=":"), sep="-")
       }
       else if (length(unique(modelFit[[n]]$AgeIndex))>1 & length(unique(modelFit[[n]]$LevelIndex))>1){
-        modelFit[[n]]$varname <- paste(n, paste(n, modelFit[[n]]$Level, "Age", modelFit[[n]]$Age, sep=":"), sep="-")
+        modelFit[[n]]$varname <- paste(modelname, paste(n, modelFit[[n]]$Level, "Age", modelFit[[n]]$Age, sep=":"), sep="-")
       }
       else if (length(unique(modelFit[[n]]$AgeIndex))<=1 & length(unique(modelFit[[n]]$LevelIndex))>1){
-        modelFit[[n]]$varname <- paste(n, paste(n, modelFit[[n]]$Level, sep=":"), sep="-")
+        modelFit[[n]]$varname <- paste(modelname, paste(n, modelFit[[n]]$Level, sep=":"), sep="-")
       }
       else{
         stop()
@@ -514,11 +505,11 @@ summaryLgaPar <- function(modelFit){
 }
 #' @noRd
 summaryWglPar <- function(modelFit){
-  return(summaryLgaPar(modelFit))
+  return(summaryLgaPar(modelFit, "WeightGivenLengthModel"))
 }
 #' @noRd
 summaryPaaPar <- function(modelFit){
-  return(summaryLgaPar(modelFit))
+  return(summaryLgaPar(modelFit, "ProportionAtAgeModel"))
 }
 
 
@@ -527,26 +518,37 @@ summaryPaaPar <- function(modelFit){
 #'  Reports means and variances over iterations run for Reca parameterization, which may be used as input to convergence checks.
 #' @details
 #'  Multiple chains may be aggregated into one summary table, by repeatedly applying this
-#'  function with the aggregated result provided as the argument 'RecaParameterSummaryData'.
+#'  function with the aggregated result provided as the argument 'ParameterizationSummaryData'.
 #'  This requires that chains are different, and that they are run for the same number of iterations.
-#' @param RecaParameterData Reca parameters 
+#'  
+#'  Parameters in the summary are identified with the following notation:
+#'  <model name>-<covariate name>-<any covariate value/level>:<any Age group> <parameter type>,
+#'  e.g: 'ProportionAtAgeModel-Area:47:Age:2 Intercept ' for
+#'  the intercept of age 2 in area 47 in the Proportion-At-Age model.
+#'  
+#' @param RecaParameterData Simulated Reca parameters 
 #' @param ParameterizationSummaryData summary of Reca parameters that the results should be appended to. May be NULL.
 #' @return \code{\link[RstoxFDA]{ParameterizationSummaryData}}
 #' @seealso \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation
-#'   \code{\link[RstoxFDA]{ReportRecaConvergence}} for convergence checks.
-#' @noRd
+#'   \code{\link[RstoxFDA]{ReportParameterConvergence}} for convergence checks.
+#' @export
 ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSummaryData){
   
   chainId <- RecaParameterData$GlobalParameters$GlobalParameters$resultdir
   iterations <- nrow(RecaParameterData$FitProportionAtAge$LogLikelihood)
   
   output <- list()
-  output$ProportionAtAge <- summaryPaaPar(RecaParameterData$FitProportionAtAge)
-  output$ProportionAtAge$chainId <- chainId
-  output$LengthGivenAge <- summaryLgaPar(RecaParameterData$FitLengthGivenAge)
-  output$LengthGivenAge$chainId <- chainId
-  output$WeightGivenLength <- summaryWglPar(RecaParameterData$FitWeightGivenLength)
-  output$WeightGivenLength$chainId <- chainId
+  output$ParameterSummary <- summaryPaaPar(RecaParameterData$FitProportionAtAge)
+  output$ParameterSummary$chainId <- chainId
+  
+  LengthGivenAge <- summaryLgaPar(RecaParameterData$FitLengthGivenAge)
+  LengthGivenAge$chainId <- chainId
+  output$ParameterSummary <- rbind(output$ParameterSummary, LengthGivenAge)
+  
+  WeightGivenLength <- summaryWglPar(RecaParameterData$FitWeightGivenLength)
+  WeightGivenLength$chainId <- chainId
+  output$ParameterSummary <- rbind(output$ParameterSummary, WeightGivenLength)
+  
   output$RunParameters <- data.table::data.table(chainId=chainId, Iterations=iterations)
   
   if (!is.null(ParameterizationSummaryData)){
@@ -556,9 +558,7 @@ ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSum
       stop("Cannot append summary statistic to parameterizations with the same chain ID. Different chains should be run in different directories (argument 'ResultDirectory' in 'ParameterizeRecaModels')")
     }
     
-    output$ProportionAtAge <- rbind(output$ProportionAtAge, ParameterizationSummaryData$ProportionAtAge)
-    output$LengthGivenAge <- rbind(output$LengthGivenAge, ParameterizationSummaryData$LengthGivenAge)
-    output$WeightGivenLength <- rbind(output$WeightGivenLength, ParameterizationSummaryData$WeightGivenLength)
+    output$ParameterSummary <- rbind(output$ParameterSummary, ParameterizationSummaryData$ParameterSummary)
     output$RunParameters <- rbind(output$RunParameters, ParameterizationSummaryData$RunParameters)
     
   }
@@ -594,16 +594,34 @@ crossChainConvergence <- function(modelSummary, iterations, tolerance){
   return(tab)
 }
 
-#' Report convergence Statistics
+#' Report convergence Statistics for parameter simulations
+#' @description 
+#'  For multi-chain parameter simulations, intra-chain variance, inter-chain variance
+#'  and the Gelman-Rubins R statistic is reported.
+#'  
+#'  'chains' in this respect refers to statistically independent simulations.
 #' @details 
 #'  Only parameters with a Gelman-Rubins R statistic that deviates sufficiently from 1
 #'  is reported. The accepted deviation is controlled by the argument 'Tolerance'.
 #'  Parameters are reported if they differ from 1 by 'Tolerance' or more,
 #'  so that a Tolerance of 0 reports all parameters.
+#'  If not provided a default Tolerance of 0.1 is used.
+#'  
+#'  Gelman-Rubins R is described in Gelman and Rubin (Statistical Science, 1992):
+#'  DOI: https://doi.org/10.1214/ss/1177011136
+#'  
+#'  The Gelman-Rubins R reported here is approximately that specified in 
+#'  Gelman and Rubins Eq. 20, ignoring the contribution from the factor (df/(df-2)).
 #' @param ParameterizationSummaryData summary statistics for Reca parameters
-#' @param Tolerance threshold for reporting parameters. See details
-#' @noRd
-ReportRecaConvergence <- function(ParameterizationSummaryData, Tolerance=0){
+#' @param Tolerance threshold for reporting parameters. Defaults to 0.1. See details
+#' @return \code{\link[RstoxFDA]{ParameterConvergenceData}}
+#' @export
+ReportParameterConvergence <- function(ParameterizationSummaryData, Tolerance=numeric()){
+  
+  if (!isGiven(Tolerance)){
+    Tolerance = 0.1
+  }
+  
   message("Consider generalizing to MCMC, and make this independent on model naming.")
   if (length(unique(ParameterizationSummaryData$RunParameters$Iterations))!=1){
     stop("All chains must be run for the same number of iterations")
@@ -611,9 +629,7 @@ ReportRecaConvergence <- function(ParameterizationSummaryData, Tolerance=0){
   iterations <- ParameterizationSummaryData$RunParameters$Iterations[1]
   
   output <- list()
-  output$ProportionAtAge <- crossChainConvergence(ParameterizationSummaryData$ProportionAtAge, iterations, Tolerance)
-  output$LengthGivenAge <- crossChainConvergence(ParameterizationSummaryData$LengthGivenAge, iterations, Tolerance)
-  output$WeightGivenLength <- crossChainConvergence(ParameterizationSummaryData$WeightGivenLength, iterations, Tolerance)
-  
+  output$ConvergenceReport <- crossChainConvergence(ParameterizationSummaryData$ParameterSummary, iterations, Tolerance)
+
   return(output)
 }

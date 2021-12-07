@@ -193,64 +193,122 @@ is.ReportFdaSOP <- function(ReportFdaSOP){
 }
 
 
-#' Summary statistics for MCMC parameterizations  (ParameterizationSummaryData)
+#' Summary statistics for simulated parameters (ParameterizationSummaryData)
 #' 
 #' @description 
-#'  Summary statistics for MCMC parameterizations
+#'  Summary statistics for (potentially multi-chained) simulated parameters, 
+#'  such as MCMC simulations with Reca.
+#'  'chains' in this respect refers to statistically independent simulations.
 #'  
-#'  list with four members 'ProportionAtAge' and 'LengthGivenAge', 'WeightGivenLength' and 'RunParameters',
-#'  which are all \code{\link[data.table]{data.table}}s. The three first correspond to the different
-#'  Reca-models that are typically parameterized and have the following columns:
+#'  list with two members 'ParameterSummary' and 'RunParameters',
+#'  which both all \code{\link[data.table]{data.table}}s. 'ParameterSummary'
+#'  contains parameter statistics for simulations and have the following columns:
 #'  \describe{
-#'   \item{Parameter}{Identifies the parameter that i summarized. See details for naming convention}
+#'   \item{Parameter}{Identifies the parameter that is summarized.}
 #'   \item{Mean}{Mean of the parameter}
 #'   \item{Variance}{Variance of the parameter}
 #'   \item{chainId}{Identifies the parameterization chain.}
 #'  }
 #'  
-#'  RunParameters summarizes global control parameters, valid for all the models, and has columns:
+#'  RunParameters summarizes global control parameters for each chain and has columns:
 #'  \describe{
 #'   \item{chainId}{Identifies the parameterization chain.}
-#'   \item{Iterations}{The number of iterations sampled for parameterization}
+#'   \item{Iterations}{The number of iterations for parameter simulation}
 #'  }
 #'  
-#'  @details 
-#'   Parameters are identified by their name as they are reported in \code{\link[RstoxFDA]{RecaParameterData}} objects,
-#'   as returned by, e.g. \code{\link[RstoxFDA]{RunRecaModels}}. Variables that are defined
+#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
+#' @seealso \code{\link[RstoxFDA]{ReportRecaParameterStatistics}} 
+#'  for creating ParameterizationSummaryData from Reca-simulations.
 #' 
 #' @name ParameterizationSummaryData
 #' 
 NULL
 
-
-#' @noRd
-is.ReportRecaConvergence <- function(ReportRecaParameterStatistics){
+#' Checks if argument is \code{\link[RstoxFDA]{ParameterizationSummaryData}}
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ParameterizationSummaryData}}
+#' @param ParameterizationSummaryData argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ParameterizationSummaryData}}
+#' @export
+is.ParameterizationSummaryData <- function(ParameterizationSummaryData){
   
-  if (!is.list(ReportRecaParameterStatistics)){
+  if (!is.list(ParameterizationSummaryData)){
     return(FALSE)
   }
-  if (!all(c("ProportionAtAge", "LengthGivenAge", "WeightGivenLength") %in% names(ReportRecaParameterStatistics))){
+  
+  if (!all(c("ParameterSummary", "RunParameters") %in% names(ParameterizationSummaryData))){
+    return(FALSE)
+  }
+  
+  if (!data.table::is.data.table(ParameterizationSummaryData$ParameterSummary)){
+    return(FALSE)
+  }
+  
+  if (!data.table::is.data.table(ParameterizationSummaryData$RunParameters)){
+    return(FALSE)
+  }
+  
+  if (!all(c("chainId","Iterations") %in% names(ParameterizationSummaryData$RunParameters))){
+    return(FALSE)
+  }
+  
+  if (!all(c("Parameter", "Mean", "Variance", "chainId") %in% names(ParameterizationSummaryData$ParameterSummary))){
+    return(FALSE)
+  }
+  
+  return(TRUE)
+}
+
+#' Convergence Report for simulated parameters (ParameterConvergenceData)
+#' 
+#' @description 
+#'  Convergence Report for multi-chained simulated parameters, 
+#'  such as MCMC simulations with Reca.
+#'  'chains' in this respect refers to statistically independent simulations.
+#'  
+#'  list with one members 'ConvergenceReport',
+#'  which is a \code{\link[data.table]{data.table}} containing the following columns:
+#'  \describe{
+#'   \item{Parameter}{Identifies the parameter that is summarized.}
+#'   \item{InterVariance}{The Root-Mean-Squared-Deviation for means of the parameter in each chain}
+#'   \item{IntraVariance}{The mean of the chain-variances of the parameter}
+#'   \item{GelmanRubinR}{Gelman-Rubins-R. }
+#'  }
+#'  
+#' @details 
+#'  Gelman-Rubins R is described by Gelman and Rubin (Statistical Science, 1992):
+#'  DOI: https://doi.org/10.1214/ss/1177011136
+#'  
+#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
+#' @seealso \code{\link[RstoxFDA]{ReportParameterConvergence}} 
+#'  for creating ParameterConvergenceData.
+#' 
+#' @name ParameterConvergenceData
+#' 
+NULL
+
+#' Checks if argument is \code{\link[RstoxFDA]{ParameterConvergenceData}}
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ParameterConvergenceData}}
+#' @param ParameterConvergenceData argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ParameterConvergenceData}}
+#' @export
+is.ParameterConvergenceData <- function(ParameterConvergenceData){
+  
+  if (!is.list(ParameterConvergenceData)){
+    return(FALSE)
+  }
+  if (!all(c("ConvergenceReport") %in% names(ParameterConvergenceData))){
     return(FALSE)
   }
   cnames <- c("Parameter", "InterVariance", "IntraVariance", "GelmanRubinR")
-  if (!all(cnames %in% names(ReportRecaParameterStatistics$ProportionAtAge))){
+  if (!all(cnames %in% names(ParameterConvergenceData$ConvergenceReport))){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportRecaParameterStatistics$ProportionAtAge)){
+  if (!data.table::is.data.table(ParameterConvergenceData$ConvergenceReport)){
     return(FALSE)
   }
-  if (!all(cnames %in% names(ReportRecaParameterStatistics$WeightGivenLength))){
-    return(FALSE)
-  }
-  if (!data.table::is.data.table(ReportRecaParameterStatistics$WeightGivenLength)){
-    return(FALSE)
-  }
-  if (!all(cnames %in% names(ReportRecaParameterStatistics$LengthGivenAge))){
-    return(FALSE)
-  }
-  if (!data.table::is.data.table(ReportRecaParameterStatistics$LengthGivenAge)){
-    return(FALSE)
-  }
+
   return(TRUE)
 }
 

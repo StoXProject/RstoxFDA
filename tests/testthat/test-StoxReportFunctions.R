@@ -20,13 +20,14 @@ paramOut3 <- ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = fpath3)
 paramSummary <- ReportRecaParameterStatistics(paramOut1, NULL)
 paramSummary <- ReportRecaParameterStatistics(paramOut2, paramSummary)
 paramSummary <- ReportRecaParameterStatistics(paramOut3, paramSummary)
+expect_true(is.ParameterizationSummaryData(paramSummary))
 
 removeTempDirReca(fpath1)
 removeTempDirReca(fpath2)
 removeTempDirReca(fpath3)
 
-convergence <- ReportRecaConvergence(paramSummary)
-expect_true(is.ReportRecaConvergence(convergence))
+convergence <- ReportParameterConvergence(paramSummary)
+expect_true(is.ParameterConvergenceData(convergence))
 
 context("Test StoxReportFunctions: ReportRecaCatchStatistics")
 predictiondatafile <- system.file("testresources","stocksplitpred.rds", package="RstoxFDA")
