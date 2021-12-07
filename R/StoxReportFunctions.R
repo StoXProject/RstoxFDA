@@ -577,12 +577,16 @@ crossChainConvergence <- function(modelSummary, iterations, tolerance){
   #squared diff of chain means to joint mean
   modelSummary$sqDiff <- (modelSummary$Mean - modelSummary$AllChainMain)**2
   
+  #B/n
   betweenChainVar <- modelSummary[,list(InterVariance=sum(get("sqDiff"))*iterations/(nchains-1)), by=list(Parameter=get("Parameter"))]
+  #W
   withinChainVar <- modelSummary[,list(IntraVariance=mean(get("Variance"))), by=list(Parameter=get("Parameter"))]
   
   tab <- merge(betweenChainVar, withinChainVar)
-  tab$V <- tab$IntraVariance * (nchains-1) / nchains + (nchains+1) * tab$InterVariance / (nchains * iterations)
-  tab$GelmanRubinR <- sqrt(tab$V/tab$IntraVariance)
+  
+  #sqrt(W(n-1)/n + B(m+1)/mn)
+  tab$GelmanRubinR <- sqrt(tab$IntraVariance * (iterations-1) / iterations +  tab$InterVariance * (nchains+1)/nchains)
+  
 
   #exclude V from report  
   tab$V <- NULL
@@ -612,6 +616,9 @@ crossChainConvergence <- function(modelSummary, iterations, tolerance){
 #'  
 #'  The Gelman-Rubins R reported here is approximately that specified in 
 #'  Gelman and Rubins Eq. 20, ignoring the contribution from the factor (df/(df-2)).
+#'  
+#'  In the report InterVariance correspond to their B/n and
+#'  IntraVariance correspond to their W.
 #' @param ParameterizationSummaryData summary statistics for Reca parameters
 #' @param Tolerance threshold for reporting parameters. Defaults to 0.1. See details
 #' @return \code{\link[RstoxFDA]{ParameterConvergenceData}}

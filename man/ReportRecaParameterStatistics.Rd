@@ -29,5 +29,5 @@ Multiple chains may be aggregated into one summary table, by repeatedly applying
 }
 \seealso{
 \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation
-  \code{\link[RstoxFDA]{ReportConvergence}} for convergence checks.
+  \code{\link[RstoxFDA]{ReportParameterConvergence}} for convergence checks.
 }
