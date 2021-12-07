@@ -4,8 +4,10 @@ StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="R
 StoxLandingData <- readRDS(StoxLandingFile)
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
-StoxBioticData$Haul$Gear <- StoxLandingData$Landing$Gear[sample.int(20,45, replace=T)]
-prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Gear"))
+StoxBioticData$Individual <- StoxBioticData$Individual[StoxBioticData$Individual$IndividualAge<4,]
+StoxBioticData$Haul$Gear <- StoxLandingData$Landing$Gear[c(1:20, 1:20, 1:5)]
+StoxBioticData$Station$Area <- StoxLandingData$Landing$Area[c(1:20, 1:20, 1:5)]
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Gear", "Area"), CellEffect = c("All"), MinAge = 2, MaxAge = 3)
 
 fpath1 <- makeTempDirReca("chain1")
 fpath2 <- makeTempDirReca("chain2")
@@ -24,7 +26,7 @@ removeTempDirReca(fpath2)
 removeTempDirReca(fpath3)
 
 convergence <- ReportRecaConvergence(paramSummary)
-
+expect_true(is.ReportRecaConvergence(convergence))
 
 context("Test StoxReportFunctions: ReportRecaCatchStatistics")
 predictiondatafile <- system.file("testresources","stocksplitpred.rds", package="RstoxFDA")

@@ -141,7 +141,7 @@ convertModelFit <- function(modelfit, covariateMaps, model){
         fit <- merge(slopes, fit, by=names(fit)[names(fit) %in% names(slopes)])     
       }
     }
-    
+
     #set covariate levels
     fit$Age <- covariateMaps$AgeCategories[fit$AgeIndex]
     if (co %in% names(covariateMaps$inLandings)){
@@ -154,7 +154,7 @@ convertModelFit <- function(modelfit, covariateMaps, model){
       fit$Level <- unlist(covariateMaps$randomEffects$WeightLength[[co]])[fit$LevelIndex]
     }
     else{
-      fit$Level <- c(NA)[fit$LevelIndex]
+      fit$Level <- paste("LevelIndex",fit$LevelIndex,sep="_")
     }
     
     if (co == "contsant"){

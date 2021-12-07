@@ -192,6 +192,68 @@ is.ReportFdaSOP <- function(ReportFdaSOP){
   
 }
 
+
+#' Summary statistics for MCMC parameterizations  (ParameterizationSummaryData)
+#' 
+#' @description 
+#'  Summary statistics for MCMC parameterizations
+#'  
+#'  list with four members 'ProportionAtAge' and 'LengthGivenAge', 'WeightGivenLength' and 'RunParameters',
+#'  which are all \code{\link[data.table]{data.table}}s. The three first correspond to the different
+#'  Reca-models that are typically parameterized and have the following columns:
+#'  \describe{
+#'   \item{Parameter}{Identifies the parameter that i summarized. See details for naming convention}
+#'   \item{Mean}{Mean of the parameter}
+#'   \item{Variance}{Variance of the parameter}
+#'   \item{chainId}{Identifies the parameterization chain.}
+#'  }
+#'  
+#'  RunParameters summarizes global control parameters, valid for all the models, and has columns:
+#'  \describe{
+#'   \item{chainId}{Identifies the parameterization chain.}
+#'   \item{Iterations}{The number of iterations sampled for parameterization}
+#'  }
+#'  
+#'  @details 
+#'   Parameters are identified by their name as they are reported in \code{\link[RstoxFDA]{RecaParameterData}} objects,
+#'   as returned by, e.g. \code{\link[RstoxFDA]{RunRecaModels}}. Variables that are defined
+#' 
+#' @name ParameterizationSummaryData
+#' 
+NULL
+
+
+#' @noRd
+is.ReportRecaConvergence <- function(ReportRecaParameterStatistics){
+  
+  if (!is.list(ReportRecaParameterStatistics)){
+    return(FALSE)
+  }
+  if (!all(c("ProportionAtAge", "LengthGivenAge", "WeightGivenLength") %in% names(ReportRecaParameterStatistics))){
+    return(FALSE)
+  }
+  cnames <- c("Parameter", "InterVariance", "IntraVariance", "GelmanRubinR")
+  if (!all(cnames %in% names(ReportRecaParameterStatistics$ProportionAtAge))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(ReportRecaParameterStatistics$ProportionAtAge)){
+    return(FALSE)
+  }
+  if (!all(cnames %in% names(ReportRecaParameterStatistics$WeightGivenLength))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(ReportRecaParameterStatistics$WeightGivenLength)){
+    return(FALSE)
+  }
+  if (!all(cnames %in% names(ReportRecaParameterStatistics$LengthGivenAge))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(ReportRecaParameterStatistics$LengthGivenAge)){
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
 #' Checks if argument is \code{\link[RstoxData]{Translation}}
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxData]{Translation}}
