@@ -568,7 +568,7 @@ ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSum
 #' @noRd
 crossChainConvergence <- function(modelSummary, iterations, tolerance){
   nchains <- length(unique(modelSummary$chainId))
-  if (nchains<3){
+  if (nchains<2){
     stop("Need at least three chains to compute convergence statistics.")
   }
   
@@ -578,18 +578,14 @@ crossChainConvergence <- function(modelSummary, iterations, tolerance){
   modelSummary$sqDiff <- (modelSummary$Mean - modelSummary$AllChainMain)**2
   
   #B/n
-  betweenChainVar <- modelSummary[,list(InterVariance=sum(get("sqDiff"))*iterations/(nchains-1)), by=list(Parameter=get("Parameter"))]
+  betweenChainVar <- modelSummary[,list(InterVariance=sum(get("sqDiff"))/(nchains-1)), by=list(Parameter=get("Parameter"))]
   #W
   withinChainVar <- modelSummary[,list(IntraVariance=mean(get("Variance"))), by=list(Parameter=get("Parameter"))]
   
   tab <- merge(betweenChainVar, withinChainVar)
   
   #sqrt(W(n-1)/n + B(m+1)/mn)
-  tab$GelmanRubinR <- sqrt(tab$IntraVariance * (iterations-1) / iterations +  tab$InterVariance * (nchains+1)/nchains)
-  
-
-  #exclude V from report  
-  tab$V <- NULL
+  tab$GelmanRubinR <- sqrt((tab$IntraVariance * (iterations-1) / iterations +  tab$InterVariance * (nchains+1)/nchains) / tab$IntraVariance)
   
   tab <- tab[abs(tab$GelmanRubinR - 1) >= tolerance]
   
@@ -629,7 +625,6 @@ ReportParameterConvergence <- function(ParameterizationSummaryData, Tolerance=nu
     Tolerance = 0.1
   }
   
-  message("Consider generalizing to MCMC, and make this independent on model naming.")
   if (length(unique(ParameterizationSummaryData$RunParameters$Iterations))!=1){
     stop("All chains must be run for the same number of iterations")
   }

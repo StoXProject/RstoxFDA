@@ -270,9 +270,9 @@ is.ParameterizationSummaryData <- function(ParameterizationSummaryData){
 #'  which is a \code{\link[data.table]{data.table}} containing the following columns:
 #'  \describe{
 #'   \item{Parameter}{Identifies the parameter that is summarized.}
-#'   \item{InterVariance}{The Root-Mean-Squared-Deviation for means of the parameter in each chain}
-#'   \item{IntraVariance}{The mean of the chain-variances of the parameter}
-#'   \item{GelmanRubinR}{Gelman-Rubins-R. }
+#'   \item{InterVariance}{The Mean-Squared-Deviation the means of the parameter in each chain, to the mean across all chains}
+#'   \item{IntraVariance}{The mean of the within-chain variances of the parameter}
+#'   \item{GelmanRubinR}{Gelman-Rubins R}
 #'  }
 #'  
 #' @details 

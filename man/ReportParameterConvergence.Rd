@@ -32,4 +32,7 @@ Only parameters with a Gelman-Rubins R statistic that deviates sufficiently from
  
  The Gelman-Rubins R reported here is approximately that specified in 
  Gelman and Rubins Eq. 20, ignoring the contribution from the factor (df/(df-2)).
+ 
+ In the report InterVariance correspond to their B/n and
+ IntraVariance correspond to their W.
 }

@@ -15,19 +15,31 @@ fpath3 <- makeTempDirReca("chain3")
 
 paramOut1 <- ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = fpath1)
 paramOut2 <- ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = fpath2)
-paramOut3 <- ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = fpath3)
 
 paramSummary <- ReportRecaParameterStatistics(paramOut1, NULL)
 paramSummary <- ReportRecaParameterStatistics(paramOut2, paramSummary)
-paramSummary <- ReportRecaParameterStatistics(paramOut3, paramSummary)
 expect_true(is.ParameterizationSummaryData(paramSummary))
 
 removeTempDirReca(fpath1)
 removeTempDirReca(fpath2)
-removeTempDirReca(fpath3)
 
 convergence <- ReportParameterConvergence(paramSummary)
 expect_true(is.ParameterConvergenceData(convergence))
+expect_true(nrow(convergence$ConvergenceReport) < 433)
+expect_true(nrow(convergence$ConvergenceReport) > 0)
+
+#construct three identical chains, should signal convergence
+paramSummary <- ReportRecaParameterStatistics(paramOut1, NULL)
+paramOut1$GlobalParameters$GlobalParameters$resultdir="B"
+paramSummary <- ReportRecaParameterStatistics(paramOut1, paramSummary)
+paramOut1$GlobalParameters$GlobalParameters$resultdir="C"
+paramSummary <- ReportRecaParameterStatistics(paramOut1, paramSummary)
+
+context("Check Gelman-Rubin for equal chains")
+convergence <- ReportParameterConvergence(paramSummary, Tolerance = 0)
+expect_equal(nrow(convergence$ConvergenceReport), 433)
+expect_true(all(abs(convergence$ConvergenceReport$GelmanRubinR-1)<.1))
+
 
 context("Test StoxReportFunctions: ReportRecaCatchStatistics")
 predictiondatafile <- system.file("testresources","stocksplitpred.rds", package="RstoxFDA")
