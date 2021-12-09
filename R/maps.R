@@ -7,6 +7,9 @@
 #'  if these are not given they will be derived in order to include all positions in 'data'.
 #'  if 'data is not given they will be derived from the bounding box of 'areaDef'.
 #'  To allow for flexible projection, some space will be added around 'xlim' and 'ylim'.
+#'  
+#'  Colors can be specified as understood by ggplot2. E.g. one of those listed by \code{\link[grDevices]{colors()}}.
+#'  
 #' @param data data.frame with any points to be plotted
 #' @param latCol character() identifing column in 'data' that specify latitudes (WGS84)
 #' @param lonCol character() identifing column in 'data' that specify longitudes (WGS84)
@@ -22,6 +25,7 @@
 #' @param pointSize size for any points to be plotted
 #' @param title plot title
 #' @param projection proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}. Defaults to mercator projection.
+#' @param polygonColor color to be used for plotting polygons.
 #' @examples
 #'  # plot ICES areas with default projection
 #'  data(ICESareas)
@@ -36,7 +40,7 @@
 #'           projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
 #'           +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 #' @export
-plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="StratumName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL){
+plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="StratumName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL, polygonColor="blue"){
 
   if (is.null(projection)) {
     projection <- "+proj=merc +datum=WGS84"
@@ -86,7 +90,7 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
   }
 
   if (!is.null(areaDef)){
-    pl <- pl + ggplot2::geom_sf(data=areaDef, fill=NA)
+    pl <- pl + ggplot2::geom_sf(data=areaDef, fill=NA, colour=polygonColor)
 
     if (areaLabels){
       labelPos <- suppressWarnings(cbind(areaDef, sf::st_coordinates(sf::st_centroid(sf::st_transform(areaDef, newcrs)))))
