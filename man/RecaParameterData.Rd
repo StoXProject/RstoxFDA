@@ -10,7 +10,8 @@ various report functions that invoke \code{\link[Reca]{eca.predict}}.
 \section{model fit}{
 
  For inspection or analysis of model fit, the lists 'FitProportionAtAge', 
- 'FitLengthGivenAge' and 'FitWeightGivenLength' is of interest. 
+ 'FitLengthGivenAge' and 'FitWeightGivenLength' is of interest. For stock-splitting analysis,
+ the lists FitLengthGivenAgeCC and FitWeightGivenLengthCC will be added as well, corresponding to one of the stocks.
  These lists correspond to the three Reca-models and contain:
  \describe{
  \item{LogLikeliehood}{A \code{\link[data.table]{data.table}} 

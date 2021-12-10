@@ -7,7 +7,7 @@ stoxWarning <- function(msg){
 
 #' Check if parameter is given
 #' @noRd
-isGiven <- function(value){
+isGiven <- function(value=NULL){
   if (length(value) == 0){
     return(FALSE)
   }

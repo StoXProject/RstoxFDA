@@ -19,7 +19,8 @@ plotArea(
   pointShape = 23,
   pointSize = 1,
   title = "",
-  projection = NULL
+  projection = NULL,
+  polygonColor = "blue"
 )
 }
 \arguments{
@@ -52,6 +53,8 @@ plotArea(
 \item{title}{plot title}
 
 \item{projection}{proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}. Defaults to mercator projection.}
+
+\item{polygonColor}{color to be used for plotting polygons.}
 }
 \description{
 Plots area polygons on a map, may point a set of positions as well.
@@ -61,6 +64,8 @@ Map ranges to plot are specified by 'xlim' and 'ylim'. These should always be gi
  if these are not given they will be derived in order to include all positions in 'data'.
  if 'data is not given they will be derived from the bounding box of 'areaDef'.
  To allow for flexible projection, some space will be added around 'xlim' and 'ylim'.
+ 
+ Colors can be specified as understood by ggplot2. E.g. one of those listed by \code{\link[grDevices]{colors}}.
 }
 \examples{
  # plot ICES areas with default projection

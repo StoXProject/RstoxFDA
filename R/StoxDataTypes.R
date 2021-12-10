@@ -192,6 +192,126 @@ is.ReportFdaSOP <- function(ReportFdaSOP){
   
 }
 
+
+#' Summary statistics for simulated parameters (ParameterizationSummaryData)
+#' 
+#' @description 
+#'  Summary statistics for (potentially multi-chained) simulated parameters, 
+#'  such as MCMC simulations with Reca.
+#'  'chains' in this respect refers to statistically independent simulations.
+#'  
+#'  list with two members 'ParameterSummary' and 'RunParameters',
+#'  which both all \code{\link[data.table]{data.table}}s. 'ParameterSummary'
+#'  contains parameter statistics for simulations and have the following columns:
+#'  \describe{
+#'   \item{Parameter}{Identifies the parameter that is summarized.}
+#'   \item{Mean}{Mean of the parameter}
+#'   \item{Variance}{Variance of the parameter}
+#'   \item{chainId}{Identifies the parameterization chain.}
+#'  }
+#'  
+#'  RunParameters summarizes global control parameters for each chain and has columns:
+#'  \describe{
+#'   \item{chainId}{Identifies the parameterization chain.}
+#'   \item{Iterations}{The number of iterations for parameter simulation}
+#'  }
+#'  
+#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
+#' @seealso \code{\link[RstoxFDA]{ReportRecaParameterStatistics}} 
+#'  for creating ParameterizationSummaryData from Reca-simulations.
+#' 
+#' @name ParameterizationSummaryData
+#' 
+NULL
+
+#' Checks if argument is \code{\link[RstoxFDA]{ParameterizationSummaryData}}
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ParameterizationSummaryData}}
+#' @param ParameterizationSummaryData argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ParameterizationSummaryData}}
+#' @export
+is.ParameterizationSummaryData <- function(ParameterizationSummaryData){
+  
+  if (!is.list(ParameterizationSummaryData)){
+    return(FALSE)
+  }
+  
+  if (!all(c("ParameterSummary", "RunParameters") %in% names(ParameterizationSummaryData))){
+    return(FALSE)
+  }
+  
+  if (!data.table::is.data.table(ParameterizationSummaryData$ParameterSummary)){
+    return(FALSE)
+  }
+  
+  if (!data.table::is.data.table(ParameterizationSummaryData$RunParameters)){
+    return(FALSE)
+  }
+  
+  if (!all(c("chainId","Iterations") %in% names(ParameterizationSummaryData$RunParameters))){
+    return(FALSE)
+  }
+  
+  if (!all(c("Parameter", "Mean", "Variance", "chainId") %in% names(ParameterizationSummaryData$ParameterSummary))){
+    return(FALSE)
+  }
+  
+  return(TRUE)
+}
+
+#' Convergence Report for simulated parameters (ParameterConvergenceData)
+#' 
+#' @description 
+#'  Convergence Report for multi-chained simulated parameters, 
+#'  such as MCMC simulations with Reca.
+#'  'chains' in this respect refers to statistically independent simulations.
+#'  
+#'  list with one members 'ConvergenceReport',
+#'  which is a \code{\link[data.table]{data.table}} containing the following columns:
+#'  \describe{
+#'   \item{Parameter}{Identifies the parameter that is summarized.}
+#'   \item{InterVariance}{The Mean-Squared-Deviation the means of the parameter in each chain, to the mean across all chains}
+#'   \item{IntraVariance}{The mean of the within-chain variances of the parameter}
+#'   \item{GelmanRubinR}{Gelman-Rubins R}
+#'  }
+#'  
+#' @details 
+#'  Gelman-Rubins R is described by Gelman and Rubin (Statistical Science, 1992):
+#'  DOI: https://doi.org/10.1214/ss/1177011136
+#'  
+#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
+#' @seealso \code{\link[RstoxFDA]{ReportParameterConvergence}} 
+#'  for creating ParameterConvergenceData.
+#' 
+#' @name ParameterConvergenceData
+#' 
+NULL
+
+#' Checks if argument is \code{\link[RstoxFDA]{ParameterConvergenceData}}
+#' @description
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ParameterConvergenceData}}
+#' @param ParameterConvergenceData argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ParameterConvergenceData}}
+#' @export
+is.ParameterConvergenceData <- function(ParameterConvergenceData){
+  
+  if (!is.list(ParameterConvergenceData)){
+    return(FALSE)
+  }
+  if (!all(c("ConvergenceReport") %in% names(ParameterConvergenceData))){
+    return(FALSE)
+  }
+  cnames <- c("Parameter", "InterVariance", "IntraVariance", "GelmanRubinR")
+  if (!all(cnames %in% names(ParameterConvergenceData$ConvergenceReport))){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(ParameterConvergenceData$ConvergenceReport)){
+    return(FALSE)
+  }
+
+  return(TRUE)
+}
+
 #' Checks if argument is \code{\link[RstoxData]{Translation}}
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxData]{Translation}}
@@ -402,7 +522,8 @@ is.RecaData <- function(RecaData){
 #'
 #' @section model fit:
 #'  For inspection or analysis of model fit, the lists 'FitProportionAtAge', 
-#'  'FitLengthGivenAge' and 'FitWeightGivenLength' is of interest. 
+#'  'FitLengthGivenAge' and 'FitWeightGivenLength' is of interest. For stock-splitting analysis,
+#'  the lists FitLengthGivenAgeCC and FitWeightGivenLengthCC will be added as well, corresponding to one of the stocks.
 #'  These lists correspond to the three Reca-models and contain:
 #'  \describe{
 #'  \item{LogLikeliehood}{A \code{\link[data.table]{data.table}} 
@@ -1218,6 +1339,21 @@ stoxFunctionAttributes <- list(
     functionParameterFormat = list(
       GroupingVariables = "GroupingVariablesSop"
     )
+  ),
+  ReportRecaParameterStatistics = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ParameterizationSummaryData",
+    functionArgumentHierarchy = list(
+      ParameterizationSummaryData = list(
+        AppendReport = TRUE
+      )
+    )
+  ),
+  ReportParameterConvergence = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ParameterConvergenceData"
   )
 )
 
