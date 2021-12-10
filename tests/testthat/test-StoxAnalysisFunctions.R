@@ -43,7 +43,16 @@ expect_true(prep$GlobalParameters$GlobalParameters$CCerror)
 expect_true(is.StockSplittingParameters(prep$AgeLength$StockSplittingParameters))
 expect_true(is.null(prep$AgeLength$CCerrorList))
 fpath <- makeTempDirReca()
+print("Parameterize CC")
 param <- ParameterizeRecaModels(prep, 100, 500, ResultDirectory = fpath, Seed = 100)
+
+context("check that age group names are set correct for stock splitting")
+expect_equal(sum(is.na(param$FitProportionAtAge$constant$Age)), 0)
+expect_equal(param$FitProportionAtAge$constant$Age[1], "S1 2")
+
+
+context("Check that back conversion to eca objects works fine with stock splitting")
+ecafit <- stox2recaFit(param)
 
 result <- RunRecaModels(param, StoxLandingData = StoxLandingData, Seed = 100)
 expect_true("Stock" %in% result$GroupingVariables$GroupingVariables)
@@ -248,7 +257,7 @@ removeTempDirReca(fpath)
 
 
 context("test-StoxAnalysisFunctions: RunRecaEstimate with random effect Area")
-est <- RunRecaEstimate(prep, 10, 100, 0)
+est <- RunRecaEstimate(prep, 10, 100, 0, Seed = 112)
 expect_true("Area" %in% names(est$fit$ProportionAtAge$Intercept$cov))
 
 context("RunRecaEstimate not providing burnin")

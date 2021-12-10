@@ -8,7 +8,7 @@
 #'  if 'data is not given they will be derived from the bounding box of 'areaDef'.
 #'  To allow for flexible projection, some space will be added around 'xlim' and 'ylim'.
 #'  
-#'  Colors can be specified as understood by ggplot2. E.g. one of those listed by \code{\link[grDevices]{colors()}}.
+#'  Colors can be specified as understood by ggplot2. E.g. one of those listed by \code{\link[grDevices]{colors}}.
 #'  
 #' @param data data.frame with any points to be plotted
 #' @param latCol character() identifing column in 'data' that specify latitudes (WGS84)

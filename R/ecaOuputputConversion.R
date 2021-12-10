@@ -143,7 +143,12 @@ convertModelFit <- function(modelfit, covariateMaps, model){
     }
 
     #set covariate levels
-    fit$Age <- covariateMaps$AgeCategories[fit$AgeIndex]
+    if (length(covariateMaps$StockSplitting$StockNameCC)>0){
+      fit$Age <- c(paste(covariateMaps$StockSplitting$StockNameCC,covariateMaps$AgeCategories), paste(covariateMaps$StockSplitting$StockNameCC,covariateMaps$AgeCategories))[fit$AgeIndex]
+    }
+    else{
+      fit$Age <- covariateMaps$AgeCategories[fit$AgeIndex]      
+    }
     if (co %in% names(covariateMaps$inLandings)){
       fit$Level <- covariateMaps$inLandings[[co]][fit$LevelIndex]
     }
@@ -296,6 +301,13 @@ recaFit2Stox <- function(fit, covariateMaps){
   output$FitProportionAtAge <- convertModelFit(fit$ProportionAtAge, covariateMaps, "ProportionAtAge")
   output$FitLengthGivenAge <- convertModelFit(fit$LengthGivenAge, covariateMaps, "LengthGivenAge")
   output$FitWeightGivenLength <- convertModelFit(fit$WeightGivenLength, covariateMaps, "WeightGivenLength")
+  
+  if ("LengthGivenAgeCC" %in% names(fit)){
+    output$FitLengthGivenAgeCC <- convertModelFit(fit$LengthGivenAgeCC, covariateMaps, "LengthGivenAge")
+  }
+  if ("WeightGivenLengthCC" %in% names(fit)){
+    output$FitWeightGivenLengthCC <- convertModelFit(fit$WeightGivenLengthCC, covariateMaps, "WeightGivenLength")
+  }
   return(output)
 }
 
@@ -313,6 +325,16 @@ stox2recaFit <- function(stoxFit){
   
   fits$WeightGivenLength <- convertModelFit2eca(stoxFit$FitWeightGivenLength)
   fits$WeightGivenLength$LogLikelihood <- stoxFit$FitWeightGivenLength$LogLikelihood$LogLikelihood
+  
+  if ("FitLengthGivenAgeCC" %in% names(stoxFit)){
+    fits$LengthGivenAgeCC <- convertModelFit2eca(stoxFit$FitLengthGivenAgeCC)
+    fits$LengthGivenAgeCC$LogLikelihood <- stoxFit$FitLengthGivenAgeCC$LogLikelihood$LogLikelihood
+  }
+  
+  if ("FitWeightGivenLengthCC" %in% names(stoxFit)){
+    fits$WeightGivenLengthCC <- convertModelFit2eca(stoxFit$FitWeightGivenLengthCC)
+    fits$WeightGivenLengthCC$LogLikelihood <- stoxFit$FitWeightGivenLengthCC$LogLikelihood$LogLikelihood  
+  }
   
   # remove slope from proportionatage
   fits$ProportionAtAge$Slope <- NULL

@@ -16,8 +16,8 @@ fpath3 <- makeTempDirReca("chain3")
 paramOut1 <- ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = fpath1)
 paramOut2 <- ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = fpath2)
 
-paramSummary <- ReportRecaParameterStatistics(paramOut1, NULL)
-paramSummary <- ReportRecaParameterStatistics(paramOut2, paramSummary)
+paramSummary <- ReportRecaParameterStatistics(paramOut1)
+paramSummary <- ReportRecaParameterStatistics(paramOut2, paramSummary, AppendReport = TRUE)
 expect_true(is.ParameterizationSummaryData(paramSummary))
 
 removeTempDirReca(fpath1)
@@ -29,11 +29,11 @@ expect_true(nrow(convergence$ConvergenceReport) < 433)
 expect_true(nrow(convergence$ConvergenceReport) > 0)
 
 #construct three identical chains, should signal convergence
-paramSummary <- ReportRecaParameterStatistics(paramOut1, NULL)
+paramSummary <- ReportRecaParameterStatistics(paramOut1)
 paramOut1$GlobalParameters$GlobalParameters$resultdir="B"
-paramSummary <- ReportRecaParameterStatistics(paramOut1, paramSummary)
+paramSummary <- ReportRecaParameterStatistics(paramOut1, paramSummary, AppendReport = T)
 paramOut1$GlobalParameters$GlobalParameters$resultdir="C"
-paramSummary <- ReportRecaParameterStatistics(paramOut1, paramSummary)
+paramSummary <- ReportRecaParameterStatistics(paramOut1, paramSummary, AppendReport = T)
 
 context("Check Gelman-Rubin for equal chains")
 convergence <- ReportParameterConvergence(paramSummary, Tolerance = 0)

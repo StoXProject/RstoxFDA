@@ -504,8 +504,16 @@ summaryLgaPar <- function(modelFit, modelname="LengthGivenAgeModel"){
   return(summary)
 }
 #' @noRd
+summaryLgaCCPar <- function(modelFit){
+  return(summaryLgaPar(modelFit, "LengthGivenAgeModelCC"))
+}
+#' @noRd
 summaryWglPar <- function(modelFit){
   return(summaryLgaPar(modelFit, "WeightGivenLengthModel"))
+}
+#' @noRd
+summaryWglCCPar <- function(modelFit){
+  return(summaryLgaPar(modelFit, "WeightGivenLengthModelCC"))
 }
 #' @noRd
 summaryPaaPar <- function(modelFit){
@@ -528,12 +536,23 @@ summaryPaaPar <- function(modelFit){
 #'  
 #' @param RecaParameterData Simulated Reca parameters 
 #' @param ParameterizationSummaryData summary of Reca parameters that the results should be appended to. Optional.
+#' @param AppendReport if true, the results are appended to another report provided by 'ParameterizationSummaryData' 
 #' @return \code{\link[RstoxFDA]{ParameterizationSummaryData}}
 #' @seealso \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation
 #'   \code{\link[RstoxFDA]{ReportParameterConvergence}} for convergence checks.
 #' @export
-ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSummaryData){
+ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSummaryData, AppendReport=FALSE){
   
+  
+  if (AppendReport){
+    if (!isGiven(ParameterizationSummaryData)){
+      stop("Need to provide 'ParameterizationSummaryData' when 'AppendReport' is TRUE")
+    }
+  }
+  
+  if (!AppendReport){
+    ParameterizationSummaryData <- NULL
+  }
   chainId <- RecaParameterData$GlobalParameters$GlobalParameters$resultdir
   iterations <- nrow(RecaParameterData$FitProportionAtAge$LogLikelihood)
   
@@ -548,6 +567,17 @@ ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSum
   WeightGivenLength <- summaryWglPar(RecaParameterData$FitWeightGivenLength)
   WeightGivenLength$chainId <- chainId
   output$ParameterSummary <- rbind(output$ParameterSummary, WeightGivenLength)
+  
+  if ("FitWeightGivenLengthCC" %in% names(RecaParameterData)){
+    WeightGivenLengthCC <- summaryWglCCPar(RecaParameterData$FitWeightGivenLengthCC)
+    WeightGivenLengthCC$chainId <- chainId
+    output$ParameterSummary <- rbind(output$ParameterSummary, WeightGivenLengthCC)
+  }
+  if ("FitLengthGivenAgeCC" %in% names(RecaParameterData)){
+    LengthGivenAgeCC <- summaryLgaCCPar(RecaParameterData$FitLengthGivenAgeCC)
+    LengthGivenAgeCC$chainId <- chainId
+    output$ParameterSummary <- rbind(output$ParameterSummary, LengthGivenAgeCC)
+  }
   
   output$RunParameters <- data.table::data.table(chainId=chainId, Iterations=iterations)
   

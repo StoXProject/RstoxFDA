@@ -4,12 +4,18 @@
 \alias{ReportRecaParameterStatistics}
 \title{Report summary statistics for Reca paramters}
 \usage{
-ReportRecaParameterStatistics(RecaParameterData, ParameterizationSummaryData)
+ReportRecaParameterStatistics(
+  RecaParameterData,
+  ParameterizationSummaryData,
+  AppendReport = FALSE
+)
 }
 \arguments{
 \item{RecaParameterData}{Simulated Reca parameters}
 
 \item{ParameterizationSummaryData}{summary of Reca parameters that the results should be appended to. Optional.}
+
+\item{AppendReport}{if true, the results are appended to another report provided by 'ParameterizationSummaryData'}
 }
 \value{
 \code{\link[RstoxFDA]{ParameterizationSummaryData}}

@@ -65,7 +65,7 @@ Map ranges to plot are specified by 'xlim' and 'ylim'. These should always be gi
  if 'data is not given they will be derived from the bounding box of 'areaDef'.
  To allow for flexible projection, some space will be added around 'xlim' and 'ylim'.
  
- Colors can be specified as understood by ggplot2. E.g. one of those listed by \code{\link[grDevices]{colors()}}.
+ Colors can be specified as understood by ggplot2. E.g. one of those listed by \code{\link[grDevices]{colors}}.
 }
 \examples{
  # plot ICES areas with default projection
