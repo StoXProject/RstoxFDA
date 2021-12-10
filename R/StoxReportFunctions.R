@@ -527,7 +527,7 @@ summaryPaaPar <- function(modelFit){
 #'  the intercept of age 2 in area 47 in the Proportion-At-Age model.
 #'  
 #' @param RecaParameterData Simulated Reca parameters 
-#' @param ParameterizationSummaryData summary of Reca parameters that the results should be appended to. May be NULL.
+#' @param ParameterizationSummaryData summary of Reca parameters that the results should be appended to. Optional.
 #' @return \code{\link[RstoxFDA]{ParameterizationSummaryData}}
 #' @seealso \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation
 #'   \code{\link[RstoxFDA]{ReportParameterConvergence}} for convergence checks.

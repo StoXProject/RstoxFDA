@@ -9,7 +9,7 @@ ReportRecaParameterStatistics(RecaParameterData, ParameterizationSummaryData)
 \arguments{
 \item{RecaParameterData}{Simulated Reca parameters}
 
-\item{ParameterizationSummaryData}{summary of Reca parameters that the results should be appended to. May be NULL.}
+\item{ParameterizationSummaryData}{summary of Reca parameters that the results should be appended to. Optional.}
 }
 \value{
 \code{\link[RstoxFDA]{ParameterizationSummaryData}}

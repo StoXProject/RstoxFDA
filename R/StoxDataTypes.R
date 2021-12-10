@@ -1338,6 +1338,16 @@ stoxFunctionAttributes <- list(
     functionParameterFormat = list(
       GroupingVariables = "GroupingVariablesSop"
     )
+  ),
+  ReportRecaParameterStatistics = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ParameterizationSummaryData"
+  ),
+  ReportParameterConvergence = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ParameterConvergenceData"
   )
 )
 
