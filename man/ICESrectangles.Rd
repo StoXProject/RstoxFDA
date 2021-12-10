@@ -16,16 +16,19 @@ ICES rectangles are defined by grids made up from integer longitudes, integer la
 They derive their name from being rectangular in mercator projection.
 }
 \details{
-The data contains the following columns with rows for each rectange:
+The data contains the following columns with rows for each rectangle:
 \describe{
  \item{ICESNAME}{name of the rectangle in standard ICES notation}
  \item{SOUTH}{southern border of rectangle (latitude)}
  \item{WEST}{western border of rectangle (longitude)}
  \item{NORTH}{northern border of rectangle (latitdue)}
  \item{EAST}{eastern border of rectangle (longitude)}
- \item{AREA_KM2}{area of rectangle in square kilometers}
- \item{Ecoregion}{The main ecoregion the rectangle covers. May cover more at borders between ecoregions.}
+ \item{Area_Full}{Code for full ICES area, including the FAO area code (27).}
+ \item{Area_27}{Code for full ICES area, excluding the FAO area code (27).}
 }
+
+The data also contains columns for the individul components of the full ICES area code:
+<Major_FA>.<SubArea>.<Division>.<SubDivision>.<Unit>
 
 Polygons are derived from shapefiles provided by ICES web-portals.
 
