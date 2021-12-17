@@ -75,6 +75,10 @@ SamplingReport <- ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVar
 expect_true(is.ReportFdaSamplingData(SamplingReport))
 expect_true(all(!is.na(SamplingReport$FisheriesSampling$LandedRoundWeight)))
 
+SamplingReportRounded <- ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"), Decimals=-6)
+expect_true(all(SamplingReportRounded$FisheriesSampling$LandedRoundWeight != SamplingReport$FisheriesSampling$LandedRoundWeight))
+expect_true(all(SamplingReportRounded$FisheriesSampling$WeightOfSampledCatches != SamplingReport$FisheriesSampling$WeightOfSampledCatches))
+
 #Default gear is different coding system for stoxbiotic and landing
 unlanded <- ReportFdaSampling(StoxBioticData, StoxLandingData)
 expect_true(is.data.table(unlanded$GroupingVariables))

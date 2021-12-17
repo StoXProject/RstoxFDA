@@ -1,3 +1,15 @@
+#' Rounds the specified number of decimals
+#' @noRd
+desimals <- function(x, Decimals=integer()){
+  
+  if (isGiven(Decimals)){
+    return(round(x, digits = Decimals))
+  }
+  
+  return(x)
+  
+}
+
 #' Report FDA sampling
 #' @description 
 #'  Report sampling of fisheries against landings in partitions of the fisheries.
@@ -8,6 +20,9 @@
 #'  but unequal category-definitios. For instance area are coded in landings as dominant area for a fishing trip,
 #'  while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
 #'  with another area listed as dominant area.
+#'  
+#'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+#'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 #' @param StoxBioticData
 #'  \code{\link[RstoxData]{StoxBioticData}} data with samples from fisheries
 #'  and approriate columns added for identifying corresponding landings.
@@ -15,9 +30,10 @@
 #'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 #'  and approriate columns added for identifying corresponding samples
 #' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.
+#' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @export
-ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character()){
+ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer()){
   
   flatlandings <- StoxLandingData$Landing
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData)
@@ -67,6 +83,11 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   
   tab <- merge(landingsTab, sampledTab, by=GroupingVariables, all=T)
   tab <- tab[order(tab$LandedRoundWeight, decreasing = T),]
+  
+  if (isGiven(Decimals)){
+    tab$WeightOfSampledCatches <- desimals(tab$WeightOfSampledCatches, Decimals)
+    tab$LandedRoundWeight <- desimals(tab$LandedRoundWeight, Decimals)
+  }
   
   output <- list()
   output$FisheriesSampling <- tab
