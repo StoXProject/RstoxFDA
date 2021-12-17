@@ -98,19 +98,32 @@ usethis::use_data(ICESareas, overwrite = T, compress = "xz")
 #
 # prep ICES rectangles
 #
-ICESrectangles <- rgdal::readOGR("~/shapefiles/ICES_rectangles//", stringsAsFactors = F)
+ICESrectangles <- rgdal::readOGR("~/shapefiles/ICES_StatRec_mapto_ICES_Areas/", stringsAsFactors = F)
 for (i in 1:nrow(ICESrectangles)){
   slot(slot(ICESrectangles, "polygons")[[i]], "ID") <- ICESrectangles$ICESNAME[i]
 }
+# some potentially useful attributes are removed, pending quality checks.
+# other versions of this file have had areas and percentages calculated from planarized coordinates.
 ICESrectangles$StratumName <- ICESrectangles$ICESNAME
+ICESrectangles$ICESNAME <- NULL
+ICESrectangles@data$ID <- NULL
 ICESrectangles@data$OBJECTID <- NULL
-ICESrectangles@data$OBJECTID_1 <- NULL
-ICESrectangles@data$ICESNAME_2 <- NULL
-ICESrectangles@data$ICESNAME_1 <- NULL
-ICESrectangles@data$Shape_STAr <- NULL
-ICESrectangles@data$Shape_STLe <- NULL
-ICESrectangles@data$AREA <- NULL #planarized area
-ICESrectangles@data$PERCENTAGE <- NULL #percentage of main ecoregion, based on planarized area.
+ICESrectangles@data$AREA_KM2 <- NULL
+ICESrectangles$stat_x <- NULL
+ICESrectangles$stat_y <- NULL
+ICESrectangles$Perc <- NULL
+ICESrectangles$MaxPer <- NULL
+ICESrectangles$RNDMaxPer <- NULL
+ICESrectangles$AreasList <- NULL
+ICESrectangles$Shape_Leng <- NULL
+ICESrectangles$Shape_Area <- NULL
+ICESrectangles$SubArea <- unlist(lapply(strsplit(ICESrectangles$Area_27, ".", fixed=T), FUN=function(x){x[1]}))
+ICESrectangles$Division <- unlist(lapply(strsplit(ICESrectangles$Area_27, ".", fixed=T), FUN=function(x){x[2]}))
+ICESrectangles$SubDivision <- unlist(lapply(strsplit(ICESrectangles$Area_27, ".", fixed=T), FUN=function(x){x[3]}))
+ICESrectangles$Unit <- unlist(lapply(strsplit(ICESrectangles$Area_27, ".", fixed=T), FUN=function(x){x[4]}))
+ICESrectangles$Major_FA <- "27"
+ICESrectangles$Area_Full <- paste("27", ICESrectangles$Area_27, sep=".")
+ICESrectangles <- ICESrectangles[!is.na(ICESrectangles$Area_27),]
 ICESrectangles <- sp::spTransform(ICESrectangles, commonCRS)
 usethis::use_data(ICESrectangles, overwrite = T, compress = "xz")
 

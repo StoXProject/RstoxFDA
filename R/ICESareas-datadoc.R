@@ -7,6 +7,16 @@
 #' Polygons are derived from shapefiles provided by ICES web-portals.
 #'
 #' Polygons are defined in WGS84 coordinates (unprojected).
+#' 
+#' The data contains the following columns with rows for each area:
+#' \describe{
+#'  \item{Area_km2}{Area of ICES area in squared kilometers}
+#'  \item{Area_Full}{Code for full ICES area, including the FAO area code (27).}
+#'  \item{Area_27}{Code for full ICES area, excluding the FAO area code (27).}
+#' }
+#' 
+#' The data also contains columns for the individul components of the full ICES area code:
+#' <Major_FA>.<SubArea>.<Division>.<SubDivision>.<Unit>
 #'
 #' @docType data
 #'
