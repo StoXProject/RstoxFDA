@@ -63,7 +63,7 @@ They derive their name from being rectangular in mercator projection.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>The data contains the following columns with rows for each rectange:</p><dl><dt>ICESNAME</dt>
+    <p>The data contains the following columns with rows for each rectangle:</p><dl><dt>ICESNAME</dt>
 <dd><p>name of the rectangle in standard ICES notation</p></dd>
 
  <dt>SOUTH</dt>
@@ -78,14 +78,16 @@ They derive their name from being rectangular in mercator projection.</p>
  <dt>EAST</dt>
 <dd><p>eastern border of rectangle (longitude)</p></dd>
 
- <dt>AREA_KM2</dt>
-<dd><p>area of rectangle in square kilometers</p></dd>
+ <dt>Area_Full</dt>
+<dd><p>Code for full ICES area, including the FAO area code (27).</p></dd>
 
- <dt>Ecoregion</dt>
-<dd><p>The main ecoregion the rectangle covers. May cover more at borders between ecoregions.</p></dd>
+ <dt>Area_27</dt>
+<dd><p>Code for full ICES area, excluding the FAO area code (27).</p></dd>
 
 
-</dl><p>Polygons are derived from shapefiles provided by ICES web-portals.</p>
+</dl><p>The data also contains columns for the individul components of the full ICES area code:
+&lt;Major_FA&gt;.&lt;SubArea&gt;.&lt;Division&gt;.&lt;SubDivision&gt;.&lt;Unit&gt;</p>
+<p>Polygons are derived from shapefiles provided by ICES web-portals.</p>
 <p>Polygons are defined in WGS84 coordinates (unprojected).</p>
     </div>
 

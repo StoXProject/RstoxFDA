@@ -64,6 +64,18 @@ Polygons are defined on different levels of aggregation, either Subarea, Divisio
     <p>In addtion to columns idenitfying the polygons in FAO nomenclature, a column with the area in square kilometers is included.
 Polygons are derived from shapefiles provided by ICES web-portals.</p>
 <p>Polygons are defined in WGS84 coordinates (unprojected).</p>
+<p>The data contains the following columns with rows for each area:</p><dl><dt>Area_km2</dt>
+<dd><p>Area of ICES area in squared kilometers</p></dd>
+
+ <dt>Area_Full</dt>
+<dd><p>Code for full ICES area, including the FAO area code (27).</p></dd>
+
+ <dt>Area_27</dt>
+<dd><p>Code for full ICES area, excluding the FAO area code (27).</p></dd>
+
+
+</dl><p>The data also contains columns for the individul components of the full ICES area code:
+&lt;Major_FA&gt;.&lt;SubArea&gt;.&lt;Division&gt;.&lt;SubDivision&gt;.&lt;Unit&gt;</p>
     </div>
 
     <div id="ref-examples">
