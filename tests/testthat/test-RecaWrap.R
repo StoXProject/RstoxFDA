@@ -43,7 +43,6 @@ expect_equal(max(minRobj$WeightLength$DataMatrix$samplingID), nrow(minRobj$Weigh
 expect_true(all(!is.na(minRobj$AgeLength$DataMatrix$partcount)))
 expect_true(all(!is.na(minRobj$WeightLength$DataMatrix$partcount)))
 
-
 context("test prepRECA: missing column random effect")
 expect_error(prepRECA(fishdata, landings, NULL, c("gear"), NULL, month=landings$Month))
 
@@ -61,16 +60,23 @@ map <- getCovariateMap(c("Metier5"), fishdata, landings)
 expect_equal(length(map), length(unique(c(fishdata$Metier5, landings$Metier5))))
 expect_true(map[[1]] %in% landings$Metier5)
 
+context("tets getCovariateMap: not in sample")
+expect_error(getCovariateMap(c("non"), fishdata, landings), "Covariate non not in samples")
+
 context("tets getInfoMatrix: simple run")
 infom <- getInfoMatrix(fishdata, landings, c("Metier5"), c("vessel"), NULL)
 expect_equal(nrow(infom), 3)
 expect_true(all(c("constant", "Metier5", "vessel") %in% rownames(infom)))
 expect_true(all(c("random", "CAR", "nlev") %in% colnames(infom)))
 
+expect_error(getInfoMatrix(fishdata, landings, c("Metier5"), c("Metier5"), NULL), "some effects are specified more than once")
+
 context("tets getInfoMatrix: interaction")
 infom <- getInfoMatrix(fishdata, landings, c("Metier5"), c("vessel"), NULL, c("Metier5"))
 expect_equal(infom["Metier5", "interaction"], 1)
 expect_error(getInfoMatrix(fishdata, landings, c("Metier5"), c("vessel"), NULL, c("vessel")), "Effect vessel is specified in interaction, but is not found in landings")
+expect_error(getInfoMatrix(fishdata, landings, c("Metier5"), c("vessel"), NULL, c("v")), "The effects specified in 'interaction' must be provided as either fixedEffects, randomEffects, or carEffect")
+expect_error(getInfoMatrix(fishdata, landings, c("Metier5"), c("OSid"), NULL, c("OSid")), "Effect OSid is specified in interaction, but is not found in landings")
 
 context("tets getDataMatrixAgeLength: simple run")
 dmAgeLength <- getDataMatrixAgeLength(fishdata[1:10,], NULL)
@@ -124,6 +130,8 @@ expect_equal(max(land$AgeLengthCov$Metier5), length(unique(landings$Metier5)))
 expect_true(all(c("Metier5", "midseason") %in% names(land$AgeLengthCov)))
 expect_true(all(c("Metier5", "midseason") %in% names(land$WeightLengthCov)))
 
+expect_error(getLandings(landings, c("Metier5"), covariateMaps), "date, month, and quarter can not all be NULL")
+expect_error(getLandings(landings, c("Metier5"), covariateMaps, month=landings$Month, quarter=landings$Quarter), "Several arguments for temporal resolution is provided. Provide either: date, month or quarter.")
 
 context("test getNeighbours: simple run")
 covMap <- list()
@@ -137,6 +145,9 @@ neighbours[["c"]] <- c("a")
 neighboursECA <- getNeighbours(neighbours, covMap)
 expect_equal(neighboursECA$numNeighbours, c(2,1,1))
 expect_equal(neighboursECA$idNeighbours, c(2,3,1,1))
+
+expect_error(getNeighbours(neighbours, NULL), "covariateMap is not provided")
+expect_error(getNeighbours(neighbours, covMap[1:2]), "length of neighbours does not match length of covariateMap")
 
 context("test prepRECA: CAR effect simple run")
 carefftest <- fishdata[1:1000,]
@@ -153,6 +164,23 @@ expect_equal(RECAobj$AgeLength$CARNeighbours$numNeighbours, c(2,1,1))
 expect_equal(RECAobj$AgeLength$CARNeighbours$idNeighbours, c(2,3,1,1))
 expect_true(all(RECAobj$AgeLength$CovariateMatrix$dummyArea %in% c(1,2,3)))
 
+ll <- carefftestland
+ll$LiveWeightKG <- NULL
+expect_error(prepRECA(carefftest, ll, NULL, c("Metier5", "vessel"), "dummyArea", neighbours = neighbours, month=landings$Month), "Column LiveWeightKG is mandatory in landings")
+
+cf <- carefftest
+cf$catchId <- NULL
+expect_error(prepRECA(cf, carefftestland, NULL, c("Metier5", "vessel"), "dummyArea", neighbours = neighbours, month=landings$Month), "Columns, catchId, sampleId, date, Age, Length, and Weight are mandatory in samples. Missing:  catchId")
+
+cf <- carefftest
+cf$vessel[1] <- NA
+expect_error(prepRECA(cf, carefftestland, NULL, c("Metier5", "vessel"), "dummyArea", neighbours = neighbours, month=landings$Month), "NAs are only allowed for weight and age in samples, not for covariates, date or length. Found NA for: vessel")
+
+ll <- carefftestland
+ll$LiveWeightKG[1] <- NA
+expect_error(prepRECA(carefftest, ll, NULL, c("Metier5", "vessel"), "dummyArea", neighbours = neighbours, month=landings$Month), "NAs in landings")
+
+
 context("test prepRECA: CAR effect errors")
 expect_error(prepRECA(carefftest, landings, NULL, c("Metier5", "vessel"), "dummyArea", neighbours = neighbours, month=landings$Month)) #CAR not in landings
 expect_error(prepRECA(carefftest, carefftestland, NULL, c("Metier5", "vessel"), NULL, neighbours = neighbours, month=landings$Month)) #neighbours with no CAR
@@ -162,15 +190,28 @@ carefftestland$dummyArea[1] <- "dd"
 expect_error(prepRECA(carefftest, carefftestland, NULL, c("Metier5", "vessel"), "dummyArea", neighbours = neighbours, month=landings$Month), "Not all combinations of fixed effects are sampled together with CAR effect or neighbours for Age") #CAR not sampled
 
 
+context("test prepRECA: agebounds errors")
+expect_error(prepRECA(fishdata[is.na(fishdata$Age) | fishdata$Age %in% c(1,2,3),], landings, NULL, c("Metier5", "vessel"), NULL, month=landings$Month, minAge=1, maxAge = 2), "Samples contains ages")
+expect_error(prepRECA(fishdata[is.na(fishdata$Age) | fishdata$Age %in% c(1,2,3),], landings, NULL, c("Metier5", "vessel"), NULL, month=landings$Month, minAge=0, maxAge = 2), "Samples contains ages")
+expect_error(prepRECA(fishdata[is.na(fishdata$Age) | fishdata$Age %in% c(1,2),], landings, NULL, c("Metier5", "vessel"), NULL, month=landings$Month, minAge=1, maxAge = 2, maxLength = 1), "Samples contains lengths longer than maxLength")
+
+
 context("test prepRECA: age error simple run")
 ageErr <- matrix(c(.8,.2,.2,.8), nrow=2, dimnames=list(c(1,2), c(1,2)))
 RECAobj <- prepRECA(fishdata[is.na(fishdata$Age) | fishdata$Age %in% c(1,2),], landings, NULL, c("Metier5", "vessel"), NULL, month=landings$Month, ageError = ageErr, minAge=1, maxAge = 2)
 expect_equal(nrow(RECAobj$AgeLength$AgeErrorMatrix),2)
 
 context("test prepRECA: age error with matrix errors")
+expect_error(prepRECA(fishdata[is.na(fishdata$Age) | fishdata$Age %in% c(1,2),], landings, NULL, NULL, NULL, month=landings$Month, ageError = list()), "ageError must be a matrix")
 expect_error(prepRECA(fishdata, landings, c("Metier5"), c("vessel"), NULL, month=landings$Month, ageError = ageErr)) #outside age range
 ageErr <- matrix(c(.8,.2,.1,.8), nrow=2, dimnames=list(c(1,2), c(1,2)))
 expect_error( prepRECA(fishdata[is.na(fishdata$Age) | fishdata$Age %in% c(1,2),], landings, c("Metier5"), c("vessel"), NULL, month=landings$Month, ageError = ageErr, minAge=1, maxAge = 2)) # ageError matrix does not sum to 1
+ageErr <- matrix(c(.8,.2,.1,.7), nrow=2, dimnames=list(c(1,2), c(1,2)))
+expect_error( prepRECA(fishdata[is.na(fishdata$Age) | fishdata$Age %in% c(1,2),], landings, NULL, NULL, NULL, month=landings$Month, ageError = ageErr, minAge=1, maxAge = 2), "Age error columns does not sum to 1.") # ageError matrix does not sum to 1
+expect_error( prepRECA(fishdata[is.na(fishdata$Age) | fishdata$Age %in% c(1,2),], landings, NULL, NULL, NULL, month=landings$Month, ageError = ageErr, minAge=1, maxAge = 3), "Age error matrix must have entries for the entire age range estimated.") # ageError matrix does not sum to 1
+ageErr <- matrix(c(.8,.2,.1,.8), nrow=2)
+expect_error( prepRECA(fishdata[is.na(fishdata$Age) | fishdata$Age %in% c(1,2),], landings, NULL, NULL, NULL, month=landings$Month, ageError = ageErr, minAge=1, maxAge = 2), "rownames and colnames must be set for ageError matrix")
+
 
 context("test prepRECA: no custom covariates")
 recaObj <- prepRECA(fishdata, landings, fixedEffects = NULL, randomEffects = NULL, NULL, minAge = 1, maxAge = 20, lengthResolution = 1, quarter = landings$Quarter, nFish = nFish)
