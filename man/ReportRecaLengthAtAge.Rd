@@ -7,7 +7,8 @@
 ReportRecaLengthAtAge(
   RecaCatchAtAge,
   PlusGroup = integer(),
-  IntervalWidth = numeric()
+  IntervalWidth = numeric(),
+  Decimals = integer()
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ ReportRecaLengthAtAge(
 \item{PlusGroup}{If given, ages 'PlusGroup' or older are included in a plus group.}
 
 \item{IntervalWidth}{The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.}
+
+\item{Decimals}{integer specifying the number of decimals to report for 'MeanIndividualLength', 'SD', 'Low' and 'High'. Defaults to 1.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}}
@@ -28,6 +31,9 @@ Tabulates summary statistics for mean length (cm) at age from MCMC simulations u
  
  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
  area, gear, stock, etc., summary statistics will be presented similarly.
+ 
+ Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+ so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 }
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis

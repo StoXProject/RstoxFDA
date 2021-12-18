@@ -1330,7 +1330,24 @@ stoxFunctionAttributes <- list(
   ReportRecaCatchStatistics = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaCatchSummaryData"
+    functionOutputDataType = "ReportFdaCatchSummaryData",
+    functionArgumentHierarchy = list(
+      DecimalTotalNumber = list(
+        DecimalOptions = TRUE
+      ),
+      DecimalTotalWeight = list(
+        DecimalOptions = TRUE
+      ),
+      DecimalMeanAge = list(
+        DecimalOptions = TRUE
+      ),
+      DecimalMeanWeight = list(
+        DecimalOptions = TRUE
+      ),
+      DecimalMeanLength = list(
+        DecimalOptions = TRUE
+      )
+    )
   ),
   ReportFdaSOP = list(
     functionType = "modelData",

@@ -8,7 +8,9 @@ ReportFdaSOP(
   ReportFdaCatchAtAgeData,
   ReportFdaWeightAtAgeData,
   StoxLandingData,
-  GroupingVariables = character()
+  GroupingVariables = character(),
+  DecimalWeight = integer(),
+  DecimalFraction = integer()
 )
 }
 \arguments{
@@ -19,6 +21,10 @@ ReportFdaSOP(
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries}
 
 \item{GroupingVariables}{Columns of 'StoxLandingData' that partitions the landings into groups SOP tests should be reported for.}
+
+\item{DecimalWeight}{integer specifying the number of decimals to report for weights: 'TotalWeightEstimated', 'LandedWeight', and 'Difference'. Defaults to 0}
+
+\item{DecimalFraction}{integer specifying the nnumber of decimals to report for 'RelativeDifference'. Defaults to 3.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSopData}}
@@ -35,6 +41,9 @@ Report sum-of-product test (SOP-test) for catch estimates.
  
  'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same
  'GroupingVariables' and must be reported for the same age groups
+ 
+ Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+ so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 }
 \seealso{
 \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for some ways of preparing 'ReportFdaWeightAtAgeData' and 'ReportFdaCatchAtAgeData'.

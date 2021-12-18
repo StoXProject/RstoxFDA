@@ -24,6 +24,7 @@ removeTempDirReca(fpath1)
 removeTempDirReca(fpath2)
 
 convergence <- ReportParameterConvergence(paramSummary)
+
 expect_true(is.ParameterConvergenceData(convergence))
 expect_true(nrow(convergence$ConvergenceReport) < 433)
 expect_true(nrow(convergence$ConvergenceReport) > 0)
@@ -79,6 +80,7 @@ SamplingReportRounded <- ReportFdaSampling(StoxBioticData, StoxLandingData, Grou
 expect_true(all(SamplingReportRounded$FisheriesSampling$LandedRoundWeight != SamplingReport$FisheriesSampling$LandedRoundWeight))
 expect_true(all(SamplingReportRounded$FisheriesSampling$WeightOfSampledCatches != SamplingReport$FisheriesSampling$WeightOfSampledCatches))
 
+
 #Default gear is different coding system for stoxbiotic and landing
 unlanded <- ReportFdaSampling(StoxBioticData, StoxLandingData)
 expect_true(is.data.table(unlanded$GroupingVariables))
@@ -87,7 +89,7 @@ expect_true(any(is.na(unlanded$FisheriesSampling$LandedRoundWeight)))
 expect_error(ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter", "Nonesene")), "All 'GroupingVariables' must be present in 'StoxLandingData'. Missing: Nonesene")
 
 
-# Report Catch at age
+context("Report Catch At Age")
 catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
 catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.rds", package="RstoxFDA"))
 
@@ -107,6 +109,12 @@ expect_equal(ncol(catchAtAgeReportFlat$FdaReport), 6)
 expect_equal(length(catchAtAgeReportDecomp$GroupingVariables$GroupingVariables), 2)
 expect_equal(ncol(catchAtAgeReportDecomp$FdaReport), 8)
 
+#test Digits
+catchAtAgeD <- ReportRecaCatchAtAge(catchAtAgeFlat, Decimals=-3)
+expect_true(all(catchAtAgeD$FdaReport$SD[1] != catchAtAgeReportFlat$FdaReport$SD[1]))
+catchAtAgeD <- ReportRecaCatchAtAge(catchAtAgeFlat, Decimals=0)
+expect_true(all(catchAtAgeD$FdaReport$SD == catchAtAgeReportFlat$FdaReport$SD))
+
 #test plusgroup
 catchAtAgeReportDecompPlusGr <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5)
 diff <- sum(catchAtAgeReportDecomp$FdaReport$CatchAtAge) - sum(catchAtAgeReportDecompPlusGr$FdaReport$CatchAtAge)
@@ -123,8 +131,12 @@ expect_equal(nrow(catchAtAgeReportFlatPlusGr$FdaReport), 4)
 expect_equal(nrow(catchAtAgeReportFlatPlusGr$GroupingVariables), 0)
 
 # Report Mean weight
+
 MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp)
 expect_true(is.ReportFdaByAgeData(MeanWeightReportDecomp))
+
+MeanWeightReportDecimal <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4)
+expect_true(MeanWeightReportDecimal$FdaReport$Low[1] != MeanWeightReportDecomp$FdaReport$Low[1])
 
 # Report Mean weight Plus gr
 MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5)
@@ -153,6 +165,10 @@ expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
 # Report Mean length
 MeanLengthReportDecomp <- ReportRecaLengthAtAge(catchAtAgeDecomp)
 expect_true(is.ReportFdaByAgeData(MeanLengthReportDecomp))
+expect_true(!all(nchar(as.character(MeanLengthReportDecomp$FdaReport$MeanIndividualLength[MeanLengthReportDecomp$FdaReport$MeanIndividualLength>0]))>5))
+
+MeanLengthReportDecimals <- ReportRecaLengthAtAge(catchAtAgeDecomp, Decimals = 4)
+expect_true(all(nchar(as.character(MeanLengthReportDecimals$FdaReport$MeanIndividualLength[MeanLengthReportDecimals$FdaReport$MeanIndividualLength>0]))>5))
 
 # Report Mean length Plus gr
 MeanLengthReportDecompPlusGr <- ReportRecaLengthAtAge(catchAtAgeDecomp, PlusGroup=5)
@@ -176,7 +192,8 @@ expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
                   MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age==13]))
 
 context("Test SOP")
-
+catchAtAgeReportDecompPlusGr <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
+MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
 sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"))
 expect_true(is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport

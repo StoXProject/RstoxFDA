@@ -4,12 +4,18 @@
 \alias{ReportParameterConvergence}
 \title{Report convergence Statistics for parameter simulations}
 \usage{
-ReportParameterConvergence(ParameterizationSummaryData, Tolerance = numeric())
+ReportParameterConvergence(
+  ParameterizationSummaryData,
+  Tolerance = numeric(),
+  Decimals = integer()
+)
 }
 \arguments{
 \item{ParameterizationSummaryData}{summary statistics for Reca parameters}
 
 \item{Tolerance}{threshold for reporting parameters. Defaults to 0.1. See details}
+
+\item{Decimals}{integer specifying the number of decimals to report for 'GelmanRubinR'. Defaults to 2}
 }
 \value{
 \code{\link[RstoxFDA]{ParameterConvergenceData}}

@@ -7,7 +7,8 @@
 ReportFdaSampling(
   StoxBioticData,
   StoxLandingData,
-  GroupingVariables = character()
+  GroupingVariables = character(),
+  Decimals = integer()
 )
 }
 \arguments{
@@ -18,6 +19,8 @@ and approriate columns added for identifying corresponding landings.}
 and approriate columns added for identifying corresponding samples}
 
 \item{GroupingVariables}{Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.}
+
+\item{Decimals}{integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSamplingData}}
@@ -32,4 +35,7 @@ Sampling is reported partitioned on the provided 'GroupingVariables'.
  but unequal category-definitios. For instance area are coded in landings as dominant area for a fishing trip,
  while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
  with another area listed as dominant area.
+ 
+ Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+ so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 }
