@@ -259,10 +259,11 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
 #' @param Decimals integer specifying the number of decimals to report for 'MeanIndividualWeight', 'SD', 'Low' and 'High'. Defaults to 2.
+#' @param Threshold threshold for reporting mean weight. Rows with an estimated Catch At Age lower than this will have NA reported for their mean weight. Defaults to 0.
 #' @return \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
-ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer()){
+ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric()){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   
   if (!isGiven(Decimals)){
@@ -273,8 +274,32 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
     IntervalWidth <- 0.9
   }
 
+  if (!isGiven(Threshold)){
+    Threshold = 0
+  }
+  
   meanWeightAtAge <- getPlusGroupMeans(RecaCatchAtAge, "MeanWeight", "MeanIndividualWeight", PlusGroup)
   mwaa <-reportParameterAtAge(meanWeightAtAge, RecaCatchAtAge$GroupingVariables$GroupingVariables, "MeanIndividualWeight", alpha = 1 - IntervalWidth)
+  
+  
+  #set age groups with catches below threshold to NA
+  caa<-ReportRecaCatchAtAge(RecaCatchAtAge, PlusGroup = PlusGroup)
+  caa$FdaReport$SD <- NULL
+  caa$FdaReport$Low <- NULL
+  caa$FdaReport$High <- NULL
+  caa$FdaReport$include <- caa$FdaReport$CatchAtAge >= Threshold
+  caa$FdaReport$order <- 1:nrow(caa$FdaReport)
+  caa$FdaReport$CatchAtAge <- NULL
+  
+  mwaa$FdaReport <- merge(mwaa$FdaReport, caa$FdaReport)
+  stopifnot(nrow(mwaa$FdaReport) == nrow(caa$FdaReport))
+  mwaa$FdaReport$MeanIndividualWeight[!mwaa$FdaReport$include] <- NA
+  mwaa$FdaReport$SD[!mwaa$FdaReport$include] <- NA
+  mwaa$FdaReport$Low[!mwaa$FdaReport$include] <- NA
+  mwaa$FdaReport$High[!mwaa$FdaReport$include] <- NA
+  mwaa$FdaReport$include <- NULL
+  mwaa$FdaReport <- mwaa$FdaReport[order(mwaa$FdaReport$order),]
+  mwaa$FdaReport$order <- NULL
   
   mwaa$FdaReport$MeanIndividualWeight <- desimals(mwaa$FdaReport$MeanIndividualWeight, Decimals)
   mwaa$FdaReport$SD <- desimals(mwaa$FdaReport$SD, Decimals)
@@ -301,10 +326,11 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
 #' @param Decimals integer specifying the number of decimals to report for 'MeanIndividualLength', 'SD', 'Low' and 'High'. Defaults to 1.
+#' @param Threshold threshold for reporting mean weight. Rows with an estimated Catch At Age lower than this will have NA reported for their mean length Defaults to 0.
 #' @return \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
-ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer()){
+ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric()){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   
   if (!isGiven(Decimals)){
@@ -315,9 +341,33 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
     IntervalWidth <- 0.9
   }
   
-  meanLengthAtAge <- getPlusGroupMeans(RecaCatchAtAge, "MeanLength", "MeanIndividualLength", PlusGroup)
+  if (!isGiven(Threshold)){
+    Threshold = 0
+  }
   
+  
+  meanLengthAtAge <- getPlusGroupMeans(RecaCatchAtAge, "MeanLength", "MeanIndividualLength", PlusGroup)
   mla <- reportParameterAtAge(meanLengthAtAge, RecaCatchAtAge$GroupingVariables$GroupingVariables, "MeanIndividualLength", alpha = 1 - IntervalWidth)
+  
+  #set age groups with catches below threshold to NA
+  caa<-ReportRecaCatchAtAge(RecaCatchAtAge, PlusGroup = PlusGroup)
+  caa$FdaReport$SD <- NULL
+  caa$FdaReport$Low <- NULL
+  caa$FdaReport$High <- NULL
+  caa$FdaReport$include <- caa$FdaReport$CatchAtAge >= Threshold
+  caa$FdaReport$order <- 1:nrow(caa$FdaReport)
+  caa$FdaReport$CatchAtAge <- NULL
+  
+  mla$FdaReport <- merge(mla$FdaReport, caa$FdaReport)
+  stopifnot(nrow(mla$FdaReport) == nrow(caa$FdaReport))
+  mla$FdaReport$MeanIndividualLength[!mla$FdaReport$include] <- NA
+  mla$FdaReport$SD[!mla$FdaReport$include] <- NA
+  mla$FdaReport$Low[!mla$FdaReport$include] <- NA
+  mla$FdaReport$High[!mla$FdaReport$include] <- NA
+  mla$FdaReport$include <- NULL
+  mla$FdaReport <- mla$FdaReport[order(mla$FdaReport$order),]
+  mla$FdaReport$order <- NULL
+  
   mla$FdaReport$MeanIndividualLength <- desimals(mla$FdaReport$MeanIndividualLength, Decimals)
   mla$FdaReport$SD <- desimals(mla$FdaReport$SD, Decimals)
   mla$FdaReport$Low <- desimals(mla$FdaReport$Low, Decimals)

@@ -138,6 +138,10 @@ expect_true(is.ReportFdaByAgeData(MeanWeightReportDecomp))
 MeanWeightReportDecimal <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4)
 expect_true(MeanWeightReportDecimal$FdaReport$Low[1] != MeanWeightReportDecomp$FdaReport$Low[1])
 
+MeanWeightReportTk <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4, Threshold = 1000)
+MeanWeightReportT10k <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4, Threshold = 10000)
+expect_true(sum(is.na(MeanWeightReportTk$FdaReport$MeanIndividualWeight)) < sum(is.na(MeanWeightReportT10k$FdaReport$MeanIndividualWeight)))
+
 # Report Mean weight Plus gr
 MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5)
 
@@ -169,6 +173,9 @@ expect_true(!all(nchar(as.character(MeanLengthReportDecomp$FdaReport$MeanIndivid
 
 MeanLengthReportDecimals <- ReportRecaLengthAtAge(catchAtAgeDecomp, Decimals = 4)
 expect_true(all(nchar(as.character(MeanLengthReportDecimals$FdaReport$MeanIndividualLength[MeanLengthReportDecimals$FdaReport$MeanIndividualLength>0]))>5))
+
+MeanLengthReportTk <- ReportRecaLengthAtAge(catchAtAgeDecomp, Decimals = 4, Threshold = 1000)
+expect_true(all(is.na(MeanLengthReportTk$FdaReport$MeanIndividualLength) == is.na(MeanWeightReportTk$FdaReport$MeanIndividualWeight)))
 
 # Report Mean length Plus gr
 MeanLengthReportDecompPlusGr <- ReportRecaLengthAtAge(catchAtAgeDecomp, PlusGroup=5)
