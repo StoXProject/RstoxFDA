@@ -23,6 +23,8 @@ desimals <- function(x, Decimals=integer()){
 #'  
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+#'
+#'  The units considered valid for weights are those listed for quantity 'mass' in ~\code{\link[RstoxData]{StoxUnits}}
 #' @param StoxBioticData
 #'  \code{\link[RstoxData]{StoxBioticData}} data with samples from fisheries
 #'  and approriate columns added for identifying corresponding landings.
@@ -31,14 +33,21 @@ desimals <- function(x, Decimals=integer()){
 #'  and approriate columns added for identifying corresponding samples
 #' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.
 #' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.
+#' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @export
-ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer()){
+ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=c("kg","t","kt")){
   
   if (!isGiven(Decimals)){
     Decimals=0
   }
-  
+
+  if (isGiven(Unit)){
+    Unit <- Unit[1]
+    if (!(Unit %in% RstoxData::StoxUnits$symbol[RstoxData::StoxUnits$quantity=="mass"])){
+      stop(paste(Unit, "is not a recognized unit for mass / weight."))
+    }
+  }
   
   flatlandings <- StoxLandingData$Landing
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData)
@@ -93,6 +102,15 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
     tab$WeightOfSampledCatches <- desimals(tab$WeightOfSampledCatches, Decimals)
     tab$LandedRoundWeight <- desimals(tab$LandedRoundWeight, Decimals)
   }
+
+  if (isGiven(Unit)){
+    tab$WeightOfSampledCatches <- RstoxData::convertUnits(tab$WeightOfSampledCatches, "kg", Unit)
+    tab$LandedRoundWeight <- RstoxData::convertUnits(tab$LandedRoundWeight, "kg", Unit)
+  }
+  
+  attr(tab$WeightOfSampledCatches, "unit") <- Unit
+  attr(tab$LandedRoundWeight, "unit") <- Unit
+  
   
   output <- list()
   output$FisheriesSampling <- tab
