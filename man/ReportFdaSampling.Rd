@@ -9,7 +9,7 @@ ReportFdaSampling(
   StoxLandingData,
   GroupingVariables = character(),
   Decimals = integer(),
-  Unit = RstoxData::getUnitOptions("mass", conversionRange = c(1, 1e+12))
+  Unit = c("kg", "t", "kt")
 )
 }
 \arguments{
@@ -42,5 +42,5 @@ Sampling is reported partitioned on the provided 'GroupingVariables'.
  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 
- The units considered valid for weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
+ The units considered valid for weights are those listed for quantity 'mass' in ~\code{\link[RstoxData]{StoxUnits}}
 }
