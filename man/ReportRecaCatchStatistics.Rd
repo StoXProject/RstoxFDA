@@ -4,12 +4,33 @@
 \alias{ReportRecaCatchStatistics}
 \title{Report catch statistics}
 \usage{
-ReportRecaCatchStatistics(RecaCatchAtAge, IntervalWidth = numeric())
+ReportRecaCatchStatistics(
+  RecaCatchAtAge,
+  IntervalWidth = numeric(),
+  DecimalOptions = FALSE,
+  DecimalTotalNumber = integer(),
+  DecimalTotalWeight = integer(),
+  DecimalMeanAge = integer(),
+  DecimalMeanWeight = integer(),
+  DecimalMeanLength = integer()
+)
 }
 \arguments{
 \item{RecaCatchAtAge}{Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).}
 
 \item{IntervalWidth}{The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.}
+
+\item{DecimalOptions}{logical determining whether the StoX user interface should show decimal options}
+
+\item{DecimalTotalNumber}{integer specifying the number of decimals to report for 'TotalNumber', and the corresponding 'SD', 'Low' and 'High'. to 0}
+
+\item{DecimalTotalWeight}{integer specifying the number of decimals to report for 'TotalWeightDefaults', and the corresponding 'SD', 'Low' and 'High'. to 0}
+
+\item{DecimalMeanAge}{integer specifying the number of decimals to report for 'MeanIndividualAge', and the corresponding 'SD', 'Low' and 'High'. Defaults to 1}
+
+\item{DecimalMeanWeight}{integer specifying the number of decimals to report for 'MeanIndividualWeight', and the corresponding 'SD', 'Low' and 'High'. Defaults to 3}
+
+\item{DecimalMeanLength}{integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'. Defaults to 2}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSummaryData}}
@@ -23,6 +44,9 @@ Report summary statistics for landed catches from MCMC simulations using Reca.
  
  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
  area, gear, stock, etc., summary statistics will be presented similarly.
+ 
+ Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+ so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 }
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
