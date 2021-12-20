@@ -4,7 +4,9 @@
  Summary statistics are obtained from the posterior distribution, and
  the interval is reported as equal-tailed credible intervals are reported. 
 If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
- area, gear, stock, etc., summary statistics will be presented similarly."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+ area, gear, stock, etc., summary statistics will be presented similarly. 
+Rounding of numbers according to the argument 'Decimals' is done with round,
+ so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
@@ -56,14 +58,18 @@ If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such a
  Summary statistics are obtained from the posterior distribution, and
  the interval is reported as equal-tailed credible intervals are reported.</p> 
 <p>If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
- area, gear, stock, etc., summary statistics will be presented similarly.</p>
+ area, gear, stock, etc., summary statistics will be presented similarly.</p> 
+<p>Rounding of numbers according to the argument 'Decimals' is done with <code><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></code>,
+ so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.</p>
     </div>
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ReportRecaLengthAtAge</span><span class="op">(</span>
   <span class="va">RecaCatchAtAge</span>,
   PlusGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,
-  IntervalWidth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>
+  IntervalWidth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>,
+  Decimals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,
+  Threshold <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -75,6 +81,10 @@ If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such a
 <dd><p>If given, ages 'PlusGroup' or older are included in a plus group.</p></dd>
 <dt>IntervalWidth</dt>
 <dd><p>The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.</p></dd>
+<dt>Decimals</dt>
+<dd><p>integer specifying the number of decimals to report for 'MeanIndividualLength', 'SD', 'Low' and 'High'. Defaults to 1.</p></dd>
+<dt>Threshold</dt>
+<dd><p>threshold for reporting mean weight. Rows with an estimated Catch At Age lower than this will have NA reported for their mean length Defaults to 0.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>

@@ -53,7 +53,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ReportFdaSampling</span><span class="op">(</span>
   <span class="va">StoxBioticData</span>,
   <span class="va">StoxLandingData</span>,
-  GroupingVariables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>
+  GroupingVariables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,
+  Decimals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -67,6 +68,8 @@ and approriate columns added for identifying corresponding landings.</p></dd>
 and approriate columns added for identifying corresponding samples</p></dd>
 <dt>GroupingVariables</dt>
 <dd><p>Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.</p></dd>
+<dt>Decimals</dt>
+<dd><p>integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -79,7 +82,9 @@ and approriate columns added for identifying corresponding samples</p></dd>
  This may be due to recording errors or filtering errors, but it may also be due to comparison of similar
  but unequal category-definitios. For instance area are coded in landings as dominant area for a fishing trip,
  while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
- with another area listed as dominant area.</p>
+ with another area listed as dominant area.</p> 
+<p>Rounding of numbers according to the argument 'Decimals' is done with <code><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></code>,
+ so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.</p>
     </div>
 
   </div>

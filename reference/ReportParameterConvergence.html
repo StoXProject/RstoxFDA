@@ -54,7 +54,11 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ReportParameterConvergence</span><span class="op">(</span><span class="va">ParameterizationSummaryData</span>, Tolerance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ReportParameterConvergence</span><span class="op">(</span>
+  <span class="va">ParameterizationSummaryData</span>,
+  Tolerance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>,
+  Decimals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -63,6 +67,8 @@
 <dd><p>summary statistics for Reca parameters</p></dd>
 <dt>Tolerance</dt>
 <dd><p>threshold for reporting parameters. Defaults to 0.1. See details</p></dd>
+<dt>Decimals</dt>
+<dd><p>integer specifying the number of decimals to report for 'GelmanRubinR'. Defaults to 2</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
