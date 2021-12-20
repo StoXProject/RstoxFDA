@@ -10,6 +10,15 @@ desimals <- function(x, Decimals=integer()){
   
 }
 
+#' modifies unit by reference (note: no return value)
+#' @noRd
+setUnits <- function(table, columns, unit){
+  for (co in columns){
+    table[[co]] <- RstoxData::setUnit(table[[co]], unit)
+  }
+  return(table)
+}
+
 #' Report FDA sampling
 #' @description 
 #'  Report sampling of fisheries against landings in partitions of the fisheries.
@@ -103,14 +112,11 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
     tab$LandedRoundWeight <- desimals(tab$LandedRoundWeight, Decimals)
   }
 
+  tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), "kg")
+  
   if (isGiven(Unit)){
-    tab$WeightOfSampledCatches <- RstoxData::convertUnits(tab$WeightOfSampledCatches, "kg", Unit)
-    tab$LandedRoundWeight <- RstoxData::convertUnits(tab$LandedRoundWeight, "kg", Unit)
+    tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), Unit)
   }
-  
-  attr(tab$WeightOfSampledCatches, "unit") <- Unit
-  attr(tab$LandedRoundWeight, "unit") <- Unit
-  
   
   output <- list()
   output$FisheriesSampling <- tab
