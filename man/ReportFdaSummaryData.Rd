@@ -18,5 +18,8 @@ Results from catch estimations. The results may be presented
   \item{High}{The higher limit of the estimated interval for the reported statistic.}
   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
  }
+ 
+ Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+ 
  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 }
