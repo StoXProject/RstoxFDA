@@ -11,11 +11,13 @@ Sum of Products report (SOP-report), comparing the total landed weight of fish
  list with two members 'SopReport' and 'GroupingVariables'.
  'SopReport' is a \code{\link[data.table]{data.table}} with the columns:
  \describe{
-  \item{TotalWeightEstimated}{Total round weight (kg) estimated}
-  \item{LandedWeight}{Landed round weight (kg) reported}
-  \item{Difference}{The difference between estimated and reported landed weight}
+  \item{TotalWeightEstimated}{Total round weight estimated in kg}
+  \item{LandedWeight}{Landed round weight reported in kg}
+  \item{Difference}{The difference between estimated and reported landed weight in kg}
   \item{RelativeDifference}{The difference between estimated and reported landed weight relative to reported weight}
   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
  }
  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
+
+ The unit for RelativeDifference is configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 }

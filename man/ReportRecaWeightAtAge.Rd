@@ -9,7 +9,8 @@ ReportRecaWeightAtAge(
   PlusGroup = integer(),
   IntervalWidth = numeric(),
   Decimals = integer(),
-  Threshold = numeric()
+  Threshold = numeric(),
+  Unit = c("kg", "g")
 )
 }
 \arguments{
@@ -21,7 +22,9 @@ ReportRecaWeightAtAge(
 
 \item{Decimals}{integer specifying the number of decimals to report for 'MeanIndividualWeight', 'SD', 'Low' and 'High'. Defaults to 2.}
 
-\item{Threshold}{threshold for reporting mean weight. Rows with an estimated Catch At Age (number of individuals) lower than this will have NA reported for their mean weight. Defaults to 0.}
+\item{Threshold}{threshold for reporting mean weight. Rows with an estimated Catch At Age lower than this will have NA reported for their mean weight. Defaults to 0.}
+
+\item{Unit}{unit for the 'MeanIndividualWeight', 'SD', 'Low' and 'High'. Defaults to kg.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}}
@@ -37,6 +40,8 @@ Tabulates summary statistics for mean weights (kg) at age from MCMC simulations 
  
  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+ 
+ The units considered valid for mean weights are those listed for quantity 'mass' in ~\code{\link[RstoxData]{StoxUnits}}
 }
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
