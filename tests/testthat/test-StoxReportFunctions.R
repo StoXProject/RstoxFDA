@@ -64,25 +64,25 @@ expect_true(nrow(catchReportFlat$TotalNumber) == 1)
 expect_true(nrow(catchReportFlat$GroupingVariables) == 0)
 
 context("Test StoxReportFunctions: ReportRecaCatchStatistics units")
-catchReportFlat <- ReportRecaCatchStatistics(catchAtAgeFlat, DecimalTotalWeight = 3, DecimalMeanWeight = 3, DecimalMeanLength = 1)
-expect_equal(RstoxData::getUnit(catchReportFlat$MeanAge$MeanIndividualAge), "yr")
-expect_equal(RstoxData::getUnit(catchReportFlat$MeanWeight$SD), "kg")
-expect_equal(RstoxData::getUnit(catchReportFlat$MeanLength$Low), "cm")
-expect_equal(RstoxData::getUnit(catchReportFlat$TotalWeight$High), "kt")
-expect_equal(RstoxData::getUnit(catchReportFlat$TotalNumber$TotalNumber), "Mi")
+catchReportFlat <- ReportRecaCatchStatistics(catchAtAgeFlat, DecimalMeanWeight = 3, DecimalMeanLength = 1)
+expect_equal(RstoxData::getUnit(catchReportFlat$MeanAge$MeanIndividualAge), "age-year")
+expect_equal(RstoxData::getUnit(catchReportFlat$MeanWeight$SD), "mass-g")
+expect_equal(RstoxData::getUnit(catchReportFlat$MeanLength$Low), "length-mm")
+expect_equal(RstoxData::getUnit(catchReportFlat$TotalWeight$High), "mass-kg")
+expect_equal(RstoxData::getUnit(catchReportFlat$TotalNumber$TotalNumber), "cardinality-N")
 
-catchReportFlatOU <- ReportRecaCatchStatistics(catchAtAgeFlat, UnitTotalNumber = "ki", DecimalTotalNumber = 6, UnitTotalWeight = "kg", UnitMeanWeight = "g", UnitMeanLength = "mm")
-expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanAge$MeanIndividualAge), "yr")
-expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanWeight$MeanIndividualWeight), "g")
-expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanLength$High), "mm")
-expect_equal(RstoxData::getUnit(catchReportFlatOU$TotalWeight$Low), "kg")
-expect_equal(RstoxData::getUnit(catchReportFlatOU$TotalNumber$SD), "ki")
+catchReportFlatOU <- ReportRecaCatchStatistics(catchAtAgeFlat, UnitTotalNumber = "10^3 individuals", DecimalTotalNumber = 6, DecimalTotalWeight = 6, UnitTotalWeight = "kiloton", UnitMeanWeight = "kg", UnitMeanLength = "cm", DecimalMeanLength = 2)
+expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanAge$MeanIndividualAge), "age-year")
+expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanWeight$MeanIndividualWeight), "mass-kg")
+expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanLength$High), "length-cm")
+expect_equal(RstoxData::getUnit(catchReportFlatOU$TotalWeight$Low), "mass-kt")
+expect_equal(RstoxData::getUnit(catchReportFlatOU$TotalNumber$SD), "cardinality-kN")
 
 expect_equal(catchReportFlatOU$MeanAge$MeanIndividualAge, catchReportFlat$MeanAge$MeanIndividualAge)
-expect_equal(catchReportFlatOU$MeanWeight$MeanIndividualWeight[1]/1000, catchReportFlat$MeanWeight$MeanIndividualWeight[1])
-expect_equal(catchReportFlatOU$MeanLength$MeanIndividualLength[1]/10, catchReportFlat$MeanLength$MeanIndividualLength[1])
-expect_equal(catchReportFlatOU$TotalWeight$TotalWeight[1]/1e6, catchReportFlat$TotalWeight$TotalWeight[1])
-expect_equal(catchReportFlatOU$TotalNumber$TotalNumber[1]/1e3, catchReportFlat$TotalNumber$TotalNumber[1])
+expect_equal(catchReportFlatOU$MeanWeight$MeanIndividualWeight[1]*1000, catchReportFlat$MeanWeight$MeanIndividualWeight[1])
+expect_equal(catchReportFlatOU$MeanLength$MeanIndividualLength[1]*10, catchReportFlat$MeanLength$MeanIndividualLength[1])
+expect_equal(catchReportFlatOU$TotalWeight$TotalWeight[1]*1e6, catchReportFlat$TotalWeight$TotalWeight[1])
+expect_equal(catchReportFlatOU$TotalNumber$TotalNumber[1]*1e3, catchReportFlat$TotalNumber$TotalNumber[1])
 
 
 context("Test StoxReportFunctions: ReportFdaSampling")
@@ -97,13 +97,13 @@ StoxLandingData$Landing$Quarter <- quarters(StoxLandingData$Landing$CatchDate)
 SamplingReport <- ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"))
 expect_true(is.ReportFdaSamplingData(SamplingReport))
 expect_true(all(!is.na(SamplingReport$FisheriesSampling$LandedRoundWeight)))
-expect_equal(RstoxData::getUnit(SamplingReport$FisheriesSampling$WeightOfSampledCatches), "kg")
+expect_equal(RstoxData::getUnit(SamplingReport$FisheriesSampling$WeightOfSampledCatches), "mass-kg")
 expect_true(is.na(RstoxData::getUnit(SamplingReport$FisheriesSampling$Catches)))
 
-SamplingReportKt <- ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"), Unit="kt", Decimals = 6)
+SamplingReportKt <- ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"), Unit="kiloton", Decimals = 6)
 expect_equal(SamplingReportKt$FisheriesSampling$LandedRoundWeight[1:2], SamplingReport$FisheriesSampling$LandedRoundWeight[1:2]/1e6)
-expect_equal(RstoxData::getUnit(SamplingReportKt$FisheriesSampling$WeightOfSampledCatches), "kt")
-expect_equal(RstoxData::getUnit(SamplingReportKt$FisheriesSampling$LandedRoundWeight), "kt")
+expect_equal(RstoxData::getUnit(SamplingReportKt$FisheriesSampling$WeightOfSampledCatches), "mass-kt")
+expect_equal(RstoxData::getUnit(SamplingReportKt$FisheriesSampling$LandedRoundWeight), "mass-kt")
 expect_true(is.na(RstoxData::getUnit(SamplingReportKt$FisheriesSampling$Catches)))
 
 SamplingReportRounded <- ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"), Decimals=-6)
@@ -161,17 +161,17 @@ expect_equal(nrow(catchAtAgeReportFlatPlusGr$FdaReport), 4)
 expect_equal(nrow(catchAtAgeReportFlatPlusGr$GroupingVariables), 0)
 expect_equal(RstoxData::getUnit(catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge, property = "name"), "individuals")
 
-catchAtAgeReportMi <- ReportRecaCatchAtAge(catchAtAgeFlat, PlusGroup=5, Unit = "Mi", Decimals = 6)
-expect_equal(RstoxData::getUnit(catchAtAgeReportMi$FdaReport$CatchAtAge, property = "symbol"), "Mi")
+catchAtAgeReportMi <- ReportRecaCatchAtAge(catchAtAgeFlat, PlusGroup=5, Unit = "10^6 individuals", Decimals = 6)
+expect_equal(RstoxData::getUnit(catchAtAgeReportMi$FdaReport$CatchAtAge, property = "symbol"), "MN")
 expect_equal(catchAtAgeReportMi$FdaReport$CatchAtAge[1:3]*1e6, catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge[1:3])
 expect_equal(catchAtAgeReportMi$FdaReport$SD[1:3]*1e6, catchAtAgeReportFlatPlusGr$FdaReport$SD[1:3])
 
 
 # Report Mean weight
 
-MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimals = 4)
+MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimals = 4, Unit = "kg")
 expect_true(is.ReportFdaByAgeData(MeanWeightReportDecomp))
-expect_equal(RstoxData::getUnit(MeanWeightReportDecomp$FdaReport$MeanIndividualWeight), "kg")
+expect_equal(RstoxData::getUnit(MeanWeightReportDecomp$FdaReport$MeanIndividualWeight), "mass-kg")
 
 MeanWeightReportDecimal <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4)
 MeanWeightReportDecimalG <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=1, Unit="g")
@@ -208,13 +208,13 @@ expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
 
 
 # Report Mean length
-MeanLengthReportDecomp <- ReportRecaLengthAtAge(catchAtAgeDecomp)
+MeanLengthReportDecomp <- ReportRecaLengthAtAge(catchAtAgeDecomp, Unit="cm")
 expect_true(is.ReportFdaByAgeData(MeanLengthReportDecomp))
 expect_true(!all(nchar(as.character(MeanLengthReportDecomp$FdaReport$MeanIndividualLength[MeanLengthReportDecomp$FdaReport$MeanIndividualLength>0]))>5))
-expect_equal(RstoxData::getUnit(MeanLengthReportDecomp$FdaReport$MeanIndividualLength), "cm")
+expect_equal(RstoxData::getUnit(MeanLengthReportDecomp$FdaReport$MeanIndividualLength), "length-cm")
 
 MeanLengthReportDecompMM <- ReportRecaLengthAtAge(catchAtAgeDecomp, Unit = "mm", Decimals=0)
-expect_equal(RstoxData::getUnit(MeanLengthReportDecompMM$FdaReport$MeanIndividualLength), "mm")
+expect_equal(RstoxData::getUnit(MeanLengthReportDecompMM$FdaReport$MeanIndividualLength), "length-mm")
 expect_equal(MeanLengthReportDecomp$FdaReport$MeanIndividualLength[3:4]*10, MeanLengthReportDecompMM$FdaReport$MeanIndividualLength[3:4])
 expect_equal(MeanLengthReportDecomp$FdaReport$Low[3:4]*10, MeanLengthReportDecompMM$FdaReport$Low[3:4])
 
@@ -246,7 +246,7 @@ expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
                   MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age==13]))
 
 context("Test SOP")
-catchAtAgeReportDecompPlusGrKi <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6, Unit = "ki")
+catchAtAgeReportDecompPlusGrKi <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6, Unit = "10^3 individuals")
 catchAtAgeReportDecompPlusGr <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
 MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
 sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"))
@@ -256,15 +256,15 @@ sopTab <- sopTab$SopReport
 sopTabKi <- sopTabKi$SopReport
 expect_true(all(abs(sopTab$RelativeDifference) < 0.02))
 
-expect_equal(RstoxData::getUnit(sopTab$TotalWeightEstimated), "kg")
-expect_equal(RstoxData::getUnit(sopTab$LandedWeight), "kg")
-expect_equal(RstoxData::getUnit(sopTab$Difference), "kg")
-expect_equal(RstoxData::getUnit(sopTab$RelativeDifference), "0.")
+expect_equal(RstoxData::getUnit(sopTab$TotalWeightEstimated), "mass-kg")
+expect_equal(RstoxData::getUnit(sopTab$LandedWeight), "mass-kg")
+expect_equal(RstoxData::getUnit(sopTab$Difference), "mass-kg")
+expect_equal(RstoxData::getUnit(sopTab$RelativeDifference), "fraction-decimal")
 
-expect_equal(RstoxData::getUnit(sopTabKi$TotalWeightEstimated), "kg")
-expect_equal(RstoxData::getUnit(sopTabKi$LandedWeight), "kg")
-expect_equal(RstoxData::getUnit(sopTabKi$Difference), "kg")
-expect_equal(RstoxData::getUnit(sopTabKi$RelativeDifference), "%")
+expect_equal(RstoxData::getUnit(sopTabKi$TotalWeightEstimated), "mass-kg")
+expect_equal(RstoxData::getUnit(sopTabKi$LandedWeight), "mass-kg")
+expect_equal(RstoxData::getUnit(sopTabKi$Difference), "mass-kg")
+expect_equal(RstoxData::getUnit(sopTabKi$RelativeDifference), "fraction-percent")
 
 expect_equal(sopTabKi$RelativeDifference[1:2]/100, sopTab$RelativeDifference[1:2])
 expect_equal(sopTabKi$TotalWeightEstimated[1:2], sopTab$TotalWeightEstimated[1:2])
