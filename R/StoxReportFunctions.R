@@ -10,6 +10,14 @@ desimals <- function(x, Decimals=integer()){
   
 }
 
+#' @noRd
+setDecimals <- function(table, columns, decimals){
+  for (co in columns){
+    table[[co]] <- desimals(table[[co]], decimals)
+  }
+  return(table)
+}
+
 #' modifies unit by reference (note: no return value)
 #' @noRd
 setUnits <- function(table, columns, unit, quantity){
@@ -107,19 +115,13 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   tab <- merge(landingsTab, sampledTab, by=GroupingVariables, all=T)
   tab <- tab[order(tab$LandedRoundWeight, decreasing = T),]
   
-  tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), "kg", "mass")
+  tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), "kg")
   if (isGiven(Unit)){
     tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), Unit, "mass")
   }
   
   if (isGiven(Decimals)){
     tab <- setDecimals(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), Decimals)
-  }
-
-  tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), "kg")
-  
-  if (isGiven(Unit)){
-    tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), Unit, "mass")
   }
   
   output <- list()
@@ -178,7 +180,7 @@ setAgeGroup <- function(AgeReport){
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 #'  
-#'  The units considered valid for catch at age in nnumbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
+#'  The units considered valid for catch at age in nnumbers are those listed for quantity 'cardinaltiy' in ~\code{\link[RstoxData]{StoxUnits}}
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
@@ -187,19 +189,13 @@ setAgeGroup <- function(AgeReport){
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
-ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
+ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality")){
   
   if (!isGiven(Decimals)){
     Decimals=0
   }
   
-  if (isGiven(Unit)){
-    Unit <- Unit[1]
-    if (!(Unit %in% RstoxData::getUnitOptions("cardinality"))){
-      stop(paste(Unit, "is not a recognized unit catch in numbers."))
-    }
-  }
-  
+  Unit <- match.arg(Unit)
   
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   
@@ -230,10 +226,10 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
   
   caa <- reportParameterAtAge(totalOverLength, aggNames, "CatchAtAge", alpha = 1-IntervalWidth)
   
-  caa$FdaReport <- setUnits(caa$FdaReport, "Age", "year", "age")
-  caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), "individuals", "cardinality")
+  caa$FdaReport <- setUnits(caa$FdaReport, "Age", "yr")
+  caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), "i")
   if (isGiven(Unit)){
-    caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), Unit, "cardinality")  
+    caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), Unit)  
   }
   
   if (isGiven(Decimals)){
@@ -302,7 +298,7 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 #'  
-#'  The units considered valid for mean weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
+#'  The units considered valid for mean weights are those listed for quantity 'mass' in ~\code{\link[RstoxData]{StoxUnits}}
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
@@ -312,7 +308,7 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
 #' @return \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
-ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10))){
+ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=c("kg", "g")){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   
   if (!isGiven(Decimals)){
@@ -329,7 +325,7 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 
   if (isGiven(Unit)){
     Unit <- Unit[1]
-    if (!(Unit %in% RstoxData::getUnitOptions("mass"))){
+    if (!(Unit %in% RstoxData::StoxUnits$symbol[RstoxData::StoxUnits$quantity=="mass"])){
       stop(paste(Unit, "is not a recognized unit for mass / weight."))
     }
   }
@@ -357,10 +353,10 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
   mwaa$FdaReport <- mwaa$FdaReport[order(mwaa$FdaReport$order),]
   mwaa$FdaReport$order <- NULL
   
-  mwaa$FdaReport <- setUnits(mwaa$FdaReport, "Age", "year", "age")
-  mwaa$FdaReport <- setUnits(mwaa$FdaReport, c("MeanIndividualWeight", "SD", "Low", "High"), "kg", "mass")
+  mwaa$FdaReport <- setUnits(mwaa$FdaReport, "Age", "yr")
+  mwaa$FdaReport <- setUnits(mwaa$FdaReport, c("MeanIndividualWeight", "SD", "Low", "High"), "kg")
   if (isGiven(Unit)){
-    mwaa$FdaReport <- setUnits(mwaa$FdaReport, c("MeanIndividualWeight", "SD", "Low", "High"), Unit, "mass")  
+    mwaa$FdaReport <- setUnits(mwaa$FdaReport, c("MeanIndividualWeight", "SD", "Low", "High"), Unit)  
   }
   
   if (isGiven(Decimals)){
@@ -384,7 +380,7 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 #'  
-#'  The units considered valid for mean lengths are those listed for quantity 'length' in \code{\link[RstoxData]{StoxUnits}}
+#'  The units considered valid for mean lengths are those listed for quantity 'length' in ~\code{\link[RstoxData]{StoxUnits}}
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
@@ -394,7 +390,7 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #' @return \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
-ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=RstoxData::getUnitOptions("length", conversionRange=c(1e-7, 10))){
+ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=c("cm", "mm", "m")){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   
   if (!isGiven(Decimals)){
@@ -411,7 +407,7 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
   
   if (isGiven(Unit)){
     Unit <- Unit[1]
-    if (!(Unit %in% RstoxData::getUnitOptions("length"))){
+    if (!(Unit %in% RstoxData::StoxUnits$symbol[RstoxData::StoxUnits$quantity=="length"])){
       stop(paste(Unit, "is not a recognized unit for length."))
     }
   }
@@ -439,10 +435,10 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
   mla$FdaReport <- mla$FdaReport[order(mla$FdaReport$order),]
   mla$FdaReport$order <- NULL
   
-  mla$FdaReport <- setUnits(mla$FdaReport, "Age", "year", "age")
-  mla$FdaReport <- setUnits(mla$FdaReport, c("MeanIndividualLength", "SD", "Low", "High"), "cm", "length")
+  mla$FdaReport <- setUnits(mla$FdaReport, "Age", "yr")
+  mla$FdaReport <- setUnits(mla$FdaReport, c("MeanIndividualLength", "SD", "Low", "High"), "cm")
   if (isGiven(Unit)){
-    mla$FdaReport <- setUnits(mla$FdaReport, c("MeanIndividualLength", "SD", "Low", "High"), Unit, "length")  
+    mla$FdaReport <- setUnits(mla$FdaReport, c("MeanIndividualLength", "SD", "Low", "High"), Unit)  
   }
   
   if (isGiven(Decimals)){
@@ -550,9 +546,6 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), D
   if (isGiven(DecimalMeanAge)){
     meanAge$FdaReport <- setDecimals(meanAge$FdaReport, c("MeanIndividualAge", "SD", "Low", "High"), DecimalMeanAge)
   }
-  if (isGiven(UnitAge)){
-    meanAge$FdaReport <- setUnits(meanAge$FdaReport, c("MeanIndividualAge", "SD", "Low", "High"), UnitAge, "age")    
-  }
   
   # mean weight
   mcw <- getPlusGroupMeans(RecaCatchAtAge, "MeanWeight", "MeanIndividualWeight",PlusGroup = min(RecaCatchAtAge$CatchAtAge$Age))
@@ -564,11 +557,6 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), D
     meanWeight$FdaReport <- setDecimals(meanWeight$FdaReport, c("MeanIndividualWeight", "SD", "Low", "High"), DecimalMeanWeight)
   }
   
-  meanWeight$FdaReport <- setUnits(meanWeight$FdaReport, c("MeanIndividualWeight", "SD", "Low", "High"), "kg", "mass")
-  if (isGiven(UnitMeanWeight)){
-    meanWeight$FdaReport <- setUnits(meanWeight$FdaReport, c("MeanIndividualWeight", "SD", "Low", "High"), UnitMeanWeight, "mass")
-  }
-  
   # mean length
   mlw <- getPlusGroupMeans(RecaCatchAtAge, "MeanLength", "MeanIndividualLength",PlusGroup = min(RecaCatchAtAge$CatchAtAge$Age))
   meanLength <- reportParameterAtAge(mlw, RecaCatchAtAge$GroupingVariables$GroupingVariables, "MeanIndividualLength", alpha = 1 - IntervalWidth)
@@ -578,12 +566,6 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), D
   if (isGiven(DecimalMeanLength)){
     meanLength$FdaReport <- setDecimals(meanLength$FdaReport, c("MeanIndividualLength", "SD", "Low", "High"), DecimalMeanLength)
   }
-  
-  meanLength$FdaReport <- setUnits(meanLength$FdaReport, c("MeanIndividualLength", "SD", "Low", "High"), "cm", "length")
-  if (isGiven(UnitMeanWeight)){
-    meanLength$FdaReport <- setUnits(meanLength$FdaReport, c("MeanIndividualLength", "SD", "Low", "High"), UnitMeanLength, "length")
-  }
-  
   
   # total weight and total number
   # hack to use ReportRecaCatchAtAge
@@ -612,10 +594,6 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), D
   if (isGiven(DecimalTotalWeight)){
     TotalWeight$FdaReport <- setDecimals(TotalWeight$FdaReport, c("TotalWeight", "SD", "Low", "High"), DecimalTotalWeight)
   }
-  if (isGiven(UnitTotalWeight)){
-    TotalWeight$FdaReport <- setUnits(TotalWeight$FdaReport, c("TotalWeight", "SD", "Low", "High"), UnitTotalWeight, "mass")
-  }
-  
   
   # total number
   TotalNumber<-ReportRecaCatchAtAge(RecaCatchAtAge, PlusGroup = min(RecaCatchAtAge$CatchAtAge$Age), Unit = "individuals")
@@ -625,9 +603,6 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), D
   
   if (isGiven(DecimalTotalNumber)){
     TotalNumber$FdaReport <- setDecimals(TotalNumber$FdaReport, c("TotalNumber", "SD", "Low", "High"), DecimalTotalNumber)
-  }
-  if (isGiven(UnitTotalNumber)){
-    TotalNumber$FdaReport <- setUnits(TotalNumber$FdaReport, c("TotalNumber", "SD", "Low", "High"), UnitTotalNumber, "cardinality")
   }
   
   # combine
@@ -659,7 +634,7 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), D
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 #'  
-#'  The units considered valid for mean lengths are those listed for quantity 'fraction' in \code{\link[RstoxData]{StoxUnits}}
+#'  The units considered valid for mean lengths are those listed for quantity 'fraction' in ~\code{\link[RstoxData]{StoxUnits}}
 #' @param ReportFdaCatchAtAgeData \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}} with estimates of total catch at age
 #' @param ReportFdaWeightAtAgeData \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}} with estimates of mean weight at age for individual fish
 #' @param StoxLandingData
@@ -673,10 +648,10 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), D
 #'  \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for some ways of preparing 'ReportFdaWeightAtAgeData' and 'ReportFdaCatchAtAgeData'.
 #'  \code{\link[RstoxData]{StoxLanding}} and \code{\link[RstoxData]{FilterStoxLanding}} for ways of preparing 'StoxLandingData'.
 #' @export
-ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, StoxLandingData, GroupingVariables=character(), DecimalWeight=integer(), DecimalFraction=integer(), UnitFraction=RstoxData::getUnitOptions("fraction")){
+ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, StoxLandingData, GroupingVariables=character(), DecimalWeight=integer(), DecimalFraction=integer(), UnitFraction=c("0.", "%")){
   
-  ReportFdaCatchAtAgeData$FdaReport$CatchAtAge <- RstoxData::setUnit(ReportFdaCatchAtAgeData$FdaReport$CatchAtAge, "cardinality-N")
-  ReportFdaWeightAtAgeData$FdaReport$MeanIndividualWeight <- RstoxData::setUnit(ReportFdaWeightAtAgeData$FdaReport$MeanIndividualWeight, "mass-kg")
+  ReportFdaCatchAtAgeData$FdaReport$CatchAtAge <- RstoxData::setUnit(ReportFdaCatchAtAgeData$FdaReport$CatchAtAge, "i")
+  ReportFdaWeightAtAgeData$FdaReport$MeanIndividualWeight <- RstoxData::setUnit(ReportFdaWeightAtAgeData$FdaReport$MeanIndividualWeight, "kg")
   
   if (!isGiven(DecimalWeight)){
     DecimalWeight = 0
@@ -691,7 +666,7 @@ ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, Stox
   
   if (isGiven(UnitFraction)){
     UnitFraction <- UnitFraction[1]
-    if (!(UnitFraction %in% RstoxData::getUnitOptions("fraction"))){
+    if (!(UnitFraction %in% RstoxData::StoxUnits$symbol[RstoxData::StoxUnits$quantity=="fraction"])){
       stop(paste(UnitFraction, "is not a recognized unit for fraction."))
     }
   }
@@ -760,11 +735,11 @@ ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, Stox
   reportTab$Difference <- desimals(reportTab$Difference, DecimalWeight)
   reportTab$RelativeDifference <- desimals(reportTab$RelativeDifference, DecimalFraction)
   
-  reportTab$TotalWeightEstimated <- RstoxData::setUnit(reportTab$TotalWeightEstimated, "mass-kg", assertNew=T)
-  reportTab$LandedWeight <- RstoxData::setUnit(reportTab$LandedWeight, "mass-kg", assertNew=T)
-  reportTab$Difference <- RstoxData::setUnit(reportTab$Difference, "mass-kg", assertNew=T)
-  reportTab$RelativeDifference <- RstoxData::setUnit(reportTab$RelativeDifference, "fraction-decimal", assertNew=T)
-  reportTab$RelativeDifference <- RstoxData::setUnit(reportTab$RelativeDifference, RstoxData::findUnit("fraction", UnitFraction))
+  reportTab$TotalWeightEstimated <- RstoxData::setUnit(reportTab$TotalWeightEstimated, "kg", assertNew=T)
+  reportTab$LandedWeight <- RstoxData::setUnit(reportTab$LandedWeight, "kg", assertNew=T)
+  reportTab$Difference <- RstoxData::setUnit(reportTab$Difference, "kg", assertNew=T)
+  reportTab$RelativeDifference <- RstoxData::setUnit(reportTab$RelativeDifference, "0.", assertNew=T)
+  reportTab$RelativeDifference <- RstoxData::setUnit(reportTab$RelativeDifference, UnitFraction)
   
   #remove dummy aggregation variable
   if (is.null(GroupingVariables)){
