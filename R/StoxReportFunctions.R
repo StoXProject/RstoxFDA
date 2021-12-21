@@ -12,9 +12,9 @@ desimals <- function(x, Decimals=integer()){
 
 #' modifies unit by reference (note: no return value)
 #' @noRd
-setUnits <- function(table, columns, unit){
+setUnits <- function(table, columns, unit, quantity){
   for (co in columns){
-    table[[co]] <- RstoxData::setUnit(table[[co]], unit)
+    table[[co]] <- RstoxData::setUnit(table[[co]], RstoxData::findUnit(quantity, unit))
   }
   return(table)
 }
@@ -45,7 +45,7 @@ setUnits <- function(table, columns, unit){
 #' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @export
-ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=c("kg","t","kt")){
+ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
   
   if (!isGiven(Decimals)){
     Decimals=0
@@ -53,7 +53,7 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
 
   if (isGiven(Unit)){
     Unit <- Unit[1]
-    if (!(Unit %in% RstoxData::StoxUnits$symbol[RstoxData::StoxUnits$quantity=="mass"])){
+    if (!(Unit %in% RstoxData::getUnitOptions("mass"))){
       stop(paste(Unit, "is not a recognized unit for mass / weight."))
     }
   }
@@ -115,7 +115,7 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), "kg")
   
   if (isGiven(Unit)){
-    tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), Unit)
+    tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), Unit, "mass")
   }
   
   output <- list()
