@@ -9,7 +9,7 @@ ReportRecaCatchAtAge(
   PlusGroup = integer(),
   IntervalWidth = numeric(),
   Decimals = integer(),
-  Unit = RstoxData::getUnitOptions("cardinality")
+  Unit = c("i", "ki", "Mi")
 )
 }
 \arguments{
