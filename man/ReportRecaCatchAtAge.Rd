@@ -9,7 +9,7 @@ ReportRecaCatchAtAge(
   PlusGroup = integer(),
   IntervalWidth = numeric(),
   Decimals = integer(),
-  Unit = RstoxData::getUnitOptions("cardinality", conversionRange = c(1, 1e+12))
+  Unit = RstoxData::getUnitOptions("cardinality")
 )
 }
 \arguments{
@@ -38,7 +38,7 @@ Tabulates summary statistics for total catch (number) at age from MCMC simulatio
  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
  
- The units considered valid for catch at age in nnumbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
+ The units considered valid for catch at age in nnumbers are those listed for quantity 'cardinaltiy' in ~\code{\link[RstoxData]{StoxUnits}}
 }
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
