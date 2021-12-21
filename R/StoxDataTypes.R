@@ -1360,6 +1360,18 @@ stoxFunctionAttributes <- list(
       ),
       DecimalMeanLength = list(
         DecimalOptions = TRUE
+      ),
+      UnitTotalNumber = list(
+        UnitOptions = TRUE
+      ),
+      UnitTotalWeight = list(
+        UnitOptions = TRUE
+      ),
+      UnitMeanWeight = list(
+        UnitOptions = TRUE
+      ),
+      UnitMeanLength = list(
+        UnitOptions = TRUE
       )
     )
   ),
