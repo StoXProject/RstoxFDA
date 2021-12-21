@@ -8,8 +8,10 @@ Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaByA
  with the reported <Statistic> being:
  
  \describe{
-  \item{MeanIndividualWeight}{The mean weight at age in kg}
+  \item{MeanIndividualWeight}{The mean weight at age}
  }
+ 
+ Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
  
  Note that the summary statistics are reported for summaries
  of mean weights, so that e.g. SD report the standard deviation of the means,
