@@ -9,7 +9,8 @@ ReportRecaWeightAtAge(
   PlusGroup = integer(),
   IntervalWidth = numeric(),
   Decimals = integer(),
-  Threshold = numeric()
+  Threshold = numeric(),
+  Unit = c("kg", "g")
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ Tabulates summary statistics for mean weights (kg) at age from MCMC simulations 
  
  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+ 
+ The units considered valid for mean weights are those listed for quantity 'mass' in ~\code{\link[RstoxData]{StoxUnits}}
 }
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
