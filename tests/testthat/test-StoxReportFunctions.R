@@ -248,8 +248,6 @@ expect_equal(sopTabKi$RelativeDifference[1:2]/100, sopTab$RelativeDifference[1:2
 expect_equal(sopTabKi$TotalWeightEstimated[1:2], sopTab$TotalWeightEstimated[1:2])
 expect_equal(sopTabKi$LandedWeight[1:2], sopTab$LandedWeight[1:2])
 
-browser()
-
 sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear"))
 expect_true(is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport
