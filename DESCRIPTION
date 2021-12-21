@@ -30,7 +30,7 @@ Imports:
     sf (>= 0.9.0),
     rgdal (>= 1.5.0),
     rgeos (>= 0.5),
-    RstoxData (>= 1.2.20),
+    RstoxData (>= 1.2.21),
     RstoxBase (>= 1.4.28)
 Suggests: 
     rnaturalearth,
