@@ -125,9 +125,12 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   }
 
   tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), "kg")
-  
   if (isGiven(Unit)){
     tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), Unit)
+  }
+  
+  if (isGiven(Decimals)){
+    tab <- setDecimals(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), Decimals)
   }
   
   output <- list()
