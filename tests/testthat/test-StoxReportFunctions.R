@@ -63,6 +63,28 @@ expect_true(nrow(catchReportFlat$TotalWeight) == 1)
 expect_true(nrow(catchReportFlat$TotalNumber) == 1)
 expect_true(nrow(catchReportFlat$GroupingVariables) == 0)
 
+context("Test StoxReportFunctions: ReportRecaCatchStatistics units")
+catchReportFlat <- ReportRecaCatchStatistics(catchAtAgeFlat, DecimalTotalWeight = 3, DecimalMeanWeight = 3, DecimalMeanLength = 1)
+expect_equal(RstoxData::getUnit(catchReportFlat$MeanAge$MeanIndividualAge), "yr")
+expect_equal(RstoxData::getUnit(catchReportFlat$MeanWeight$SD), "kg")
+expect_equal(RstoxData::getUnit(catchReportFlat$MeanLength$Low), "cm")
+expect_equal(RstoxData::getUnit(catchReportFlat$TotalWeight$High), "kt")
+expect_equal(RstoxData::getUnit(catchReportFlat$TotalNumber$TotalNumber), "Mi")
+
+catchReportFlatOU <- ReportRecaCatchStatistics(catchAtAgeFlat, UnitTotalNumber = "ki", DecimalTotalNumber = 6, UnitTotalWeight = "kg", UnitMeanWeight = "g", UnitMeanLength = "mm")
+expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanAge$MeanIndividualAge), "yr")
+expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanWeight$MeanIndividualWeight), "g")
+expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanLength$High), "mm")
+expect_equal(RstoxData::getUnit(catchReportFlatOU$TotalWeight$Low), "kg")
+expect_equal(RstoxData::getUnit(catchReportFlatOU$TotalNumber$SD), "ki")
+
+expect_equal(catchReportFlatOU$MeanAge$MeanIndividualAge, catchReportFlat$MeanAge$MeanIndividualAge)
+expect_equal(catchReportFlatOU$MeanWeight$MeanIndividualWeight[1]/1000, catchReportFlat$MeanWeight$MeanIndividualWeight[1])
+expect_equal(catchReportFlatOU$MeanLength$MeanIndividualLength[1]/10, catchReportFlat$MeanLength$MeanIndividualLength[1])
+expect_equal(catchReportFlatOU$TotalWeight$TotalWeight[1]/1e6, catchReportFlat$TotalWeight$TotalWeight[1])
+expect_equal(catchReportFlatOU$TotalNumber$TotalNumber[1]/1e3, catchReportFlat$TotalNumber$TotalNumber[1])
+
+
 context("Test StoxReportFunctions: ReportFdaSampling")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
