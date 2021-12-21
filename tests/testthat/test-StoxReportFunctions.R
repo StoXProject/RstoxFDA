@@ -78,7 +78,7 @@ expect_true(all(!is.na(SamplingReport$FisheriesSampling$LandedRoundWeight)))
 expect_equal(RstoxData::getUnit(SamplingReport$FisheriesSampling$WeightOfSampledCatches), "kg")
 expect_true(is.na(RstoxData::getUnit(SamplingReport$FisheriesSampling$Catches)))
 
-SamplingReportKt <- ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"), Unit="kt")
+SamplingReportKt <- ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"), Unit="kt", Decimals = 6)
 expect_equal(SamplingReportKt$FisheriesSampling$LandedRoundWeight[1:2], SamplingReport$FisheriesSampling$LandedRoundWeight[1:2]/1e6)
 expect_equal(RstoxData::getUnit(SamplingReportKt$FisheriesSampling$WeightOfSampledCatches), "kt")
 expect_equal(RstoxData::getUnit(SamplingReportKt$FisheriesSampling$LandedRoundWeight), "kt")
@@ -137,21 +137,32 @@ reldiff <- abs(diff/sum(catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge))
 expect_lt(reldiff, .001)
 expect_equal(nrow(catchAtAgeReportFlatPlusGr$FdaReport), 4)
 expect_equal(nrow(catchAtAgeReportFlatPlusGr$GroupingVariables), 0)
+expect_equal(RstoxData::getUnit(catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge, property = "name"), "individuals")
+
+catchAtAgeReportMi <- ReportRecaCatchAtAge(catchAtAgeFlat, PlusGroup=5, Unit = "Mi", Decimals = 6)
+expect_equal(RstoxData::getUnit(catchAtAgeReportMi$FdaReport$CatchAtAge, property = "symbol"), "Mi")
+expect_equal(catchAtAgeReportMi$FdaReport$CatchAtAge[1:3]*1e6, catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge[1:3])
+expect_equal(catchAtAgeReportMi$FdaReport$SD[1:3]*1e6, catchAtAgeReportFlatPlusGr$FdaReport$SD[1:3])
+
 
 # Report Mean weight
 
-MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp)
+MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimals = 4)
 expect_true(is.ReportFdaByAgeData(MeanWeightReportDecomp))
+expect_equal(RstoxData::getUnit(MeanWeightReportDecomp$FdaReport$MeanIndividualWeight), "kg")
 
 MeanWeightReportDecimal <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4)
-expect_true(MeanWeightReportDecimal$FdaReport$Low[1] != MeanWeightReportDecomp$FdaReport$Low[1])
+MeanWeightReportDecimalG <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=1, Unit="g")
+expect_equal(MeanWeightReportDecimalG$FdaReport$MeanIndividualWeight[1:2], MeanWeightReportDecomp$FdaReport$MeanIndividualWeight[1:2]*1000)
 
 MeanWeightReportTk <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4, Threshold = 1000)
 MeanWeightReportT10k <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4, Threshold = 10000)
 expect_true(sum(is.na(MeanWeightReportTk$FdaReport$MeanIndividualWeight)) < sum(is.na(MeanWeightReportT10k$FdaReport$MeanIndividualWeight)))
 
 # Report Mean weight Plus gr
-MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5)
+MeanWeightReportDecomp <- ReportRecaWeightAtAge(catchAtAgeDecomp, Decimals = 6)
+expect_true(MeanWeightReportDecimal$FdaReport$Low[1] != MeanWeightReportDecomp$FdaReport$Low[1])
+MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
 
 expect_lt(nrow(MeanWeightReportDecompPlusGr$FdaReport), nrow(MeanWeightReportDecomp$FdaReport))
 
@@ -178,6 +189,12 @@ expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
 MeanLengthReportDecomp <- ReportRecaLengthAtAge(catchAtAgeDecomp)
 expect_true(is.ReportFdaByAgeData(MeanLengthReportDecomp))
 expect_true(!all(nchar(as.character(MeanLengthReportDecomp$FdaReport$MeanIndividualLength[MeanLengthReportDecomp$FdaReport$MeanIndividualLength>0]))>5))
+expect_equal(RstoxData::getUnit(MeanLengthReportDecomp$FdaReport$MeanIndividualLength), "cm")
+
+MeanLengthReportDecompMM <- ReportRecaLengthAtAge(catchAtAgeDecomp, Unit = "mm", Decimals=0)
+expect_equal(RstoxData::getUnit(MeanLengthReportDecompMM$FdaReport$MeanIndividualLength), "mm")
+expect_equal(MeanLengthReportDecomp$FdaReport$MeanIndividualLength[3:4]*10, MeanLengthReportDecompMM$FdaReport$MeanIndividualLength[3:4])
+expect_equal(MeanLengthReportDecomp$FdaReport$Low[3:4]*10, MeanLengthReportDecompMM$FdaReport$Low[3:4])
 
 MeanLengthReportDecimals <- ReportRecaLengthAtAge(catchAtAgeDecomp, Decimals = 4)
 expect_true(all(nchar(as.character(MeanLengthReportDecimals$FdaReport$MeanIndividualLength[MeanLengthReportDecimals$FdaReport$MeanIndividualLength>0]))>5))
@@ -207,12 +224,31 @@ expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
                   MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age==13]))
 
 context("Test SOP")
+catchAtAgeReportDecompPlusGrKi <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6, Unit = "ki")
 catchAtAgeReportDecompPlusGr <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
 MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
 sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"))
+sopTabKi <- ReportFdaSOP(catchAtAgeReportDecompPlusGrKi, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"), UnitFraction = "%")
 expect_true(is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport
+sopTabKi <- sopTabKi$SopReport
 expect_true(all(abs(sopTab$RelativeDifference) < 0.02))
+
+expect_equal(RstoxData::getUnit(sopTab$TotalWeightEstimated), "kg")
+expect_equal(RstoxData::getUnit(sopTab$LandedWeight), "kg")
+expect_equal(RstoxData::getUnit(sopTab$Difference), "kg")
+expect_equal(RstoxData::getUnit(sopTab$RelativeDifference), "0.")
+
+expect_equal(RstoxData::getUnit(sopTabKi$TotalWeightEstimated), "kg")
+expect_equal(RstoxData::getUnit(sopTabKi$LandedWeight), "kg")
+expect_equal(RstoxData::getUnit(sopTabKi$Difference), "kg")
+expect_equal(RstoxData::getUnit(sopTabKi$RelativeDifference), "%")
+
+expect_equal(sopTabKi$RelativeDifference[1:2]/100, sopTab$RelativeDifference[1:2])
+expect_equal(sopTabKi$TotalWeightEstimated[1:2], sopTab$TotalWeightEstimated[1:2])
+expect_equal(sopTabKi$LandedWeight[1:2], sopTab$LandedWeight[1:2])
+
+browser()
 
 sopTab <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear"))
 expect_true(is.ReportFdaSOP(sopTab))

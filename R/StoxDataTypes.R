@@ -36,6 +36,9 @@ is.Date <- function(date){
 #'  }
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
+#' 
+#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#' 
 #' @name ReportFdaByAgeData
 #' 
 NULL
@@ -57,6 +60,9 @@ NULL
 #'   \item{High}{The higher limit of the estimated interval for the reported statistic.}
 #'   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
 #'  }
+#'  
+#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaSummaryData
@@ -70,6 +76,8 @@ NULL
 #'  \describe{
 #'   \item{CacthAtAge}{The total catch at age in numbers.}
 #'  }
+#'  
+#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaCatchAtAgeData
 #' 
@@ -82,8 +90,10 @@ NULL
 #'  with the reported <Statistic> being:
 #'  
 #'  \describe{
-#'   \item{MeanIndividualLength}{The mean length at age in cm.}
+#'   \item{MeanIndividualLength}{The mean length at age.}
 #'  }
+#'  
+#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #'  
 #'  Note that the summary statistics are reported for summaries of mean lengths, 
 #'  so that e.g. SD report the standard deviation of the means,
@@ -100,8 +110,10 @@ NULL
 #'  with the reported <Statistic> being:
 #'  
 #'  \describe{
-#'   \item{MeanIndividualWeight}{The mean weight at age in kg}
+#'   \item{MeanIndividualWeight}{The mean weight at age}
 #'  }
+#'  
+#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #'  
 #'  Note that the summary statistics are reported for summaries
 #'  of mean weights, so that e.g. SD report the standard deviation of the means,
@@ -150,13 +162,15 @@ is.ReportFdaByAgeData <- function(ReportFdaByAgeData){
 #'  list with two members 'SopReport' and 'GroupingVariables'.
 #'  'SopReport' is a \code{\link[data.table]{data.table}} with the columns:
 #'  \describe{
-#'   \item{TotalWeightEstimated}{Total round weight (kg) estimated}
-#'   \item{LandedWeight}{Landed round weight (kg) reported}
-#'   \item{Difference}{The difference between estimated and reported landed weight}
+#'   \item{TotalWeightEstimated}{Total round weight estimated in kg}
+#'   \item{LandedWeight}{Landed round weight reported in kg}
+#'   \item{Difference}{The difference between estimated and reported landed weight in kg}
 #'   \item{RelativeDifference}{The difference between estimated and reported landed weight relative to reported weight}
 #'   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
 #'  }
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
+#' 
+#'  The unit for RelativeDifference is configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaSopData
 #' 
