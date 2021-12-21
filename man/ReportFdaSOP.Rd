@@ -11,7 +11,7 @@ ReportFdaSOP(
   GroupingVariables = character(),
   DecimalWeight = integer(),
   DecimalFraction = integer(),
-  UnitFraction = RstoxData::getUnitOptions("fraction")
+  UnitFraction = c("0.", "\%")
 )
 }
 \arguments{
@@ -48,7 +48,7 @@ Report sum-of-product test (SOP-test) for catch estimates.
  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
  
- The units considered valid for mean lengths are those listed for quantity 'fraction' in \code{\link[RstoxData]{StoxUnits}}
+ The units considered valid for mean lengths are those listed for quantity 'fraction' in ~\code{\link[RstoxData]{StoxUnits}}
 }
 \seealso{
 \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for some ways of preparing 'ReportFdaWeightAtAgeData' and 'ReportFdaCatchAtAgeData'.
