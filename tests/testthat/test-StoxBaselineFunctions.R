@@ -1,3 +1,12 @@
+context("test-StoxBaselineFunctions: ListBioticDifference")
+
+bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA")
+nmdbiotic <- RstoxData::ReadBiotic(bioticfile)
+StoxBiotic <- RstoxData::StoxBiotic(nmdbiotic)
+
+data <- ListBioticDifference(StoxBiotic, nmdbiotic)
+expect_equal(nrow(data$fishstation),0)
+
 context("test-StoxBaselineFunctions: DefineLengthConversionParameters")
 conversionfile <- system.file("testresources","lengthConversion.txt", package="RstoxFDA")
 tab <- DefineLengthConversionParameters(FileName=conversionfile)
