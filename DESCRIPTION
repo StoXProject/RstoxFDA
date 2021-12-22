@@ -31,7 +31,7 @@ Imports:
     rgdal (>= 1.5.0),
     rgeos (>= 0.5),
     RstoxData (>= 1.2.21),
-    RstoxBase (>= 1.4.30)
+    RstoxBase (>= 1.4.31)
 Suggests: 
     rnaturalearth,
     Reca,
