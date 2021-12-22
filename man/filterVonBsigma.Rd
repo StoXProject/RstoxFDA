@@ -48,7 +48,7 @@ This function is intended to provide the same filtering that is offered in ECA 3
  for removing outliers based on von-Bertalanffy growth relationships, and
  function arguments are named to correspond to the naming convention used in ECA.
  
- Lengths that fall outside the range from:
+ Fish with lengths that fall outside the range from:
  Linf\*(1-exp(-K\*(AGE)))\*exp(kAu\*sigma)
  to
  Linf\*(1-exp(-K\*(AGE)))\*exp(-kAl\*sigma)

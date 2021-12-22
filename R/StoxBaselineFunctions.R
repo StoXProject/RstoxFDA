@@ -1498,7 +1498,7 @@ ListBioticDifference <- function(StoxBioticData, BioticData){
 #'  for removing outliers based on von-Bertalanffy growth curves, and
 #'  function arguments are named to correspond to the naming convention used in ECA.
 #'  
-#'  Lengths are removed if they fall outside the range from:
+#'  Records are removed if the length fall outside the range from:
 #'  Linf\*(1-exp(-K\*(AGE)))\*exp(kAu\*sigma)
 #'  to
 #'  Linf\*(1-exp(-K\*(AGE)))\*exp(-kAl\*sigma)
@@ -1519,6 +1519,7 @@ ListBioticDifference <- function(StoxBioticData, BioticData){
 #'   \item{pok.27.1-2 (Pollachius virens)}{Linf=100.5282683, K=0.1392982, sigma=0.0996507 kAl=kAu=4}
 #'   \item{pelagic stocks North Atlantic}{Linf=37.2490509 K=0.3128122 sigma=0.009681094 kAl=kAu=4}
 #'  }
+#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} to be filtered
 #' @param FilterUpwards Whether the filter action will propagate in the upwards direction (removing Samples, Stations, etc. for which all fish records are removed). Default to FALSE.
 #' @param Linf Asymptotic length for the von-Bertalanffy growth curve (in cm)
 #' @param K The growth coefficient for the von-Bertalanffy growth curve
@@ -1526,8 +1527,9 @@ ListBioticDifference <- function(StoxBioticData, BioticData){
 #' @param kAl Number of standard deviations (on a log scale) that defines the lower limit of the acceptable region
 #' @param kAu Number of standard deviations (on a log scale) that defines the upper limit of the acceptable region. Defaults to the same value as kAl.
 #' @return \code{\link[RstoxData]{StoxBioticData}} with individuals outside the acceptable region removed.
+#' @seealso \code{\link[RstoxFDA]{FilterWeightLengthOutliers}}
 #' @export
-FilterAgeLengthOutliers <- function(StoxBioticData, 
+FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData, 
                                     FilterUpwards = FALSE,
                                     Linf=numeric(),
                                     K=numeric(),
@@ -1571,3 +1573,78 @@ FilterAgeLengthOutliers <- function(StoxBioticData,
   return(StoxBioticData)
 
 }
+
+#' Filter length-weight outliers
+#' @description 
+#'  Removes fish records that fall outside an acceptable weight-length region
+#'  defined by the log-linear model
+#'  
+#'  weight=alfa\*length^beta\*exp(epsilon); epsilon~N(0,sigma^2)
+#'  
+#'  with alfa=exp(logalfa), logalfa and other parameters corresponding to arguments to this function.
+#'  
+#' @details 
+#'  This function is intended to provide the same filtering that is offered in ECA 3.x and ECA 4.x
+#'  for removing outliers based on a log-linear weight-length model, and
+#'  function arguments are named to correspond to the naming convention used in ECA.
+#'  
+#'  Records are removed if their weights that outside the range from:
+#'  alfa\*L^beta\*exp(kAu\*sigma)
+#'  to
+#'  alfa\*L^beta\*exp(-kAl\*sigma)
+#' 
+#'  any records with missing length or weight is not removed.
+#'  
+#'  Parameters 'logalfa', 'beta' and 'sigma' must be appropriate for weights recorded in gram,
+#'  and lengths recorded in cm.
+#'  
+#'  Note that kAl and kAu are given on a log scale, so that the acceptable region
+#'  is not symmetric around the growth curve when kAl=kAu.
+#'  
+#'  Some parameterizations that have been used for some stocks at IMR:
+#'  \describe{
+#'   \item{cod.27.1-2 (Gadus morhua)}{logalfa = -5.0061, beta = 3.0716, sigma = 0.1454, kAl = kAu = 4}
+#'   \item{had.27.1-2 (Melanogrammus aeglefinus)}{logalfa = -4.9620, beta = 3.0919, sigma = 0.1282, kAl = kAu = 4}
+#'   \item{pok.27.1-2 (Pollachius virens)}{logalfa = -4.7718, beta = 3.0287, sigma = 0.1338, kAl = kAu = 4}
+#'  }
+#'  
+#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} to be filtered
+#' @param FilterUpwards Whether the filter action will propagate in the upwards direction (removing Samples, Stations, etc. for which all fish records are removed). Default to FALSE.
+#' @param logalfa The alfa parameter (on a log scale) for the log-linear model. See details for units.
+#' @param beta The beta parameter for the log-linear model. See details for units.
+#' @param sigma The standard deviation of weight for the log-linear model. See details for units.
+#' @param kAl Number of standard deviations (on a log scale) that defines the lower limit of the acceptable region
+#' @param kAu Number of standard deviations (on a log scale) that defines the upper limit of the acceptable region
+#' @return \code{\link[RstoxData]{StoxBioticData}} with individuals outside the acceptable region removed.
+#' @seealso \code{\link[RstoxFDA]{FilterAgeLengthOutliers}}
+#' @export
+FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
+                                       FilterUpwards=FALSE,
+                                       logalfa=numeric(), beta=numeric(), sigma=numeric(), kAl=numeric(), kAu=numeric()){
+  if (!isGiven(kAu)){
+    kAu <- kAl
+  }
+  if (!isGiven(logalfa) | !isGiven(beta) | !isGiven(sigma) | !isGiven(kAl)){
+    stop("All the parameters 'logalfa', 'beta', 'sigma', and 'kAl' must be provided.")
+  }
+  
+  #make sure temp columns are not taken.
+  stopifnot(!any(c("logLinFilter") %in% names(StoxBioticData$Individual)))
+  
+  
+  StoxBioticData$Individual$logLinFilter <- filterLogLinearMask(StoxBioticData$Individual, 
+                                                              logalfa,beta,sigma,kAl,kAu=kAl,
+                                                              weightCol="IndividualRoundWeight",
+                                                              lengthCol="IndividualTotalLength")
+  filterExpression <- list()
+  filterExpression$Individual <- c(
+    'logLinFilter == TRUE'
+  )
+  
+  StoxBioticData <- RstoxData::FilterStoxBiotic(StoxBioticData, filterExpression, FilterUpwards = FilterUpwards)
+  StoxBioticData$Individual$logLinFilter <- NULL
+  return(StoxBioticData)
+}
+
+  
+  
