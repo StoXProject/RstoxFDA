@@ -1527,7 +1527,7 @@ ListBioticDifference <- function(StoxBioticData, BioticData){
 #' @param kAl Number of standard deviations (on a log scale) that defines the lower limit of the acceptable region
 #' @param kAu Number of standard deviations (on a log scale) that defines the upper limit of the acceptable region. Defaults to the same value as kAl.
 #' @return \code{\link[RstoxData]{StoxBioticData}} with individuals outside the acceptable region removed.
-#' @seealso \code{\link[RstoxFDA]{FilterWeightLengthOutliers}}
+#' @seealso \code{\link[RstoxFDA]{FilterWeightLengthOutliersStoxBiotic}}
 #' @export
 FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData, 
                                     FilterUpwards = FALSE,
@@ -1616,7 +1616,7 @@ FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData,
 #' @param kAl Number of standard deviations (on a log scale) that defines the lower limit of the acceptable region
 #' @param kAu Number of standard deviations (on a log scale) that defines the upper limit of the acceptable region
 #' @return \code{\link[RstoxData]{StoxBioticData}} with individuals outside the acceptable region removed.
-#' @seealso \code{\link[RstoxFDA]{FilterAgeLengthOutliers}}
+#' @seealso \code{\link[RstoxFDA]{FilterAgeLengthOutliersStoxBiotic}}
 #' @export
 FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
                                        FilterUpwards=FALSE,

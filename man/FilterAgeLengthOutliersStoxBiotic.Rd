@@ -68,5 +68,5 @@ This function is intended to provide the same filtering that is offered in ECA 3
  }
 }
 \seealso{
-\code{\likn[RstoxFDA]{FilterWeightLengthOutliers}}
+\code{\link[RstoxFDA]{FilterWeightLengthOutliersStoxBiotic}}
 }
