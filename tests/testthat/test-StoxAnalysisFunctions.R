@@ -251,7 +251,7 @@ expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covaria
 expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covariate=="GG"], 1)
 
 fpath <- makeTempDirReca()
-paramOut <- ParameterizeRecaModels(prepCell, 10, 50, 1, fpath)
+paramOut <- ParameterizeRecaModels(prepCell, 10, 50, 1, fpath, Seed = 451)
 expect_true("cell" %in% names(paramOut$FitProportionAtAge))
 removeTempDirReca(fpath)
 

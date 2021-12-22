@@ -79,7 +79,8 @@ jobs:
         run: |
           sudo apt-get install -y libproj-dev
           sudo apt-get install -y libudunits2-dev
-          sudo apt-get install -y libproj-dev
+          sudo apt-get install -y libgdal-dev
+          
           while read -r cmd
           do
             eval sudo $cmd

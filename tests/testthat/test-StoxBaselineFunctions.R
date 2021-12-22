@@ -2,10 +2,47 @@ context("test-StoxBaselineFunctions: ListBioticDifference")
 
 bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA")
 nmdbiotic <- RstoxData::ReadBiotic(bioticfile)
+nmdbiotic$biotic_v3_example.xml$fishstation$stationstartdate <- nmdbiotic$biotic_v3_example.xml$fishstation$stationstopdate
+nmdbiotic <- SetTimeBiotic(nmdbiotic)
 StoxBiotic <- RstoxData::StoxBiotic(nmdbiotic)
 
 data <- ListBioticDifference(StoxBiotic, nmdbiotic)
 expect_equal(nrow(data$fishstation),0)
+
+context("test-StoxBaselineFunctions: FilterAgeLengthOutliersStoxBiotic")
+filterExpression <- list()
+filterExpression$SpeciesCategory <- c(
+  'SpeciesCategory == "torsk/164712/126436/NA"'
+)
+StoxBioticCod <- RstoxData::FilterStoxBiotic(StoxBiotic, FilterExpression = filterExpression)
+filt <- FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=4)
+expect_equal(nrow(filt$Individual), nrow(StoxBioticCod$Individual))
+
+StoxBioticCod$Individual <- StoxBioticCod$Individual[!is.na(StoxBioticCod$Individual$IndividualAge),]
+filt <- FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=1)
+expect_true(nrow(filt$Individual) < nrow(StoxBioticCod$Individual))
+expect_equal(nrow(filt$Station), nrow(StoxBioticCod$Station))
+filt <- FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=.01, FilterUpwards = T)
+expect_true(nrow(filt$Individual) < nrow(StoxBioticCod$Individual))
+expect_true(nrow(filt$Station) < nrow(StoxBioticCod$Station))
+
+
+context("test-StoxBaselineFunctions: FilterWeightLengthOutliersStoxBiotic")
+filterExpression <- list()
+filterExpression$SpeciesCategory <- c(
+  'SpeciesCategory == "torsk/164712/126436/NA"'
+)
+StoxBioticCod <- RstoxData::FilterStoxBiotic(StoxBiotic, FilterExpression = filterExpression)
+filt <- FilterWeightLengthOutliersStoxBiotic(StoxBioticCod, logalfa = -5.0061, beta = 3.0716, sigma = 0.1454, kAl=4)
+expect_equal(nrow(filt$Individual), nrow(StoxBioticCod$Individual))
+
+StoxBioticCod$Individual <- StoxBioticCod$Individual[!is.na(StoxBioticCod$Individual$IndividualRoundWeight),]
+filt <- FilterWeightLengthOutliersStoxBiotic(StoxBioticCod, logalfa = -5.0061, beta = 3.0716, sigma = 0.1454, kAl=1)
+expect_true(nrow(filt$Individual) < nrow(StoxBioticCod$Individual))
+expect_equal(nrow(filt$Station), nrow(StoxBioticCod$Station))
+filt <- FilterWeightLengthOutliersStoxBiotic(StoxBioticCod, logalfa = -5.0061, beta = 3.0716, sigma = 0.1454,, kAl=.01, FilterUpwards = T)
+expect_true(nrow(filt$Individual) < nrow(StoxBioticCod$Individual))
+expect_true(nrow(filt$Station) < nrow(StoxBioticCod$Station))
 
 context("test-StoxBaselineFunctions: DefineLengthConversionParameters")
 conversionfile <- system.file("testresources","lengthConversion.txt", package="RstoxFDA")

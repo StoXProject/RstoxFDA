@@ -1266,6 +1266,16 @@ stoxFunctionAttributes <- list(
     functionCategory = "baseline", 
     functionOutputDataType = "BioticData"
   ),
+  FilterAgeLengthOutliersStoxBiotic = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxBioticData"
+  ),
+  FilterWeightLengthOutliersStoxBiotic = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StoxBioticData"
+  ),
   
   PrepareRecaEstimate = list(
     functionType = "modelData",
