@@ -1261,6 +1261,12 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "StoxBioticData"
   ),
   
+  ListBioticDifference = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "BioticData"
+  ),
+  
   PrepareRecaEstimate = list(
     functionType = "modelData",
     functionCategory = "analysis",

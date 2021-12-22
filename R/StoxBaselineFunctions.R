@@ -1466,3 +1466,21 @@ DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("Resour
   }
 }
 
+#' List Difference
+#' @description 
+#'  List the difference between a NMDbiotic v 3.x data set and a StoxBiotic data set.
+#' @details 
+#'  Lists all missions, fishstations, catchsamples and individuals from a NMDbiotic v 3.x data set
+#'  that is not present in a given StoxBiotic data set.
+#'  
+#'  This may be used to summarize the effect of filters and data conversions.
+#' @param StoxBioticData
+#'  \code{\link[RstoxData]{StoxBioticData}} data set.
+#' @param BioticData 
+#'  \code{\link[RstoxData]{BioticData}} that has been read from a NMDbiotic v 3.x file
+#' @return
+#'  \code{\link[RstoxData]{BioticData}} with data that is not found in 'StoxBioticData'.
+#' @export
+ListBioticDifference <- function(StoxBioticData, BioticData){
+  return(bioticDiff(BioticData, StoxBioticData))
+}
