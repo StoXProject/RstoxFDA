@@ -57,7 +57,14 @@ This function is intended to provide the same filtering that is offered in ECA 3
  
  Note that kAl and kAu are given on a log scale, so that the acceptable region
  is not symmetric around the growth curve when kAl=kAu.
+ 
+ Some parameterizations that have been used for some stocks at IMR:
+ \describe{
+  \item{cod.27.1-2 (Gadus morhua)}{logalfa = -5.0061, beta = 3.0716, sigma = 0.1454, kAl = kAu = 4}
+  \item{had.27.1-2 (Melanogrammus aeglefinus)}{logalfa = -4.9620, beta = 3.0919, sigma = 0.1282, kAl = kAu = 4}
+  \item{pok.27.1-2 (Pollachius virens)}{logalfa = -4.7718, beta = 3.0287, sigma = 0.1338, kAl = kAu = 4}
+ }
 }
 \seealso{
-\code{\likn[RstoxFDA]{FilterAgeLengthOutliers}}
+\code{\link[RstoxFDA]{FilterAgeLengthOutliers}}
 }

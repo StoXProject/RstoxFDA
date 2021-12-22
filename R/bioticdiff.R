@@ -50,7 +50,7 @@ bioticDiff <- function(biotic, StoxBiotic){
                              cs$serialnumber,
                              cs$catchsampleid,
                              sep="/")
-    missingCatchsamples <- rbind(missingCatchsamples, cs[!(catchsampleKeys %in% sampleKeys),..cn])
+    missingCatchsamples <- rbind(missingCatchsamples, cs[!(catchsampleKeys %in% sampleKeys), .SD, .SDcols = cn])
     
     #merge with fs to get station id
     cn <- names(b$individual)
@@ -72,7 +72,7 @@ bioticDiff <- function(biotic, StoxBiotic){
                             ind$specimenid,
                             sep="/")
     
-    missingIndividuals <- rbind(missingIndividuals, ind[!(individualKeys %in% stoxIndividualKeys),..cn])
+    missingIndividuals <- rbind(missingIndividuals, ind[!(individualKeys %in% stoxIndividualKeys), .SD, .SDcols =cn])
     
     #merge with fs to get station id
     cn <- names(b$agedetermination)
@@ -88,7 +88,7 @@ bioticDiff <- function(biotic, StoxBiotic){
                      age$specimenid,
                             sep="/")
     
-    missingAgeDeterminations <- rbind(missingAgeDeterminations, age[!(ageKeys %in% stoxIndividualKeys),..cn])
+    missingAgeDeterminations <- rbind(missingAgeDeterminations, age[!(ageKeys %in% stoxIndividualKeys), .SD, .SDcols =cn])
     
     missingPrey <- rbind(missingPrey, b$prey)
     missingLF <- rbind(missingLF, b$preylengthfrequencytable)
