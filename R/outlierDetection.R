@@ -28,6 +28,7 @@ filterVonBsigmaMask <- function(individuals,
   mask <- is.na(upper) | 
              is.na(lower) |
              is.na(individuals[[lengthCol]]) |
+             is.na(individuals[[ageCol]]) |
              (individuals[[lengthCol]] < upper &
                 individuals[[lengthCol]] > lower)
 
@@ -129,6 +130,7 @@ filterLogLinearMask <- function(individuals,
   
   mask <- is.na(upper) | 
     is.na(lower) |
+    is.na(individuals[[weightCol]]) |
     is.na(individuals[[lengthCol]]) |
     (individuals[[weightCol]] < upper &
        individuals[[weightCol]] > lower)
