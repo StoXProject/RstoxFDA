@@ -63,4 +63,4 @@ expect_true(mean(s$IndividualRoundWeight / s$IndividualTotalLength, na.rm=T) > m
 #test that NAs are removed
 s <- filterLogLinearMask(indCod,
                      logalfa = -5.0061, beta = 3.0716, sigma = 0.1454, kAl = 1)
-expect_true(sum(is.na(s)))
+expect_true(sum(is.na(s))==0)
