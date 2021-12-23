@@ -259,7 +259,7 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
 #' @param Decimals integer specifying the number of decimals to report for 'MeanIndividualWeight', 'SD', 'Low' and 'High'. Defaults to 2.
-#' @param Threshold threshold for reporting mean weight. Rows with an estimated Catch At Age lower than this will have NA reported for their mean weight. Defaults to 0.
+#' @param Threshold threshold for reporting mean weight. Rows with an estimated Catch At Age (number of individuals) lower than this will have NA reported for their mean weight. Defaults to 0.
 #' @return \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
@@ -326,7 +326,7 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
 #' @param Decimals integer specifying the number of decimals to report for 'MeanIndividualLength', 'SD', 'Low' and 'High'. Defaults to 1.
-#' @param Threshold threshold for reporting mean weight. Rows with an estimated Catch At Age lower than this will have NA reported for their mean length Defaults to 0.
+#' @param Threshold threshold for reporting mean weight. Rows with an estimated Catch At Age (number of individuals) lower than this will have NA reported for their mean length Defaults to 0.
 #' @return \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
