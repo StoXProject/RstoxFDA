@@ -60,3 +60,7 @@ s <- filterLogLinear(indCod,
 expect_true(nrow(s) < nrow(indCod))
 expect_true(mean(s$IndividualRoundWeight / s$IndividualTotalLength, na.rm=T) > mean(indCod$IndividualRoundWeight / indCod$IndividualTotalLength, na.rm=T))
 
+#test that NAs are removed
+s <- filterLogLinearMask(indCod,
+                     logalfa = -5.0061, beta = 3.0716, sigma = 0.1454, kAl = 1)
+expect_true(sum(is.na(s))==0)
