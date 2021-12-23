@@ -58,7 +58,8 @@
   ResultDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,
   Lgamodel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"log-linear"</span>, <span class="st">"non-linear"</span><span class="op">)</span>,
   Delta.age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>,
-  Seed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>
+  Seed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>,
+  UseCachedData <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -80,6 +81,8 @@
 <dd><p>see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>. Defaults to 0.001.</p></dd>
 <dt>Seed</dt>
 <dd><p>see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>. Defaults to random seed.</p></dd>
+<dt>UseCachedData</dt>
+<dd><p>if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -88,16 +91,21 @@
     <div id="details">
     <h2>Details</h2>
     <p><code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
- This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.</p>
+ This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.</p> 
+<p>The argument 'UseCachedData' allows previously computed parameterization to be returned in stead of parameterizing again.
+ If no previous run is located in the 'ResultDirectory', or the arguments that are passed to Reca differs from the previous run, 
+ execution will halt with an error.</p>
     </div>
-    <div id="temporary-files">
-    <h2>temporary files</h2>
+    <div id="resultdirectory-files">
+    <h2>ResultDirectory files</h2>
     
 
 <p>Various report functions may use output of this function with the function <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code> which samples the posterior distributions of parameters.
  Communication between <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> and <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code> is managed by writing and reading files, 
  and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
- For multi-chain analysis, a different directory should be provided for each chain.</p>
+ For multi-chain analysis, a different directory should be provided for each chain.</p> 
+<p>Be aware that this breaks with the general design of StoX and somewhat limits the transferrability of
+ StoX projects between computers.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

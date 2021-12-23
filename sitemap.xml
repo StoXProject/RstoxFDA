@@ -67,6 +67,12 @@
     <loc>/reference/DefineWeightConversionFactor.html</loc>
   </url>
   <url>
+    <loc>/reference/FilterAgeLengthOutliersStoxBiotic.html</loc>
+  </url>
+  <url>
+    <loc>/reference/FilterWeightLengthOutliersStoxBiotic.html</loc>
+  </url>
+  <url>
     <loc>/reference/GearGroupFdirTable.html</loc>
   </url>
   <url>
@@ -212,6 +218,12 @@
   </url>
   <url>
     <loc>/reference/convertCodes.html</loc>
+  </url>
+  <url>
+    <loc>/reference/filterLogLinear.html</loc>
+  </url>
+  <url>
+    <loc>/reference/filterVonBsigma.html</loc>
   </url>
   <url>
     <loc>/reference/getCovariateMap.html</loc>
