@@ -420,12 +420,19 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @details
 #'  \code{\link[Reca]{eca.estimate}} performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
 #'  This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.
+#'  
+#'  The argument 'UseCachedData' allows previously computed parameterization to be returned in stead of parameterizing again.
+#'  If no previous run is located in the 'ResultDirectory', or the arguments that are passed to Reca differs from the previous run, 
+#'  execution will halt with an error.
 #'
-#' @section temporary files:
+#' @section ResultDirectory files:
 #'  Various report functions may use output of this function with the function \code{\link[Reca]{eca.predict}} which samples the posterior distributions of parameters.
 #'  Communication between \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}} is managed by writing and reading files, 
 #'  and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
-#'  For multi-chain analysis, a different directory should be provided for each chain.
+#'  For multi-chain analysis, a different directory should be provided for each chain. 
+#'  
+#'  Be aware that this breaks with the general design of StoX and somewhat limits the transferrability of
+#'  StoX projects between computers. 
 #'
 #' @param RecaData \code{\link[RstoxFDA]{RecaData}} as returned from \code{\link[RstoxFDA]{PrepareRecaEstimate}}
 #' @param Nsamples number of MCMC samples that will be made available for \code{\link[Reca]{eca.predict}}. See documentation for \code{\link[Reca]{eca.estimate}},
@@ -435,11 +442,12 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @param Thin controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
 #' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
+#' @param UseCachedData if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.
 #' @return \code{\link[RstoxFDA]{RecaParameterData}} results from Reca Model Parameterization.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for model configuration, and data preparation for this function, and
 #'  \code{\link[RstoxFDA]{RunRecaModels}} for obtaining predictions / estimates from the Reca-models.
 #' @export
-ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=character(), Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric()){
+ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=character(), Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric(), UseCachedData=FALSE){
   RecaData <- convertStox2PrepReca(RecaData)
   Lgamodel <- match.arg(Lgamodel, Lgamodel)
   if (!isGiven(Lgamodel)){
@@ -450,18 +458,18 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
     Seed <- sample.int(.Machine$integer.max, 1)
   }
   if (!isGiven(ResultDirectory)){
-    stop("Parameter 'ResultDirectory' must be provided.")
+    stop("Parameter 'ResultDirectory' must be provided. See ?ParameterizeRecaModels for details about the 'ResultDirectory'.")
   }
   
   ResultDirectory <- path.expand(ResultDirectory)
   
   if (!file.exists(ResultDirectory)){
-    stop(paste("Could not find the directory", ResultDirectory))
+    stop(paste("Could not find the 'ResultDirectory'", ResultDirectory, ". See ?ParameterizeRecaModels for details about the 'ResultDirectory'."))
   }
   
   if (grepl(" ", ResultDirectory)) {
     stop(paste(
-      "Please make temporary directory for Reca contain no spaces",
+      "path to 'ResultDirectory' may not contain spaces",
       "(current:",
       ResultDirectory,
       ") ."
@@ -502,7 +510,40 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
   RecaData$GlobalParameters <- GlobalParameters
   RecaData <- checkEcaObj(RecaData)
   
-  fit <- Reca::eca.estimate(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters)
+  inputcache <- file.path(path.expand(ResultDirectory), "RecaDataCache.rds")
+  outputcahce <- file.path(path.expand(ResultDirectory), "RecaFitCache.rds")
+  if (!UseCachedData){
+    saveRDS(RecaData, file=inputcache)
+    fit <- Reca::eca.estimate(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters)
+    saveRDS(fit, file=outputcahce)
+  }
+  else{
+    
+    if (!file.exists(inputcache)){
+      stop("No cached input found. Re-run with UseCache=FALSE.")
+    }
+    if (!file.exists(outputcahce)){
+      stop("No cached output found. Re-run with UseCache=FALSE.")
+    }
+    
+    cachedRecaData <- readRDS(inputcache)
+    RecaData$GlobalParameters$fitfile <- cachedRecaData$GlobalParameters$fitfile
+    RecaData$GlobalParameters$predictfile <- cachedRecaData$GlobalParameters$predictfile
+    
+    if (!identical(cachedRecaData, RecaData)){
+      diffs <- all.equal(cachedRecaData, RecaData)
+      for (d in diffs){
+        message(d)
+      }
+      stop("Arguments or data are not identical to cached run. Re-run with UseCache=FALSE.")
+    }
+    else{
+      warning("Using cached data for ParameterizeRecaModels.")
+      RecaData <- cachedRecaData
+      fit <- readRDS(outputcahce)  
+    }
+  }
+  
   
   out <- recaFit2Stox(fit, RecaData$CovariateMaps)
   

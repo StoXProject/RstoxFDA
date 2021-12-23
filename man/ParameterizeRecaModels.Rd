@@ -12,7 +12,8 @@ ParameterizeRecaModels(
   ResultDirectory = character(),
   Lgamodel = c("log-linear", "non-linear"),
   Delta.age = numeric(),
-  Seed = numeric()
+  Seed = numeric(),
+  UseCachedData = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ ParameterizeRecaModels(
 \item{Delta.age}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.}
 
 \item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.}
+
+\item{UseCachedData}{if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.}
 }
 \value{
 \code{\link[RstoxFDA]{RecaParameterData}} results from Reca Model Parameterization.
@@ -41,13 +44,20 @@ Runs estimation of parameters for Reca models. Invokes \code{\link[Reca]{eca.est
 \details{
 \code{\link[Reca]{eca.estimate}} performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
  This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.
+ 
+ The argument 'UseCachedData' allows previously computed parameterization to be returned in stead of parameterizing again.
+ If no previous run is located in the 'ResultDirectory', or the arguments that are passed to Reca differs from the previous run, 
+ execution will halt with an error.
 }
-\section{temporary files}{
+\section{ResultDirectory files}{
 
  Various report functions may use output of this function with the function \code{\link[Reca]{eca.predict}} which samples the posterior distributions of parameters.
  Communication between \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}} is managed by writing and reading files, 
  and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
- For multi-chain analysis, a different directory should be provided for each chain.
+ For multi-chain analysis, a different directory should be provided for each chain. 
+ 
+ Be aware that this breaks with the general design of StoX and somewhat limits the transferrability of
+ StoX projects between computers.
 }
 
 \seealso{

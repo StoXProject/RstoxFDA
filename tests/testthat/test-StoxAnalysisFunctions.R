@@ -1,3 +1,37 @@
+context("Test ParameterizeRecaModels cache")
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+
+prep <- PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
+
+fpath <- makeTempDirReca()
+# check that cache works
+paramOut <- ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=155, )
+expect_warning(paramOut2 <- ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=155, UseCache=T), "Using cached data for ParameterizeRecaModels")
+expect_true(identical(paramOut, paramOut2))
+# check that cache fails when arguments are changed
+expect_error(ParameterizeRecaModels(prep, 10, 51, 1, fpath, Seed=155, UseCache=T), "Arguments or data are not identical to cached run. Re-run with UseCache=FALSE.")
+# check that cache fails when data are changed
+prep2 <- prep
+prep2$AgeLength$DataMatrix$lengthCM[1]<-5
+expect_error(ParameterizeRecaModels(prep2, 10, 50, 1, fpath, Seed=155,  UseCache=T), "Arguments or data are not identical to cached run. Re-run with UseCache=FALSE.")
+# check that failed runs didnt touch cache files
+expect_warning(paramOut3 <- ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=155, UseCache=T), "Using cached data for ParameterizeRecaModels")
+expect_true(identical(paramOut, paramOut2))
+# check that new run overwrites cahce files
+paramOut4 <- ParameterizeRecaModels(prep, 10, 52, 1, fpath, Seed=156)
+expect_warning(paramOut5 <- ParameterizeRecaModels(prep, 10, 52, 1, fpath, Seed=156, UseCache=T), "Using cached data for ParameterizeRecaModels")
+expect_true(identical(paramOut4, paramOut5))
+removeTempDirReca(fpath)
+
+fpath <- makeTempDirReca()
+# check that halts with error when no cache is found
+expect_error(ParameterizeRecaModels(prep, 10, 52, 1, fpath, Seed=156, UseCache=T), "No cached input found. Re-run with UseCache=FALSE.")
+removeTempDirReca(fpath)
+
 context("PrepRecaEstimate: Missing values warnings")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
