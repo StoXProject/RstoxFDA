@@ -72,8 +72,8 @@ expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppen
 
 
 context("test-StoxBaselineFunctions: appendAreaCode wrong projection")
-strp <- sp::spTransform(strp, sp::CRS("+proj=longlat +datum=NAD83"))
-expect_error(appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended"))
+strp <- sp::spTransform(strp, sp::CRS("EPSG:4269"))
+expect_error(expect_warning(appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended")), "'areaPolygons' must be in unprojected WGS84 coordinates")
 
 context("test-StoxBaselineFunctions: appendAreaCode non-numeric lat")
 areaPos[["Latitude"]] <- as.character(areaPos[["Latitude"]])
