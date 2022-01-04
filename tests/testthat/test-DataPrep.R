@@ -72,6 +72,7 @@ expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppen
 
 
 context("test-StoxBaselineFunctions: appendAreaCode wrong projection")
+
 if (rgdal::PROJis6ormore()){
  strp <- sp::spTransform(strp, sp::CRS("EPSG:4269"))
 } else{

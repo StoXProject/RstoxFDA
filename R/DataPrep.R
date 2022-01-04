@@ -170,6 +170,7 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
   pos <- as.data.frame(table[,c(latName, lonName), with=F])
   names(pos) <- c("LAT", "LON")
   sp::coordinates(pos) <- ~ LON + LAT
+
   if (rgdal::PROJis6ormore()){
     sp::proj4string(pos) <- sp::CRS("EPSG:4326")    
     areaPolygons <- sp::spTransform(areaPolygons, sp::wkt(pos))
