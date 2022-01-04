@@ -72,12 +72,8 @@ expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppen
 
 
 context("test-StoxBaselineFunctions: appendAreaCode wrong projection")
-if (rgdal::PROJis6ormore()){
- strp <- sp::spTransform(strp, sp::CRS("EPSG:4269"))
-} else{
-  suppressWarnings(strp <- sp::spTransform(strp, sp::CRS(projargs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")))
-}
-appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended")
+strp <- sp::spTransform(strp, sp::CRS("EPSG:4269"))
+expect_error(expect_warning(appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended")), "'areaPolygons' must be in unprojected WGS84 coordinates")
 
 context("test-StoxBaselineFunctions: appendAreaCode non-numeric lat")
 areaPos[["Latitude"]] <- as.character(areaPos[["Latitude"]])
