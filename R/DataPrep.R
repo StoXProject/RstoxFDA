@@ -166,18 +166,21 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
   if (any(is.na(table[[lonName]]))){
     stop("Missing values in column: ", lonName)
   }
-
-  projcheck <- grep("proj=longlat", sp::proj4string(areaPolygons))
-  datumcheck <- grep("+datum=WGS84", sp::proj4string(areaPolygons))
-  if ( length(projcheck) == 0 | length(datumcheck) == 0 | projcheck<1 | datumcheck <1){
-    warning("Assuming unprojected WGS84 coordinates, but did not find expected components in proj4string of areaPolygons:", sp::proj4string(areaPolygons))
+  
+  projcheck <- startsWith(sp::wkt(areaPolygons), "GEOGCRS")
+  datumcheck <- grep("DATUM[\"World Geodetic System 1984\"", sp::wkt(areaPolygons), fixed=T)
+  if ( !projcheck || length(datumcheck) == 0 || datumcheck <1){
+    warning("Assuming unprojected WGS84 coordinates, but did not find expected components in wkt of areaPolygons:", sp::wkt(areaPolygons))
   }
   
   pos <- as.data.frame(table[,c(latName, lonName), with=F])
   names(pos) <- c("LAT", "LON")
   sp::coordinates(pos) <- ~ LON + LAT
-  sp::proj4string(pos) <- sp::CRS(sp::proj4string(areaPolygons))
+  sp::proj4string(pos) <- sp::CRS("EPSG:4326")
 
+  if (!sp::identicalCRS(pos, areaPolygons)){
+    stop("'areaPolygons' must be in unprojected WGS84 coordinates (e.g. EPSG:4326)")
+  }
 
   location_codes <- sp::over(pos, areaPolygons)
   table[[colName]] <- location_codes[[StratumName]]
@@ -214,7 +217,7 @@ appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName
     stop(paste("Column name", areaName, "not found in 'table'."))
   }
 
-  if (length(grep("proj=longlat", sp::proj4string(areaPolygons)))==0){
+  if (!startsWith(sp::wkt(areaPolygons), "GEOGCRS")){
     warning("could not verify projection of 'areaPolygons'")
   }
   mapping <- cbind(data.table::as.data.table(sp::coordinates(areaPolygons)), areaPolygons[[StratumName]])
