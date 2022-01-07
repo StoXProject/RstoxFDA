@@ -242,8 +242,15 @@ writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
     stop(paste("File", output, "exists already."))
   }
   
-  projection="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
-  shp <- sp::spTransform(shape, sp::CRS(projection))
+  if (rgdal::PROJis6ormore()){
+    crs <- sp::CRS("EPSG:4326")
+    shp <- sp::spTransform(shape, crs)
+  }
+  else{
+    projection="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
+    crs <- sp::CRS(projection)
+    suppressWarnings(shp <- sp::spTransform(shape, crs))
+  }
   
   f<-file(output, open="w")
   

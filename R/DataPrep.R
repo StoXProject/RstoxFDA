@@ -166,19 +166,20 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
   if (any(is.na(table[[lonName]]))){
     stop("Missing values in column: ", lonName)
   }
-
-  projcheck <- grep("proj=longlat", sp::proj4string(areaPolygons))
-  datumcheck <- grep("+datum=WGS84", sp::proj4string(areaPolygons))
-  if ( length(projcheck) == 0 | length(datumcheck) == 0 | projcheck<1 | datumcheck <1){
-    warning("Assuming unprojected WGS84 coordinates, but did not find expected components in proj4string of areaPolygons:", sp::proj4string(areaPolygons))
-  }
   
   pos <- as.data.frame(table[,c(latName, lonName), with=F])
   names(pos) <- c("LAT", "LON")
   sp::coordinates(pos) <- ~ LON + LAT
-  sp::proj4string(pos) <- sp::CRS(sp::proj4string(areaPolygons))
 
-
+    if (rgdal::PROJis6ormore()){
+    sp::proj4string(pos) <- sp::CRS("EPSG:4326")    
+    areaPolygons <- sp::spTransform(areaPolygons, sp::wkt(pos))
+  }
+  else{
+    suppressWarnings(sp::proj4string(pos) <- sp::CRS(projargs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
+    suppressWarnings(areaPolygons <- sp::spTransform(areaPolygons, sp::CRS(sp::proj4string(pos))))
+  }
+  
   location_codes <- sp::over(pos, areaPolygons)
   table[[colName]] <- location_codes[[StratumName]]
 
@@ -214,9 +215,16 @@ appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName
     stop(paste("Column name", areaName, "not found in 'table'."))
   }
 
-  if (length(grep("proj=longlat", sp::proj4string(areaPolygons)))==0){
+  if (rgdal::PROJis6ormore() && !startsWith(sp::wkt(areaPolygons), "GEOGCRS")){
     warning("could not verify projection of 'areaPolygons'")
+  } 
+  if (!rgdal::PROJis6ormore()){
+    suppressWarnings(lonlat <- length(grep("proj=longlat", sp::proj4string(areaPolygons)))!=0)
+    if (!lonlat){
+      warning("could not verify projection of 'areaPolygons'")  
+    }
   }
+  
   mapping <- cbind(data.table::as.data.table(sp::coordinates(areaPolygons)), areaPolygons[[StratumName]])
   names(mapping) <- c(lonColName, latColName, areaName)
 
