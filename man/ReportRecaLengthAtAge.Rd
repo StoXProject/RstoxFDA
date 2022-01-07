@@ -23,6 +23,8 @@ ReportRecaLengthAtAge(
 \item{Decimals}{integer specifying the number of decimals to report for 'MeanIndividualLength', 'SD', 'Low' and 'High'. Defaults to 1.}
 
 \item{Threshold}{threshold for reporting mean weight. Rows with an estimated Catch At Age (number of individuals) lower than this will have NA reported for their mean length Defaults to 0.}
+
+\item{Unit}{unit for 'MeanIndividualLength', 'SD', 'Low' and 'High'}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}}

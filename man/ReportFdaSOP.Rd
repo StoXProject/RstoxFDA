@@ -27,7 +27,7 @@ ReportFdaSOP(
 
 \item{DecimalFraction}{integer specifying the number of decimals to report for 'RelativeDifference'. Defaults to 3.}
 
-\item{UnitFraction}{unit for the RelativeDifference. E.g. '0.' for decimal notation or '%' for percent.}
+\item{UnitFraction}{unit for the RelativeDifference. E.g. '0.' for decimal notation or '\%' for percent.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSopData}}
