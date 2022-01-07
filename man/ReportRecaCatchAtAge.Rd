@@ -21,7 +21,7 @@ ReportRecaCatchAtAge(
 
 \item{Decimals}{integer specifying the number of decimals to report for 'CatchAtAge', 'SD', 'Low' and 'High'. Defaults to zero.}
 
-\item{Unit}{unit for the 'CatchAtAge', 'SD', 'Low' and 'High'}
+\item{Unit}{unit for 'CatchAtAge', 'SD', 'Low' and 'High'}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
