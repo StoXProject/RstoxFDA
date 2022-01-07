@@ -22,9 +22,9 @@ ReportRecaWeightAtAge(
 
 \item{Decimals}{integer specifying the number of decimals to report for 'MeanIndividualWeight', 'SD', 'Low' and 'High'. Defaults to 2.}
 
-\item{Threshold}{threshold for reporting mean weight. Rows with an estimated Catch At Age lower than this will have NA reported for their mean weight. Defaults to 0.}
+\item{Threshold}{threshold for reporting mean weight. Rows with an estimated Catch At Age (number of individuals) lower than this will have NA reported for their mean weight. Defaults to 0.}
 
-\item{Unit}{unit for the 'MeanIndividualWeight', 'SD', 'Low' and 'High'. Defaults to kg.}
+\item{Unit}{unit for 'MeanIndividualWeight', 'SD', 'Low' and 'High'}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}}
