@@ -245,6 +245,15 @@ expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[Mean
 expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age==5] <
                   MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age==13]))
 
+context("Test SOP w NAs")
+catchAtAgeReportDecompPlusGr <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
+MeanWeightReportDecompPlusGr <- ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6, Threshold = 1000)
+expect_true(sum(is.na(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight))>1)
+sopTabNa <- ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"))
+expect_true(is.ReportFdaSOP(sopTabNa))
+sopTabNa <- sopTabNa$SopReport
+expect_true(any(sopTabNa$Difference<0))
+
 context("Test SOP")
 catchAtAgeReportDecompPlusGrKi <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6, Unit = "10^3 individuals")
 catchAtAgeReportDecompPlusGr <- ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
@@ -255,6 +264,9 @@ expect_true(is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport
 sopTabKi <- sopTabKi$SopReport
 expect_true(all(abs(sopTab$RelativeDifference) < 0.02))
+
+#check that the number different may come from NAs
+expect_equal(sum(sopTabNa$RelativeDifference!=0), sum(sopTabNa$Difference != sopTab$Difference))
 
 expect_equal(RstoxData::getUnit(sopTab$TotalWeightEstimated), "mass-kg")
 expect_equal(RstoxData::getUnit(sopTab$LandedWeight), "mass-kg")

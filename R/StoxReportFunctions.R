@@ -649,7 +649,8 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), D
 #'  Report sum-of-product test (SOP-test) for catch estimates.
 #' 
 #'  Mean weight at age and estimated catch (numbers) at age is used to compute total catches
-#'  and the relative difference to reported landings are reported.
+#'  and the relative difference to reported landings are reported. Missing values (NAs) are ignored
+#'  (exlcuded from sums).
 #'  
 #'  The report will be generated for landings decomposed on the provided 'GroupingVariables'
 #'  which must be available in both 'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData'
@@ -749,8 +750,8 @@ ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, Stox
   jointTab$TotalWeightEstimated <- jointTab$CatchAtAge*jointTab$MeanIndividualWeight
   
   # aggregate on requested variables and merge with landings
-  estTab <- jointTab[, list(TotalWeightEstimated=sum(get("TotalWeightEstimated"))), by=aggVars]
-  landTab <- StoxLandingData$Landing[, list(LandedWeight=sum(get("RoundWeight"))), by=aggVars]
+  estTab <- jointTab[, list(TotalWeightEstimated=sum(get("TotalWeightEstimated"), na.rm=T)), by=aggVars]
+  landTab <- StoxLandingData$Landing[, list(LandedWeight=sum(get("RoundWeight"), na.rm=T)), by=aggVars]
   
   # calculate differences
   reportTab <- merge(estTab, landTab, all=T)
