@@ -54,7 +54,8 @@
   <span class="va">StoxBioticData</span>,
   <span class="va">StoxLandingData</span>,
   GroupingVariables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,
-  Decimals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>
+  Decimals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,
+  Unit <span class="op">=</span> <span class="fu">RstoxData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RstoxData/man/getUnitOptions.html" class="external-link">getUnitOptions</a></span><span class="op">(</span><span class="st">"mass"</span>, conversionRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1e+12</span><span class="op">)</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -70,6 +71,8 @@ and approriate columns added for identifying corresponding samples</p></dd>
 <dd><p>Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.</p></dd>
 <dt>Decimals</dt>
 <dd><p>integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.</p></dd>
+<dt>Unit</dt>
+<dd><p>unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -85,6 +88,7 @@ and approriate columns added for identifying corresponding samples</p></dd>
  with another area listed as dominant area.</p> 
 <p>Rounding of numbers according to the argument 'Decimals' is done with <code><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></code>,
  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.</p>
+<p>The units considered valid for weights are those listed for quantity 'mass' in <code><a href="https://rdrr.io/pkg/RstoxData/man/StoxUnits.html" class="external-link">StoxUnits</a></code></p>
     </div>
 
   </div>

@@ -5,13 +5,13 @@
 list with two members 'SopReport' and 'GroupingVariables'.
  'SopReport' is a data.table with the columns:
   TotalWeightEstimated
-Total round weight (kg) estimated
+Total round weight estimated in kg
 
   LandedWeight
-Landed round weight (kg) reported
+Landed round weight reported in kg
 
   Difference
-The difference between estimated and reported landed weight
+The difference between estimated and reported landed weight in kg
 
   RelativeDifference
 The difference between estimated and reported landed weight relative to reported weight
@@ -20,7 +20,8 @@ The difference between estimated and reported landed weight relative to reported
 Any aggregation variables. The names of these are listed in 'GroupingVariables'
 
  
-'GroupingVariables' is a data.table with a column containing the names of any aggregation variables."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+'GroupingVariables' is a data.table with a column containing the names of any aggregation variables.
+The unit for RelativeDifference is configurable, and can be inspected by ~getUnit"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
@@ -72,13 +73,13 @@ Any aggregation variables. The names of these are listed in 'GroupingVariables'
  at age estimates</p> 
 <p>list with two members 'SopReport' and 'GroupingVariables'.
  'SopReport' is a <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with the columns:</p><dl><dt>TotalWeightEstimated</dt>
-<dd><p>Total round weight (kg) estimated</p></dd>
+<dd><p>Total round weight estimated in kg</p></dd>
 
   <dt>LandedWeight</dt>
-<dd><p>Landed round weight (kg) reported</p></dd>
+<dd><p>Landed round weight reported in kg</p></dd>
 
   <dt>Difference</dt>
-<dd><p>The difference between estimated and reported landed weight</p></dd>
+<dd><p>The difference between estimated and reported landed weight in kg</p></dd>
 
   <dt>RelativeDifference</dt>
 <dd><p>The difference between estimated and reported landed weight relative to reported weight</p></dd>
@@ -88,6 +89,7 @@ Any aggregation variables. The names of these are listed in 'GroupingVariables'
 
  
 </dl><p>'GroupingVariables' is a <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with a column containing the names of any aggregation variables.</p>
+<p>The unit for RelativeDifference is configurable, and can be inspected by ~<code><a href="https://rdrr.io/pkg/RstoxData/man/getUnit.html" class="external-link">getUnit</a></code></p>
     </div>
 
 

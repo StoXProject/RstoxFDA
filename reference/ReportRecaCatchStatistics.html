@@ -6,7 +6,10 @@ Weights are reported in kg, lengths in cm.
 If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
  area, gear, stock, etc., summary statistics will be presented similarly. 
 Rounding of numbers according to the argument 'Decimals' is done with round,
- so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+ so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit. 
+The units considered valid for mean lengths are those listed for quantity 'length' in StoxUnits
+ The units considered valid for weights are those listed for quantity 'mass' in StoxUnits
+ The units considered valid for total catch in numbers are those listed for quantity 'cardinality' in StoxUnits"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
@@ -60,7 +63,10 @@ Rounding of numbers according to the argument 'Decimals' is done with round,
 <p>If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
  area, gear, stock, etc., summary statistics will be presented similarly.</p> 
 <p>Rounding of numbers according to the argument 'Decimals' is done with <code><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></code>,
- so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.</p>
+ so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.</p> 
+<p>The units considered valid for mean lengths are those listed for quantity 'length' in <code><a href="https://rdrr.io/pkg/RstoxData/man/StoxUnits.html" class="external-link">StoxUnits</a></code>
+ The units considered valid for weights are those listed for quantity 'mass' in <code><a href="https://rdrr.io/pkg/RstoxData/man/StoxUnits.html" class="external-link">StoxUnits</a></code>
+ The units considered valid for total catch in numbers are those listed for quantity 'cardinality' in <code><a href="https://rdrr.io/pkg/RstoxData/man/StoxUnits.html" class="external-link">StoxUnits</a></code></p>
     </div>
 
     <div id="ref-usage">
@@ -72,7 +78,13 @@ Rounding of numbers according to the argument 'Decimals' is done with round,
   DecimalTotalWeight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,
   DecimalMeanAge <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,
   DecimalMeanWeight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,
-  DecimalMeanLength <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>
+  DecimalMeanLength <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,
+  UnitOptions <span class="op">=</span> <span class="cn">FALSE</span>,
+  UnitTotalNumber <span class="op">=</span> <span class="fu">RstoxData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RstoxData/man/getUnitOptions.html" class="external-link">getUnitOptions</a></span><span class="op">(</span><span class="st">"cardinality"</span>, conversionRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,
+    <span class="fl">1e+12</span><span class="op">)</span><span class="op">)</span>,
+  UnitTotalWeight <span class="op">=</span> <span class="fu">RstoxData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RstoxData/man/getUnitOptions.html" class="external-link">getUnitOptions</a></span><span class="op">(</span><span class="st">"mass"</span>, conversionRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1e+12</span><span class="op">)</span><span class="op">)</span>,
+  UnitMeanWeight <span class="op">=</span> <span class="fu">RstoxData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RstoxData/man/getUnitOptions.html" class="external-link">getUnitOptions</a></span><span class="op">(</span><span class="st">"mass"</span>, conversionRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e-04</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>,
+  UnitMeanLength <span class="op">=</span> <span class="fu">RstoxData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RstoxData/man/getUnitOptions.html" class="external-link">getUnitOptions</a></span><span class="op">(</span><span class="st">"length"</span>, conversionRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e-04</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -94,6 +106,16 @@ Rounding of numbers according to the argument 'Decimals' is done with round,
 <dd><p>integer specifying the number of decimals to report for 'MeanIndividualWeight', and the corresponding 'SD', 'Low' and 'High'. Defaults to 3</p></dd>
 <dt>DecimalMeanLength</dt>
 <dd><p>integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'. Defaults to 2</p></dd>
+<dt>UnitOptions</dt>
+<dd><p>logical determining whether the StoX user interface should show unit options</p></dd>
+<dt>UnitTotalNumber</dt>
+<dd><p>unit for total catch in numbers. Defaults to Mi (millions)</p></dd>
+<dt>UnitTotalWeight</dt>
+<dd><p>unit for weight of total catch. Defaults to kt</p></dd>
+<dt>UnitMeanWeight</dt>
+<dd><p>unit for mean weight. Defaults to kg</p></dd>
+<dt>UnitMeanLength</dt>
+<dd><p>unit for mean length. Defaults to cm.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
