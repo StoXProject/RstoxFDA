@@ -478,6 +478,10 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
   if (temporalColumn %in% names(table)){
     stop(paste("Temporal column", temporalColumn, "exists already."))
   }
+  
+  if (is.null(temporalDefinition$StartYear)){
+    temporalDefinition$StartYear <- rep(as.integer(NA), nrow(temporalDefinition))
+  }
 
   if (!(all(is.na(temporalDefinition$StartYear))) & any(is.na(temporalDefinition$StartYear))){
     stop("Year is provided for some, but not all temporal definitions.")
@@ -1005,12 +1009,23 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
     else {
       endstr <- c(CustomPeriods[2:length(CustomPeriods)], CustomPeriods[1])
     }
-    output <- data.table::data.table(Period=as.character(
-      paste("[", startstr, ", ", endstr, ">", sep="")),
-      StartDay=days,
-      StartMonth=months,
-      StartYear=years
-    )
+    
+    if (all(!is.na(years))){
+      output <- data.table::data.table(Period=as.character(
+        paste("[", startstr, ", ", endstr, ">", sep="")),
+        StartDay=days,
+        StartMonth=months,
+        StartYear=years
+      )
+    }
+    else{
+      stopifnot(all(is.na(years)))
+      output <- data.table::data.table(Period=as.character(
+        paste("[", startstr, ", ", endstr, ">", sep="")),
+        StartDay=days,
+        StartMonth=months
+      )
+    }
     
   }
   else{

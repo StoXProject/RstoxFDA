@@ -70,16 +70,16 @@
   				"properties": {
   					"Description": { "type": "string"},
   					"Species": { "type": "string"},
-  					"LengthMeasurement": { "type": "string"},
+  					"MeasurementType": { "type": "string"},
   					"Alpha": { "type": "number"},
   					"Beta": { "type": "number"}
   				},
   				"required": [
   					"Description",
   					"Species",
-  					"LengthMeasurement",
-					"Alpha",
-					"Beta"
+  					"MeasurementType",
+					  "Alpha",
+					  "Beta"
   				]
   			}
   		]
