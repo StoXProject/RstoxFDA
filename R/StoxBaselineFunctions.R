@@ -954,16 +954,14 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
     output <- data.table::data.table(Period=as.character(
         c("January", "Februrary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")),
         StartDay=as.integer(rep(1,12)),
-        StartMonth=as.integer(seq(1,12)),
-        StartYear=as.integer(rep(NA, 12))
+        StartMonth=as.integer(seq(1,12))
     )
   }
   else if (TemporalCategory == "Quarter"){
     output <- data.table::data.table(Period=as.character(
       c("Q1", "Q2", "Q3", "Q4")),
       StartDay=as.integer(rep(1,4)),
-      StartMonth=as.integer(c(1,4,7,10)),
-      StartYear=as.integer(rep(NA, 4))
+      StartMonth=as.integer(c(1,4,7,10))
     )
   }
   else if (TemporalCategory == "Custom"){

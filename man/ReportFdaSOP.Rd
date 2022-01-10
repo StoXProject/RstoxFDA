@@ -36,7 +36,8 @@ ReportFdaSOP(
 Report sum-of-product test (SOP-test) for catch estimates.
 
  Mean weight at age and estimated catch (numbers) at age is used to compute total catches
- and the relative difference to reported landings are reported.
+ and the relative difference to reported landings are reported. Missing values (NAs) are ignored
+ (exlcuded from sums).
  
  The report will be generated for landings decomposed on the provided 'GroupingVariables'
  which must be available in both 'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData'
