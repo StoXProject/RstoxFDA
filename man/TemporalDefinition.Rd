@@ -11,10 +11,10 @@ Table (\code{\link[data.table]{data.table}}) defining a categorical variable for
   \item{TemporalCategory}{character() Value of the temporal category}
   \item{StartDay}{integer() Day of month for first day in the temporal category (1-based)}
   \item{StartMonth}{integer() Month for first day in the temporal category (1-based)}
-  \item{StartYear}{integer() Year for which the category is defined, NA for seasonal definitions.}
+  \item{StartYear}{optional integer() Year for which the category is defined, omit this column for seasonal definitions.}
  }
 
  Start and end of year is not implied as category delimitations when not included.
- If 1st of January is not definied as the start of a category,
+ If 1st of January is not defined as the start of a category,
  it is taken to be included in the last category of the preceding year.
 }

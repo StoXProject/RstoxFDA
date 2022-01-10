@@ -9,7 +9,8 @@ ReportRecaLengthAtAge(
   PlusGroup = integer(),
   IntervalWidth = numeric(),
   Decimals = integer(),
-  Threshold = numeric()
+  Threshold = numeric(),
+  Unit = RstoxData::getUnitOptions("length", conversionRange = c(1e-07, 10))
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ ReportRecaLengthAtAge(
 \item{Decimals}{integer specifying the number of decimals to report for 'MeanIndividualLength', 'SD', 'Low' and 'High'. Defaults to 1.}
 
 \item{Threshold}{threshold for reporting mean weight. Rows with an estimated Catch At Age (number of individuals) lower than this will have NA reported for their mean length Defaults to 0.}
+
+\item{Unit}{unit for 'MeanIndividualLength', 'SD', 'Low' and 'High'}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}}
@@ -37,6 +40,8 @@ Tabulates summary statistics for mean length (cm) at age from MCMC simulations u
  
  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+ 
+ The units considered valid for mean lengths are those listed for quantity 'length' in \code{\link[RstoxData]{StoxUnits}}
 }
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis

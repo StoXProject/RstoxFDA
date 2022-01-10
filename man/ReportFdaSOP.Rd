@@ -10,7 +10,8 @@ ReportFdaSOP(
   StoxLandingData,
   GroupingVariables = character(),
   DecimalWeight = integer(),
-  DecimalFraction = integer()
+  DecimalFraction = integer(),
+  UnitFraction = RstoxData::getUnitOptions("fraction")
 )
 }
 \arguments{
@@ -24,7 +25,9 @@ ReportFdaSOP(
 
 \item{DecimalWeight}{integer specifying the number of decimals to report for weights: 'TotalWeightEstimated', 'LandedWeight', and 'Difference'. Defaults to 0}
 
-\item{DecimalFraction}{integer specifying the nnumber of decimals to report for 'RelativeDifference'. Defaults to 3.}
+\item{DecimalFraction}{integer specifying the number of decimals to report for 'RelativeDifference'. Defaults to 3.}
+
+\item{UnitFraction}{unit for the RelativeDifference. E.g. '0.' for decimal notation or '\%' for percent.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSopData}}
@@ -32,8 +35,9 @@ ReportFdaSOP(
 \description{
 Report sum-of-product test (SOP-test) for catch estimates.
 
- Mean weight (kg) at age and estimated catch (numbers) at age is used to compute total catches
- and the relative difference to reported landings are reported.
+ Mean weight at age and estimated catch (numbers) at age is used to compute total catches
+ and the relative difference to reported landings are reported. Missing values (NAs) are ignored
+ (exlcuded from sums).
  
  The report will be generated for landings decomposed on the provided 'GroupingVariables'
  which must be available in both 'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData'
@@ -44,6 +48,8 @@ Report sum-of-product test (SOP-test) for catch estimates.
  
  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+ 
+ The units considered valid for mean lengths are those listed for quantity 'fraction' in \code{\link[RstoxData]{StoxUnits}}
 }
 \seealso{
 \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for some ways of preparing 'ReportFdaWeightAtAgeData' and 'ReportFdaCatchAtAgeData'.

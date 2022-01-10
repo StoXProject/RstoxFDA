@@ -8,7 +8,8 @@ ReportFdaSampling(
   StoxBioticData,
   StoxLandingData,
   GroupingVariables = character(),
-  Decimals = integer()
+  Decimals = integer(),
+  Unit = RstoxData::getUnitOptions("mass", conversionRange = c(1, 1e+12))
 )
 }
 \arguments{
@@ -21,6 +22,8 @@ and approriate columns added for identifying corresponding samples}
 \item{GroupingVariables}{Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.}
 
 \item{Decimals}{integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.}
+
+\item{Unit}{unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSamplingData}}
@@ -38,4 +41,6 @@ Sampling is reported partitioned on the provided 'GroupingVariables'.
  
  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+
+ The units considered valid for weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
 }

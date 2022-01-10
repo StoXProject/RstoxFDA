@@ -9,4 +9,6 @@ A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object with the reported <Statistic
  \describe{
   \item{CacthAtAge}{The total catch at age in numbers.}
  }
+ 
+ Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 }

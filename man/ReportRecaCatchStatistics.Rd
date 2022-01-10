@@ -12,7 +12,13 @@ ReportRecaCatchStatistics(
   DecimalTotalWeight = integer(),
   DecimalMeanAge = integer(),
   DecimalMeanWeight = integer(),
-  DecimalMeanLength = integer()
+  DecimalMeanLength = integer(),
+  UnitOptions = FALSE,
+  UnitTotalNumber = RstoxData::getUnitOptions("cardinality", conversionRange = c(1,
+    1e+12)),
+  UnitTotalWeight = RstoxData::getUnitOptions("mass", conversionRange = c(1, 1e+12)),
+  UnitMeanWeight = RstoxData::getUnitOptions("mass", conversionRange = c(1e-04, 10)),
+  UnitMeanLength = RstoxData::getUnitOptions("length", conversionRange = c(1e-04, 10))
 )
 }
 \arguments{
@@ -31,6 +37,16 @@ ReportRecaCatchStatistics(
 \item{DecimalMeanWeight}{integer specifying the number of decimals to report for 'MeanIndividualWeight', and the corresponding 'SD', 'Low' and 'High'. Defaults to 3}
 
 \item{DecimalMeanLength}{integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'. Defaults to 2}
+
+\item{UnitOptions}{logical determining whether the StoX user interface should show unit options}
+
+\item{UnitTotalNumber}{unit for total catch in numbers. Defaults to Mi (millions)}
+
+\item{UnitTotalWeight}{unit for weight of total catch. Defaults to kt}
+
+\item{UnitMeanWeight}{unit for mean weight. Defaults to kg}
+
+\item{UnitMeanLength}{unit for mean length. Defaults to cm.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSummaryData}}
@@ -47,6 +63,10 @@ Report summary statistics for landed catches from MCMC simulations using Reca.
  
  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+ 
+ The units considered valid for mean lengths are those listed for quantity 'length' in \code{\link[RstoxData]{StoxUnits}}
+ The units considered valid for weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
+ The units considered valid for total catch in numbers are those listed for quantity 'cardinality' in \code{\link[RstoxData]{StoxUnits}}
 }
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis

@@ -6,11 +6,7 @@ library(rgdal)
 #
 
 mainareaFdir2018 <- RstoxBase::DefineStratumPolygon(NULL, F, "ResourceFile", system.file("dataPrepScripts", "mainarea2018.txt", package="RstoxFDA"))
-
-if (is.na(sp::proj4string(mainareaFdir2018))){
-  sp::proj4string(mainareaFdir2018) <- "+proj=longlat +datum=WGS84"
-}
-commonCRS <- sp::CRS(sp::proj4string(mainareaFdir2018))
+commonCRS <- sp::CRS(sp::wkt(mainareaFdir2018))
 
 usethis::use_data(mainareaFdir2018, overwrite = T, compress = "xz")
 
@@ -20,9 +16,6 @@ usethis::use_data(mainareaFdir2018, overwrite = T, compress = "xz")
 
 
 mainareaFdir2017 <- RstoxBase::DefineStratumPolygon(NULL, F, "ResourceFile", system.file("dataPrepScripts", "mainarea2017.txt", package="RstoxFDA"))
-if (is.na(sp::proj4string(mainareaFdir2017))){
-  sp::proj4string(mainareaFdir2017) <- "+proj=longlat +datum=WGS84"
-}
 mainareaFdir2017 <- sp::spTransform(mainareaFdir2017, commonCRS)
 slot(slot(mainareaFdir2017, "polygons")[[1]], "ID") <- "00"
 slot(slot(mainareaFdir2017, "polygons")[[2]], "ID") <- "01"

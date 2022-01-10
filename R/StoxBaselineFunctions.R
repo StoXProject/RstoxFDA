@@ -478,6 +478,10 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
   if (temporalColumn %in% names(table)){
     stop(paste("Temporal column", temporalColumn, "exists already."))
   }
+  
+  if (is.null(temporalDefinition$StartYear)){
+    temporalDefinition$StartYear <- rep(as.integer(NA), nrow(temporalDefinition))
+  }
 
   if (!(all(is.na(temporalDefinition$StartYear))) & any(is.na(temporalDefinition$StartYear))){
     stop("Year is provided for some, but not all temporal definitions.")
@@ -950,16 +954,14 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
     output <- data.table::data.table(Period=as.character(
         c("January", "Februrary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")),
         StartDay=as.integer(rep(1,12)),
-        StartMonth=as.integer(seq(1,12)),
-        StartYear=as.integer(rep(NA, 12))
+        StartMonth=as.integer(seq(1,12))
     )
   }
   else if (TemporalCategory == "Quarter"){
     output <- data.table::data.table(Period=as.character(
       c("Q1", "Q2", "Q3", "Q4")),
       StartDay=as.integer(rep(1,4)),
-      StartMonth=as.integer(c(1,4,7,10)),
-      StartYear=as.integer(rep(NA, 4))
+      StartMonth=as.integer(c(1,4,7,10))
     )
   }
   else if (TemporalCategory == "Custom"){
@@ -1005,12 +1007,23 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
     else {
       endstr <- c(CustomPeriods[2:length(CustomPeriods)], CustomPeriods[1])
     }
-    output <- data.table::data.table(Period=as.character(
-      paste("[", startstr, ", ", endstr, ">", sep="")),
-      StartDay=days,
-      StartMonth=months,
-      StartYear=years
-    )
+    
+    if (all(!is.na(years))){
+      output <- data.table::data.table(Period=as.character(
+        paste("[", startstr, ", ", endstr, ">", sep="")),
+        StartDay=days,
+        StartMonth=months,
+        StartYear=years
+      )
+    }
+    else{
+      stopifnot(all(is.na(years)))
+      output <- data.table::data.table(Period=as.character(
+        paste("[", startstr, ", ", endstr, ">", sep="")),
+        StartDay=days,
+        StartMonth=months
+      )
+    }
     
   }
   else{

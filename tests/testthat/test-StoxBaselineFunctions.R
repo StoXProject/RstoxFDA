@@ -276,7 +276,7 @@ context("test-StoxBaselineFunctions: DefinePeriod")
 temp <- DefinePeriod(NULL)
 expect_true(data.table::is.data.table(temp))
 expect_equal(nrow(temp), 4)
-expect_equal(ncol(temp), 4)
+expect_equal(ncol(temp), 3)
 
 context("test-StoxBaselineFunctions: DefinePeriod useProcessData")
 temp <- DefinePeriod(NULL, UseProcessData = T)
@@ -286,7 +286,12 @@ context("test-StoxBaselineFunctions: DefinePeriod Month")
 temp <- DefinePeriod(NULL, TemporalCategory = "Month")
 expect_true(data.table::is.data.table(temp))
 expect_equal(nrow(temp), 12)
-expect_equal(ncol(temp), 4)
+expect_equal(ncol(temp), 3)
+
+temp <- DefinePeriod(NULL, TemporalCategory = "Quarter")
+expect_true(data.table::is.data.table(temp))
+expect_equal(nrow(temp), 4)
+expect_equal(ncol(temp), 3)
 
 context("test-StoxBaselineFunctions: DefinePeriod non-seasonal")
 temp <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("04-02-2018", "04-09-2018"))
@@ -299,17 +304,11 @@ expect_false(any(is.na(temp$StartYear)))
 context("test-StoxBaselineFunctions: DefinePeriod unrecognized category")
 expect_error(DefinePeriod(NULL, TemporalCategory = "Something"), "Temporal category Something not recognized.")
 
-context("test-StoxBaselineFunctions: DefinePeriod Custom")
-temp <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("05-02","15-09"))
-expect_true(data.table::is.data.table(temp))
-expect_equal(nrow(temp), 2)
-expect_equal(ncol(temp), 4)
-
 context("test-StoxBaselineFunctions: DefinePeriod Custom seasonal")
 temp <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("05-02","15-09"))
 expect_true(data.table::is.data.table(temp))
 expect_equal(nrow(temp), 2)
-expect_equal(ncol(temp), 4)
+expect_equal(ncol(temp), 3)
 
 context("test-StoxBaselineFunctions: DefinePeriod Custom non-seasonal")
 expect_error(DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-01","15-09","01-01")), "Need to provide unique periods.")
@@ -446,6 +445,7 @@ tabExampleMissing$stopD[2] <- NA
 expect_error(appendTemporal(tabExampleMissing, "period", temp, datecolumns = c("stopD", "startD")), "NA for some dates")
 
 tempMisspec <- temp
+tempMisspec$StartYear <- NA
 tempMisspec$StartYear[1] <- 1993
 expect_error(appendTemporal(tabExamplePre, "period", tempMisspec, datecolumns = c("stopD", "startD")), "Year is provided for some, but not all temporal definitions.")
 
@@ -466,7 +466,6 @@ expect_equal(tabMonthPost$period[1], "September")
 monthCat <- DefinePeriod(NULL, TemporalCategory = "Quarter")
 tabMonthPost <- appendTemporal(tabMonth, "period", monthCat, datecolumns = c("stopD", "startD"))
 expect_equal(tabMonthPost$period, c("Q4", "Q1", "Q4"))
-
 
 tabMultiYear <- tabExamplePre
 my <- DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("01-10-2019","01-12-2019"))
