@@ -932,7 +932,7 @@ fixCar <- function(car, careffect){
 #'  in order to obtain proportinos of catches and fish parameters.
 #'  Using these parameters and the given total landings, predictions of distribution of catch-parameter distributions will be calculated.
 #'
-#'  If resultdir is NULL,  atemporary directory will be created for its purpose.
+#'  If resultdir is NULL, a temporary directory will be created for its purpose.
 #'  This will be attempted removed after execution.
 #'  If removal is not successful a warning will be issued which includes the path to the temporary directory.
 #'
