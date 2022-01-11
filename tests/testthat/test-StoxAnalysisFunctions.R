@@ -47,8 +47,8 @@ StoxBioticData <- readRDS(StoxBioticFile)
 StoxBioticData$Haul$Gear[1] <- NA
 expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("Gear"), RandomEffects = c())))
 StoxBioticData <- readRDS(StoxBioticFile)
-StoxBioticData$Sample$CatchFractionCount[1] <- NA
-expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("CatchFractionCount"), RandomEffects = c())))
+StoxBioticData$Sample$CatchFractionNumber[1] <- NA
+expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("CatchFractionNumber"), RandomEffects = c())))
 StoxBioticData <- readRDS(StoxBioticFile)
 StoxBioticData$Individual$IndividualTotalLength[1] <- NA
 expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())))
@@ -253,12 +253,12 @@ context("test-StoxAnalysisFunctions: PrepareRecaEstimate, missing sample dates")
 StoxBioticData$Station$DateTime[1] <- NA
 expect_error(suppressWarnings(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())))
 
-context("test-StoxAnalysisFunctions: PrepareRecaEstimate, stratified samples (nFish), missing CatchFractionCount")
+context("test-StoxAnalysisFunctions: PrepareRecaEstimate, stratified samples (nFish), missing CatchFractionNumber")
 StoxBioticDataDelp <- readRDS(system.file("testresources","StoxBioticDelpr.rds", package="RstoxFDA"))
 expect_error(suppressWarnings(PrepareRecaEstimate(StoxBioticDataDelp, StoxLandingData, FixedEffects = c(), RandomEffects = c())))
 
 context("test-StoxAnalysisFunctions: PrepareRecaEstimate, stratified samples (nFish)")
-StoxBioticDataDelp$Sample$CatchFractionCount[2] <- 3000
+StoxBioticDataDelp$Sample$CatchFractionNumber[2] <- 3000
 prep <- PrepareRecaEstimate(StoxBioticDataDelp, StoxLandingData, FixedEffects = c(), RandomEffects = c())
 
 #context("test-StoxAnalysisFunctions: RunRecaEstimate, stratified samples (nFish)")

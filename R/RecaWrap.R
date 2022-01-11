@@ -920,52 +920,6 @@ fixCar <- function(car, careffect){
   return(car)
 }
 
-#' To be called from runRECA, update covariateMap wih an entry for cell in covariateMap$inlandings, before renameRecaOutput is run
-#' @noRd
-addCellCovariateMap <- function(covariateMap, infoMatrix){
-  cellMemb <- rownames(infoMatrix[infoMatrix[,"interaction"] == 1,])
-  stop("Not implemented. Need doc update.")
-}
-
-#' Rename R-ECA output
-#' @description Renames output returned from \code{\link[Reca]{eca.estimate}},
-#' so that covariate names and levels correspond to those used in data fed to \code{\link[RstoxFDA]{prepRECA}}
-#' @param fit as returned from \code{\link[Reca]{eca.estimate}},
-#' @param covariateMaps as returned from \code{\link[RstoxFDA]{prepRECA}}
-#' @param careffect name of careffect
-#' @noRd
-renameRecaOutput <- function(ecafit, covariateMaps, careffect){
-  stop("Need doc update for cell effects before this can be finalized. Add tests.")
-  for (model in names(ecafit)){
-    if ("Intercept" %in% names(ecafit[[model]])){
-      for (p in names(ecafit[[model]][["Intercept"]])){
-        if ("catchSample" %in% names(ecafit[[model]][["Intercept"]][[p]])){
-          ecafit[[model]][["Intercept"]][[p]][["catchId"]] <- ecafit[[model]][["Intercept"]][["catchSample"]]
-          ecafit[[model]][["Intercept"]][[p]][["catchSample"]] <- NULL
-        }
-      }
-    }
-    if ("Slope" %in% names(ecafit[[model]])){
-      for (p in names(ecafit[[model]][["Slope"]])){
-        if ("catchSample" %in% names(ecafit[[model]][["Slope"]][[p]])){
-          ecafit[[model]][["Slope"]][["cov"]][[p]][["catchId"]] <- ecafit[[model]][["Slope"]][["catchSample"]]
-          ecafit[[model]][["Slope"]][["cov"]][[p]][["catchSample"]] <- NULL
-        }
-      }
-    }
-
-    for (reg in c("Intercept", "Slope")){
-      if ("cov" %in% names(ecafit[[model]][[reg]])){
-        ecafit[[model]][[reg]][["cov"]] <- fixCov(ecafit[[model]][[reg]][["cov"]], covariateMaps, model)
-      }
-      if ("CAR" %in% names(ecafit[[model]][[reg]])){
-        ecafit[[model]][[reg]][["CAR"]] <- fixCar(ecafit[[model]][[reg]][["CAR"]], careffect)
-      }
-    }
-  }
-  return(ecafit)
-}
-
 #' Run R-ECA
 #' @description
 #'  Runs \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
@@ -978,7 +932,7 @@ renameRecaOutput <- function(ecafit, covariateMaps, careffect){
 #'  in order to obtain proportinos of catches and fish parameters.
 #'  Using these parameters and the given total landings, predictions of distribution of catch-parameter distributions will be calculated.
 #'
-#'  If resultdir is NULL,  atemporary directory will be created for its purpose.
+#'  If resultdir is NULL, a temporary directory will be created for its purpose.
 #'  This will be attempted removed after execution.
 #'  If removal is not successful a warning will be issued which includes the path to the temporary directory.
 #'

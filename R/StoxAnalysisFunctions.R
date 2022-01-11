@@ -298,20 +298,20 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   if (length(unique(flatbiotic$catchId)) != length(unique(flatbiotic$sampleId))){
     allSamples <- unique(flatbiotic[,c("catchId", "sampleId")])
     stratifiedCatchIds <- allSamples$catchId[duplicated(allSamples$catchId)]
-    nFish <- flatbiotic[flatbiotic$catchId %in% stratifiedCatchIds,c("sampleId", "CatchFractionCount", "HaulKey", "SampleKey", "CruiseKey", "StationKey")]
+    nFish <- flatbiotic[flatbiotic$catchId %in% stratifiedCatchIds,c("sampleId", "CatchFractionNumber", "HaulKey", "SampleKey", "CruiseKey", "StationKey")]
     nFish <- nFish[!duplicated(nFish$sampleId),]
-    if (any(is.na(nFish$CatchFractionCount))){
-      missing <- nFish[is.na(nFish$CatchFractionCount),]
+    if (any(is.na(nFish$CatchFractionNumber))){
+      missing <- nFish[is.na(nFish$CatchFractionNumber),]
       for (i in 1:nrow(missing)){
         HaulKey <- missing$HaulKey[i]
         SampleKey <- missing$SampleKey[i]
         CruiseKey<- missing$CruiseKey[i]
         StationKey<- missing$StationKey[i]
-        stoxWarning(paste("'CatchFractionCount' missing from Sample", SampleKey, "from Haul", HaulKey, "which have several catch fractions sampled. Cruise:", CruiseKey, "Station:", StationKey))
+        stoxWarning(paste("'CatchFractionNumber' missing from Sample", SampleKey, "from Haul", HaulKey, "which have several catch fractions sampled. Cruise:", CruiseKey, "Station:", StationKey))
       }
-      stop("'StoxBioticData' have 'CatchFractionCount' missing from the 'Sample' table for Hauls with several fractions sampled.")
+      stop("'StoxBioticData' have 'CatchFractionNumber' missing from the 'Sample' table for Hauls with several fractions sampled.")
     }
-    nFish <- nFish[,c("sampleId", "CatchFractionCount")]
+    nFish <- nFish[,c("sampleId", "CatchFractionNumber")]
     names(nFish) <- c("sampleId", "count")
   }
   
