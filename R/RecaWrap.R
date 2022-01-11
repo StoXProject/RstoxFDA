@@ -885,41 +885,6 @@ checkEcaObj <- function(RECAobj){
   return(obj)
 }
 
-#' @noRd
-fixCov <- function(cov, covariateMaps, model){
-  for (n in names(cov)[names(cov) != "cell"]){ #deal with cell later
-    if (n %in% names(covariateMaps$inLandings)){
-      map <- covariateMaps$inLandings[[n]]
-    }
-    else if (n %in% names(covariateMaps$randomEffects[[model]])){
-      map <- covariateMaps$randomEffects[[model]][[n]]
-    }
-
-    dimm <- dim(cov[[n]])
-    stopifnot(length(dimm) == 3)
-
-    if (n == "constant"){
-      dimnames(cov[[n]]) <- list(1:dimm[[1]], 1:dimm[[2]], 1:dimm[[3]])
-    }
-    else{
-      dimnames(cov[[n]]) <- list(1:dimm[[1]], unlist(map[1:dimm[[2]]]), 1:dimm[[3]]) #first dimension is one, expect for Prop at age, when it is the age groups
-    }
-
-  }
-  return(cov)
-}
-
-#' @noRd
-fixCar <- function(car, careffect){
-  if (is.null(car)){
-    return(NULL)
-  }
-  if (names(car) == c("spatial")){
-    names(car) = c(careffect)
-  }
-  return(car)
-}
-
 #' Run R-ECA
 #' @description
 #'  Runs \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
