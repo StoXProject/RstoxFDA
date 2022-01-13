@@ -217,7 +217,7 @@ imputeCatchesLandings <- function(landings, catchPartition, tripIdCol="tripid", 
 #' Adjust landings by logbooks
 #' @description 
 #'  imputes landings and redistributes catch within quarter and area to mimic sales notes for each individual fishing operation (logbook record).
-#'  Applicabe to formats parsed by \code{\link[RstoxData]{readLssFile}} and \code{\link[RstoxData]{logbookfile}}
+#'  Applicabe to formats parsed by \code{\link[RstoxData]{readLssFile}} and \code{\link[RstoxData]{readErsFile}}
 #' @details 
 #'  As there is some variation in naming conventions used in the supported formats, 
 #'  relevant column names are paramaterized so that they can be changed to the appropriate format dialect.
@@ -226,7 +226,7 @@ imputeCatchesLandings <- function(landings, catchPartition, tripIdCol="tripid", 
 #'  
 #'  Sales-note lines identifiers are made unique after imputation and redistibution ('lineIdCol').
 #' @param landings landings as returned by e.g. \code{\link[RstoxData]{readLssFile}}
-#' @param logbook logbooks as returned by e.g. \code{\link[RstoxData]{logbookfile}}
+#' @param logbooks logbooks as returned by e.g. \code{\link[RstoxData]{readErsFile}}
 #' @param gearCodes character() with gear-codes which logbook cleaning should be applied for (as they appear in 'gearCol'). If not provided, cleaning is applied to all gear codes
 #' @param gearCol character() that identifies the column in 'logbook' that contain gear codes.
 #' @param timeCol character() that identifies the column in 'logbook' that contain the time columns to use for inferring quarter.
