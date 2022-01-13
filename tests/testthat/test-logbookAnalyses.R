@@ -13,6 +13,10 @@ expect_equal(sum(is.na(logbTI$tripid)),1)
 expect_equal(ncol(logb), ncol(logbTI)-1)
 expect_equal(nrow(logb), nrow(logbTI))
 
+logbEmpty <-appendTripIdLogbooks(logb[rep(F, nrow(logb))], tripIds)
+expect_equal(ncol(logbTI), ncol(logbEmpty))
+expect_equal(nrow(logbEmpty), 0)
+
 context("Test calculateLogbookPartitionByTrip")
 logbTIC <- logbTI[!is.na(logbTI$tripid)]
 logbTIC$mainarea <- substring(logbTIC$LOKASJON_START, 1, 2)
@@ -22,7 +26,9 @@ expect_error(calculateLogbookPartitionByTrip(logbTIC, groupCols = c("mainarea", 
 expect_error(calculateLogbookPartitionByTrip(logbTIC, groupCols = c("mainarea", "quarter"), tripCol = "tt"), "Column 'tripCol' not found in 'logbooks")
 expect_error(calculateLogbookPartitionByTrip(logbTIC, groupCols = c("mainarea", "quarter"), speciesCol = "tt"), "Column 'speciesCol' not found in 'logbooks")
 expect_error(calculateLogbookPartitionByTrip(logbTIC, groupCols = c("mainarea", "quarter"), weightCol = "tt"), "Column 'weightCol' not found in 'logbooks")
-resultmerged <- merge(result$fractions, result$groupDefinition)
+
+resultmerged <- merge(result$fractions, result$groupDefinition, by="groupid")
 expect_equal(nrow(resultmerged), nrow(result$fractions))
 trippagg <- aggregate(resultmerged$fraction~resultmerged$tripid+resultmerged$species, FUN=sum)
 expect_true(all(trippagg$`resultmerged$fraction` == 1))
+
