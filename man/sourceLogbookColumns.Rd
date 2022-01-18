@@ -8,7 +8,7 @@ sourceLogbookColumns(
   landings,
   logbooks,
   tripIdCol = "tripid",
-  catchIdCol = "STARTTIDSPUNKT",
+  catchIdCol,
   speciesColLand = "Art FAO (kode)",
   speciesColLog = "FANGSTART_FAO"
 )
