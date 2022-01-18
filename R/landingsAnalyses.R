@@ -216,7 +216,10 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
     partitioned[[v]] <- partitioned[[v]]*partitioned$fraction    
   }
   
+  notPartitioned[[catchIdCol]] <- partitioned[[catchIdCol]][1]
+  notPartitioned[,catchIdCol] <- NA
   partitioned$fraction <- NULL
+  
   result <- rbind(partitioned, notPartitioned)
   
   return(result)
@@ -249,7 +252,7 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
 #' @seealso 
 #'  \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, \code{\link[RstoxFDA]{appendTripIdLogbooks}}, and \code{\link[RstoxFDA]{imputeCatchesLandings}} for obtaining 'landings' and 'logbooks' with trip-ids and catch-ids.
 #' @export
-sourceLogbookColumns <- function(landings, logbooks, tripIdCol="tripid", catchIdCol="STARTTIDSPUNKT", speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO"){
+sourceLogbookColumns <- function(landings, logbooks, tripIdCol="tripid", catchIdCol, speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO"){
   
   landCols <- c(catchIdCol, tripIdCol, speciesColLand)
   if (!all(landCols %in% names(landings))){
@@ -298,7 +301,7 @@ sourceLogbookColumns <- function(landings, logbooks, tripIdCol="tripid", catchId
 #' @seealso 
 #'  \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, \code{\link[RstoxFDA]{appendTripIdLogbooks}}, and \code{\link[RstoxFDA]{imputeCatchesLandings}} for obtaining 'landings' and 'logbooks' with trip-ids and catch-ids.
 #' @export
-addLogbookColumns <- function(landings, logbooks, logbookColumns, tripIdCol="tripid", catchIdCol="STARTTIDSPUNKT", speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO"){
+addLogbookColumns <- function(landings, logbooks, logbookColumns, tripIdCol="tripid", catchIdCol, speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO"){
   landIds <- paste(landings[[tripIdCol]], landings[[catchIdCol]], landings[[speciesColLand]])
   logIds <- paste(logbooks[[tripIdCol]], logbooks[[catchIdCol]], logbooks[[speciesColLog]])
   
@@ -386,9 +389,10 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), species
     stop("Must provide at least one activity type ('activityTypes')")
   }
   logbooks <- logbooks[logbooks$AKTIVITET_KODE %in% activityTypes,]
+  logbooks$catchId <- 1:nrow(logbooks)
   
   #check that tempcols are not used
-  catchIdCol <- "STARTTIDSPUNKT"
+  catchIdCol <- "catchId"
   if (any(c(catchIdCol, "tripid") %in% names(landings))){
     stop(paste("The columns '", catchIdCol, "' and 'tripid' should not exist in 'landings"))
   }
@@ -412,7 +416,7 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), species
     }
     
     landings <- imputeCatchesLandings(landings, logbooks, speciesColLand = speciesColLand, valueColumns = valueColLand, catchIdCol = catchIdCol)
-    landings <- sourceLogbookColumns(landings, logbooks, tripIdCol = "tripid")
+    landings <- sourceLogbookColumns(landings, logbooks, tripIdCol = "tripid", catchIdCol = catchIdCol)
     landings <- addLogbookColumns(landings, logbooks, addColumns, tripIdCol = "tripid", catchIdCol = catchIdCol)    
   }
 

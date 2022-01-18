@@ -66,6 +66,87 @@ warnMissingCovariateStoxBiotic <- function(varnames, StoxBioticData){
   }
 }
 
+#' Issues stox warnings if any of the samples are taken form cells not in landings.
+#' Terminate with warning
+#' @noRd
+warnMissingLandings <- function(StoxBiotic, StoxLanding, effects){
+  
+  if (!isGiven(effects)){
+    return()
+  }
+  flatbiotic <- RstoxData::MergeStoxBiotic(StoxBiotic, TargetTable = "Individual")
+  effects <- effects[effects %in% names(StoxLanding$Landing) & effects %in% names(flatbiotic)]
+  if (!isGiven(effects)){
+    return()
+  }
+  
+  #reconstruct flatbiotic as deep as necessary to cover all effects
+  levelEff <- effects
+  flatbiotic <- StoxBiotic$Cruise
+  levelEff <- levelEff[!(levelEff %in% names(StoxBiotic$Cruise))]
+  if (length(levelEff) > 0){
+    flatbiotic <- RstoxData::mergeByIntersect(flatbiotic, StoxBiotic$Station)
+    levelEff <- levelEff[!(levelEff %in% names(StoxBiotic$Station))]
+  }
+  if (length(levelEff) > 0){
+    flatbiotic <- RstoxData::mergeByIntersect(flatbiotic, StoxBiotic$Haul)
+    levelEff <- levelEff[!(levelEff %in% names(StoxBiotic$Haul))]
+  }
+  if (length(levelEff) > 0){
+    flatbiotic <- RstoxData::mergeByIntersect(flatbiotic, StoxBiotic$SpeciesCategory)
+    levelEff <- levelEff[!(levelEff %in% names(StoxBiotic$SpeciesCategory))]
+  }
+  if (length(levelEff) > 0){
+    flatbiotic <- RstoxData::mergeByIntersect(flatbiotic, StoxBiotic$Sample)
+    levelEff <- levelEff[!(levelEff %in% names(StoxBiotic$Sample))]
+  }
+  if (length(levelEff) > 0){
+    flatbiotic <- RstoxData::mergeByIntersect(flatbiotic, StoxBiotic$Individual)
+  }
+  
+  flatbiotic$effectId <- Reduce(x=effects, f=function(x,y){paste(flatbiotic[[x]], flatbiotic[[y]])})
+  LandingEffectIds <- Reduce(x=effects, f=function(x,y){paste(StoxLanding$Landing[[x]], StoxLanding$Landing[[y]])})
+  
+  flatbiotic <- flatbiotic[!(flatbiotic$effectId %in% LandingEffectIds),]
+  
+  if (nrow(flatbiotic)==0){
+    return()
+  }
+  
+  for (i in 1:nrow(flatbiotic)){
+    warningString <- "Sample taken from cell not in landings "
+    effectDescr <- c()
+    for (e in effects){
+      effectDescr <- c(effectDescr, paste(e,flatbiotic[[e]][[i]],sep="="))
+    }
+    warningString <- paste0(warningString, "(", paste(effectDescr, collapse=", "), "):")
+    keyDescr <- c()
+    if ("CruiseKey" %in% names(flatbiotic)){
+      keyDescr <- c(keyDescr, paste("CruiseKey:",flatbiotic$CruiseKey[[i]]))
+    }
+    if ("StationKey" %in% names(flatbiotic)){
+      keyDescr <- c(keyDescr, paste("StationKey:",flatbiotic$StationKey[[i]]))
+    }
+    if ("HaulKey" %in% names(flatbiotic)){
+      keyDescr <- c(keyDescr, paste("HaulKey:",flatbiotic$HaulKey[[i]]))
+    }
+    if ("SpeciesCategoryKey" %in% names(flatbiotic)){
+      keyDescr <- c(keyDescr, paste("SpeciesCategoryKey:",flatbiotic$SpeciesCategoryKey[[i]]))
+    }
+    if ("SampleKey" %in% names(flatbiotic)){
+      keyDescr <- c(keyDescr, paste("SampleKey:",flatbiotic$Sample[[i]]))
+    }
+    if ("IndividualKey" %in% names(flatbiotic)){
+      keyDescr <- c(keyDescr, paste("IndividualKey:",flatbiotic$IndividualKey[[i]]))
+    }
+    warningString <- paste(warningString, paste(keyDescr, collapse=", "))
+    stoxWarning(warningString)
+  }
+  
+  stop("Cannot proceed with samples taken from cells that are not in landings,")
+  
+}
+
 #' Prepare data for Reca.
 #' @description
 #'  Performs data checks and data conversions,
@@ -258,6 +339,8 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   #
   effects <- c(FixedEffects, RandomEffects, CarEffect, "IndividualTotalLength", "DateTime")
   warnMissingCovariateStoxBiotic(effects, StoxBioticData)
+  effects <- c(FixedEffects, RandomEffects, CarEffect)
+  warnMissingLandings(StoxBioticData, StoxLandingData, effects)
   
   
   #
