@@ -616,17 +616,22 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
 }
 
 
-#' Adds Stratum to StoxLandingData
+#' Adds Strata to StoxLandingData
 #' @description
 #'  Adds a column to StoxLandingData with the spatial strata each row belongs to.
 #' @details
 #'  The strata are added to the new column 'Stratum'.
+#'  
+#'  The Strata may be added as a new column, or to an existing column depending on the 
+#'  argument 'ColumnName'. The option 'Stratum' (default) adds strata to a new column 'Stratum'. 
+#'  The option 'Area' changes the values in the existing column 'Area'.
 #'  
 #'  \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
 #'  these need to be added as columns 'Latitude' and 'Longitude' before calling this function.
 #'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions, based on area codes.
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
+#' @param ColumnName specifies which column the area should be added to. See details.
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @seealso \code{\link[RstoxBase]{DefineStratumPolygon}} for configuring stratum definitions.
 #'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to landings,
@@ -635,9 +640,11 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
 #'  \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
 #' @export
-AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon){
+AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=c("Stratum", "Area")){
   
-  columnName <- "Stratum"    
+  ColumnName <- match.arg(ColumnName)
+  
+  cname <- "cname"    
   latColumn <- "Latitude"    
   lonColumn <- "Longitude"  
   
@@ -645,16 +652,16 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon){
   if (!(all(c(latColumn, lonColumn) %in% names(StoxLandingData$Landing)))){
     stop(paste("Could not find columns:", latColumn, "and", lonColumn, "that should be added to StoxLandingData"))
   }
-  if (columnName %in% names(StoxLandingData$Landing)){
-    stop(paste("Column name", columnName, "already exists."))
-  }
-  StoxLandingData$Landing <- appendAreaCode(StoxLandingData$Landing, StratumPolygon, latColumn, lonColumn, columnName)
+  StoxLandingData$Landing <- appendAreaCode(StoxLandingData$Landing, StratumPolygon, latColumn, lonColumn, cname)
+  StoxLandingData$Landing[[ColumnName]] <- StoxLandingData$Landing$cname
+  StoxLandingData$Landing$cname <- NULL
   return(StoxLandingData)
 }
 
 #' Adds Stratum to StoxBioticData
 #' @description
-#'  Adds a column to StoxBioticData with the spatial strata each row belongs to.
+#'  Adds a column 'Stratum' to StoxBioticData with the spatial strata each row belongs to.
+#'  
 #' @details 
 #'  The strata are added to the new column 'Stratum'.
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated. Needs postions appended. See details.

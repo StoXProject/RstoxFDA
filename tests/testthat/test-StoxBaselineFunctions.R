@@ -548,5 +548,20 @@ stoxLandingPre <- RstoxData:::StoxLanding(landingH)
 landingWpos <- AddAreaPositionStoxLanding(stoxLandingPre, areaPos)
 
 landingPost <- AddStratumStoxLanding(landingWpos, strp)
-expect_true(all(as.integer(landingPost$Stratum)==as.integer(landingPost$area)))
+expect_true(all(as.integer(landingPost$Landing$Stratum)==as.integer(landingPost$area)))
+expect_equal(ncol(landingWpos$Landing)+1, ncol(landingPost$Landing))
 
+landingPost <- AddStratumStoxLanding(landingWpos, strp, ColumnName = "Area")
+expect_true(all(as.integer(landingPost$Area)==as.integer(landingPost$area)))
+expect_equal(ncol(landingWpos$Landing), ncol(landingPost$Landing))
+
+
+context("test-StoxBaselineFunctions: AppendStratumStoxBiotic")
+strp <- mainareaFdir2018
+bioticfiles <- system.file("testresources","biotic_v3_example.xml", package="RstoxFDA")
+BioticData <- RstoxData::ReadBiotic(bioticfiles)
+StoxBioticPre <- RstoxData::StoxBiotic(BioticData)
+StoxBioticPost <- AddStratumStoxBiotic(StoxBioticPre, strp)
+expect_true("Stratum" %in% names(StoxBioticPost$Station))
+expect_true(!any(is.na(StoxBioticPost$Station$Stratum)))
+expect_equal(ncol(StoxBioticPost$Station), ncol(StoxBioticPost$Station))
