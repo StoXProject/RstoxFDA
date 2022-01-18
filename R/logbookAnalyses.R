@@ -161,7 +161,7 @@ calculateLogbookPartitionByTrip <- function(logbooks, groupCols, tripCol="tripid
 
   logbooks$groupid <- ""
   for (co in groupCols){
-    logbooks$groupid <- paste(logbooks$groupid, logbooks[[co]], sep="/")
+      logbooks$groupid <- paste(logbooks$groupid, logbooks[[co]], sep="/")
   }
 
   groupTotals <- data.table::as.data.table(stats::aggregate(list(totalGroup=logbooks[[weightCol]]), by=list(tripid=logbooks[[tripCol]], species=logbooks[[speciesCol]], groupid=logbooks$groupid), FUN=function(x){sum(x, na.rm=T)}))

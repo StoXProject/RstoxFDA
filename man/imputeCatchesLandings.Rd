@@ -6,46 +6,57 @@
 \usage{
 imputeCatchesLandings(
   landings,
-  catchPartition,
+  logbooks,
   tripIdCol = "tripid",
-  speciesCol = "Art FAO (kode)",
+  catchIdCol = "STARTTIDSPUNKT",
+  speciesColLand = "Art FAO (kode)",
+  speciesColLog = "FANGSTART_FAO",
+  weightCol = "RUNDVEKT",
   valueColumns = c("Bruttovekt", "Produktvekt", "Rundvekt")
 )
 }
 \arguments{
 \item{landings}{\code{\link[data.table]{data.table}} containing landings records, and a column identifying the trip that caught the landed catch ('tripIdCol').}
 
-\item{catchPartition}{\code{\link[RstoxFDA]{TripPartition}} partitioning the catch of each trip on grouping variables.}
+\item{logbooks}{\code{\link[data.table]{data.table}} containing logbook records, and columns identifying the trip ('tripIdCol') and catch ('catchIdCol').}
 
-\item{tripIdCol}{character() that identifies the column in 'landings' that contain trip ids corresponding to those in 'catchPartition'}
+\item{tripIdCol}{character() that identifies the column in 'landings' and 'logbooks' that contain trip ids}
 
-\item{speciesCol}{character() that identifies the column in 'landings' that contain species ids corresponding to those in 'catchPartition'}
+\item{catchIdCol}{character() that identifies the column in 'logbooks' that contain catch ids}
+
+\item{speciesColLand}{character() that identifies the column in 'landings' that contain species ids}
+
+\item{speciesColLog}{character() that identifies the column in 'logbooks' that contain species ids}
+
+\item{weightCol}{character() that identifies the column in 'logbooks' that contain the weights to use for redistribution of value columns.}
 
 \item{valueColumns}{character() vector with names of columns that should be redistributed over the imputed landings}
 }
 \value{
-\code{\link[data.table]{data.table}} with 'landings' that have artificial landings imputed and 'valueColumns' redistributed to reflect the 'logbookPartition'.
+\code{\link[data.table]{data.table}} with 'landings' that have artificial landings imputed, each catch identified by the added column 'catchIdCol'.
 }
 \description{
 Imputes landings to represent individual catches of species from a trip, and redistributes selected values over the imputed landings.
  This mimics a situation where landings are reported for each catch rather than each trip.
  This is useful to obtain a higher resolution on some grouping variables and consolidate logbook records with landing records, 
- while preserving data for landings not reported in logbooks, and preseriving the total value equal to that in landings.
+ while preserving data for landings not reported in logbooks, and preserving the total value equal to that in landings.
 }
 \details{
-Important: columns in landings that are not in 'valueColumns' and are not in the group definition ('catchPartition') will
+The result of imputation have added lines for each corresponding catch in logbooks, 
+ and 'valueColumns' redistributed to reflect the fraction of 'weightCol' that each catch 
+ contributes to the total trip catch of the species ('speciesColLog').
+ 
+ Important: columns in landings that are not in 'valueColumns' will
  be duplicated exactly for the imputed catches. 
  That means that any weight-column not in 'valueColumns' will result in duplicated total weights for that column.
  That also means that any identifiers / keys may be copied and thus be rendered non-unique in the imputed landings.
- Landings are imputed and redistributed line-by-line, so that the total proportions of categorical variables not in the group definition ('catchPartition') are preserved for the columns in 'valueColumns'.
  
- Landings for which no partition can be found in 'catchPartition' are left untouched.
- Catchpartitions with no corresponding landings are ignored.
+ Landings for which no trip can be found in 'logbooks' are left untouched.
+ logbook entries with no corresponding landings are ignored.
  
  Default values for parameters 'speciesCol' and 'valueColumns' are suitable for data read with \code{\link[RstoxData]{readLssFile}}.
- Default values for 'tripIdCol' corresponds to defaults for \code{\link[RstoxFDA]{makeTripIds}} and \code{\link[RstoxFDA]{appendTripIdLandings}}.
+ Default values for 'tripIdCol' corresponds to defaults for \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, and \code{\link[RstoxFDA]{appendTripIdLogbooks}}.
 }
 \seealso{
-\code{\link[RstoxFDA]{calculateLogbookPartitionByTrip}} for calculation of 'catchPartition'
- \code{\link[RstoxFDA]{makeTripIds}} and \code{\link[RstoxFDA]{appendTripIdLandings}} for obtaining 'landings' with trip-ids.
+\code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, and \code{\link[RstoxFDA]{appendTripIdLogbooks}} for obtaining 'landings' with trip-ids.
 }

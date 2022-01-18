@@ -20,65 +20,81 @@ context("Test append trip landings error: data frame")
 expect_error(appendTripIdLandings(as.data.frame(land), tripIdCol = "tt"), "Parameter 'landings' must be a data table")
 
 
-context("Test logbook adjustment of landings")
+
 logb <- RstoxData::readErsFile(system.file("testresources","logbooks_mock_2018.psv", package="RstoxFDA"))
 land <- RstoxData::readLssFile(system.file("testresources","landings_trimmed_2018.lss", package="RstoxFDA"))
 land <- appendTripIdLandings(land, tripIdCol = "tt")
 tripIds <- makeTripIds(land)
-expect_warning(logbTI <-appendTripIdLogbooks(logb, tripIds))
+expect_warning(logbTI <-appendTripIdLogbooks(logb, tripIds, tripIdCol = "tt"))
+logbTI <- logbTI[!is.na(logbTI$tt),]
 
-logbTIC <- logbTI[!is.na(logbTI$tripid)]
-logbTIC$mainarea <- substring(logbTIC$LOKASJON_START, 1, 2)
-logbTIC$quarter <- quarters(logbTIC$STARTTIDSPUNKT, abbreviate=T)
-land$mainarea <- land$`Hovedområde (kode)`
-land$quarter <- quarters(land$`Siste fangstdato`, abbreviate=T)
-partition <- calculateLogbookPartitionByTrip(logbTIC, groupCols = c("mainarea", "quarter"))
-# hack correspondance for test
+#hack to force some redistr
+logbTI$FANGSTART_FAO[logbTI$tt == "RCRC/2018-02-26" & logbTI$FANGSTART_FAO=="HER"] <- "CAP"
+logbTI$FANGSTART_FAO[logbTI$tt == "RCRC/2018-04-11" & logbTI$FANGSTART_FAO=="COD"] <- "WHB"
 
-partition$fractions$species[partition$fractions$tripid == "RCRC/2018-02-26" & partition$fractions$species=="HER"] <- "CAP"
-partition$fractions$species[partition$fractions$tripid == "RCRC/2018-04-11" & partition$fractions$species=="COD"] <- "WHB"
-
-expect_warning(imputedLandings <- imputeCatchesLandings(land, partition, tripIdCol = "tt"), "Not all species-trips")
+context("Test imputeCatchesLandings")
+expect_warning(imputedLandings <- imputeCatchesLandings(land, logbTI, tripIdCol = "tt"), "Not all species-trips")
 expect_equal(sum(imputedLandings$Bruttovekt), sum(land$Bruttovekt))
 expect_equal(sum(imputedLandings$Rundvekt), sum(land$Rundvekt))
 expect_equal(sum(imputedLandings$Produktvekt), sum(land$Produktvekt))
 
-context("Test logbook adjustment of Not adjusting prod weight")
-expect_warning(imputedLandings <- imputeCatchesLandings(land, partition, tripIdCol = "tt", valueColumns=c("Bruttovekt", "Rundvekt")), "Not all species-trips")
+context("Test imputeCatchesLandings, not adjusting prod weight")
+expect_warning(imputedLandings <- imputeCatchesLandings(land, logbTI, tripIdCol = "tt", valueColumns=c("Bruttovekt", "Rundvekt")), "Not all species-trips")
 expect_equal(sum(imputedLandings$Bruttovekt), sum(land$Bruttovekt))
 expect_equal(sum(imputedLandings$Rundvekt), sum(land$Rundvekt))
 expect_true(sum(imputedLandings$Produktvekt) > sum(land$Produktvekt))
 
-alteredLandings <- imputedLandings[imputedLandings$tt %in% partition$fractions$tripid,]
-nonAlteredLandings <- imputedLandings[!(imputedLandings$tt %in% partition$fractions$tripid),]
+alteredLandings <- imputedLandings[imputedLandings$tt %in% logbTI$tt,]
+nonAlteredLandings <- imputedLandings[!(imputedLandings$tt %in% logbTI$tt),]
 
 
-context("Test logbook adjustment check that non-altered Landings are untouched")
-comp <- merge(nonAlteredLandings[, c("mainarea", "quarter", "tt", "Rundvekt")], imputedLandings[, c("mainarea", "quarter", "tt", "Rundvekt")], by=c("mainarea", "quarter", "tt"))
+context("Test imputeCatchesLandings check that non-altered Landings are untouched")
+comp <- merge(nonAlteredLandings[, c("tt", "Rundvekt")], land[, c("tt", "Rundvekt")], by=c( "tt"))
 expect_true(all(comp$Rundvekt.x == comp$Rundvekt.y))
+context("Test imputeCatchesLandings check that altered Landings are altered")
+comp <- merge(alteredLandings[, c("tt", "Rundvekt")], land[, c("tt", "Rundvekt")], by=c("tt"))
+expect_true(any(comp$Rundvekt.x != comp$Rundvekt.y))
 
-context("Test logbook adjustment check that altered Landings havae proprotions equal to logb")
-totalGroup <- alteredLandings[,list(Total=sum(get("Rundvekt"))), by=c("mainarea", "quarter", "Art FAO (kode)", "tt")]
+context("Test imputeCatchesLandings check that altered Landings have proprotions equal to logb")
+totalGroup <- alteredLandings[,list(Total=sum(get("Rundvekt"))), by=c("STARTTIDSPUNKT", "Art FAO (kode)", "tt")]
 totalTrip <- alteredLandings[,list(Total=sum(get("Rundvekt"))), by=c("Art FAO (kode)","tt")]
 m <- merge(totalGroup, totalTrip, by=c("tt", "Art FAO (kode)"), suffix=c(".group", ".trip"))
 m$fraction <- m$Total.group / m$Total.trip
-fracs <- merge(m[,c("tt", "Art FAO (kode)", "mainarea", "quarter", "fraction")], merge(partition$fractions, partition$groupDefinition, by="groupid")[,c("tripid", "species", "mainarea", "quarter", "fraction")], by.x=c("tt", "Art FAO (kode)", "mainarea", "quarter"), by.y=c("tripid", "species", "mainarea", "quarter"), suffix=c(".adj", "logb"))
-expect_true(all(fracs$fraction.adj == fracs$fractionlogb))
+m <- m[,c("tt", "STARTTIDSPUNKT", "Art FAO (kode)", "fraction")]
 
-context("Test logbook adjustment param error")
-expect_error(imputeCatchesLandings(land, partition, tripIdCol = "tt", valueColumns=c("Bruttovekt", "Rundvek")), "Not all columns in 'valueColumns' are found in 'landings'")
-expect_error(imputeCatchesLandings(land, partition, tripIdCol = "ttt", valueColumns=c("Bruttovekt", "Rundvekt")), "tripIdCol' is not found in 'landings'")
-ll <- land
-ll$quarter <- NULL
-expect_error(imputeCatchesLandings(ll, partition, tripIdCol = "tt", valueColumns=c("Bruttovekt", "Rundvekt")), "Not all columns in group definition of ")
+totalGroup <- logbTI[,list(Total=sum(get("RUNDVEKT"))), by=c("STARTTIDSPUNKT", "FANGSTART_FAO", "tt")]
+totalTrip <- logbTI[,list(Total=sum(get("RUNDVEKT"))), by=c("FANGSTART_FAO", "tt")]
+
+d <- merge(totalGroup, totalTrip, by=c("tt", "FANGSTART_FAO"), suffix=c(".group", ".trip"))
+d$fraction <- d$Total.group / d$Total.trip
+d <- d[,c("tt", "STARTTIDSPUNKT", "FANGSTART_FAO", "fraction")]
+
+names(m) <- c("tt", "STARTTIDSPUNKT", "FANGSTART_FAO", "fraction")
+g<-merge(m,d, by=c("tt", "STARTTIDSPUNKT", "FANGSTART_FAO"))
+expect_true(all(g$fraction.x == g$fraction.y))
+
+context("Test imputeCatchesLandings param error")
+expect_error(imputeCatchesLandings(land, logbTI, tripIdCol = "tt", valueColumns=c("Bruttovekt", "Rundvek")), "Not all columns in 'valueColumns' are found in 'landings'")
+expect_error(imputeCatchesLandings(land, logbTI, tripIdCol = "ttt", valueColumns=c("Bruttovekt", "Rundvekt")), "tripIdCol' is not found in 'landings'")
 
 context("Test logbookAdjustment")
 land <- RstoxData::readLssFile(system.file("testresources","landings_trimmed_2018.lss", package="RstoxFDA"))
 logb <- RstoxData::readErsFile(system.file("testresources","logbooks_mock_2018.psv", package="RstoxFDA"))
+
 #hack logb for test
 logb$FANGSTART_FAO[logb$RC=="RCRC"] <- "CAP"
+logb <- logb[1:8,]
+land$`Hovedområde (kode)`[land$`Art FAO (kode)`=="CAP"] <- "12"
 expect_warning(landAdj <- logbookAdjustment(land, logb))
 expect_true(nrow(landAdj) > nrow(land))
+expect_gt(sum(is.na(landAdj$Hovedområde)), 0)
 expect_equal(sum(landAdj$Rundvekt), sum(land$Rundvekt))
 expect_equal(sum(duplicated(landAdj$Linjenummer)),0)
 expect_equal(ncol(landAdj), ncol(land))
+expect_true(!(all(landAdj$`Hovedområde (kode)`[landAdj$`Art FAO (kode)`=="CAP"] %in% land$`Hovedområde (kode)`[land$`Art FAO (kode)`=="CAP"])))
+
+context("Test logbookAdjustment add columns")
+expect_warning(landAdj <- logbookAdjustment(land, logb, addColumns=c("START_LG", "START_LT", "MASKEVIDDE")))
+expect_true(all(c("START_LG", "START_LT", "MASKEVIDDE") %in% names(landAdj)))
+expect_true(!all(is.na(landAdj$START_LG)))
+

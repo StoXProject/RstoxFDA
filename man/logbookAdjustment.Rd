@@ -9,14 +9,11 @@ logbookAdjustment(
   logbooks,
   gearCodes = character(),
   gearCol = "REDSKAP_FAO",
-  timeCol = "STARTTIDSPUNKT",
-  dateLastCatchCol = "Siste fangstdato",
-  locCol = "LOKASJON_START",
-  areaCol = "Hovedområde (kode)",
   speciesColLog = "FANGSTART_FAO",
   speciesColLand = "Art FAO (kode)",
   weightColLog = "RUNDVEKT",
   valueColLand = c("Bruttovekt", "Produktvekt", "Rundvekt"),
+  addColumns = character(),
   lineIdCol = "Linjenummer"
 )
 }
@@ -29,14 +26,6 @@ logbookAdjustment(
 
 \item{gearCol}{character() that identifies the column in 'logbook' that contain gear codes.}
 
-\item{timeCol}{character() that identifies the column in 'logbook' that contain the time columns to use for inferring quarter.}
-
-\item{dateLastCatchCol}{character() that identifies the column in 'landings' that contain the date of last catch.}
-
-\item{locCol}{character() that identifies the column in 'logbook' that contain area and location info.}
-
-\item{areaCol}{character() that identifies the column in 'landings' that contain the area code.}
-
 \item{speciesColLog}{character() that identifies the column in 'logbook' that contain information about species of catch.}
 
 \item{speciesColLand}{character() that identifies the column in 'landings' that contain information about species of catch.}
@@ -45,6 +34,8 @@ logbookAdjustment(
 
 \item{valueColLand}{character() vector that identifies the columns in 'landings' that contain values that are to be redistributed over imputed landings (weight and value columns)}
 
+\item{addColumns}{character() vector that identifies columns in 'logbooks' that should be added to 'landings'}
+
 \item{lineIdCol}{character() that identifies the column in 'landings' that contain the identifier for each line on a sales note.}
 }
 \value{
@@ -52,13 +43,21 @@ logbookAdjustment(
 }
 \description{
 imputes landings and redistributes catch within quarter and area to mimic sales notes for each individual fishing operation (logbook record).
- Applicabe to formats parsed by \code{\link[RstoxData]{readLssFile}} and \code{\link[RstoxData]{readErsFile}}
+ Applicable to formats parsed by \code{\link[RstoxData]{readLssFile}} and \code{\link[RstoxData]{readErsFile}}
 }
 \details{
-As there is some variation in naming conventions used in the supported formats, 
- relevant column names are paramaterized so that they can be changed to the appropriate format dialect.
- This may also be utilized to choose between coding systems. For instance 'gearCol' can be specified as 
- "REDSKAP_FAO" or "REDSKAP_NS" to use FAO-gear codes or NS-9400 gear codes, respectively.
+Imputes landings for logbook records, redistributes catches, and adds information from logbooks.
+ See details in utilized functions: \code{\link[RstoxFDA]{imputeCatchesLandings}}, 
+ \code{\link[RstoxFDA]{sourceLogbookColumns}}, and \code{\link[RstoxFDA]{addLogbookColumns}}.
+ In particular consult \code{\link[RstoxFDA]{sourceLogbookColumns}} to learn
+ which columns in the 'landings' are affected by imputation.
  
- Sales-note lines identifiers are made unique after imputation and redistibution ('lineIdCol').
+ Logbook imputations are only applied with logbook records with the gears in 'gearCodes' if given.
+ If gearCodes are not given (the default) all available logbook records are applied.
+ This may apply to landings with a different gear listed in the landing records.
+ 
+ Landings for which logbook records are not available, or not applied (by 'gearCode' restriction)
+ are retained untouched in the returned landings.
+ 
+ Sales-note lines identifiers are made unique after imputation and redistribution ('lineIdCol').
 }
