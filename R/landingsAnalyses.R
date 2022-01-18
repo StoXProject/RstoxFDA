@@ -207,7 +207,7 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
   tab <- tab[, .SD, .SDcols=cols]
   data.table::setkeyv(partitioned, cols=c(tripIdCol, speciesColLand))
   data.table::setkeyv(tab, cols= c("tripid", "species"))
-  partitioned <- partitioned[tab, by=.EACHI, allow.cartesian=T]
+  partitioned <- partitioned[tab, allow.cartesian=T]
   
   # distribute values
   for (v in valueColumns){
