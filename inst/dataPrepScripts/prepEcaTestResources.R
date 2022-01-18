@@ -1,12 +1,3 @@
-#' example results for testing reporting
-fpath <- makeTempDirReca()
-param <- ParameterizeRecaModels(prep, 10, 100, ResultDirectory = fpath)
-recaParam <- RstoxFDA::ParameterizeRecaModels(recaDataExample, 10, 200, 10, ResultDirectory = fpath)
-recaPredictionFlat <- RstoxFDA::RunRecaModels(recaParam, StoxLandingData)
-recaPredictionFlatAggvar <- RstoxFDA::RunRecaModels(recaParam, StoxLandingData, GroupingVariables = c("Gear", "Area"))
-saveRDS(recaPredictionFlat, "inst/testresources/recaPredictionFlat.rds")
-saveRDS(recaPredictionFlatAggvar, "inst/testresources/recaPredictionDecomp.rds")
-removeTempDirReca(fpath)
 
 #
 # make test data with delprøve
@@ -48,3 +39,14 @@ RstoxAPI::runModel(projectPath = exampleProject, modelName = "baseline")
 #set nSamples to a low number in the project in order to keep file size small
 ss<-RstoxAPI::runModel(projectPath = exampleProject, modelName = "analysis")
 saveRDS(ss$PreredictAreaQuarter, "inst/testresources/stocksplitpred.rds")
+
+#' example results for testing reporting
+fpath <- makeTempDirReca()
+param <- ParameterizeRecaModels(prep, 10, 100, ResultDirectory = fpath)
+recaParam <- RstoxFDA::ParameterizeRecaModels(recaDataExample, 10, 200, 10, ResultDirectory = fpath)
+recaPredictionFlat <- RstoxFDA::RunRecaModels(recaParam, StoxLandingData, CollapseLength = F)
+recaPredictionFlatAggvar <- RstoxFDA::RunRecaModels(recaParam, StoxLandingData, GroupingVariables = c("Gear", "Area"), CollapseLength = F)
+saveRDS(recaPredictionFlat, "inst/testresources/recaPredictionFlat.rds")
+saveRDS(recaPredictionFlatAggvar, "inst/testresources/recaPredictionDecomp.rds")
+removeTempDirReca(fpath)
+

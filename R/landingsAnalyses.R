@@ -199,6 +199,8 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
   partitioned <- landings[tripSpeciesRecordsLanding %in% tripSpeciesRecords,]
   
   if (nrow(partitioned)==0){
+    notPartitioned[[catchIdCol]] <- NA
+    warning("No logbook records were imputed.")
     return(notPartitioned)
   }
   
@@ -332,9 +334,8 @@ addLogbookColumns <- function(landings, logbooks, logbookColumns, tripIdCol="tri
 #'  In particular consult \code{\link[RstoxFDA]{sourceLogbookColumns}} to learn
 #'  which columns in the 'landings' are affected by imputation.
 #'  
-#'  Logbook imputations are only applied with logbook records with the gears in 'gearCodes' if given.
+#'  Logbook imputations are only applied for logbook records with the gears in 'gearCodes' if given.
 #'  If gearCodes are not given (the default) all available logbook records are applied.
-#'  This may apply to landings with a different gear listed in the landing records.
 #'  
 #'  Landings for which logbook records are not available, or not applied (by 'gearCode' restriction)
 #'  are retained untouched in the returned landings.
@@ -342,24 +343,18 @@ addLogbookColumns <- function(landings, logbooks, logbookColumns, tripIdCol="tri
 #'  Sales-note lines identifiers are made unique after imputation and redistribution ('lineIdCol').
 #' @param landings landings as returned by e.g. \code{\link[RstoxData]{readLssFile}}
 #' @param logbooks logbooks as returned by e.g. \code{\link[RstoxData]{readErsFile}}
-#' @param gearCodes character() with gear-codes which logbook cleaning should be applied for (as they appear in 'gearCol'). If not provided, cleaning is applied to all gear codes
-#' @param gearCol character() that identifies the column in 'logbook' that contain gear codes.
+#' @param gearCodes character() with NS-9400 gear-codes which logbook cleaning should be applied for. If not provided, cleaning is applied to all gear codes
 #' @param speciesColLog character() that identifies the column in 'logbook' that contain information about species of catch.
 #' @param speciesColLand character() that identifies the column in 'landings' that contain information about species of catch.
 #' @param weightColLog character() that identifies the column in 'logbook' that contain the weights that redistribution of weights should be based on.
 #' @param valueColLand character() vector that identifies the columns in 'landings' that contain values that are to be redistributed over imputed landings (weight and value columns)
 #' @param addColumns character() vector that identifies columns in 'logbooks' that should be added to 'landings'
+#' @param activityTypes character() vector with the activity types that should be utilized from logbook records ('AKTIVITET_KODE')
 #' @param lineIdCol character() that identifies the column in 'landings' that contain the identifier for each line on a sales note.
 #' @return 'landings' with catches redistributed over more sales-note lines corresponding to logbook-catch records / fishing operations.
 #' @export
-logbookAdjustment <- function(landings, logbooks, gearCodes=character(), gearCol="REDSKAP_FAO", speciesColLog="FANGSTART_FAO", speciesColLand="Art FAO (kode)", weightColLog="RUNDVEKT", valueColLand=c("Bruttovekt", "Produktvekt", "Rundvekt"), addColumns=character(), lineIdCol="Linjenummer"){
+logbookAdjustment <- function(landings, logbooks, gearCodes=character(), speciesColLog="FANGSTART_FAO", speciesColLand="Art FAO (kode)", weightColLog="RUNDVEKT", valueColLand=c("Bruttovekt", "Produktvekt", "Rundvekt"), addColumns=character(), activityTypes=c("FIS", "REL", "SCR"), lineIdCol="Linjenummer"){
   
-  if (!(gearCol) %in% names(logbooks)){
-    stop("Column 'gearCol' not found in 'logbooks'")
-  }
-  if (any(is.na(logbooks[[gearCol]]))){
-    stop("Column 'gearCol' has some missing values (NAs)")
-  }
   if (!(lineIdCol) %in% names(landings)){
     stop("Column 'lineIdCol' not found in 'landings'")
   }
@@ -389,6 +384,11 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), gearCol
     stop("Some columns in 'valueColLand' are not found in 'landings'")
   }
   
+  if (length(activityTypes)==0){
+    stop("Must provide at least one activity type ('activityTypes')")
+  }
+  logbooks <- logbooks[logbooks$AKTIVITET_KODE %in% activityTypes,]
+  
   #check that tempcols are not used
   catchIdCol <- "STARTTIDSPUNKT"
   if (any(c(catchIdCol, "tripid") %in% names(landings))){
@@ -400,21 +400,24 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), gearCol
   logbooks <- appendTripIdLogbooks(logbooks, tripIds)
   
   if (isGiven(gearCodes)){
-    logbooks <- logbooks[logbooks[[gearCol]] %in% gearCodes]
+    tripids <- landings$tripid[(is.na(landings[["Redskap (kode)"]]) | (landings[["Redskap (kode)"]] %in% gearCodes))]
+    logbooks <- logbooks[!(logbooks$tripid %in% tripids),]
   }
   
-  if (any(is.na(logbooks$tripid))){
-    missing <- logbooks[is.na(logbooks$tripid),]
-    catches <- paste(missing$RC, missing$STARTTIDSPUNKT, sep=":")
-    all <- paste(logbooks$RC, logbooks$STARTTIDSPUNKT, sep=":")
-    warning(paste("Some fishing operations could not be matched to a landing. Missing", length(unique(catches)), "out of", length(unique(all))))
-    logbooks <- logbooks[!is.na(logbooks$tripid),]
+  if (nrow(logbooks)>0){
+    if (any(is.na(logbooks$tripid))){
+      missing <- logbooks[is.na(logbooks$tripid),]
+      catches <- paste(missing$RC, missing$STARTTIDSPUNKT, sep=":")
+      all <- paste(logbooks$RC, logbooks$STARTTIDSPUNKT, sep=":")
+      warning(paste("Some fishing operations could not be matched to a landing. Missing", length(unique(catches)), "out of", length(unique(all))))
+      logbooks <- logbooks[!is.na(logbooks$tripid),]
+    }
+    
+    landings <- imputeCatchesLandings(landings, logbooks, speciesColLand = speciesColLand, valueColumns = valueColLand, catchIdCol = catchIdCol)
+    landings <- sourceLogbookColumns(landings, logbooks, tripIdCol = "tripid")
+    landings <- addLogbookColumns(landings, logbooks, addColumns, tripIdCol = "tripid", catchIdCol = catchIdCol)    
   }
-  
-  landings <- imputeCatchesLandings(landings, logbooks, speciesColLand = speciesColLand, valueColumns = valueColLand, catchIdCol = catchIdCol)
-  landings <- sourceLogbookColumns(landings, logbooks, tripIdCol = "tripid")
-  landings <- addLogbookColumns(landings, logbooks, addColumns, tripIdCol = "tripid", catchIdCol = catchIdCol)
-  
+
   # fix line number ids so that they are unique
   landings[[lineIdCol]] <- 1:nrow(landings)
   

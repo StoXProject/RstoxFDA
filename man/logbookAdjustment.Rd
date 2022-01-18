@@ -8,12 +8,12 @@ logbookAdjustment(
   landings,
   logbooks,
   gearCodes = character(),
-  gearCol = "REDSKAP_FAO",
   speciesColLog = "FANGSTART_FAO",
   speciesColLand = "Art FAO (kode)",
   weightColLog = "RUNDVEKT",
   valueColLand = c("Bruttovekt", "Produktvekt", "Rundvekt"),
   addColumns = character(),
+  activityTypes = c("FIS", "REL", "SCR"),
   lineIdCol = "Linjenummer"
 )
 }
@@ -22,9 +22,7 @@ logbookAdjustment(
 
 \item{logbooks}{logbooks as returned by e.g. \code{\link[RstoxData]{readErsFile}}}
 
-\item{gearCodes}{character() with gear-codes which logbook cleaning should be applied for (as they appear in 'gearCol'). If not provided, cleaning is applied to all gear codes}
-
-\item{gearCol}{character() that identifies the column in 'logbook' that contain gear codes.}
+\item{gearCodes}{character() with NS-9400 gear-codes which logbook cleaning should be applied for. If not provided, cleaning is applied to all gear codes}
 
 \item{speciesColLog}{character() that identifies the column in 'logbook' that contain information about species of catch.}
 
@@ -35,6 +33,8 @@ logbookAdjustment(
 \item{valueColLand}{character() vector that identifies the columns in 'landings' that contain values that are to be redistributed over imputed landings (weight and value columns)}
 
 \item{addColumns}{character() vector that identifies columns in 'logbooks' that should be added to 'landings'}
+
+\item{activityTypes}{character() vector with the activity types that should be utilized from logbook records ('AKTIVITET_KODE')}
 
 \item{lineIdCol}{character() that identifies the column in 'landings' that contain the identifier for each line on a sales note.}
 }
@@ -52,9 +52,8 @@ Imputes landings for logbook records, redistributes catches, and adds informatio
  In particular consult \code{\link[RstoxFDA]{sourceLogbookColumns}} to learn
  which columns in the 'landings' are affected by imputation.
  
- Logbook imputations are only applied with logbook records with the gears in 'gearCodes' if given.
+ Logbook imputations are only applied for logbook records with the gears in 'gearCodes' if given.
  If gearCodes are not given (the default) all available logbook records are applied.
- This may apply to landings with a different gear listed in the landing records.
  
  Landings for which logbook records are not available, or not applied (by 'gearCode' restriction)
  are retained untouched in the returned landings.

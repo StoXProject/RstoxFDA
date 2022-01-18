@@ -83,6 +83,21 @@ NULL
 #' 
 NULL
 
+#' Fisheries dependent Catch At Age Report (ReportFdaCatchAtAgeData)
+#' 
+#' @description 
+#'  A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object with the reported <Statistic> being:
+#'  
+#'  \describe{
+#'   \item{CacthAtLength}{The total catch at length in numbers.}
+#'  }
+#'  
+#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#' 
+#' @name ReportFdaCatchAtLengthData
+#' 
+NULL
+
 #' Fisheries dependent Length At Age Report (ReportFdaLengthAtAgeData)
 #' 
 #' @description 
@@ -1350,6 +1365,11 @@ stoxFunctionAttributes <- list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "ReportFdaCatchAtAgeData"
+  ),
+  ReportRecaCatchAtLength = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaCatchAtLengthData"
   ),
   ReportRecaLengthAtAge = list(
     functionType = "modelData",

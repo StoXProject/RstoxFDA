@@ -98,3 +98,9 @@ expect_warning(landAdj <- logbookAdjustment(land, logb, addColumns=c("START_LG",
 expect_true(all(c("START_LG", "START_LT", "MASKEVIDDE") %in% names(landAdj)))
 expect_true(!all(is.na(landAdj$START_LG)))
 
+context("Test logbookAdjustment filter gear")
+landAdj <- logbookAdjustment(land, logb, gearCodes = c("53"))
+expect_warning(logbookAdjustment(land, logb, gearCodes = c("11")))
+
+
+
