@@ -2,14 +2,20 @@
 % Please edit documentation in R/StoxBaselineFunctions.R
 \name{AddStratumStoxLanding}
 \alias{AddStratumStoxLanding}
-\title{Adds Stratum to StoxLandingData}
+\title{Adds Strata to StoxLandingData}
 \usage{
-AddStratumStoxLanding(StoxLandingData, StratumPolygon)
+AddStratumStoxLanding(
+  StoxLandingData,
+  StratumPolygon,
+  ColumnName = c("Stratum", "Area")
+)
 }
 \arguments{
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.}
 
 \item{StratumPolygon}{Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}}
+
+\item{ColumnName}{specifies which column the area should be added to. See details.}
 }
 \value{
 StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
@@ -19,6 +25,10 @@ Adds a column to StoxLandingData with the spatial strata each row belongs to.
 }
 \details{
 The strata are added to the new column 'Stratum'.
+ 
+ The Strata may be added as a new column, or to an existing column depending on the 
+ argument 'ColumnName'. The option 'Stratum' (default) adds strata to a new column 'Stratum'. 
+ The option 'Area' changes the values in the existing column 'Area'.
  
  \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
  these need to be added as columns 'Latitude' and 'Longitude' before calling this function.
