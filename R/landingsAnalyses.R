@@ -213,8 +213,8 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
     partitioned[[v]] <- partitioned[[v]]*partitioned$fraction    
   }
   
-  notPartitioned[[catchIdCol]] <- partitioned[[catchIdCol]][1]
-  notPartitioned[,catchIdCol] <- NA
+  notPartitioned[[catchIdCol]] <- NA
+  class(notPartitioned[[catchIdCol]]) <- class(partitioned[[catchIdCol]])
   partitioned$fraction <- NULL
   
   result <- rbind(partitioned, notPartitioned)
