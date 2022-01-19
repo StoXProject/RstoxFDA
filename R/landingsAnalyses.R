@@ -353,8 +353,13 @@ addLogbookColumns <- function(landings, logbooks, logbookColumns, tripIdCol="tri
 #' @param activityTypes character() vector with the activity types that should be utilized from logbook records ('AKTIVITET_KODE')
 #' @param lineIdCol character() that identifies the column in 'landings' that contain the identifier for each line on a sales note.
 #' @return 'landings' with catches redistributed over more sales-note lines corresponding to logbook-catch records / fishing operations.
-#' @export
+#' @noRd
 logbookAdjustment <- function(landings, logbooks, gearCodes=character(), speciesColLog="FANGSTART_FAO", speciesColLand="Art FAO (kode)", weightColLog="RUNDVEKT", valueColLand=c("Bruttovekt", "Produktvekt", "Rundvekt"), addColumns=character(), activityTypes=c("FIS", "REL", "SCR"), lineIdCol="Linjenummer"){
+  
+  #
+  # Test properly against old method before exporting
+  #
+  
   
   if (!(lineIdCol) %in% names(landings)){
     stop("Column 'lineIdCol' not found in 'landings'")
