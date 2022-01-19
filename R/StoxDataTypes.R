@@ -1046,7 +1046,7 @@ is.StockSplittingParameters <- function(StockSplittingParameters){
 stoxFunctionAttributes <- list(
   
   DefineStockSplittingParameters = list(
-    functionType = "modelData", 
+    functionType = "processData", 
     functionCategory = "baseline", 
     functionOutputDataType = "StockSplittingParameters",
     functionParameterFormat = list(
@@ -1104,7 +1104,7 @@ stoxFunctionAttributes <- list(
   ),
   
   DefineCarNeighbours = list(
-    functionType = "modelData", 
+    functionType = "processData", 
     functionCategory = "baseline", 
     functionOutputDataType = "CarNeighbours",
     functionParameterFormat = list(
@@ -1128,7 +1128,7 @@ stoxFunctionAttributes <- list(
   ),
   
   DefineAgeErrorMatrix = list(
-    functionType = "modelData", 
+    functionType = "processData", 
     functionCategory = "baseline", 
     functionOutputDataType = "AgeErrorMatrix",
     functionParameterFormat = list(

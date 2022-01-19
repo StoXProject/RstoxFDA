@@ -364,6 +364,7 @@ expect_error(DefineCarNeighbours(NULL, FileName = errorfile), "Malformed resourc
 
 context("test-StoxBaselineFunctions: DefineCarNeighbours StratumPolygon")
 car <- DefineCarNeighbours(NULL, DefinitionMethod = "StratumPolygon", StratumPolygon = mainareaFdir2018)
+
 neighbours44 <- strsplit(car$Neighbours[car$CarValues=="44"], ",")[[1]]
 expect_true(all(c("43", "45", "49") %in% neighbours44))
 expect_equal(length(neighbours44), 3)
