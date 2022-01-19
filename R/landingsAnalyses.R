@@ -191,8 +191,8 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
   }
   
   catchPartition$fractions <- catchPartition$fractions[tripSpeciesRecords %in% tripSpeciesRecordsLanding,]
-  notPartitioned <- landings[!(tripSpeciesRecordsLanding %in% tripSpeciesRecords),]
-  partitioned <- landings[tripSpeciesRecordsLanding %in% tripSpeciesRecords,]
+  notPartitioned <- landings[!(!is.na(tripSpeciesRecordsLanding) & tripSpeciesRecordsLanding %in% tripSpeciesRecords),]
+  partitioned <- landings[!is.na(tripSpeciesRecordsLanding) & tripSpeciesRecordsLanding %in% tripSpeciesRecords,]
   
   if (nrow(partitioned)==0){
     notPartitioned[[catchIdCol]] <- NA
@@ -390,14 +390,14 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), species
     stop("Must provide at least one activity type ('activityTypes')")
   }
   logbooks <- logbooks[logbooks$AKTIVITET_KODE %in% activityTypes,]
-  logbooks$catchId <- 1:nrow(logbooks)
+  logbooks$catchId <- paste(logbooks$STARTTIDSPUNKT, logbooks$LOKASJON_START, logbooks$START_LG, logbooks$START_LT, logbooks$FANGSTART_FAO)
   
   #check that tempcols are not used
   catchIdCol <- "catchId"
   if (any(c(catchIdCol, "tripid") %in% names(landings))){
     stop(paste("The columns '", catchIdCol, "' and 'tripid' should not exist in 'landings"))
   }
-
+  
   tripIds <- makeTripIds(landings)
   landings <- appendTripIdLandings(landings)
   logbooks <- appendTripIdLogbooks(logbooks, tripIds)
