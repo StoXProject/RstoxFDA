@@ -27,11 +27,14 @@ expect_warning(logbTI <-appendTripIdLogbooks(logb, tripIds, tripIdCol = "tt"))
 logbTI <- logbTI[!is.na(logbTI$tt),]
 
 #hack to force some redistr
-logbTI$FANGSTART_FAO[logbTI$tt == "RCRC/2018-02-26" & logbTI$FANGSTART_FAO=="HER"] <- "CAP"
-logbTI$FANGSTART_FAO[logbTI$tt == "RCRC/2018-04-11" & logbTI$FANGSTART_FAO=="COD"] <- "WHB"
+logbTI$FANGSTART_FAO[1:3] <- rep("CAP",3)
+logbTI$FANGSTART_FAO[4:8] <- rep("WHB",5)
+
 logbTI$catchId <- 1:nrow(logbTI)
 stopifnot(nrow(logbTI)==9)
 stopifnot(nrow(land)==9)
+expect_equal(logbTI$FANGSTART_FAO, c("CAP", "CAP", "CAP", "WHB", "WHB", "WHB", "WHB", "WHB", "POK"))
+expect_equal(land$`Art FAO (kode)`, c("CAP", "CAP", "HER", "HER", "HER", "HER", "CAP", "CAP", "WHB"))
 
 context("Test imputeCatchesLandings")
 expect_warning(imputedLandings <- imputeCatchesLandings(land, logbTI, tripIdCol = "tt", catchIdCol = "catchId"), "Not all species-trips")
