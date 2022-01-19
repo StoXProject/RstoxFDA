@@ -47,7 +47,6 @@ expect_warning(imputedLandings <- imputeCatchesLandings(land, logbTI, tripIdCol 
 expect_equal(sum(imputedLandings$Bruttovekt), sum(land$Bruttovekt))
 expect_equal(sum(imputedLandings$Rundvekt), sum(land$Rundvekt))
 expect_true(sum(imputedLandings$Produktvekt) > sum(land$Produktvekt))
-# fails on github
 
 alteredLandings <- imputedLandings[imputedLandings$tt %in% logbTI$tt,]
 nonAlteredLandings <- imputedLandings[!(imputedLandings$tt %in% logbTI$tt),]
@@ -59,7 +58,6 @@ expect_true(all(comp$Rundvekt.x == comp$Rundvekt.y))
 context("Test imputeCatchesLandings check that altered Landings are altered")
 comp <- merge(alteredLandings[, .SD, .SDcol=c("tt", "Rundvekt")], land[, .SD, .SDcol=c("tt", "Rundvekt")], by=c("tt"))
 expect_true(any(comp$Rundvekt.x != comp$Rundvekt.y))
-# fails on github
 
 context("Test imputeCatchesLandings check that altered Landings have proprotions equal to logb")
 totalGroup <- alteredLandings[,list(Total=sum(get("Rundvekt"))), by=c("catchId", "Art FAO (kode)", "tt")]
