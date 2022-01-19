@@ -166,10 +166,7 @@ appendTripIdLandings <- function(landings, tripIds=NULL, vesselIdCol="Radiokalle
 #' @return \code{\link[data.table]{data.table}} with 'landings' that have artificial landings imputed, each catch identified by the added column 'catchIdCol'.
 #' @export
 imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchIdCol, speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO", weightCol="RUNDVEKT", valueColumns=c("Bruttovekt", "Produktvekt", "Rundvekt")){
-  catchkey <- paste(logbooks[[catchIdCol]], logbooks[[speciesColLog]], logbooks[[tripIdCol]])
-  if (length(unique(catchkey)) != nrow(logbooks)){
-    stop("The columns 'tripIdCol', 'catchIdCol', and 'speciesColLog' must uniquely identify a logbook record.")
-  }
+  
   if (!all(valueColumns %in% names(landings))){
     stop("Not all columns in 'valueColumns' are found in 'landings'")
   }
@@ -268,7 +265,6 @@ sourceLogbookColumns <- function(landings, logbooks, tripIdCol="tripid", catchId
   mask <- selection[!is.na(selection)]
   selection <- selection[!is.na(selection)]
   
-  
   landings[["Hovedomr\u00E5de (kode)"]][mask] <- substr(logbooks$LOKASJON_START,1,2)[selection]
   landings[["Hovedomr\u00E5de"]][mask] <- NA
   landings$`Lokasjon (kode)`[mask] <- substr(logbooks$LOKASJON_START,3,4)[selection]
@@ -299,6 +295,7 @@ sourceLogbookColumns <- function(landings, logbooks, tripIdCol="tripid", catchId
 #'  \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, \code{\link[RstoxFDA]{appendTripIdLogbooks}}, and \code{\link[RstoxFDA]{imputeCatchesLandings}} for obtaining 'landings' and 'logbooks' with trip-ids and catch-ids.
 #' @export
 addLogbookColumns <- function(landings, logbooks, logbookColumns, tripIdCol="tripid", catchIdCol, speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO"){
+  
   landIds <- paste(landings[[tripIdCol]], landings[[catchIdCol]], landings[[speciesColLand]])
   logIds <- paste(logbooks[[tripIdCol]], logbooks[[catchIdCol]], logbooks[[speciesColLog]])
   
@@ -348,10 +345,12 @@ addLogbookColumns <- function(landings, logbooks, logbookColumns, tripIdCol="tri
 #' @param valueColLand character() vector that identifies the columns in 'landings' that contain values that are to be redistributed over imputed landings (weight and value columns)
 #' @param addColumns character() vector that identifies columns in 'logbooks' that should be added to 'landings'
 #' @param activityTypes character() vector with the activity types that should be utilized from logbook records ('AKTIVITET_KODE')
+#' @param polygons \code{\link[sp]{SpatialPolygonsDataFrame}} with area names in the column 'StratumName'. If provided, area ("Hovedområde kode") will be calculated from position, rather than fetched from logbook records.
 #' @param lineIdCol character() that identifies the column in 'landings' that contain the identifier for each line on a sales note.
 #' @return 'landings' with catches redistributed over more sales-note lines corresponding to logbook-catch records / fishing operations.
 #' @noRd
-logbookAdjustment <- function(landings, logbooks, gearCodes=character(), speciesColLog="FANGSTART_FAO", speciesColLand="Art FAO (kode)", weightColLog="RUNDVEKT", valueColLand=c("Bruttovekt", "Produktvekt", "Rundvekt"), addColumns=character(), activityTypes=c("FIS", "REL", "SCR"), lineIdCol="Linjenummer"){
+logbookAdjustment <- function(landings, logbooks, gearCodes=character(), speciesColLog="FANGSTART_FAO", speciesColLand="Art FAO (kode)", weightColLog="RUNDVEKT", valueColLand=c("Bruttovekt", "Produktvekt", "Rundvekt"), addColumns=character(), activityTypes=c("FIS", "REL", "SCR"), polygons=RstoxFDA::mainareaFdir2018, lineIdCol="Linjenummer"){
+  
   
   #
   # Test properly against old method before exporting
@@ -404,10 +403,13 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), species
   logbooks <- appendTripIdLogbooks(logbooks, tripIds)
   
   if (isGiven(gearCodes)){
-    tripids <- landings$tripid[(is.na(landings[["Redskap (kode)"]]) | (landings[["Redskap (kode)"]] %in% gearCodes))]
-    logbooks <- logbooks[!(logbooks$tripid %in% tripids),]
+    if (!is.character(gearCodes)){
+      stop(paste("'gearCodes must be provides as character"))
+    }
+    tripids <- landings$tripid[!is.na(landings[["Redskap (kode)"]]) & (landings[["Redskap (kode)"]] %in% gearCodes)]
+    logbooks <- logbooks[logbooks$tripid %in% tripids,]
   }
-  
+
   if (nrow(logbooks)>0){
     if (any(is.na(logbooks$tripid))){
       missing <- logbooks[is.na(logbooks$tripid),]
@@ -419,7 +421,33 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), species
     
     landings <- imputeCatchesLandings(landings, logbooks, speciesColLand = speciesColLand, valueColumns = valueColLand, catchIdCol = catchIdCol)
     landings <- sourceLogbookColumns(landings, logbooks, tripIdCol = "tripid", catchIdCol = catchIdCol)
-    landings <- addLogbookColumns(landings, logbooks, addColumns, tripIdCol = "tripid", catchIdCol = catchIdCol)    
+    landings <- addLogbookColumns(landings, logbooks, unique(c(addColumns, "START_LT", "START_LG")), tripIdCol = "tripid", catchIdCol = catchIdCol)    
+    
+    #set area from position if positions are available
+    if (!is.null(landings$START_LG) & isGiven(polygons)){
+      # set area from position when available
+      landingsWPos <- landings[!is.na(landings$START_LT) & !is.na(landings$START_LG),]
+      landingsWoPos <- landings[is.na(landings$START_LT) | is.na(landings$START_LG),]
+      
+      if (nrow(landingsWPos)>0){
+        landingsWPos <- RstoxFDA::appendAreaCode(landingsWPos, polygons, "START_LT", "START_LG", "areaFromPos", StratumName = "StratumName")
+        landingsWPos[["Hovedomr\u00E5de (kode)"]][!is.na(landingsWPos$areaFromPos)] <- landingsWPos$areaFromPos[!is.na(landingsWPos$areaFromPos)]
+        landingsWPos$areaFromPos <- NULL
+        landings <- rbind(landingsWPos, landingsWoPos)
+      }
+      else{
+        landings <- landingsWoPos
+      }
+    }
+    
+    #remove position columns unless requested by user
+    if (!("START_LT" %in% addColumns)){
+      landings$START_LT <- NULL
+    }
+    if (!("START_LG" %in% addColumns)){
+      landings$START_LG <- NULL
+    }
+    
   }
 
   # fix line number ids so that they are unique

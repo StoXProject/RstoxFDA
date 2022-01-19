@@ -103,8 +103,14 @@ expect_true(all(c("START_LG", "START_LT", "MASKEVIDDE") %in% names(landAdj)))
 expect_true(!all(is.na(landAdj$START_LG)))
 
 context("Test logbookAdjustment filter gear")
-landAdj <- logbookAdjustment(land, logb, gearCodes = c("53"))
-expect_warning(logbookAdjustment(land, logb, gearCodes = c("11")))
+expect_warning(landAdj <- logbookAdjustment(land, logb, gearCodes = c("53")), "Not all species-trips")
+
+landAdj <- logbookAdjustment(land, logb, gearCodes = c("11"))
+expect_true(sum(landAdj$Rundvekt[landAdj$`Redskap (kode)`=="11" & landAdj$`Hovedområde (kode)`=="12"]) != sum(land$Rundvekt[land$`Redskap (kode)`=="11" & land$`Hovedområde (kode)`=="12"]))
+expect_equal(sum(landAdj$Rundvekt[landAdj$`Redskap (kode)`!="11" & landAdj$`Hovedområde (kode)`=="12"]), sum(land$Rundvekt[land$`Redskap (kode)`!="11" & land$`Hovedområde (kode)`=="12"]))
+
+context("Test logbookAdjustment filter gear code type error")
+expect_error(logbookAdjustment(land, logb, gearCodes = c(53)), "'gearCodes must be provides as character")
 
 
 
