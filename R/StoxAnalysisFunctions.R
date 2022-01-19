@@ -85,28 +85,38 @@ warnMissingLandings <- function(StoxBiotic, StoxLanding, effects){
   flatbiotic <- StoxBiotic$Cruise
   levelEff <- levelEff[!(levelEff %in% names(StoxBiotic$Cruise))]
   if (length(levelEff) > 0){
-    flatbiotic <- RstoxData::mergeByIntersect(flatbiotic, StoxBiotic$Station)
+    flatbiotic <- merge(flatbiotic, StoxBiotic$Station, by=names(flatbiotic)[names(flatbiotic) %in% names(StoxBiotic$Station)])
     levelEff <- levelEff[!(levelEff %in% names(StoxBiotic$Station))]
   }
+  
   if (length(levelEff) > 0){
-    flatbiotic <- RstoxData::mergeByIntersect(flatbiotic, StoxBiotic$Haul)
+    flatbiotic <- merge(flatbiotic, StoxBiotic$Haul, by=names(flatbiotic)[names(flatbiotic) %in% names(StoxBiotic$Haul)])
     levelEff <- levelEff[!(levelEff %in% names(StoxBiotic$Haul))]
   }
+  
   if (length(levelEff) > 0){
-    flatbiotic <- RstoxData::mergeByIntersect(flatbiotic, StoxBiotic$SpeciesCategory)
+    flatbiotic <- merge(flatbiotic, StoxBiotic$SpeciesCategory, by=names(flatbiotic)[names(flatbiotic) %in% names(StoxBiotic$SpeciesCategory)])
     levelEff <- levelEff[!(levelEff %in% names(StoxBiotic$SpeciesCategory))]
   }
+  
   if (length(levelEff) > 0){
-    flatbiotic <- RstoxData::mergeByIntersect(flatbiotic, StoxBiotic$Sample)
+    flatbiotic <- merge(flatbiotic, StoxBiotic$Sample, by=names(flatbiotic)[names(flatbiotic) %in% names(StoxBiotic$Sample)])
     levelEff <- levelEff[!(levelEff %in% names(StoxBiotic$Sample))]
   }
+  
   if (length(levelEff) > 0){
-    flatbiotic <- RstoxData::mergeByIntersect(flatbiotic, StoxBiotic$Individual)
+    flatbiotic <- merge(flatbiotic, StoxBiotic$Individual, by=names(flatbiotic)[names(flatbiotic) %in% names(StoxBiotic$Individual)])
   }
+
+  flatbiotic$effectId <- ""
+  StoxLanding$Landing$effectId <- ""
   
-  flatbiotic$effectId <- Reduce(x=effects, f=function(x,y){paste(flatbiotic[[x]], flatbiotic[[y]])})
-  LandingEffectIds <- Reduce(x=effects, f=function(x,y){paste(StoxLanding$Landing[[x]], StoxLanding$Landing[[y]])})
-  
+  for (e in effects){
+    flatbiotic$effectId <- paste(flatbiotic$effectId, flatbiotic[[e]])  
+    StoxLanding$Landing$effectId <- paste(StoxLanding$Landing$effectId, StoxLanding$Landing[[e]])  
+  }
+  LandingEffectIds <- StoxLanding$Landing$effectId
+
   flatbiotic <- flatbiotic[!(flatbiotic$effectId %in% LandingEffectIds),]
   
   if (nrow(flatbiotic)==0){
@@ -119,6 +129,7 @@ warnMissingLandings <- function(StoxBiotic, StoxLanding, effects){
     for (e in effects){
       effectDescr <- c(effectDescr, paste(e,flatbiotic[[e]][[i]],sep="="))
     }
+    
     warningString <- paste0(warningString, "(", paste(effectDescr, collapse=", "), "):")
     keyDescr <- c()
     if ("CruiseKey" %in% names(flatbiotic)){
