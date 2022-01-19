@@ -166,7 +166,6 @@ appendTripIdLandings <- function(landings, tripIds=NULL, vesselIdCol="Radiokalle
 #' @return \code{\link[data.table]{data.table}} with 'landings' that have artificial landings imputed, each catch identified by the added column 'catchIdCol'.
 #' @export
 imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchIdCol, speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO", weightCol="RUNDVEKT", valueColumns=c("Bruttovekt", "Produktvekt", "Rundvekt")){
-  
   catchkey <- paste(logbooks[[catchIdCol]], logbooks[[speciesColLog]], logbooks[[tripIdCol]])
   if (length(unique(catchkey)) != nrow(logbooks)){
     stop("The columns 'tripIdCol', 'catchIdCol', and 'speciesColLog' must uniquely identify a logbook record.")
@@ -205,11 +204,9 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
   }
   
   tab <- merge(catchPartition$fractions, catchPartition$groupDefinition, by="groupid")
-  cols <- names(tab)[names(tab)!=c("groupid")]
+  cols <- names(tab)[names(tab)!="groupid"]
   tab <- tab[, .SD, .SDcols=cols]
-  data.table::setkeyv(partitioned, cols=c(tripIdCol, speciesColLand))
-  data.table::setkeyv(tab, cols= c("tripid", "species"))
-  partitioned <- partitioned[tab, allow.cartesian=T]
+  partitioned <- merge(partitioned, tab, by.x=c(tripIdCol, speciesColLand), by.y=c("tripid", "species"), all.x=T, allow.cartesian=T)
   
   # distribute values
   for (v in valueColumns){

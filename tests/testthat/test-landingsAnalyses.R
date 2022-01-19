@@ -19,8 +19,6 @@ expect_true(all(!is.na(landA$tt)))
 context("Test append trip landings error: data frame")
 expect_error(appendTripIdLandings(as.data.frame(land), tripIdCol = "tt"), "Parameter 'landings' must be a data table")
 
-
-
 logb <- RstoxData::readErsFile(system.file("testresources","logbooks_mock_2018.psv", package="RstoxFDA"))
 land <- RstoxData::readLssFile(system.file("testresources","landings_trimmed_2018.lss", package="RstoxFDA"))
 land <- appendTripIdLandings(land, tripIdCol = "tt")
@@ -32,6 +30,8 @@ logbTI <- logbTI[!is.na(logbTI$tt),]
 logbTI$FANGSTART_FAO[logbTI$tt == "RCRC/2018-02-26" & logbTI$FANGSTART_FAO=="HER"] <- "CAP"
 logbTI$FANGSTART_FAO[logbTI$tt == "RCRC/2018-04-11" & logbTI$FANGSTART_FAO=="COD"] <- "WHB"
 logbTI$catchId <- 1:nrow(logbTI)
+stopifnot(nrow(logbTI)==9)
+stopifnot(nrow(land)==9)
 
 context("Test imputeCatchesLandings")
 expect_warning(imputedLandings <- imputeCatchesLandings(land, logbTI, tripIdCol = "tt", catchIdCol = "catchId"), "Not all species-trips")
@@ -51,10 +51,10 @@ nonAlteredLandings <- imputedLandings[!(imputedLandings$tt %in% logbTI$tt),]
 
 
 context("Test imputeCatchesLandings check that non-altered Landings are untouched")
-comp <- merge(nonAlteredLandings[, c("tt", "Rundvekt")], land[, c("tt", "Rundvekt")], by=c( "tt"))
+comp <- merge(nonAlteredLandings[, .SD, .SDcol=c("tt", "Rundvekt")], land[, .SD, .SDcol=c("tt", "Rundvekt")], by=c( "tt"))
 expect_true(all(comp$Rundvekt.x == comp$Rundvekt.y))
 context("Test imputeCatchesLandings check that altered Landings are altered")
-comp <- merge(alteredLandings[, c("tt", "Rundvekt")], land[, c("tt", "Rundvekt")], by=c("tt"))
+comp <- merge(alteredLandings[, .SD, .SDcol=c("tt", "Rundvekt")], land[, .SD, .SDcol=c("tt", "Rundvekt")], by=c("tt"))
 expect_true(any(comp$Rundvekt.x != comp$Rundvekt.y))
 # fails on github
 
