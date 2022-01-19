@@ -165,7 +165,7 @@ appendTripIdLandings <- function(landings, tripIds=NULL, vesselIdCol="Radiokalle
 #'  \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, and \code{\link[RstoxFDA]{appendTripIdLogbooks}} for obtaining 'landings' with trip-ids.
 #' @return \code{\link[data.table]{data.table}} with 'landings' that have artificial landings imputed, each catch identified by the added column 'catchIdCol'.
 #' @export
-imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchIdCol="STARTTIDSPUNKT", speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO", weightCol="RUNDVEKT", valueColumns=c("Bruttovekt", "Produktvekt", "Rundvekt")){
+imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchIdCol, speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO", weightCol="RUNDVEKT", valueColumns=c("Bruttovekt", "Produktvekt", "Rundvekt")){
   
   catchkey <- paste(logbooks[[catchIdCol]], logbooks[[speciesColLog]], logbooks[[tripIdCol]])
   if (length(unique(catchkey)) != nrow(logbooks)){
