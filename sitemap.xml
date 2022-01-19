@@ -4,6 +4,9 @@
     <loc>/404.html</loc>
   </url>
   <url>
+    <loc>/LICENSE-text.html</loc>
+  </url>
+  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
@@ -121,6 +124,9 @@
     <loc>/reference/ReportFdaCatchAtAgeData.html</loc>
   </url>
   <url>
+    <loc>/reference/ReportFdaCatchAtLengthData.html</loc>
+  </url>
+  <url>
     <loc>/reference/ReportFdaLengthAtAgeData.html</loc>
   </url>
   <url>
@@ -146,6 +152,9 @@
   </url>
   <url>
     <loc>/reference/ReportRecaCatchAtAge.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ReportRecaCatchAtLength.html</loc>
   </url>
   <url>
     <loc>/reference/ReportRecaCatchStatistics.html</loc>
@@ -193,6 +202,9 @@
     <loc>/reference/activityCensus.html</loc>
   </url>
   <url>
+    <loc>/reference/addLogbookColumns.html</loc>
+  </url>
+  <url>
     <loc>/reference/appendAreaCode.html</loc>
   </url>
   <url>
@@ -230,6 +242,9 @@
   </url>
   <url>
     <loc>/reference/getLandings.html</loc>
+  </url>
+  <url>
+    <loc>/reference/imputeCatchesLandings.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -356,6 +371,9 @@
   </url>
   <url>
     <loc>/reference/runRECA.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sourceLogbookColumns.html</loc>
   </url>
   <url>
     <loc>/reference/stoxFunctionAttributes.html</loc>
