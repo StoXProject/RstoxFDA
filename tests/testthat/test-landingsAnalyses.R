@@ -32,6 +32,8 @@ logbTI$FANGSTART_FAO[logbTI$tt == "RCRC/2018-04-11" & logbTI$FANGSTART_FAO=="COD
 logbTI$catchId <- 1:nrow(logbTI)
 stopifnot(nrow(logbTI)==9)
 stopifnot(nrow(land)==9)
+expect_equal(logbTI$FANGSTART_FAO, c("CAP", "CAP", "CAP", "WHB", "WHB", "WHB", "WHB", "WHB", "POK"))
+expect_equal(land$`Art FAO (kode)`, c("CAP", "CAP", "HER", "HER", "HER", "HER", "CAP", "CAP", "WHB"))
 
 context("Test imputeCatchesLandings")
 expect_warning(imputedLandings <- imputeCatchesLandings(land, logbTI, tripIdCol = "tt", catchIdCol = "catchId"), "Not all species-trips")
