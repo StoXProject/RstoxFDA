@@ -156,6 +156,31 @@ reportParameterAtAge <- function(table, aggVariables, parameter, alpha=.1){
   return(output)
 }
 
+#' @noRd
+reportParameterAtLength <- function(table, aggVariables, parameter, alpha=.1){
+  
+  stopifnot(all(c("Length", "LengthGroup") %in% names(table)))
+  
+  output <- list()
+  
+  aggNames <- aggVariables
+  aggNames <- c("Length", "LengthGroup", aggNames)
+  stopifnot(length(aggNames) == (ncol(table)-2))
+  
+  result <- table[,list(par=mean(get(parameter)), SD=stats::sd(get(parameter)), Low=stats::quantile(get(parameter), probs = alpha/2.0), High=stats::quantile(get(parameter), probs = 1-(alpha/2.0))), by=aggNames]
+  
+  data.table::setcolorder(result ,c("LengthGroup", "Length", "par", "SD", "Low", "High", aggVariables))
+  names(result) <- c("LengthGroup", "Length", parameter, "SD", "Low", "High", aggVariables)
+  data.table::setorderv(result, c(aggVariables, "Length"))
+  
+  output <- list()
+  output$FdaReport <- result
+  
+  output$GroupingVariables <- data.table::data.table(GroupingVariables=aggVariables)
+  
+  return(output)
+}
+
 #' Add character description of Age groups
 #' @noRd
 setAgeGroup <- function(AgeReport){
@@ -165,6 +190,26 @@ setAgeGroup <- function(AgeReport){
   AgeReport$AgeGroup <- paste("Age", AgeReport$Age)
   
   return(AgeReport)
+}
+
+#' Add character description of Length groups
+#' @noRd
+setLengthGroup <- function(LengthReport){
+  stopifnot(!("LengthGroup" %in% names(LengthReport)))
+  stopifnot(("Length" %in% names(LengthReport)))
+  
+  l <- unique(LengthReport$Length)
+  l <- sort(l)
+  diffs <- unique(l[2:length(l)] - l[1:(length(l)-1)])
+  
+  if (length(diffs)==1){
+    LengthReport$LengthGroup <- sprintf("\u2329%.1f, %.1f\uFF3D", LengthReport$Length - diffs, LengthReport$Length)  
+  }
+  else{
+    LengthReport$LengthGroup <- sprintf("\u2329 , %.1f\uFF3D", LengthReport$Length - diffs, LengthReport$Length)  
+  }
+  
+  return(LengthReport)
 }
 
 #' Report catch at age
@@ -187,7 +232,7 @@ setAgeGroup <- function(AgeReport){
 #' @param Decimals integer specifying the number of decimals to report for 'CatchAtAge', 'SD', 'Low' and 'High'. Defaults to zero.
 #' @param Unit unit for 'CatchAtAge', 'SD', 'Low' and 'High'
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
-#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
+#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length composition.
 #' @export
 ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
   
@@ -240,6 +285,73 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
   
   if (isGiven(Decimals)){
     caa$FdaReport <- setDecimals(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), Decimals)
+  }
+  
+  return(caa)
+  
+}
+
+#' Report length at age
+#' @description 
+#'  Tabulates summary statistics for total catch (number) at length from MCMC simulations using Reca.
+#'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+#'  Summary statistics are obtained from the posterior distribution, and
+#'  the interval is reported as equal-tailed credible intervals.
+#'  
+#'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
+#'  area, gear, stock, etc., summary statistics will be presented similarly.
+#'  
+#'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+#'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+#'  
+#'  The units considered valid for catch at length in numbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
+#' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
+#' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
+#' @param Decimals integer specifying the number of decimals to report for 'CatchAtLength', 'SD', 'Low' and 'High'. Defaults to zero.
+#' @param Unit unit for 'CatchAtLength', 'SD', 'Low' and 'High'
+#' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
+#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
+#' @export
+ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
+  
+  if (!isGiven(Decimals)){
+    Decimals=0
+  }
+  
+  if (isGiven(Unit)){
+    Unit <- Unit[1]
+    if (!(Unit %in% RstoxData::getUnitOptions("cardinality"))){
+      stop(paste(Unit, "is not a recognized unit catch in numbers."))
+    }
+  }
+  
+  
+  stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  
+  if (length(IntervalWidth) == 0){
+    IntervalWidth <- 0.9
+  }
+  
+  aggNames <- c("Iteration", "Length", RecaCatchAtAge$GroupingVariables$GroupingVariables)
+  stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
+  totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
+  
+  totalOverLength <- setLengthGroup(totalOverLength)
+  
+  aggNames <- c(RecaCatchAtAge$GroupingVariables$GroupingVariables)
+  
+  caa <- reportParameterAtLength(totalOverLength, aggNames, "CatchAtAge", alpha = 1-IntervalWidth)
+  caa$FdaReport$CatchAtLength <- caa$FdaReport$CatchAtAge
+  caa$FdaReport$CatchAtAge <- NULL
+
+  caa$FdaReport <- setUnits(caa$FdaReport, "Length", "cm", "length")
+  caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtLength", "SD", "Low", "High"), "individuals", "cardinality")
+  if (isGiven(Unit)){
+    caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtLength", "SD", "Low", "High"), Unit, "cardinality")  
+  }
+  
+  if (isGiven(Decimals)){
+    caa$FdaReport <- setDecimals(caa$FdaReport, c("CatchAtLength", "SD", "Low", "High"), Decimals)
   }
   
   return(caa)

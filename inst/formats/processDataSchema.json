@@ -83,5 +83,59 @@
   				]
   			}
   		]
+  	},
+  	"CarNeighbours": {
+  		"$schema": "http://json-schema.org/draft-04/schema#",
+  		"type": "array",
+  		"items": [
+  			{
+  				"type": "object",
+  				"properties": {
+  					"CarValues": { "type": "string"},
+  					"Neighbours": { "type": "string"}
+  				},
+  				"required": [
+  					"CarValues",
+  					"Neighbours"
+  				]
+  			}
+  		]
+  	},
+  	"StockSplittingParameters": {
+  		"$schema": "http://json-schema.org/draft-04/schema#",
+  		"type": "array",
+  		"items": [
+  			{
+  				"type": "object",
+  				"properties": {
+  					"StockNameCC": { "type": "string"},
+  					"StockNameS": { "type": "string"},
+  					"ProbabilityType1As1": { "type": "number"},
+  					"ProbabilityType5As1": { "type": "number"},
+  					"ProbabilityType2As2": { "type": "number"},
+  					"ProbabilityType4As2": { "type": "number"},
+  					"ProbabilityType2As4": { "type": "number"},
+  					"ProbabilityType4As4": { "type": "number"},
+  					"ProbabilityType1As5": { "type": "number"},
+  					"ProbabilityType5As5": { "type": "number"}
+  				},
+  				"required": [
+  					"StockNameCC",
+  					"StockNameS",
+  					"ProbabilityType1As1",
+            "ProbabilityType5As1",
+            "ProbabilityType2As2",
+            "ProbabilityType4As2",
+            "ProbabilityType2As4",
+            "ProbabilityType4As4",
+            "ProbabilityType1As5",
+            "ProbabilityType5As5"
+  				]
+  			}
+  		]
+  	},
+  	"AgeErrorMatrix": {
+  		"$schema": "http://json-schema.org/draft-04/schema#",
+  		"type": "array"
   	}
 }

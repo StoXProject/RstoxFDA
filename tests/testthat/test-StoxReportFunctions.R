@@ -80,7 +80,7 @@ expect_equal(RstoxData::getUnit(catchReportFlatOU$TotalNumber$SD), "cardinality-
 
 expect_equal(catchReportFlatOU$MeanAge$MeanIndividualAge, catchReportFlat$MeanAge$MeanIndividualAge)
 expect_equal(catchReportFlatOU$MeanWeight$MeanIndividualWeight[1]*1000, catchReportFlat$MeanWeight$MeanIndividualWeight[1])
-expect_equal(catchReportFlatOU$MeanLength$MeanIndividualLength[1]*10, catchReportFlat$MeanLength$MeanIndividualLength[1])
+expect_true(abs(catchReportFlatOU$MeanLength$MeanIndividualLength[1]*10 - catchReportFlat$MeanLength$MeanIndividualLength[1])/catchReportFlat$MeanLength$MeanIndividualLength[1] < 1e-2)
 expect_equal(catchReportFlatOU$TotalWeight$TotalWeight[1]*1e6, catchReportFlat$TotalWeight$TotalWeight[1])
 expect_equal(catchReportFlatOU$TotalNumber$TotalNumber[1]*1e3, catchReportFlat$TotalNumber$TotalNumber[1])
 
@@ -138,6 +138,22 @@ expect_equal(ncol(catchAtAgeReportFlat$FdaReport), 6)
 
 expect_equal(length(catchAtAgeReportDecomp$GroupingVariables$GroupingVariables), 2)
 expect_equal(ncol(catchAtAgeReportDecomp$FdaReport), 8)
+
+context("Report Catch At Length")
+catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
+catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.rds", package="RstoxFDA"))
+
+catchAtLengthReportDecomp <- ReportRecaCatchAtLength(catchAtAgeDecomp)
+catchAtLengthReportFlat <- ReportRecaCatchAtLength(catchAtAgeFlat)
+
+expect_true(nrow(catchAtLengthReportDecomp$FdaReport) > nrow(catchAtLengthReportFlat$FdaReport))
+#check relative different to caa
+reld <- (sum(catchAtLengthReportDecomp$FdaReport$CatchAtLength) - sum(catchAtAgeReportDecomp$FdaReport$CatchAtAge)) / sum(catchAtLengthReportDecomp$FdaReport$CatchAtLength)
+expect_true(abs(reld) < 1e-6)
+#check relative different to flat
+reld <- (sum(catchAtLengthReportDecomp$FdaReport$CatchAtLength) - sum(catchAtLengthReportFlat$FdaReport$CatchAtLength)) / sum(catchAtLengthReportDecomp$FdaReport$CatchAtLength)
+expect_true(abs(reld) < 1e-2)
+
 
 #test Digits
 catchAtAgeD <- ReportRecaCatchAtAge(catchAtAgeFlat, Decimals=-3)

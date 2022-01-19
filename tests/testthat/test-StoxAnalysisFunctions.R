@@ -56,6 +56,14 @@ StoxBioticData <- readRDS(StoxBioticFile)
 StoxBioticData$Station$DateTime[1] <- NA
 expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())), regexp = "Cannot proceed with missing values for Reca-effects*")
 
+context("PrepRecaEstimate: Missing cell warnings")
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+StoxBioticData$Station$Area <- NA
+StoxBioticData$Station$Area <- c(StoxLandingData$Landing$Area[1:20], StoxLandingData$Landing$Area[1:20], StoxLandingData$Landing$Area[1:5])
+expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("Gear", "Area"), RandomEffects = c())))
 
 context("PrepRecaEstimate: StocSplitting")
 manual <- DefineStockSplittingParameters(DefinitionMethod = "FunctionParameters",

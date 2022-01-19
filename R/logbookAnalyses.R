@@ -28,6 +28,11 @@
 #' @export
 appendTripIdLogbooks <- function(logbooks, tripIds, timeCol="STARTTIDSPUNKT", vesselIdCol="RC", tripIdCol="tripid", verbose=T){
 
+  if (nrow(logbooks) == 0){
+    logbooks[[tripIdCol]] <- character()
+    return(logbooks)
+  }
+  
   if (tripIdCol %in% names(logbooks)){
     stop("The column ", tripIdCol," already exist in 'logbooks'.")
   }
@@ -143,15 +148,23 @@ calculateLogbookPartitionByTrip <- function(logbooks, groupCols, tripCol="tripid
     }
   }
 
-  totals <- stats::aggregate(list(totalw=logbooks[[weightCol]]), by=list(tripid=logbooks[[tripCol]], species=logbooks[[speciesCol]]), FUN=function(x){sum(x, na.rm=T)})
+  if (nrow(logbooks) == 0){
+    output <- list()
+    output$fractions <- data.table::data.table(tripid=character(), species=character(), groupid=character(), fraction=numeric())
+    d<-rep(list(character()),length(groupCols)+1)
+    names(d) <- c("groupid", groupCols)
+    output$groupDefinition <- data.table::as.data.table(d)
+    return(output)
+  }
+  
+  totals <- data.table::as.data.table(stats::aggregate(list(totalw=logbooks[[weightCol]]), by=list(tripid=logbooks[[tripCol]], species=logbooks[[speciesCol]]), FUN=function(x){sum(x, na.rm=T)}))
 
   logbooks$groupid <- ""
   for (co in groupCols){
-    logbooks$groupid <- paste(logbooks$groupid, logbooks[[co]], sep="/")
+      logbooks$groupid <- paste(logbooks$groupid, logbooks[[co]], sep="/")
   }
 
-  groupTotals <- stats::aggregate(list(totalGroup=logbooks[[weightCol]]), by=list(tripid=logbooks[[tripCol]], species=logbooks[[speciesCol]], groupid=logbooks$groupid), FUN=function(x){sum(x, na.rm=T)})
-
+  groupTotals <- data.table::as.data.table(stats::aggregate(list(totalGroup=logbooks[[weightCol]]), by=list(tripid=logbooks[[tripCol]], species=logbooks[[speciesCol]], groupid=logbooks$groupid), FUN=function(x){sum(x, na.rm=T)}))
   fractions <- merge(groupTotals, totals, all.x=T)
 
   fractions$fraction <- fractions$totalGroup / fractions$totalw
