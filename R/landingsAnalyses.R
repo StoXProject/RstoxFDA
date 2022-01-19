@@ -207,9 +207,7 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
   tab <- merge(catchPartition$fractions, catchPartition$groupDefinition, by="groupid")
   cols <- names(tab)[names(tab)!=c("groupid")]
   tab <- tab[, .SD, .SDcols=cols]
-  data.table::setkeyv(partitioned, cols=c(tripIdCol, speciesColLand))
-  data.table::setkeyv(tab, cols= c("tripid", "species"))
-  partitioned <- partitioned[tab, allow.cartesian=T]
+  partitioned <- merge(partitioned, tab, by.x=c(tripIdCol, speciesColLand), by.y=c("tripid", "species"), all.x=T, allow.cartesian=T)
   
   # distribute values
   for (v in valueColumns){
