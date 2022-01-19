@@ -9,7 +9,7 @@ DefineCarNeighbours(
   DefinitionMethod = c("ResourceFile", "StratumPolygon"),
   FileName = character(),
   StratumPolygon,
-  UseProcessData = FALSE
+  UseProcessData = F
 )
 }
 \arguments{

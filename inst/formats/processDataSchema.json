@@ -83,5 +83,22 @@
   				]
   			}
   		]
+  	},
+  	"CarNeighbours": {
+  		"$schema": "http://json-schema.org/draft-04/schema#",
+  		"type": "array",
+  		"items": [
+  			{
+  				"type": "object",
+  				"properties": {
+  					"CarValues": { "type": "string"},
+  					"Neighbours": { "type": "string"}
+  				},
+  				"required": [
+  					"CarValues",
+  					"Neighbours"
+  				]
+  			}
+  		]
   	}
 }

@@ -1187,7 +1187,7 @@ calculateCarNeighbours <- function(StratumPolygon){
 #' @export
 DefineCarNeighbours <- function(processData,
                                 DefinitionMethod = c("ResourceFile", "StratumPolygon"), 
-                                FileName=character(), StratumPolygon, UseProcessData = FALSE){
+                                FileName=character(), StratumPolygon, UseProcessData = F){
   if (UseProcessData){
     return(processData)
   }
