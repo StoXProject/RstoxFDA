@@ -515,9 +515,15 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #'  \code{\link[Reca]{eca.estimate}} performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
 #'  This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.
 #'  
+#'  If 'Seed' is not provided a random seed is chosen. This is stored in the returned data (RecaParameterData$GlobalVariables$Seed).
+#'  This seed is passed to Reca, but not all versions of Reca has provided exact reproducability for a given seed,
+#'  so the behaviour is dependent on the installed Reca-version.
+#'  
 #'  The argument 'UseCachedData' allows previously computed parameterization to be returned in stead of parameterizing again.
-#'  If no previous run is located in the 'ResultDirectory', or the arguments that are passed to Reca differs from the previous run, 
-#'  execution will halt with an error.
+#'  If no previous run is located in the 'ResultDirectory', or the arguments or data that are passed to Reca differs from the previous run, 
+#'  execution will halt with an error when 'UseCachedData'. In this respect it may also be useful to note a counter intuitive
+#'  aspect of the argument 'Seed'. If 'Seed' was not provided for the previous run, the arguments will be considered equal if
+#'  the seed is set to the value returned on the previous run (RecaParameterData$GlobalVariables$Seed).
 #'
 #' @section ResultDirectory files:
 #'  Various report functions may use output of this function with the function \code{\link[Reca]{eca.predict}} which samples the posterior distributions of parameters.
@@ -535,7 +541,7 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @param ResultDirectory a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
 #' @param Thin controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
 #' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.
-#' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
+#' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. If not provided a random seed will be set.
 #' @param UseCachedData if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.
 #' @return \code{\link[RstoxFDA]{RecaParameterData}} results from Reca Model Parameterization.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for model configuration, and data preparation for this function, and
