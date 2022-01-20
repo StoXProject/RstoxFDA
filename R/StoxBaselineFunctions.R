@@ -553,13 +553,17 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 
 #' Add Period to StoxLandingData
 #' @description
-#'  Add a column 'Period' to StoxLandingData with a temporal category, such as quarters.
+#'  Add a column to StoxLandingData with a temporal category, such as quarters.
 #' @details 
-#'  'Period' will be added based on the column 'CatchDate' in 'StoxLandingData'.
+#'  A column with a temporal category will be added based on the column 'CatchDate' in 'StoxLandingData'.
 #'  Temporal definitions (\code{\link[RstoxFDA]{TemporalDefinition}}) may be produced by
 #'  \code{\link[RstoxFDA]{DefinePeriod}}
+#'  
+#'  Since it may be useful to use different temporal categories for instance for parameterization and reporting
+#'  two choices are offered for the name of the added column (see argument 'ColumnName').
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated.
-#' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definiton of temporal category.
+#' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.
+#' @param ColumnName Name of the added column. Defaults to 'Period'.
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @seealso 
 #'  \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
@@ -568,9 +572,9 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
 #' @export
 #' @md
-AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition){
+AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition, ColumnName=c("Period", "ReportPeriod")){
   
-  columnName="Period"
+  columnName=match.arg(ColumnName, ColumnName)
   
   if (columnName %in% names(StoxLandingData)){
     stop(paste("The column", columnName, "already exists in StoxLandingData."))
@@ -615,6 +619,7 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
     }
     stop("Cannot add 'Period' when 'DateTime' is missing for some rows.")
   }
+  
   
   stopifnot(is.TemporalDefinition(TemporalDefinition))
   StoxBioticData$Station <- appendTemporal(StoxBioticData$Station, columnName, TemporalDefinition, "DateTime")

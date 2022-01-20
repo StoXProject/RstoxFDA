@@ -4,23 +4,32 @@
 \alias{AddPeriodStoxLanding}
 \title{Add Period to StoxLandingData}
 \usage{
-AddPeriodStoxLanding(StoxLandingData, TemporalDefinition)
+AddPeriodStoxLanding(
+  StoxLandingData,
+  TemporalDefinition,
+  ColumnName = c("Period", "ReportPeriod")
+)
 }
 \arguments{
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} data which will be annotated.}
 
-\item{TemporalDefinition}{\code{\link[RstoxFDA]{TemporalDefinition}} definiton of temporal category.}
+\item{TemporalDefinition}{\code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.}
+
+\item{ColumnName}{Name of the added column. Defaults to 'Period'.}
 }
 \value{
 StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 }
 \description{
-Add a column 'Period' to StoxLandingData with a temporal category, such as quarters.
+Add a column to StoxLandingData with a temporal category, such as quarters.
 }
 \details{
-'Period' will be added based on the column 'CatchDate' in 'StoxLandingData'.
+A column with a temporal category will be added based on the column 'CatchDate' in 'StoxLandingData'.
 Temporal definitions (\code{\link[RstoxFDA]{TemporalDefinition}}) may be produced by
 \code{\link[RstoxFDA]{DefinePeriod}}
+
+Since it may be useful to use different temporal categories for instance for parameterization and reporting
+two choices are offered for the name of the added column (see argument 'ColumnName').
 }
 \seealso{
 \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,

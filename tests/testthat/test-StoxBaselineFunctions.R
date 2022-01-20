@@ -487,6 +487,10 @@ stoxlandingPost <- AddPeriodStoxLanding(stoxlanding, quart)
 expect_true("Period" %in% names(stoxlandingPost$Landing))
 expect_true(all(c("Q1", "Q2") %in% stoxlandingPost$Landing$Period))
 
+stoxlandingPost <- AddPeriodStoxLanding(stoxlanding, quart, ColumnName = "ReportPeriod")
+expect_true("ReportPeriod" %in% names(stoxlandingPost$Landing))
+expect_true(all(c("Q1", "Q2") %in% stoxlandingPost$Landing$ReportPeriod))
+
 context("test-StoxBaselineFunctions: SetAreaPositionsBiotic")
 areaPos <- DefineAreaPosition(NULL, FileName = regularfile, StratumPolygon = NULL)
 bioticfiles <- system.file("testresources","biotic_v3_example.xml", package="RstoxFDA")
