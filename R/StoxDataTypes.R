@@ -484,6 +484,26 @@ is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
   
 }
 
+#' Landings Report data (ReportFdaLandingData)
+#' 
+#' @description 
+#'  list with tow members:
+#'  \describe{
+#'   \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FisheriesLandings' stored in the column 'GroupingVariables'}
+#'   \item{FisheriesLandings}{a \code{\link[data.table]{data.table}} described below.}
+#'  }
+#'  
+#'  FisheriesLandings is a report of landings for partitions of a fishery.
+#'  The report is a \code{\link[data.table]{data.table}} with columns:
+#'  \describe{
+#'   \item{...}{A column for each of the provided Aggregation variables}
+#'   \item{LandedRoundWeight}{Total landings in kg}
+#'  }
+#' 
+#' @name ReportFdaLandingData
+#' 
+NULL
+
 #' Reca Data (RecaData)
 #'
 #' Data and some data parameters prepared for running
@@ -1357,6 +1377,14 @@ stoxFunctionAttributes <- list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "ReportFdaSamplingData",
+    functionParameterFormat = list(
+      GroupingVariables = "samplereportvariables"
+    )
+  ),
+  ReportFdaLandings = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaLandingsData",
     functionParameterFormat = list(
       GroupingVariables = "samplereportvariables"
     )

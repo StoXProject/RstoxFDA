@@ -390,7 +390,7 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), species
     stop("Must provide at least one activity type ('activityTypes')")
   }
   logbooks <- logbooks[logbooks$AKTIVITET_KODE %in% activityTypes,]
-  logbooks$catchId <- paste(logbooks$STARTTIDSPUNKT, logbooks$LOKASJON_START, logbooks$START_LG, logbooks$START_LT, logbooks$FANGSTART_FAO)
+  logbooks$catchId <- 1:nrow(logbooks)
   
   #check that tempcols are not used
   catchIdCol <- "catchId"
@@ -408,6 +408,7 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), species
     }
     tripids <- landings$tripid[!is.na(landings[["Redskap (kode)"]]) & (landings[["Redskap (kode)"]] %in% gearCodes)]
     logbooks <- logbooks[logbooks$tripid %in% tripids,]
+    logbooks <- logbooks[logbooks$REDSKAP_NS %in% gearCodes,]
   }
 
   if (nrow(logbooks)>0){

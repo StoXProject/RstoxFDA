@@ -48,7 +48,7 @@ setUnits <- function(table, columns, unit, quantity){
 #' @param StoxLandingData
 #'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 #'  and approriate columns added for identifying corresponding samples
-#' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.
+#' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. If not provided, a single row for all landings will be produced.
 #' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.
 #' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
@@ -70,7 +70,9 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData)
   
   if (!isGiven(GroupingVariables)){
-    GroupingVariables <- names(flatbiotic)[names(flatbiotic) %in% names(flatlandings)]
+    GroupingVariables <- c("Segment")
+    flatlandings$Segment <- "All landings"
+    flatbiotic$Segment <- "All landings"
   }
   
   if (length(GroupingVariables) == 0){
@@ -126,6 +128,88 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   
   output <- list()
   output$FisheriesSampling <- tab
+  output$GroupingVariables <- data.table::data.table(GroupingVariables=GroupingVariables)
+  
+  return(output)
+}
+
+#' Report FDA landings
+#' @description 
+#'  Report landings in partitions of the fisheries.
+#' @details 
+#'  Landings are reported partitioned on the provided 'GroupingVariables'.
+#'  
+#'  Landings are sorted by decreasing weight, except if the column 'CatchDate' is used as GroupingVariable.
+#'  In that case Landings are sorted by increasing date, after sorting on other Grouping variables.
+#'  
+#'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+#'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+#'
+#'  The units considered valid for weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
+#' @param StoxLandingData
+#'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
+#'  and approriate columns added for identifying corresponding samples
+#' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. If not provided, a single row for all landings will be produced.
+#' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.
+#' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
+#' @return \code{\link[RstoxFDA]{ReportFdaLandingData}}
+#' @export
+ReportFdaLandings <- function(StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
+  
+  if (!isGiven(Decimals)){
+    Decimals=0
+  }
+  
+  if (isGiven(Unit)){
+    Unit <- Unit[1]
+    if (!(Unit %in% RstoxData::getUnitOptions("mass"))){
+      stop(paste(Unit, "is not a recognized unit for mass / weight."))
+    }
+  }
+  
+  flatlandings <- StoxLandingData$Landing
+  
+  if (!isGiven(GroupingVariables)){
+    GroupingVariables <- c("Segment")
+    flatlandings$Segment <- "All landings"
+  }
+  
+  if (length(GroupingVariables) == 0){
+    stop("No variables to stats::aggregate and compare. Provide parameter 'GroupingVariables'")
+  }
+  
+  if (!all(GroupingVariables %in% names(flatlandings))){
+    missing <- GroupingVariables[!(GroupingVariables %in% names(flatlandings))]
+    stop(paste("All 'GroupingVariables' must be present in 'StoxLandingData'. Missing:", paste(missing, sep=",")))
+  }
+  
+  landingsAggList <- list()
+  for (v in GroupingVariables){
+    landingsAggList[[v]] <- flatlandings[[v]]
+  }
+  landings <- flatlandings[,c(GroupingVariables, "RoundWeight"), with=F]
+  landingsTab <- data.table::data.table(stats::aggregate(list(LandedRoundWeight=landings$RoundWeight), by=landingsAggList, FUN=function(x){sum(x, na.rm=T)}))
+  
+  if (!("CatchDate" %in% GroupingVariables)){
+    landingsTab <- landingsTab[order(landingsTab$LandedRoundWeight, decreasing = T),]    
+  }
+  else{
+    orderCols <- c(GroupingVariables[GroupingVariables!="CatchDate"], "CatchDate")
+    data.table::setorderv(landingsTab, cols = orderCols)
+  }
+
+  
+  landingsTab <- setUnits(landingsTab, c("LandedRoundWeight"), "kg", "mass")
+  if (isGiven(Unit)){
+    landingsTab <- setUnits(landingsTab, c("LandedRoundWeight"), Unit, "mass")
+  }
+  
+  if (isGiven(Decimals)){
+    landingsTab <- setDecimals(landingsTab, c("LandedRoundWeight"), Decimals)
+  }
+  
+  output <- list()
+  output$FisheriesLandings <- landingsTab
   output$GroupingVariables <- data.table::data.table(GroupingVariables=GroupingVariables)
   
   return(output)

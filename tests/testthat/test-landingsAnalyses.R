@@ -103,7 +103,7 @@ expect_true(all(c("START_LG", "START_LT", "MASKEVIDDE") %in% names(landAdj)))
 expect_true(!all(is.na(landAdj$START_LG)))
 
 context("Test logbookAdjustment filter gear")
-expect_warning(landAdj <- logbookAdjustment(land, logb, gearCodes = c("53")), "Not all species-trips")
+landAdj <- logbookAdjustment(land, logb, gearCodes = c("53"))
 
 landAdj <- logbookAdjustment(land, logb, gearCodes = c("11"))
 expect_true(sum(landAdj$Rundvekt[landAdj$`Redskap (kode)`=="11" & landAdj$`Hovedområde (kode)`=="12"]) != sum(land$Rundvekt[land$`Redskap (kode)`=="11" & land$`Hovedområde (kode)`=="12"]))
