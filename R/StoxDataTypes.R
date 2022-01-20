@@ -1386,7 +1386,7 @@ stoxFunctionAttributes <- list(
     functionCategory = "report",
     functionOutputDataType = "ReportFdaLandingsData",
     functionParameterFormat = list(
-      GroupingVariables = "samplereportvariables"
+      GroupingVariables = "landingsreportvariables"
     )
   ),
   ReportRecaCatchAtAge = list(
@@ -1533,6 +1533,15 @@ processPropertyFormats <- list(
       }
       possibleValues <- unique(possibleValues)
       possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$Landing)]
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  landingsreportvariables = list(
+    class = "vector", 
+    title = "One or more variables to use as aggregation variables.", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- names(StoxLandingData$Landing)[names(StoxLandingData$Landing) != "Rundvekt"]
       return(sort(possibleValues))
     }, 
     variableTypes = "character"
