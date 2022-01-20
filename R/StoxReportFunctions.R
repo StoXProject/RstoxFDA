@@ -53,6 +53,7 @@ setUnits <- function(table, columns, unit, quantity){
 #' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @export
+#' @md
 ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
   
   if (!isGiven(Decimals)){
@@ -154,6 +155,7 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
 #' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
 #' @return \code{\link[RstoxFDA]{ReportFdaLandingData}}
 #' @export
+#' @md
 ReportFdaLandings <- function(StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
   
   if (!isGiven(Decimals)){
@@ -318,6 +320,7 @@ setLengthGroup <- function(LengthReport){
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length composition.
 #' @export
+#' @md
 ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
   
   if (!isGiven(Decimals)){
@@ -510,6 +513,7 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
 #' @return \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
+#' @md
 ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10))){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   
@@ -683,6 +687,7 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #' @return \code{\link[RstoxFDA]{ReportFdaSummaryData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
+#' @md
 ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), DecimalOptions=FALSE, DecimalTotalNumber=integer(), DecimalTotalWeight=integer(), DecimalMeanAge=integer(), DecimalMeanWeight=integer(), DecimalMeanLength=integer(), UnitOptions=FALSE, UnitTotalNumber=RstoxData::getUnitOptions("cardinality", conversionRange=c(1, 1e12)), UnitTotalWeight=RstoxData::getUnitOptions("mass", conversionRange=c(1, 1e12)), UnitMeanWeight=RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10)), UnitMeanLength=RstoxData::getUnitOptions("length", conversionRange=c(1e-4, 10))){
   
   if (!isGiven(DecimalTotalNumber)){
@@ -1070,7 +1075,7 @@ summaryPaaPar <- function(modelFit){
 #'  This requires that chains are different, and that they are run for the same number of iterations.
 #'  
 #'  Parameters in the summary are identified with the following notation:
-#'  <model name>-<covariate name>-<any covariate value/level>:<any Age group> <parameter type>,
+#'  \<model name\>-\<covariate name\>-\<any covariate value/level\>:\<any Age group\> \<parameter type\>,
 #'  e.g: 'ProportionAtAgeModel-Area:47:Age:2 Intercept ' for
 #'  the intercept of age 2 in area 47 in the Proportion-At-Age model.
 #'  
@@ -1081,6 +1086,7 @@ summaryPaaPar <- function(modelFit){
 #' @seealso \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation
 #'   \code{\link[RstoxFDA]{ReportParameterConvergence}} for convergence checks.
 #' @export
+#' @md
 ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSummaryData, AppendReport=FALSE){
   
   
@@ -1190,6 +1196,7 @@ crossChainConvergence <- function(modelSummary, iterations, tolerance){
 #' @param Decimals integer specifying the number of decimals to report for 'GelmanRubinR'. Defaults to 2
 #' @return \code{\link[RstoxFDA]{ParameterConvergenceData}}
 #' @export
+#' @md
 ReportParameterConvergence <- function(ParameterizationSummaryData, Tolerance=numeric(), Decimals=integer()){
   
   if (!isGiven(Tolerance)){

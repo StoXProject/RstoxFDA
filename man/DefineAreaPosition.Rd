@@ -31,26 +31,26 @@ Define positions for areas of a spatial coding system.
 }
 \details{
 Defines an association between area codes and positions that represent that area code.
- For example an area code could be associated with the centre of mass of the area, or
- some other point within the area. This may be useful for providing approximate
- coordinates when locations are identified by area codes. The soruce of the
- area-position association may be a table or a appropriately formatted
- polygon-definition (\code{\link[RstoxBase]{StratumPolygon}}). 
+For example an area code could be associated with the centre of mass of the area, or
+some other point within the area. This may be useful for providing approximate
+coordinates when locations are identified by area codes. The soruce of the
+area-position association may be a table or a appropriately formatted
+polygon-definition (\code{\link[RstoxBase]{StratumPolygon}}).
 
- For DefinitionMethod 'ResourceFile':
- Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
- \describe{
- \item{Column 1: 'Area'}{Area code (key)}
- \item{Column 2: 'Location'}{optional subdivision of area. If provided, positions for missing locations should be encoded as well.}
- \item{Column 3: 'Latitude'}{WGS84 Latitude, decimal degrees}
- \item{Column 4: 'Longitude'}{WGS84 Longitude, decimal degrees}
- }
- 
- For DefinitionMethod 'StratumPolygon':
- Definitions are extracted from a \code{\link[RstoxBase]{StratumPolygon}}:
- 'Area' in \code{\link[RstoxFDA]{AreaPosition}} is derived from the column 'StratumName' in \code{\link[RstoxBase]{StratumPolygon}}.
- 'Location' in \code{\link[RstoxFDA]{AreaPosition}} is encoded as missing.
- 'Latitude' and 'Longitude' in \code{\link[RstoxFDA]{AreaPosition}} are the coordinates set for each polygon in \code{\link[RstoxBase]{StratumPolygon}}.
+For DefinitionMethod 'ResourceFile':
+Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
+\describe{
+\item{Column 1: 'Area'}{Area code (key)}
+\item{Column 2: 'Location'}{optional subdivision of area. If provided, positions for missing locations should be encoded as well.}
+\item{Column 3: 'Latitude'}{WGS84 Latitude, decimal degrees}
+\item{Column 4: 'Longitude'}{WGS84 Longitude, decimal degrees}
+}
+
+For DefinitionMethod 'StratumPolygon':
+Definitions are extracted from a \code{\link[RstoxBase]{StratumPolygon}}:
+'Area' in \code{\link[RstoxFDA]{AreaPosition}} is derived from the column 'StratumName' in \code{\link[RstoxBase]{StratumPolygon}}.
+'Location' in \code{\link[RstoxFDA]{AreaPosition}} is encoded as missing.
+'Latitude' and 'Longitude' in \code{\link[RstoxFDA]{AreaPosition}} are the coordinates set for each polygon in \code{\link[RstoxBase]{StratumPolygon}}.
 }
 \seealso{
 \code{\link[RstoxFDA]{SetAreaPositionsBiotic}} and \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to data.

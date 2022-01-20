@@ -167,22 +167,33 @@ warnMissingLandings <- function(StoxBiotic, StoxLanding, effects){
 #'  Parameters are obtained for 'cells' using \code{\link[RstoxFDA]{ParameterizeRecaModels}} 
 #'  and and applied to landings-data when predicting total catch-at-age using \code{\link[RstoxFDA]{RunRecaModels}}.
 #'  
-#'  'Cells' are defined by all effects / covariates that are specified for both 'StoxLandingData' and 'StoxBioticData' 
-#'  (see parameters 'FixedEffects', 'RandomEffects', and 'CarEffect'). That is, any variable that are to be included in
-#'  the cell definition must always exist (not containing NAs) 
-#'  and be coded coherently in both 'StoxBioticData' and 'StoxLandingData'.
+#'  #### Cells
+#'  Reca conceptually decomposes a fishery into cells. Parameters are estimated for each cell,
+#'  and later total catch at age is predicted for each cell. Cells must therefore be defined for
+#'  both the census of landings, and for the samples.
 #'  
+#'  'Cells' are defined by all effects / covariates that are specified for both 'StoxLandingData' and 'StoxBioticData' 
+#'  (all effects are specified by one of the arguments: 'FixedEffects', 'RandomEffects', and 'CarEffect'). 
+#'  Any variable that are to be included in
+#'  the cell definition must always be observed (not containing NAs) 
+#'  and be coded coherently (the same coding system) in both 'StoxBioticData' and 'StoxLandingData'.
+#'  
+#'  #### Covariates
 #'  Only effects that are part of the cell definition may be specified as 'Fixed effect' or 'CAR effect'.
 #'  For fixed effect all values / levels of the effect must be sampled.
-#'  For CAR effect, cell or neighbouring cells ('CarNeighbours') must be sampled
+#'  For CAR effect, the cell or neighbouring cells (as defined by 'CarNeighbours') must be sampled
 #'  
 #'  Any variable in samples 'StoxBioticData' may be included as a random effect as long as it is always observed
 #'  (not containing NAs).
 #' 
 #'  A random effect identifying haul / landing is always included in Reca. Do not add haul-identifiers as covariates.
 #'  
+#'  #### Stock splitting
 #'  The option UseStockSplitting requires that a Variable 'otolithtype' is added to
 #'  the table 'Individual' in StoxBioticData.
+#'  This is developed for splitting coastal cod from atlantic cod, and that is reflected in the Reca documentation,
+#'  but this is abstracted in StoX, so that other stocks may be encoded to fit the analysis.
+#'  For some cases it may even be extended to other domains defined for individual fish.
 #'
 #' @param StoxBioticData
 #'  \code{\link[RstoxData]{StoxBioticData}} data with samples from fisheries
@@ -251,6 +262,7 @@ warnMissingLandings <- function(StoxBiotic, StoxLanding, effects){
 #'  \code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters, 
 #'  and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
 #' @export
+#' @md
 PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=FALSE, CarEffect=character(), CarNeighbours, UseAgingError=FALSE, AgeErrorMatrix, UseStockSplitting=FALSE, UseStockSplittingError=FALSE, StockSplittingParameters, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
   #expose as parameter when implemented
   ContinousEffect<-NULL
@@ -515,17 +527,19 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #'  \code{\link[Reca]{eca.estimate}} performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
 #'  This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.
 #'  
+#'  #### Seed
 #'  If 'Seed' is not provided a random seed is chosen. This is stored in the returned data (RecaParameterData$GlobalVariables$Seed).
 #'  This seed is passed to Reca, but not all versions of Reca has provided exact reproducability for a given seed,
 #'  so the behaviour is dependent on the installed Reca-version.
 #'  
+#'  #### Caching
 #'  The argument 'UseCachedData' allows previously computed parameterization to be returned in stead of parameterizing again.
 #'  If no previous run is located in the 'ResultDirectory', or the arguments or data that are passed to Reca differs from the previous run, 
 #'  execution will halt with an error when 'UseCachedData'. In this respect it may also be useful to note a counter intuitive
 #'  aspect of the argument 'Seed'. If 'Seed' was not provided for the previous run, the arguments will be considered equal if
 #'  the seed is set to the value returned on the previous run (RecaParameterData$GlobalVariables$Seed).
 #'
-#' @section ResultDirectory files:
+#'  #### ResultDirectory files:
 #'  Various report functions may use output of this function with the function \code{\link[Reca]{eca.predict}} which samples the posterior distributions of parameters.
 #'  Communication between \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}} is managed by writing and reading files, 
 #'  and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
@@ -547,6 +561,7 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for model configuration, and data preparation for this function, and
 #'  \code{\link[RstoxFDA]{RunRecaModels}} for obtaining predictions / estimates from the Reca-models.
 #' @export
+#' @md
 ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=character(), Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric(), UseCachedData=FALSE){
   RecaData <- convertStox2PrepReca(RecaData)
   Lgamodel <- match.arg(Lgamodel, Lgamodel)
@@ -714,6 +729,7 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}, 
 #'  \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} for compiling reports of predictions / estimates.
 #' @export
+#' @md
 RunRecaModels <- function(RecaParameterData, StoxLandingData, GroupingVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric(), CollapseLength=TRUE){
   
   #discard fit info and convert

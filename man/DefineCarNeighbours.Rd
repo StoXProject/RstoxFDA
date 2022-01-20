@@ -28,30 +28,30 @@ Area Neighbour Definition, see: \code{\link[RstoxFDA]{CarNeighbours}}.
 }
 \description{
 Define which values of a categorical variable are to be considered neighbours,
- when used as a CAR-variable (Conditional AutoRegressive variable) in Reca.
+when used as a CAR-variable (Conditional AutoRegressive variable) in Reca.
 }
 \details{
 A CAR-variable (condititional autoregressive variable) in Reca is typically a spatial variable
- reflecting location of a catch. \code{\link[RstoxFDA]{CarNeighbours}} defines
- which values (e.g. areas) are to be considered neighbouts in parameterisation.
- For spatial variables this is typically configured as geographic neighbours, but
- other definitions are possible. Geomtric neighbour may be calcuated from
- \code{\link[RstoxBase]{StratumPolygon}} if that is defines a spatial variable,
- by selecting the appropriate 'DefinitionMethod'.
- 
- For DefinitionMethod 'ResourceFile':
- Definitions are read from a tab separated file with headers. Columns defined as:
- \describe{
- \item{Column 1: 'CarValue'}{Value for the CAR-variable (key)}
- \item{Column 2: 'Neigbhours'}{Comma-separated list of neighbours (each should occur in Column 1)}
- }
- The neighbour definition must be symmetric
- If a is among the neighbours of b, b must also be among the neighbours of a.
- 
- For DefinitionMethod 'StratumPolygon':
- A \code{\link[RstoxFDA]{CarNeighbours}} table will be calculated from the provided 'StratumPolygon'.
- Strata that are geographic neighbours (touching each other) will be considered neighbours.
- runing time and correctness of calcuation may depend on the quality and complexity of the 'StratumPolygon'.
+reflecting location of a catch. \code{\link[RstoxFDA]{CarNeighbours}} defines
+which values (e.g. areas) are to be considered neighbouts in parameterisation.
+For spatial variables this is typically configured as geographic neighbours, but
+other definitions are possible. Geomtric neighbour may be calcuated from
+\code{\link[RstoxBase]{StratumPolygon}} if that is defines a spatial variable,
+by selecting the appropriate 'DefinitionMethod'.
+
+For DefinitionMethod 'ResourceFile':
+Definitions are read from a tab separated file with headers. Columns defined as:
+\describe{
+\item{Column 1: 'CarValue'}{Value for the CAR-variable (key)}
+\item{Column 2: 'Neigbhours'}{Comma-separated list of neighbours (each should occur in Column 1)}
+}
+The neighbour definition must be symmetric
+If a is among the neighbours of b, b must also be among the neighbours of a.
+
+For DefinitionMethod 'StratumPolygon':
+A \code{\link[RstoxFDA]{CarNeighbours}} table will be calculated from the provided 'StratumPolygon'.
+Strata that are geographic neighbours (touching each other) will be considered neighbours.
+runing time and correctness of calcuation may depend on the quality and complexity of the 'StratumPolygon'.
 }
 \seealso{
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of the definition in Reca-estimates, and \code{\link[RstoxBase]{DefineStratumPolygon}} for how to define a spatial variable from a strata-definition.

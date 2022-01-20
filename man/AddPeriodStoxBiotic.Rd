@@ -13,17 +13,17 @@ AddPeriodStoxBiotic(StoxBioticData, TemporalDefinition)
 }
 \value{
 StoxBioticData with column appended. See \code{\link[RstoxData]{StoxBioticData}}.
- \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
- \code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data, 
- \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
- and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
+\code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
+\code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data,
+\code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
+and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
 }
 \description{
 Add a column 'Period' to 'Station' on StoxBioticData with a temporal category, such as 'quarter'.
 }
 \details{
 'Period' will be added based on the column 'DateTime' on the table 'Station' in 'StoxBioticData'.
- 
- Temporal definitions (\code{\link[RstoxFDA]{TemporalDefinition}}) may be produced by
- \code{\link[RstoxFDA]{DefinePeriod}}
+
+Temporal definitions (\code{\link[RstoxFDA]{TemporalDefinition}}) may be produced by
+\code{\link[RstoxFDA]{DefinePeriod}}
 }

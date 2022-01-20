@@ -33,14 +33,14 @@ Report sampling of fisheries against landings in partitions of the fisheries.
 }
 \details{
 Sampling is reported partitioned on the provided 'GroupingVariables'.
- If samples are encoded in partitions of the fisheries with no landings. 'LandedRoundWeight' will be NA.
- This may be due to recording errors or filtering errors, but it may also be due to comparison of similar
- but unequal category-definitios. For instance area are coded in landings as dominant area for a fishing trip,
- while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
- with another area listed as dominant area.
- 
- Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
- so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+If samples are encoded in partitions of the fisheries with no landings. 'LandedRoundWeight' will be NA.
+This may be due to recording errors or filtering errors, but it may also be due to comparison of similar
+but unequal category-definitios. For instance area are coded in landings as dominant area for a fishing trip,
+while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
+with another area listed as dominant area.
 
- The units considered valid for weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
+Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+
+The units considered valid for weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
 }

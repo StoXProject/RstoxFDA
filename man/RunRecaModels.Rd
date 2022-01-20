@@ -39,22 +39,22 @@ Runs prediction (catch-at-age estimate) for parameterized Reca models.
 }
 \details{
 Parameters may be obtained with \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
- If the function-parameter 'GroupingVariables' is provided, predictions will be provided for corresponding partitions of landings.
- The parameter 'StoxLandingData' may differ from the landings used in parameterisation (passed to \code{\link[RstoxFDA]{ParameterizeRecaModels}}), 
- as long as all not additional values / levels for the model covariates / effects are introduced.
- 
- If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'GroupingVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
- 
- If the 'GroupingVariables' specify a large number of partitions of the landings, this function may
- exhaust available computer memory.
- 
- By default length groups are collapsed into one length group in the result. 
- The full age-length prediction may be extracted by setting the parameter 'CollapseLength' to FALSE.
- This will increase the risk of exhausting available computer memory.
+If the function-parameter 'GroupingVariables' is provided, predictions will be provided for corresponding partitions of landings.
+The parameter 'StoxLandingData' may differ from the landings used in parameterisation (passed to \code{\link[RstoxFDA]{ParameterizeRecaModels}}),
+as long as all not additional values / levels for the model covariates / effects are introduced.
+
+If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'GroupingVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
+
+If the 'GroupingVariables' specify a large number of partitions of the landings, this function may
+exhaust available computer memory.
+
+By default length groups are collapsed into one length group in the result.
+The full age-length prediction may be extracted by setting the parameter 'CollapseLength' to FALSE.
+This will increase the risk of exhausting available computer memory.
 }
 \seealso{
 \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation,
- \code{\link[RstoxFDA]{ReportRecaCatchAtAge}}, 
- \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}, 
- \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} for compiling reports of predictions / estimates.
+\code{\link[RstoxFDA]{ReportRecaCatchAtAge}},
+\code{\link[RstoxFDA]{ReportRecaLengthAtAge}},
+\code{\link[RstoxFDA]{ReportRecaWeightAtAge}} for compiling reports of predictions / estimates.
 }

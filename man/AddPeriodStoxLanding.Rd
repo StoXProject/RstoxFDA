@@ -19,12 +19,12 @@ Add a column 'Period' to StoxLandingData with a temporal category, such as quart
 }
 \details{
 'Period' will be added based on the column 'CatchDate' in 'StoxLandingData'.
- Temporal definitions (\code{\link[RstoxFDA]{TemporalDefinition}}) may be produced by
- \code{\link[RstoxFDA]{DefinePeriod}}
+Temporal definitions (\code{\link[RstoxFDA]{TemporalDefinition}}) may be produced by
+\code{\link[RstoxFDA]{DefinePeriod}}
 }
 \seealso{
 \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
- \code{\link[RstoxFDA]{AddStratumStoxBiotic}} for similar function for sample data, 
- \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
- and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
+\code{\link[RstoxFDA]{AddStratumStoxBiotic}} for similar function for sample data,
+\code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
+and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
 }

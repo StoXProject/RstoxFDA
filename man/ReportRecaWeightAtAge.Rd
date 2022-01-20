@@ -31,17 +31,17 @@ ReportRecaWeightAtAge(
 }
 \description{
 Tabulates summary statistics for mean weights (kg) at age from MCMC simulations using Reca.
- MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
- Summary statistics are obtained from the posterior distribution, and
- the interval is reported as 90% equal-tailed credible intervals.
- 
- If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
- area, gear, stock, etc., summary statistics will be presented similarly.
- 
- Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
- so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
- 
- The units considered valid for mean weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
+MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+Summary statistics are obtained from the posterior distribution, and
+the interval is reported as 90\% equal-tailed credible intervals.
+
+If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
+area, gear, stock, etc., summary statistics will be presented similarly.
+
+Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+
+The units considered valid for mean weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
 }
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis

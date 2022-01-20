@@ -61,6 +61,7 @@ checkSymmetry <- function(tab){
 #' @param LocationVariable Specify which column in 'StoxLandingsData' should are represented by 'Location' in 'AreaPosition'. See details.
 #' @return \code{\link[RstoxData]{StoxLandingData}} with columns for latitude and longitude appended.
 #' @export
+#' @md
 AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVariable = c("None", "Location", "Coastal")){
   
   LocationVariable <- match.arg(LocationVariable)
@@ -152,6 +153,7 @@ getBioticCatchSampleAdress <- function(tab){
 #' @return \code{\link[RstoxData]{BioticData}} with converted lengths.
 #' @seealso \code{\link[RstoxFDA]{DefineLengthConversionParameters}} for configuration of length parameters.
 #' @export
+#' @md
 ConvertLengthBiotic <- function(BioticData, LengthConversionTable, TargetLengthMeasurement=character()){
   
   if (!isGiven(TargetLengthMeasurement)){
@@ -260,6 +262,7 @@ ConvertLengthBiotic <- function(BioticData, LengthConversionTable, TargetLengthM
 #' @return \code{\link[RstoxData]{BioticData}} with converted weights.
 #' @seealso \code{\link[RstoxFDA]{DefineWeightConversionFactor}} for configuration of weight conversion parameters.
 #' @export
+#' @md
 ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeights", "IndividualWeight"), WeightConversionTable, TargetProductType=character()){
   
   ConversionType <- match.arg(ConversionType, ConversionType)
@@ -386,6 +389,7 @@ ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeight
 #' @return \code{\link[RstoxData]{BioticData}}
 #' @seealso \code{\link[RstoxFDA]{DefineAreaPosition}} for configuring definitions of positions for area codes.
 #' @export
+#' @md
 SetAreaPositionsBiotic <- function(BioticData, AreaPosition, LocationVariable = c("None", "location"), System=character(), Overwrite=F){
   
   if (!isGiven(System)){
@@ -563,6 +567,7 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 #'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
 #' @export
+#' @md
 AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition){
   
   columnName="Period"
@@ -596,6 +601,7 @@ AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition){
 #'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
 #' @export
+#' @md
 AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
   columnName="Period"
   
@@ -640,6 +646,7 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
 #'  \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
 #' @export
+#' @md
 AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=c("Stratum", "Area")){
   
   ColumnName <- match.arg(ColumnName)
@@ -673,6 +680,7 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=c(
 #'  \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
 #' @export
+#' @md
 AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
   
   columnName <- "Stratum"    
@@ -735,6 +743,7 @@ appendGear <- function(table, gearcolumn, gearDefinition, colName){
 #'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'GearGroup' as an effect in Reca-estimation,
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'GearGroup' as an aggregation variable when comparing sampling with landed volume.
 #' @export
+#' @md
 AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
   if (!is.Translation(Translation)){
     stop("Translation is not a valid Translation table.")
@@ -769,6 +778,7 @@ AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
 #'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'GearGroup' as an effect in Reca-estimation,
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'GearGroup' as an aggregation variable when comparing sampling with landed volume.
 #' @export
+#' @md
 AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
   if (!is.Translation(Translation)){
     stop("Translation is not a valid Translation table.")
@@ -854,6 +864,7 @@ SetTimeBiotic <- function(BioticData, Time=character(), Overwrite=F){
 #' @return \code{\link[RstoxData]{BioticData}}
 #' @seealso \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
 #' @export
+#' @md
 SetStartDateBiotic <- function(BioticData, Overwrite=F){
  
   for (file in names(BioticData)){
@@ -912,6 +923,7 @@ SetStartDateBiotic <- function(BioticData, Overwrite=F){
 #'  DefinePeriod(TemporalCategory = "Custom", CustomPeriods = c("15-09-2105", "15-03-2015"))
 #' 
 #' @export
+#' @md
 DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Custom"), CustomPeriods = character(), UseProcessData=F){
   
   if (UseProcessData){
@@ -1074,6 +1086,7 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
 #' @return \code{\link[RstoxFDA]{AreaPosition}}.
 #' @seealso \code{\link[RstoxFDA]{SetAreaPositionsBiotic}} and \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to data.
 #' @export
+#' @md
 DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "StratumPolygon"), FileName=character(), StratumPolygon, UseProcessData=F){
 
   DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
@@ -1185,6 +1198,7 @@ calculateCarNeighbours <- function(StratumPolygon){
 #' @return Area Neighbour Definition, see: \code{\link[RstoxFDA]{CarNeighbours}}.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of the definition in Reca-estimates, and \code{\link[RstoxBase]{DefineStratumPolygon}} for how to define a spatial variable from a strata-definition.
 #' @export
+#' @md
 DefineCarNeighbours <- function(processData,
                                 DefinitionMethod = c("ResourceFile", "StratumPolygon"), 
                                 FileName=character(), StratumPolygon, UseProcessData = F){
@@ -1228,6 +1242,7 @@ DefineCarNeighbours <- function(processData,
 #' @return Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of age-error matrices in Reca-estimation
 #' @export
+#' @md
 DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile"), FileName = character(), UseProcessData=F){
   
   encoding="UTF-8"
@@ -1336,6 +1351,7 @@ checkProbabilities <- function(tab, tolerance=1e-10){
 #' @return \code{\link[RstoxFDA]{StockSplittingParameters}}.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of stock-splitting parameters in Reca-estimation.
 #' @export
+#' @md
 DefineStockSplittingParameters <- function(processData, DefinitionMethod=c("ResourceFile", "FunctionParameters"), FileName=character(),
                                            StockNameCC=character(), StockNameS=character(), ProbabilityType1As1=numeric(),
                                            ProbabilityType5As1=numeric(), ProbabilityType2As2=numeric(),
@@ -1410,6 +1426,7 @@ DefineStockSplittingParameters <- function(processData, DefinitionMethod=c("Reso
 #' @return \code{\link[RstoxFDA]{LengthConversionTable}}
 #' @seealso \code{\link[RstoxFDA]{ConvertLengthBiotic}} for applying length conversion to data
 #' @export
+#' @md
 DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("ResourceFile"), FileName = character(), UseProcessData=F){
   
   if (UseProcessData){
@@ -1460,6 +1477,7 @@ DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("Re
 #' @return \code{\link[RstoxFDA]{WeightConversionTable}}
 #' @seealso \code{\link[RstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.
 #' @export
+#' @md
 DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("ResourceFile"), FileName = character(), UseProcessData=F){
   
   if (UseProcessData){
@@ -1501,6 +1519,7 @@ DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("Resour
 #' @return
 #'  \code{\link[RstoxData]{BioticData}} with data that is not found in 'StoxBioticData'.
 #' @export
+#' @md
 ListBioticDifference <- function(StoxBioticData, BioticData){
   return(bioticDiff(BioticData, StoxBioticData))
 }
@@ -1523,7 +1542,7 @@ ListBioticDifference <- function(StoxBioticData, BioticData){
 #'  to
 #'  Linf\*(1-exp(-K\*(AGE)))\*exp(-kAl\*sigma)
 #'  
-#'  Age is provided with a resoltation of 1/12 year, which is approximated
+#'  Age is provided with a resolutation of 1/12 year, which is approximated
 #'  by adding M/12 to the integer age, where M is the number of the month of catch (e.g. 2 for february).
 #'  For this reason, 'DateTime' must be provided for all 'Stations' in 'StoxBioticData'
 #' 
@@ -1638,6 +1657,7 @@ FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData,
 #' @return \code{\link[RstoxData]{StoxBioticData}} with individuals outside the acceptable region removed.
 #' @seealso \code{\link[RstoxFDA]{FilterAgeLengthOutliersStoxBiotic}}
 #' @export
+#' @md
 FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
                                        FilterUpwards=FALSE,
                                        logalfa=numeric(), beta=numeric(), sigma=numeric(), kAl=numeric(), kAu=numeric()){

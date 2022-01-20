@@ -25,20 +25,20 @@ Adds a column to StoxLandingData with the spatial strata each row belongs to.
 }
 \details{
 The strata are added to the new column 'Stratum'.
- 
- The Strata may be added as a new column, or to an existing column depending on the 
- argument 'ColumnName'. The option 'Stratum' (default) adds strata to a new column 'Stratum'. 
- The option 'Area' changes the values in the existing column 'Area'.
- 
- \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
- these need to be added as columns 'Latitude' and 'Longitude' before calling this function.
- \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions, based on area codes.
+
+The Strata may be added as a new column, or to an existing column depending on the
+argument 'ColumnName'. The option 'Stratum' (default) adds strata to a new column 'Stratum'.
+The option 'Area' changes the values in the existing column 'Area'.
+
+\code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
+these need to be added as columns 'Latitude' and 'Longitude' before calling this function.
+\code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions, based on area codes.
 }
 \seealso{
 \code{\link[RstoxBase]{DefineStratumPolygon}} for configuring stratum definitions.
- \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to landings,
- \code{\link[RstoxFDA]{AddStratumStoxBiotic}} for similar function for sample data, 
- \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Stratum' as an effect in Reca-estimation,
- \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
- and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
+\code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to landings,
+\code{\link[RstoxFDA]{AddStratumStoxBiotic}} for similar function for sample data,
+\code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Stratum' as an effect in Reca-estimation,
+\code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
+and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
 }

@@ -28,22 +28,22 @@ Define periods, temporal categories such as 'Quarter', 'Month' or some custom de
 }
 \details{
 Periods define an association between dates and a categorical variable definition,
- such as 'Month', 'Quarter' or some custom definition.
- 
- Periods may be seasonal, which means that dates are associated with the categories based on 
- day and month only. This distinction does not matter if all data is from the same year.
- The 'TemporalCategory'-options 'Quarter' and 'Month' produce seasonal definitions, so 
- that Jan 1st 2015 and Jan 1st 2016 belon to the same category (e.g. "Q1" if 'TemporalCategory'
- is 'Quarter').
- 
- In order to make custom seasonal definitions, use the TemporalCategory'-option 'Custom' 
- without providing years in 'CustomPeriods': "DD-MM". Periods defined in this way will automatically
- "wrap around" so that dates in January may grouped together with dates in December.
- 
- In order to make non-seasonal definitions for Quarter or Month, provide the 'CustomPeriods'
- for all years of interest on the format "DD-MM-YYYY". If years are provided the periods do not "wrap around"
- and categories are automatically extended to the entire year, if necesesarry.
- That is a category starting with 1. Jan is added if not present, and likewise a category ending with 31. Dec.
+such as 'Month', 'Quarter' or some custom definition.
+
+Periods may be seasonal, which means that dates are associated with the categories based on
+day and month only. This distinction does not matter if all data is from the same year.
+The 'TemporalCategory'-options 'Quarter' and 'Month' produce seasonal definitions, so
+that Jan 1st 2015 and Jan 1st 2016 belon to the same category (e.g. "Q1" if 'TemporalCategory'
+is 'Quarter').
+
+In order to make custom seasonal definitions, use the TemporalCategory'-option 'Custom'
+without providing years in 'CustomPeriods': "DD-MM". Periods defined in this way will automatically
+"wrap around" so that dates in January may grouped together with dates in December.
+
+In order to make non-seasonal definitions for Quarter or Month, provide the 'CustomPeriods'
+for all years of interest on the format "DD-MM-YYYY". If years are provided the periods do not "wrap around"
+and categories are automatically extended to the entire year, if necesesarry.
+That is a category starting with 1. Jan is added if not present, and likewise a category ending with 31. Dec.
 }
 \examples{
  # Define seasonal periods quarter

@@ -78,46 +78,62 @@ encoding the day of the year when fish is consider to transition from one age to
 }
 \description{
 Performs data checks and data conversions,
- and stores some data-related parameters in preparation for running
- \code{\link[RstoxFDA]{ParameterizeRecaModels}}.
+and stores some data-related parameters in preparation for running
+\code{\link[RstoxFDA]{ParameterizeRecaModels}}.
 }
 \details{
-Parameters are obtained for 'cells' using \code{\link[RstoxFDA]{ParameterizeRecaModels}} 
- and and applied to landings-data when predicting total catch-at-age using \code{\link[RstoxFDA]{RunRecaModels}}.
- 
- 'Cells' are defined by all effects / covariates that are specified for both 'StoxLandingData' and 'StoxBioticData' 
- (see parameters 'FixedEffects', 'RandomEffects', and 'CarEffect'). That is, any variable that are to be included in
- the cell definition must always exist (not containing NAs) 
- and be coded coherently in both 'StoxBioticData' and 'StoxLandingData'.
- 
- Only effects that are part of the cell definition may be specified as 'Fixed effect' or 'CAR effect'.
- For fixed effect all values / levels of the effect must be sampled.
- For CAR effect, cell or neighbouring cells ('CarNeighbours') must be sampled
- 
- Any variable in samples 'StoxBioticData' may be included as a random effect as long as it is always observed
- (not containing NAs).
+Parameters are obtained for 'cells' using \code{\link[RstoxFDA]{ParameterizeRecaModels}}
+and and applied to landings-data when predicting total catch-at-age using \code{\link[RstoxFDA]{RunRecaModels}}.
+\subsection{Cells}{
 
- A random effect identifying haul / landing is always included in Reca. Do not add haul-identifiers as covariates.
- 
- The option UseStockSplitting requires that a Variable 'otolithtype' is added to
- the table 'Individual' in StoxBioticData.
+Reca conceptually decomposes a fishery into cells. Parameters are estimated for each cell,
+and later total catch at age is predicted for each cell. Cells must therefore be defined for
+both the census of landings, and for the samples.
+
+'Cells' are defined by all effects / covariates that are specified for both 'StoxLandingData' and 'StoxBioticData'
+(all effects are specified by one of the arguments: 'FixedEffects', 'RandomEffects', and 'CarEffect').
+Any variable that are to be included in
+the cell definition must always be observed (not containing NAs)
+and be coded coherently (the same coding system) in both 'StoxBioticData' and 'StoxLandingData'.
+}
+
+\subsection{Covariates}{
+
+Only effects that are part of the cell definition may be specified as 'Fixed effect' or 'CAR effect'.
+For fixed effect all values / levels of the effect must be sampled.
+For CAR effect, the cell or neighbouring cells (as defined by 'CarNeighbours') must be sampled
+
+Any variable in samples 'StoxBioticData' may be included as a random effect as long as it is always observed
+(not containing NAs).
+
+A random effect identifying haul / landing is always included in Reca. Do not add haul-identifiers as covariates.
+}
+
+\subsection{Stock splitting}{
+
+The option UseStockSplitting requires that a Variable 'otolithtype' is added to
+the table 'Individual' in StoxBioticData.
+This is developed for splitting coastal cod from atlantic cod, and that is reflected in the Reca documentation,
+but this is abstracted in StoX, so that other stocks may be encoded to fit the analysis.
+For some cases it may even be extended to other domains defined for individual fish.
+}
 }
 \seealso{
 \code{\link[RstoxFDA]{ReportFdaSampling}} for inspecting the data availability for potential
- cell definitions.
- \code{\link[RstoxFDA]{ParameterizeRecaModels}}, 
- and \code{\link[RstoxFDA]{RunRecaModels}} for parameterising and running the Reca-analysis.
- \code{\link[RstoxBase]{DefineStratumPolygon}}, 
- \code{\link[RstoxFDA]{AddStratumStoxBiotic}},
- and \code{\link[RstoxFDA]{AddStratumStoxLanding}} for making 'Stratum' part of the cell definition,
- and #'  \code{\link[RstoxFDA]{DefineCarNeighbours}}, for maing 'Stratum' available as a CAR-effect
- \code{\link[RstoxFDA]{DefinePeriod}}, 
- \code{\link[RstoxFDA]{AddPeriodStoxBiotic}}, 
- and \code{\link[RstoxFDA]{AddPeriodStoxLanding}} for making 'Period' part of the cell definition.
- #'  \code{\link[RstoxData]{DefineTranslation}}, 
- \code{\link[RstoxFDA]{AddGearGroupStoxBiotic}}, 
- and \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for making 'GearGroup' part of the cell definition.
- \code{\link[RstoxFDA]{DefineAgeErrorMatrix}} for making an age-error matrix available for the Reca-analysis.
- \code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters, 
- and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
+cell definitions.
+\code{\link[RstoxFDA]{ParameterizeRecaModels}},
+and \code{\link[RstoxFDA]{RunRecaModels}} for parameterising and running the Reca-analysis.
+\code{\link[RstoxBase]{DefineStratumPolygon}},
+\code{\link[RstoxFDA]{AddStratumStoxBiotic}},
+and \code{\link[RstoxFDA]{AddStratumStoxLanding}} for making 'Stratum' part of the cell definition,
+and #'  \code{\link[RstoxFDA]{DefineCarNeighbours}}, for maing 'Stratum' available as a CAR-effect
+\code{\link[RstoxFDA]{DefinePeriod}},
+\code{\link[RstoxFDA]{AddPeriodStoxBiotic}},
+and \code{\link[RstoxFDA]{AddPeriodStoxLanding}} for making 'Period' part of the cell definition.
+#'  \code{\link[RstoxData]{DefineTranslation}},
+\code{\link[RstoxFDA]{AddGearGroupStoxBiotic}},
+and \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for making 'GearGroup' part of the cell definition.
+\code{\link[RstoxFDA]{DefineAgeErrorMatrix}} for making an age-error matrix available for the Reca-analysis.
+\code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters,
+and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
 }
