@@ -65,7 +65,7 @@ StoxBioticData$Station$Area <- NA
 StoxBioticData$Station$Area <- c(StoxLandingData$Landing$Area[1:20], StoxLandingData$Landing$Area[1:20], StoxLandingData$Landing$Area[1:5])
 expect_error(expect_warning(PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("Gear", "Area"), RandomEffects = c())))
 
-context("PrepRecaEstimate: StocSplitting")
+context("PrepRecaEstimate: StockSplitting")
 manual <- DefineStockSplittingParameters(DefinitionMethod = "FunctionParameters",
                                          StockNameCC="S1", StockNameS="S2", ProbabilityType1As1=.8,
                                          ProbabilityType1As5=.2, ProbabilityType2As2=.6,
@@ -183,8 +183,8 @@ expect_true(is.RecaCatchAtAge(results))
 context("test-StoxAnalysisFunctions: RunRecaModels with GroupingVariables")
 results <- RunRecaModels(paramOut, StoxLandingData, GroupingVariables = c("Area", "Usage"))
 expect_equal(length(unique(paste(results$CatchAtAge$Area, results$CatchAtAge$Usage))), length(unique(paste(StoxLandingData$Landing$Area, StoxLandingData$Landing$Usage))))
-
 expect_true(is.RecaCatchAtAge(results))
+expect_warning(RunRecaModels(paramOut, StoxLandingData, GroupingVariables = c("Area", "Usage"), CollapseLength = F), "StoX: Producing estimates for all length groups in combination with age and several 'GroupingVariables'. This may exhaust memory, consider the option 'CollapseLength'")
 removeTempDirReca(fpath)
 
 context("test-StoxAnalysisFunctions: RunRecaModels wirh random effects in landings")
@@ -295,8 +295,8 @@ expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covaria
 fpath <- makeTempDirReca()
 paramOut <- ParameterizeRecaModels(prepCell, 10, 50, 1, fpath, Seed = 451)
 expect_true("cell" %in% names(paramOut$FitProportionAtAge))
-removeTempDirReca(fpath)
 
+removeTempDirReca(fpath)
 
 context("test-StoxAnalysisFunctions: RunRecaEstimate with random effect Area")
 est <- RunRecaEstimate(prep, 10, 100, 0, Seed = 112)

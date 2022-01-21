@@ -41,7 +41,6 @@ ia <- RstoxBase::DefineStratumPolygon(DefinitionMethod = "ResourceFile", FileNam
 unlink(tempfile, recursive = T)
 expect_true("StratumName" %in% names(ia))
 
-context("Test mergepolygons")
 ia <- RstoxFDA::ICESareas
 ia$StratumName <- paste(ia$StratumName, sep=".")
 
@@ -60,5 +59,4 @@ ia@data <- ia@data[,c("StratumName","Major_FA")]
 merged <- mergePolygons(ia, "StratumName")
 expect_true("SpatialPolygonsDataFrame" %in% class(merged))
 expect_equal(length(merged), length(unique(ia$StratumName)))
-
 

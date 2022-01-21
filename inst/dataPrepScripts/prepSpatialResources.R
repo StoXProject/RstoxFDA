@@ -89,6 +89,80 @@ ICESareas <- sp::spTransform(ICESareas, commonCRS)
 usethis::use_data(ICESareas, overwrite = T, compress = "xz")
 
 #
+# copied in here to introduce the dependency to nngeo
+#
+mergePolygonsR <- function(shape, mergeCol){
+  require(nngeo)
+  if (nrow(unique(shape@data)) != length(unique(shape@data[[mergeCol]]))){
+    stop("All columns must have the same value for polygons that are to be merged")
+  }
+  
+  dd<-sf::st_as_sf(shape)
+  newPolygons <- NULL
+  for (newName in unique(shape@data[[mergeCol]])){
+    ff <- sf::st_union(dd[dd[[mergeCol]]==newName,])
+    ff <- nngeo::st_remove_holes(ff)
+    
+    if (!any(is.na(sf::st_dimension(ff)))){
+      spat <- sf::as_Spatial(ff)
+      stopifnot(length(spat@polygons)==1)
+      spat@polygons[[1]]@ID <- newName
+      
+      if (is.null(newPolygons)){
+        newPolygons <- spat
+      }
+      else{
+        newPolygons <- rbind(newPolygons, spat)      
+      }      
+    }
+    else{
+      if (!all(is.na(sf::st_dimension(ff)))){
+        browser()
+      }
+    }
+    
+  }
+  
+  newPolygons <- sp::SpatialPolygonsDataFrame(newPolygons, shape[!duplicated(shape[[mergeCol]]),]@data, match.ID = mergeCol)
+  
+  return(newPolygons)
+  
+}
+
+#
+# prep ICES SubArea
+#
+ICESsubArea <- RstoxFDA::ICESareas
+ICESsubArea$StratumName <- paste(ICESsubArea$Major_FA, ICESsubArea$SubArea, sep=".")
+ICESsubArea <- ICESsubArea[!is.na(ICESsubArea$SubArea),]
+ICESsubArea <- ICESsubArea[,"StratumName"]
+ICESsubArea <- mergePolygonsR(ICESsubArea, "StratumName")
+usethis::use_data(ICESsubArea, overwrite = T, compress = "xz")
+
+ICESdivision <- RstoxFDA::ICESareas
+ICESdivision$StratumName <- paste(ICESdivision$Major_FA, ICESdivision$SubArea, ICESdivision$Division, sep=".")
+ICESdivision <- ICESdivision[!is.na(ICESdivision$Division),]
+ICESdivision <- ICESdivision[,"StratumName"]
+ICESdivision <- mergePolygonsR(ICESdivision, "StratumName")
+usethis::use_data(ICESdivision, overwrite = T, compress = "xz")
+
+ICESsubDivision <- RstoxFDA::ICESareas
+ICESsubDivision$StratumName <- paste(ICESsubDivision$Major_FA, ICESsubDivision$SubArea, ICESsubDivision$Division, ICESsubDivision$SubDivision, sep=".")
+ICESsubDivision <- ICESsubDivision[!is.na(ICESsubDivision$SubDivision),]
+ICESsubDivision <- ICESsubDivision[,"StratumName"]
+ICESsubDivision <- mergePolygonsR(ICESsubDivision, "StratumName")
+usethis::use_data(ICESsubDivision, overwrite = T, compress = "xz")
+
+ICESunit <- RstoxFDA::ICESareas
+ICESunit$StratumName <- paste(ICESunit$Major_FA, ICESunit$SubArea, ICESunit$Division, ICESunit$SubDivision, ICESunit$Unit, sep=".")
+ICESunit <- ICESunit[!is.na(ICESunit$Unit),]
+ICESunit <- ICESunit[,"StratumName"]
+ICESunit <- mergePolygonsR(ICESunit, "StratumName")
+usethis::use_data(ICESunit, overwrite = T, compress = "xz")
+
+
+
+#
 # prep ICES rectangles
 #
 ICESrectangles <- rgdal::readOGR("~/shapefiles/ICES_StatRec_mapto_ICES_Areas/", stringsAsFactors = F)
