@@ -78,7 +78,7 @@ Not to be confused with any temporal covariate.</p></dd>
 <dt>Seed</dt>
 <dd><p>see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>. Defaults to seed stored in 'RecaParameterData'.</p></dd>
 <dt>CollapseLength</dt>
-<dd><p>indicates whether length groups should be collapsed in result. Defaults to TRUE</p></dd>
+<dd><p>indicates whether length groups should be collapsed in result. Defaults to TRUE. See details.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -91,11 +91,17 @@ If the function-parameter 'GroupingVariables' is provided, predictions will be p
 The parameter 'StoxLandingData' may differ from the landings used in parameterisation (passed to <code><a href="ParameterizeRecaModels.html">ParameterizeRecaModels</a></code>),
 as long as all not additional values / levels for the model covariates / effects are introduced.</p>
 <p>If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'GroupingVariables' in the return value (<code><a href="RecaCatchAtAge.html">RecaCatchAtAge</a></code>)</p>
-<p>If the 'GroupingVariables' specify a large number of partitions of the landings, this function may
-exhaust available computer memory.</p>
-<p>By default length groups are collapsed into one length group in the result.
+<p>If the 'GroupingVariables' specify a very large number of partitions of the landings, this function may
+exhaust available computer memory.</p><div class="section">
+<h3 id="collapselength">CollapseLength<a class="anchor" aria-label="anchor" href="#collapselength"></a></h3>
+
+
+<p>By default length groups are collapsed into one length group in the result. This does not facilitate reporting
+length resolved data, such as length distributions.
 The full age-length prediction may be extracted by setting the parameter 'CollapseLength' to FALSE.
-This will increase the risk of exhausting available computer memory.</p>
+If this is used in combination with several grouping variables, there is some risk of exhausting available computer memory.</p>
+</div>
+
     </div>
     <div id="see-also">
     <h2>See also</h2>

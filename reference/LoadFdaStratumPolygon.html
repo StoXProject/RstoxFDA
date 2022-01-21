@@ -52,8 +52,9 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">LoadFdaStratumPolygon</span><span class="op">(</span>
   <span class="va">processData</span>,
-  StrataSystem <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FDIR.2017"</span>, <span class="st">"FDIR.2018"</span>, <span class="st">"ICES.2018"</span>, <span class="st">"NAFO"</span>, <span class="st">"NAFO.FDIR.2017"</span>,
-    <span class="st">"NAFO.FDIR.2018"</span><span class="op">)</span>,
+  StrataSystem <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FDIR.2017"</span>, <span class="st">"FDIR.2018"</span>, <span class="st">"ICES.2018"</span>, <span class="st">"ICES.SubArea.2018"</span>,
+    <span class="st">"ICES.Division.2018"</span>, <span class="st">"ICES.SubDivision.2018"</span>, <span class="st">"ICES.Unit.2018"</span>, <span class="st">"NAFO"</span>,
+    <span class="st">"NAFO.FDIR.2017"</span>, <span class="st">"NAFO.FDIR.2018"</span><span class="op">)</span>,
   UseProcessData <span class="op">=</span> <span class="cn">F</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -83,6 +84,18 @@ the polygons from the RstoxFDA package, rather than requiring them as a resource
 
 <dt>"ICES.2018"</dt>
 <dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from <code><a href="ICESareas.html">ICESareas</a></code>.</p></dd>
+
+<dt>"ICES.SubArea.2018"</dt>
+<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from <code><a href="ICESsubArea.html">ICESsubArea</a></code>.</p></dd>
+
+<dt>"ICES.Division.2018"</dt>
+<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from <code><a href="ICESdivision.html">ICESdivision</a></code>.</p></dd>
+
+<dt>"ICES.SubDivision.2018"</dt>
+<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from <code><a href="ICESsubDivision.html">ICESsubDivision</a></code>.</p></dd>
+
+<dt>"ICES.Unit.2018"</dt>
+<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from <code><a href="ICESunit.html">ICESunit</a></code>.</p></dd>
 
 <dt>"NAFO"</dt>
 <dd><p>NAFO areas. NAFO naming convention is used. Derived from <code><a href="NAFOareas.html">NAFOareas</a></code>.</p></dd>

@@ -82,7 +82,19 @@
     <loc>/reference/ICESareas.html</loc>
   </url>
   <url>
+    <loc>/reference/ICESdivision.html</loc>
+  </url>
+  <url>
     <loc>/reference/ICESrectangles.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ICESsubArea.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ICESsubDivision.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ICESunit.html</loc>
   </url>
   <url>
     <loc>/reference/LengthConversionTable.html</loc>
