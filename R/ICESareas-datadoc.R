@@ -2,10 +2,11 @@
 #'
 #' Definition for FAO Northeast Atlantic (Major Fishing Area 27) area coding system used in ICES data calls,
 #' as they have been defined from 2018 inclusive.
-#' Polygons are defined on different levels of aggregation, either Subarea, Division, Subdivision or Unit.
+#' Polygons are defined on the finest available level of aggregation, either Subarea, Division, Subdivision or Unit.
 #'
 #' In addition to columns identifying the polygons in FAO nomenclature, a column with the area in square kilometers is included.
-#' Polygons are derived from shapefiles provided by ICES web-portals.
+#' Polygons are derived from shapefiles provided by ICES web-portals, and has been edited with some simplifications.
+#' Notably detailed coast-lines have been removed, in favor of drawing area borders on land-mass.
 #'
 #' Polygons are defined in WGS84 coordinates (unprojected).
 #' 
@@ -26,9 +27,12 @@
 #' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 #'
 #' @keywords datasets
+#' 
+#' @seealso \code{\link[RstoxFDA]{ICESsubArea}}, \code{\link[RstoxFDA]{ICESdivision}}, \code{\link[RstoxFDA]{ICESsubDivision}}, and \code{\link[RstoxFDA]{ICESunit}}
+#' for polygon files separating the different levels of ICES areas.
 #'
 #' @examples
 #'  # plot ICES areas
 #'  data(ICESareas)
-#'  sp::plot(ICESareas)
+#'  plotArea(areaDef=ICESareas)
 "ICESareas"

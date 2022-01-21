@@ -278,23 +278,25 @@ mergePolygons <- function(shape, mergeCol){
   }
   
   dd<-sf::st_as_sf(shape)
-  
   newPolygons <- NULL
   for (newName in unique(shape@data[[mergeCol]])){
-    ff<-sf::st_union(dd[dd$StratumName==newName,])
-    spat <- sf::as_Spatial(ff)
-    stopifnot(length(spat@polygons)==1)
-    spat@polygons[[1]]@ID <- newName
-    
-    if (is.null(newPolygons)){
-      newPolygons <- spat
+    ff <- sf::st_union(dd[dd[[mergeCol]]==newName,])
+    if (!any(is.na(sf::st_dimension(ff)))){
+      spat <- sf::as_Spatial(ff)
+      stopifnot(length(spat@polygons)==1)
+      spat@polygons[[1]]@ID <- newName
+      
+      if (is.null(newPolygons)){
+        newPolygons <- spat
+      }
+      else{
+        newPolygons <- rbind(newPolygons, spat)      
+      }      
     }
-    else{
-      newPolygons <- rbind(newPolygons, spat)      
-    }
+
   }
   
-  newPolygons <- sp::SpatialPolygonsDataFrame(newPolygons, shape@data[!duplicated(shape@data[[mergeCol]]),], match.ID = mergeCol)
+  newPolygons <- sp::SpatialPolygonsDataFrame(newPolygons, shape[!duplicated(shape[[mergeCol]]),]@data, match.ID = mergeCol)
   
   return(newPolygons)
   

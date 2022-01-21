@@ -1707,6 +1707,10 @@ FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
 #'   \item{"FDIR.2017"}{Main areas defined by the Norwegian Directorate of Fisheries, as they where defined to 2017 inclusive. Derived from \code{\link[RstoxFDA]{mainareaFdir2017}}.}
 #'   \item{"FDIR.2018"}{Main areas defined by the Norwegian Directorate of Fisheries, as they have been defined from 2018 inclusive. Derived from \code{\link[RstoxFDA]{mainareaFdir2018}}.}
 #'   \item{"ICES.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from \code{\link[RstoxFDA]{ICESareas}}.}
+#'   \item{"ICES.SubArea.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from \code{\link[RstoxFDA]{ICESsubArea}}.}
+#'   \item{"ICES.Division.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from \code{\link[RstoxFDA]{ICESdivision}}.}
+#'   \item{"ICES.SubDivision.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from \code{\link[RstoxFDA]{ICESsubDivision}}.}
+#'   \item{"ICES.Unit.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from \code{\link[RstoxFDA]{ICESunit}}.}
 #'   \item{"NAFO"}{NAFO areas. NAFO naming convention is used. Derived from \code{\link[RstoxFDA]{NAFOareas}}.}
 #'   \item{"NAFO.FDIR.2017"}{NAFO areas combined with FDIR.2017. The naming convention of the Norwegian Directorate of fisheries is used.}
 #'   \item{"NAFO.FDIR.2018"}{NAFO areas combined with FDIR.2018. The naming convention of the Norwegian Directorate of fisheries is used.}
@@ -1720,7 +1724,7 @@ FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
 #' @return \code{\link[RstoxBase]{StratumPolygon}} with the desired strata definition.
 #' @export
 #' @md
-LoadFdaStratumPolygon <- function(processData, StrataSystem=c("FDIR.2017", "FDIR.2018", "ICES.2018", "NAFO", "NAFO.FDIR.2017", "NAFO.FDIR.2018"), UseProcessData=F){
+LoadFdaStratumPolygon <- function(processData, StrataSystem=c("FDIR.2017", "FDIR.2018", "ICES.2018", "ICES.SubArea.2018", "ICES.Division.2018", "ICES.SubDivision.2018", "ICES.Unit.2018", "NAFO", "NAFO.FDIR.2017", "NAFO.FDIR.2018"), UseProcessData=F){
   
   if (UseProcessData){
     return(processData)
@@ -1737,6 +1741,18 @@ LoadFdaStratumPolygon <- function(processData, StrataSystem=c("FDIR.2017", "FDIR
     areas$StratumName <- RstoxFDA::ICESareas$Area_Full
     areas <- areas[,"StratumName"]
     return(areas)
+  }
+  if (StrataSystem == "ICES.SubArea.2018"){
+    return(RstoxFDA::ICESsubArea)
+  }
+  if (StrataSystem == "ICES.Division.2018"){
+    return(RstoxFDA::ICESdivision)
+  }
+  if (StrataSystem == "ICES.SubDivision.2018"){
+    return(RstoxFDA::ICESsubDivision)
+  }
+  if (StrataSystem == "ICES.Unit.2018"){
+    return(RstoxFDA::ICESunit)
   }
   if (StrataSystem == "NAFO"){
     areas <- RstoxFDA::NAFOareas
