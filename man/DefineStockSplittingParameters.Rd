@@ -55,14 +55,14 @@ DefineStockSplittingParameters(
 }
 \description{
 Defines parameters for the stock-splitting analysis in Reca, including
- parameters for misclassifying when determining stock membership of a specimen.
+parameters for misclassifying when determining stock membership of a specimen.
 }
 \details{
 For DefinitionMethod 'ResourceFile', definitions are read from a UTF-8 encoded tab separated file with headers and one row
- with headers corresponding to column names in \code{\link[RstoxFDA]{StockSplittingParameters}}.
- see \code{\link[RstoxFDA]{StockSplittingParameters}} for further explanation on the coding system.
- 
- For DefinitionMethod 'FunctionParameters' defintions are constructed from parameters to this function.
+with headers corresponding to column names in \code{\link[RstoxFDA]{StockSplittingParameters}}.
+see \code{\link[RstoxFDA]{StockSplittingParameters}} for further explanation on the coding system.
+
+For DefinitionMethod 'FunctionParameters' defintions are constructed from parameters to this function.
 }
 \seealso{
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of stock-splitting parameters in Reca-estimation.

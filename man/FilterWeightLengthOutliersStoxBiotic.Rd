@@ -34,36 +34,36 @@ FilterWeightLengthOutliersStoxBiotic(
 }
 \description{
 Removes fish records that fall outside an acceptable weight-length region
- defined by the log-linear model
- 
- weight=alfa\*length^beta\*exp(epsilon); epsilon~N(0,sigma^2)
- 
- with alfa=exp(logalfa), logalfa and other parameters corresponding to arguments to this function.
+defined by the log-linear model
+
+weight=alfa\*length^beta\*exp(epsilon); epsilon~N(0,sigma^2)
+
+with alfa=exp(logalfa), logalfa and other parameters corresponding to arguments to this function.
 }
 \details{
 This function is intended to provide the same filtering that is offered in ECA 3.x and ECA 4.x
- for removing outliers based on a log-linear weight-length model, and
- function arguments are named to correspond to the naming convention used in ECA.
- 
- Records are removed if their weights that outside the range from:
- alfa\*L^beta\*exp(kAu\*sigma)
- to
- alfa\*L^beta\*exp(-kAl\*sigma)
+for removing outliers based on a log-linear weight-length model, and
+function arguments are named to correspond to the naming convention used in ECA.
 
- any records with missing length or weight is not removed.
- 
- Parameters 'logalfa', 'beta' and 'sigma' must be appropriate for weights recorded in gram,
- and lengths recorded in cm.
- 
- Note that kAl and kAu are given on a log scale, so that the acceptable region
- is not symmetric around the growth curve when kAl=kAu.
- 
- Some parameterizations that have been used for some stocks at IMR:
- \describe{
-  \item{cod.27.1-2 (Gadus morhua)}{logalfa = -5.0061, beta = 3.0716, sigma = 0.1454, kAl = kAu = 4}
-  \item{had.27.1-2 (Melanogrammus aeglefinus)}{logalfa = -4.9620, beta = 3.0919, sigma = 0.1282, kAl = kAu = 4}
-  \item{pok.27.1-2 (Pollachius virens)}{logalfa = -4.7718, beta = 3.0287, sigma = 0.1338, kAl = kAu = 4}
- }
+Records are removed if their weights that outside the range from:
+alfa\*L^beta\*exp(kAu\*sigma)
+to
+alfa\*L^beta\*exp(-kAl\*sigma)
+
+any records with missing length or weight is not removed.
+
+Parameters 'logalfa', 'beta' and 'sigma' must be appropriate for weights recorded in gram,
+and lengths recorded in cm.
+
+Note that kAl and kAu are given on a log scale, so that the acceptable region
+is not symmetric around the growth curve when kAl=kAu.
+
+Some parameterizations that have been used for some stocks at IMR:
+\describe{
+\item{cod.27.1-2 (Gadus morhua)}{logalfa = -5.0061, beta = 3.0716, sigma = 0.1454, kAl = kAu = 4}
+\item{had.27.1-2 (Melanogrammus aeglefinus)}{logalfa = -4.9620, beta = 3.0919, sigma = 0.1282, kAl = kAu = 4}
+\item{pok.27.1-2 (Pollachius virens)}{logalfa = -4.7718, beta = 3.0287, sigma = 0.1338, kAl = kAu = 4}
+}
 }
 \seealso{
 \code{\link[RstoxFDA]{FilterAgeLengthOutliersStoxBiotic}}

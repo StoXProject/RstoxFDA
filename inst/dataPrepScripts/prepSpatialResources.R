@@ -71,17 +71,17 @@ NAFOareas <- sp::spTransform(NAFOareas, commonCRS)
 usethis::use_data(NAFOareas, overwrite = T, compress = "xz")
 
 #
-# prep ICES areas
+# prep ICES areas fom 2018
 #
 
 # reduced detail with https://mapshaper.org
 
-ICESareas <- rgdal::readOGR("~/shapefiles/ICES_simlified/ICES_areas/", stringsAsFactors = F)
+ICESareas <- rgdal::readOGR("~/shapefiles/forenkelt_ICES_fra_haakon/ICES_areas_forenklet/", stringsAsFactors = F)
 ICESareas <- sp::spTransform(ICESareas, sp::CRS("+proj=longlat +datum=WGS84"))
 for (i in 1:nrow(ICESareas)){
   slot(slot(ICESareas, "polygons")[[i]], "ID") <- ICESareas$Area_Full[i]
 }
-ICESareas$StratumName <- ICESareas$Area_27
+ICESareas$StratumName <- ICESareas$Area_Full
 ICESareas$OBJECTID_1 <- NULL
 ICESareas$OBJECTID <- NULL
 names(ICESareas)[names(ICESareas) == "SubDivisio"] <- "SubDivision"

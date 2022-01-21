@@ -84,6 +84,20 @@ expect_true(abs(catchReportFlatOU$MeanLength$MeanIndividualLength[1]*10 - catchR
 expect_equal(catchReportFlatOU$TotalWeight$TotalWeight[1]*1e6, catchReportFlat$TotalWeight$TotalWeight[1])
 expect_equal(catchReportFlatOU$TotalNumber$TotalNumber[1]*1e3, catchReportFlat$TotalNumber$TotalNumber[1])
 
+context("Test StoxReportFunctions: ReportFdaLandings")
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+report <- ReportFdaLandings(StoxLandingData, GroupingVariables = c("Area"))
+expect_equal(ncol(report$FisheriesLandings),2)
+report <- ReportFdaLandings(StoxLandingData)
+expect_equal(ncol(report$FisheriesLandings),2)
+expect_equal(nrow(report$FisheriesLandings),1)
+report <- ReportFdaLandings(StoxLandingData, GroupingVariables = c("Area", "Gear"), Decimals = -3)
+expect_equal(ncol(report$FisheriesLandings),3)
+reportT <- ReportFdaLandings(StoxLandingData, GroupingVariables = c("Area", "Gear"), Unit = "ton")
+expect_equal(reportT$FisheriesLandings$LandedRoundWeight[1], report$FisheriesLandings$LandedRoundWeight[1]/1000)
+reportDate <- ReportFdaLandings(StoxLandingData, GroupingVariables = c("CatchDate"), Unit = "ton")
+expect_true(all(sort(reportDate$FisheriesLandings$CatchDate)==reportDate$FisheriesLandings$CatchDate))
 
 context("Test StoxReportFunctions: ReportFdaSampling")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
@@ -112,7 +126,7 @@ expect_true(all(SamplingReportRounded$FisheriesSampling$WeightOfSampledCatches !
 
 
 #Default gear is different coding system for stoxbiotic and landing
-unlanded <- ReportFdaSampling(StoxBioticData, StoxLandingData)
+unlanded <- ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear"))
 expect_true(is.data.table(unlanded$GroupingVariables))
 expect_true("Gear" %in% unlanded$GroupingVariables$GroupingVariables)
 expect_true(any(is.na(unlanded$FisheriesSampling$LandedRoundWeight)))

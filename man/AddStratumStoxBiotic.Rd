@@ -22,8 +22,8 @@ The strata are added to the new column 'Stratum'.
 }
 \seealso{
 \code{\link[RstoxBase]{DefineStratumPolygon}} for configuring stratum definitions.
- \code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data, 
- \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Stratum' as an effect in Reca-estimation,
- \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
- and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
+\code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data,
+\code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Stratum' as an effect in Reca-estimation,
+\code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
+and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
 }

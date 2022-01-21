@@ -25,15 +25,15 @@ Reports means and variances over iterations run for Reca parameterization, which
 }
 \details{
 Multiple chains may be aggregated into one summary table, by repeatedly applying this
- function with the aggregated result provided as the argument 'ParameterizationSummaryData'.
- This requires that chains are different, and that they are run for the same number of iterations.
- 
- Parameters in the summary are identified with the following notation:
- <model name>-<covariate name>-<any covariate value/level>:<any Age group> <parameter type>,
- e.g: 'ProportionAtAgeModel-Area:47:Age:2 Intercept ' for
- the intercept of age 2 in area 47 in the Proportion-At-Age model.
+function with the aggregated result provided as the argument 'ParameterizationSummaryData'.
+This requires that chains are different, and that they are run for the same number of iterations.
+
+Parameters in the summary are identified with the following notation:
+\<model name\>-\<covariate name\>-\<any covariate value/level\>:\<any Age group\> \<parameter type\>,
+e.g: 'ProportionAtAgeModel-Area:47:Age:2 Intercept ' for
+the intercept of age 2 in area 47 in the Proportion-At-Age model.
 }
 \seealso{
 \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation
-  \code{\link[RstoxFDA]{ReportParameterConvergence}} for convergence checks.
+\code{\link[RstoxFDA]{ReportParameterConvergence}} for convergence checks.
 }

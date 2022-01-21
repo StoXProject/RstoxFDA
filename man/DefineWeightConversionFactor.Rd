@@ -25,19 +25,19 @@ DefineWeightConversionFactor(
 }
 \description{
 Define weight conversion factors for calculating approximate weights for a product type (e.g. round fish)
- from the weight of other fish products, such as gutted fish.
+from the weight of other fish products, such as gutted fish.
 }
 \details{
 For DefinitionMethod 'ResourceFile':
- Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
- \describe{
- \item{Column 1: 'Description'}{Free-text description of the product}
- \item{Column 2: 'Species'}{Identifier for the species that the conversion applies to}
- \item{Column 3: 'ProductType'}{Identifier for the type of product that the conversion applies to}
- \item{Column 4: 'WeightFactor'}{scalar value that weights for the given 'ProductType' can be multiplied with to approximate the desired product type (w.g. round fish).}
- }
- 
- Missing values for WeightFactor are interpreted as NA, and will result in NA for weights after conversion.
+Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
+\describe{
+\item{Column 1: 'Description'}{Free-text description of the product}
+\item{Column 2: 'Species'}{Identifier for the species that the conversion applies to}
+\item{Column 3: 'ProductType'}{Identifier for the type of product that the conversion applies to}
+\item{Column 4: 'WeightFactor'}{scalar value that weights for the given 'ProductType' can be multiplied with to approximate the desired product type (w.g. round fish).}
+}
+
+Missing values for WeightFactor are interpreted as NA, and will result in NA for weights after conversion.
 }
 \seealso{
 \code{\link[RstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.

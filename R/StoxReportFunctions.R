@@ -48,11 +48,12 @@ setUnits <- function(table, columns, unit, quantity){
 #' @param StoxLandingData
 #'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 #'  and approriate columns added for identifying corresponding samples
-#' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. Defaults to all column names that are found in both inputs.
+#' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. If not provided, a single row for all landings will be produced.
 #' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.
 #' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @export
+#' @md
 ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
   
   if (!isGiven(Decimals)){
@@ -70,7 +71,9 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData)
   
   if (!isGiven(GroupingVariables)){
-    GroupingVariables <- names(flatbiotic)[names(flatbiotic) %in% names(flatlandings)]
+    GroupingVariables <- c("Segment")
+    flatlandings$Segment <- "All landings"
+    flatbiotic$Segment <- "All landings"
   }
   
   if (length(GroupingVariables) == 0){
@@ -126,6 +129,89 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   
   output <- list()
   output$FisheriesSampling <- tab
+  output$GroupingVariables <- data.table::data.table(GroupingVariables=GroupingVariables)
+  
+  return(output)
+}
+
+#' Report FDA landings
+#' @description 
+#'  Report landings in partitions of the fisheries.
+#' @details 
+#'  Landings are reported partitioned on the provided 'GroupingVariables'.
+#'  
+#'  Landings are sorted by decreasing weight, except if the column 'CatchDate' is used as GroupingVariable.
+#'  In that case Landings are sorted by increasing date, after sorting on other Grouping variables.
+#'  
+#'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+#'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+#'
+#'  The units considered valid for weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
+#' @param StoxLandingData
+#'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
+#'  and approriate columns added for identifying corresponding samples
+#' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. If not provided, a single row for all landings will be produced.
+#' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.
+#' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
+#' @return \code{\link[RstoxFDA]{ReportFdaLandingData}}
+#' @export
+#' @md
+ReportFdaLandings <- function(StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
+  
+  if (!isGiven(Decimals)){
+    Decimals=0
+  }
+  
+  if (isGiven(Unit)){
+    Unit <- Unit[1]
+    if (!(Unit %in% RstoxData::getUnitOptions("mass"))){
+      stop(paste(Unit, "is not a recognized unit for mass / weight."))
+    }
+  }
+  
+  flatlandings <- StoxLandingData$Landing
+  
+  if (!isGiven(GroupingVariables)){
+    GroupingVariables <- c("Segment")
+    flatlandings$Segment <- "All landings"
+  }
+  
+  if (length(GroupingVariables) == 0){
+    stop("No variables to stats::aggregate and compare. Provide parameter 'GroupingVariables'")
+  }
+  
+  if (!all(GroupingVariables %in% names(flatlandings))){
+    missing <- GroupingVariables[!(GroupingVariables %in% names(flatlandings))]
+    stop(paste("All 'GroupingVariables' must be present in 'StoxLandingData'. Missing:", paste(missing, sep=",")))
+  }
+  
+  landingsAggList <- list()
+  for (v in GroupingVariables){
+    landingsAggList[[v]] <- flatlandings[[v]]
+  }
+  landings <- flatlandings[,c(GroupingVariables, "RoundWeight"), with=F]
+  landingsTab <- data.table::data.table(stats::aggregate(list(LandedRoundWeight=landings$RoundWeight), by=landingsAggList, FUN=function(x){sum(x, na.rm=T)}))
+  
+  if (!("CatchDate" %in% GroupingVariables)){
+    landingsTab <- landingsTab[order(landingsTab$LandedRoundWeight, decreasing = T),]    
+  }
+  else{
+    orderCols <- c(GroupingVariables[GroupingVariables!="CatchDate"], "CatchDate")
+    data.table::setorderv(landingsTab, cols = orderCols)
+  }
+
+  
+  landingsTab <- setUnits(landingsTab, c("LandedRoundWeight"), "kg", "mass")
+  if (isGiven(Unit)){
+    landingsTab <- setUnits(landingsTab, c("LandedRoundWeight"), Unit, "mass")
+  }
+  
+  if (isGiven(Decimals)){
+    landingsTab <- setDecimals(landingsTab, c("LandedRoundWeight"), Decimals)
+  }
+  
+  output <- list()
+  output$FisheriesLandings <- landingsTab
   output$GroupingVariables <- data.table::data.table(GroupingVariables=GroupingVariables)
   
   return(output)
@@ -234,6 +320,7 @@ setLengthGroup <- function(LengthReport){
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length composition.
 #' @export
+#' @md
 ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
   
   if (!isGiven(Decimals)){
@@ -426,6 +513,7 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
 #' @return \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
+#' @md
 ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10))){
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   
@@ -599,6 +687,7 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #' @return \code{\link[RstoxFDA]{ReportFdaSummaryData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
+#' @md
 ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), DecimalOptions=FALSE, DecimalTotalNumber=integer(), DecimalTotalWeight=integer(), DecimalMeanAge=integer(), DecimalMeanWeight=integer(), DecimalMeanLength=integer(), UnitOptions=FALSE, UnitTotalNumber=RstoxData::getUnitOptions("cardinality", conversionRange=c(1, 1e12)), UnitTotalWeight=RstoxData::getUnitOptions("mass", conversionRange=c(1, 1e12)), UnitMeanWeight=RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10)), UnitMeanLength=RstoxData::getUnitOptions("length", conversionRange=c(1e-4, 10))){
   
   if (!isGiven(DecimalTotalNumber)){
@@ -986,7 +1075,7 @@ summaryPaaPar <- function(modelFit){
 #'  This requires that chains are different, and that they are run for the same number of iterations.
 #'  
 #'  Parameters in the summary are identified with the following notation:
-#'  <model name>-<covariate name>-<any covariate value/level>:<any Age group> <parameter type>,
+#'  \<model name\>-\<covariate name\>-\<any covariate value/level\>:\<any Age group\> \<parameter type\>,
 #'  e.g: 'ProportionAtAgeModel-Area:47:Age:2 Intercept ' for
 #'  the intercept of age 2 in area 47 in the Proportion-At-Age model.
 #'  
@@ -997,6 +1086,7 @@ summaryPaaPar <- function(modelFit){
 #' @seealso \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation
 #'   \code{\link[RstoxFDA]{ReportParameterConvergence}} for convergence checks.
 #' @export
+#' @md
 ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSummaryData, AppendReport=FALSE){
   
   
@@ -1106,6 +1196,7 @@ crossChainConvergence <- function(modelSummary, iterations, tolerance){
 #' @param Decimals integer specifying the number of decimals to report for 'GelmanRubinR'. Defaults to 2
 #' @return \code{\link[RstoxFDA]{ParameterConvergenceData}}
 #' @export
+#' @md
 ReportParameterConvergence <- function(ParameterizationSummaryData, Tolerance=numeric(), Decimals=integer()){
   
   if (!isGiven(Tolerance)){

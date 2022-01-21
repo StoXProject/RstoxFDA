@@ -484,6 +484,26 @@ is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
   
 }
 
+#' Landings Report data (ReportFdaLandingData)
+#' 
+#' @description 
+#'  list with tow members:
+#'  \describe{
+#'   \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FisheriesLandings' stored in the column 'GroupingVariables'}
+#'   \item{FisheriesLandings}{a \code{\link[data.table]{data.table}} described below.}
+#'  }
+#'  
+#'  FisheriesLandings is a report of landings for partitions of a fishery.
+#'  The report is a \code{\link[data.table]{data.table}} with columns:
+#'  \describe{
+#'   \item{...}{A column for each of the provided Aggregation variables}
+#'   \item{LandedRoundWeight}{Total landings in kg}
+#'  }
+#' 
+#' @name ReportFdaLandingData
+#' 
+NULL
+
 #' Reca Data (RecaData)
 #'
 #' Data and some data parameters prepared for running
@@ -1164,7 +1184,6 @@ stoxFunctionAttributes <- list(
       )
     )
   ),
-  
   DefinePeriod = list(
     functionType = "processData", 
     functionCategory = "baseline", 
@@ -1217,6 +1236,17 @@ stoxFunctionAttributes <- list(
       # These two are joined with AND, and must both be fulfilled:
       FileName = list(
         DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      )
+    )
+  ),
+  
+  LoadFdaStratumPolygon = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StratumPolygon",
+    functionArgumentHierarchy = list(
+      StrataSystem = list(
         UseProcessData = FALSE
       )
     )
@@ -1359,6 +1389,14 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "ReportFdaSamplingData",
     functionParameterFormat = list(
       GroupingVariables = "samplereportvariables"
+    )
+  ),
+  ReportFdaLandings = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaLandingsData",
+    functionParameterFormat = list(
+      GroupingVariables = "landingsreportvariables"
     )
   ),
   ReportRecaCatchAtAge = list(
@@ -1505,6 +1543,15 @@ processPropertyFormats <- list(
       }
       possibleValues <- unique(possibleValues)
       possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$Landing)]
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  landingsreportvariables = list(
+    class = "vector", 
+    title = "One or more variables to use as aggregation variables.", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- names(StoxLandingData$Landing)[names(StoxLandingData$Landing) != "Rundvekt"]
       return(sort(possibleValues))
     }, 
     variableTypes = "character"

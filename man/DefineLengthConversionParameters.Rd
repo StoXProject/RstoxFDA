@@ -25,19 +25,19 @@ DefineLengthConversionParameters(
 }
 \description{
 Define length conversion parameters for approximating one type of length measurement from measurments of another type,
- based on a linear regression fit between measurement types. E.g. calculating 'total length' from measured 'fork length'.
+based on a linear regression fit between measurement types. E.g. calculating 'total length' from measured 'fork length'.
 }
 \details{
 For DefinitionMethod 'ResourceFile':
- Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
- \describe{
- \item{Column 1: 'Description'}{Free-text description of the product}
- \item{Column 2: 'Species'}{Identifier for the species that the conversion applies to}
- \item{Column 3: 'MeasurmentType'}{Identifier for the type of length measurement of the measured length}
- \item{Column 4: 'Alpha'}{scalar value representing the intercept (in cm) of a linear regression fit between length measurements.}
- \item{Column 5: 'Beta'}{scalar value representing the slope of a linear regression fit between length measurements.}
- }
- See also \code{\link[RstoxFDA]{LengthConversionTable}}
+Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:
+\describe{
+\item{Column 1: 'Description'}{Free-text description of the product}
+\item{Column 2: 'Species'}{Identifier for the species that the conversion applies to}
+\item{Column 3: 'MeasurmentType'}{Identifier for the type of length measurement of the measured length}
+\item{Column 4: 'Alpha'}{scalar value representing the intercept (in cm) of a linear regression fit between length measurements.}
+\item{Column 5: 'Beta'}{scalar value representing the slope of a linear regression fit between length measurements.}
+}
+See also \code{\link[RstoxFDA]{LengthConversionTable}}
 }
 \seealso{
 \code{\link[RstoxFDA]{ConvertLengthBiotic}} for applying length conversion to data

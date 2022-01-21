@@ -1,3 +1,19 @@
+context("test-StoxBaselineFunctions: LoadFdaStratumPolygon")
+p <- LoadFdaStratumPolygon(NULL, "FDIR.2017")
+expect_equal(nrow(p), 60)
+p <- LoadFdaStratumPolygon(NULL, "FDIR.2018")
+expect_equal(nrow(p), 60)
+p <- LoadFdaStratumPolygon(NULL, "ICES.2018")
+expect_equal(nrow(p), 66)
+p <- LoadFdaStratumPolygon(NULL, "NAFO")
+expect_equal(nrow(p), 27)
+p <- LoadFdaStratumPolygon(NULL, "NAFO.FDIR.2017")
+expect_equal(nrow(p), 87)
+p <- LoadFdaStratumPolygon(NULL, "NAFO.FDIR.2018")
+expect_equal(nrow(p), 87)
+expect_error(LoadFdaStratumPolygon(NULL, "NAFO.FDIR.201"), "StrataSystem NAFO.FDIR.201 not recognized.")
+
+
 context("test-StoxBaselineFunctions: ListBioticDifference")
 
 bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA")
@@ -486,6 +502,10 @@ quart <- DefinePeriod(NULL, TemporalCategory = "Quarter")
 stoxlandingPost <- AddPeriodStoxLanding(stoxlanding, quart)
 expect_true("Period" %in% names(stoxlandingPost$Landing))
 expect_true(all(c("Q1", "Q2") %in% stoxlandingPost$Landing$Period))
+
+stoxlandingPost <- AddPeriodStoxLanding(stoxlanding, quart, ColumnName = "ReportPeriod")
+expect_true("ReportPeriod" %in% names(stoxlandingPost$Landing))
+expect_true(all(c("Q1", "Q2") %in% stoxlandingPost$Landing$ReportPeriod))
 
 context("test-StoxBaselineFunctions: SetAreaPositionsBiotic")
 areaPos <- DefineAreaPosition(NULL, FileName = regularfile, StratumPolygon = NULL)

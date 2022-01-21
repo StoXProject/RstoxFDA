@@ -19,14 +19,14 @@ Set start date to stop date.
 }
 \details{
 Set the column 'stationstartdate' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}}
- to the value of 'stationstopdate'.
- 
- Setting stationstartdate facilitates conversion to \code{\link[RstoxData]{StoxBioticData}} 
- using \code{\link[RstoxData]{StoxBiotic}}, and is applicable if daily resolution of date and time is not critical
- for subsequent analysis.
- 
- These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
- For bioticdata that does not conform to this, no modifications are done.
+to the value of 'stationstopdate'.
+
+Setting stationstartdate facilitates conversion to \code{\link[RstoxData]{StoxBioticData}}
+using \code{\link[RstoxData]{StoxBiotic}}, and is applicable if daily resolution of date and time is not critical
+for subsequent analysis.
+
+These columns are on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
+For bioticdata that does not conform to this, no modifications are done.
 }
 \seealso{
 \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.

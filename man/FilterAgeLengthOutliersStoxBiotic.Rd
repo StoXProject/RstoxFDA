@@ -50,7 +50,7 @@ This function is intended to provide the same filtering that is offered in ECA 3
  to
  Linf\*(1-exp(-K\*(AGE)))\*exp(-kAl\*sigma)
  
- Age is provided with a resoltation of 1/12 year, which is approximated
+ Age is provided with a resolutation of 1/12 year, which is approximated
  by adding M/12 to the integer age, where M is the number of the month of catch (e.g. 2 for february).
  For this reason, 'DateTime' must be provided for all 'Stations' in 'StoxBioticData'
 

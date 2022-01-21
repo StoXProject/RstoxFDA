@@ -19,7 +19,7 @@ List the difference between a NMDbiotic v 3.x data set and a StoxBiotic data set
 }
 \details{
 Lists all missions, fishstations, catchsamples and individuals from a NMDbiotic v 3.x data set
- that is not present in a given StoxBiotic data set.
- 
- This may be used to summarize the effect of filters and data conversions.
+that is not present in a given StoxBiotic data set.
+
+This may be used to summarize the effect of filters and data conversions.
 }

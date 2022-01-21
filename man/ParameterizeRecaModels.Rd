@@ -31,7 +31,7 @@ ParameterizeRecaModels(
 
 \item{Delta.age}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.}
 
-\item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.}
+\item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. If not provided a random seed will be set.}
 
 \item{UseCachedData}{if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.}
 }
@@ -43,24 +43,35 @@ Runs estimation of parameters for Reca models. Invokes \code{\link[Reca]{eca.est
 }
 \details{
 \code{\link[Reca]{eca.estimate}} performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
- This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.
- 
- The argument 'UseCachedData' allows previously computed parameterization to be returned in stead of parameterizing again.
- If no previous run is located in the 'ResultDirectory', or the arguments that are passed to Reca differs from the previous run, 
- execution will halt with an error.
-}
-\section{ResultDirectory files}{
+This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.
+\subsection{Seed}{
 
- Various report functions may use output of this function with the function \code{\link[Reca]{eca.predict}} which samples the posterior distributions of parameters.
- Communication between \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}} is managed by writing and reading files, 
- and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
- For multi-chain analysis, a different directory should be provided for each chain. 
- 
- Be aware that this breaks with the general design of StoX and somewhat limits the transferrability of
- StoX projects between computers.
+If 'Seed' is not provided a random seed is chosen. This is stored in the returned data (RecaParameterData$GlobalVariables$Seed).
+This seed is passed to Reca, but not all versions of Reca has provided exact reproducability for a given seed,
+so the behaviour is dependent on the installed Reca-version.
 }
 
+\subsection{Caching}{
+
+The argument 'UseCachedData' allows previously computed parameterization to be returned in stead of parameterizing again.
+If no previous run is located in the 'ResultDirectory', or the arguments or data that are passed to Reca differs from the previous run,
+execution will halt with an error when 'UseCachedData'. In this respect it may also be useful to note a counter intuitive
+aspect of the argument 'Seed'. If 'Seed' was not provided for the previous run, the arguments will be considered equal if
+the seed is set to the value returned on the previous run (RecaParameterData$GlobalVariables$Seed).
+}
+
+\subsection{ResultDirectory files:}{
+
+Various report functions may use output of this function with the function \code{\link[Reca]{eca.predict}} which samples the posterior distributions of parameters.
+Communication between \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}} is managed by writing and reading files,
+and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
+For multi-chain analysis, a different directory should be provided for each chain.
+
+Be aware that this breaks with the general design of StoX and somewhat limits the transferrability of
+StoX projects between computers.
+}
+}
 \seealso{
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for model configuration, and data preparation for this function, and
- \code{\link[RstoxFDA]{RunRecaModels}} for obtaining predictions / estimates from the Reca-models.
+\code{\link[RstoxFDA]{RunRecaModels}} for obtaining predictions / estimates from the Reca-models.
 }
