@@ -574,6 +574,10 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 #' @md
 AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition, ColumnName=c("Period", "ReportPeriod")){
   
+  if (!isGiven(ColumnName)){
+    ColumnName <- "Period"
+  }
+  
   columnName=match.arg(ColumnName, ColumnName)
   
   if (columnName %in% names(StoxLandingData)){
@@ -1691,5 +1695,67 @@ FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
   return(StoxBioticData)
 }
 
+#' Load common area definitions
+#' @description 
+#'  Loads standard area definitions often used in analysis of fisheries.
+#' @details
+#'  This function has the same effect as \code{\link[RstoxBase]{DefineStratumPolygon}}, but loads
+#'  the polygons from the RstoxFDA package, rather than requiring them as a resource file.
+#' 
+#'  The options available are:
+#'  \describe{
+#'   \item{"FDIR.2017"}{Main areas defined by the Norwegian Directorate of Fisheries, as they where defined to 2017 inclusive. Derived from \code{\link[RstoxFDA]{mainareaFdir2017}}.}
+#'   \item{"FDIR.2018"}{Main areas defined by the Norwegian Directorate of Fisheries, as they have been defined from 2018 inclusive. Derived from \code{\link[RstoxFDA]{mainareaFdir2018}}.}
+#'   \item{"ICES.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from \code{\link[RstoxFDA]{ICESareas}}.}
+#'   \item{"NAFO"}{NAFO areas. NAFO naming convention is used. Derived from \code{\link[RstoxFDA]{NAFOareas}}.}
+#'   \item{"NAFO.FDIR.2017"}{NAFO areas combined with FDIR.2017. The naming convention of the Norwegian Directorate of fisheries is used.}
+#'   \item{"NAFO.FDIR.2018"}{NAFO areas combined with FDIR.2018. The naming convention of the Norwegian Directorate of fisheries is used.}
+#'  }
+#'  
+#'  FDIR.2017 corresponds to the area coding referred to as system 2 at IMR.
+#'  FDIR.2018 corresponds to the area coding referred to as system 10 at IMR.
+#' @param processData \code{\link[RstoxBase]{StratumPolygon}} as returned from this function
+#' @param StrataSystem the strata system to load
+#' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
+#' @return \code{\link[RstoxBase]{StratumPolygon}} with the desired strata definition.
+#' @export
+#' @md
+LoadFdaStratumPolygon <- function(processData, StrataSystem=c("FDIR.2017", "FDIR.2018", "ICES.2018", "NAFO", "NAFO.FDIR.2017", "NAFO.FDIR.2018"), UseProcessData=F){
   
+  if (StrataSystem == "FDIR.2017"){
+    return(RstoxFDA::mainareaFdir2017)
+  }
+  if (StrataSystem == "FDIR.2018"){
+    return(RstoxFDA::mainareaFdir2018)
+  }
+  if (StrataSystem == "ICES.2018"){
+    areas <- RstoxFDA::ICESareas
+    areas$StratumName <- RstoxFDA::ICESareas$Area_Full
+    areas <- areas[,"StratumName"]
+    return(areas)
+  }
+  if (StrataSystem == "NAFO"){
+    areas <- RstoxFDA::NAFOareas
+    areas$StratumName <- areas$nafo_names
+    areas <- areas[,"StratumName"]
+    return(areas)
+  }
+  if (StrataSystem == "NAFO.FDIR.2017"){
+    fdir <- RstoxFDA::mainareaFdir2017
+    nafo <- RstoxFDA::NAFOareas
+    nafo$StratumName <- nafo$homr
+    nafo <- nafo[,"StratumName"]
+    return(rbind(nafo, fdir))
+  }
+  if (StrataSystem == "NAFO.FDIR.2018"){
+    fdir <- RstoxFDA::mainareaFdir2018
+    nafo <- RstoxFDA::NAFOareas
+    nafo$StratumName <- nafo$homr
+    nafo <- nafo[,"StratumName"]
+    return(rbind(nafo, fdir))
+  }
+  
+  stop("StrataSystem ", StrataSystem, " not recognized.")
+  
+}
   

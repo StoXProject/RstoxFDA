@@ -1,9 +1,10 @@
 #' ICES areas
 #'
-#' Definition for FAO Northeast Atlantic (Major Fishing Area 27) area coding system used in ICES data calls.
+#' Definition for FAO Northeast Atlantic (Major Fishing Area 27) area coding system used in ICES data calls,
+#' as they have been defined from 2018 inclusive.
 #' Polygons are defined on different levels of aggregation, either Subarea, Division, Subdivision or Unit.
 #'
-#' In addtion to columns idenitfying the polygons in FAO nomenclature, a column with the area in square kilometers is included.
+#' In addition to columns identifying the polygons in FAO nomenclature, a column with the area in square kilometers is included.
 #' Polygons are derived from shapefiles provided by ICES web-portals.
 #'
 #' Polygons are defined in WGS84 coordinates (unprojected).
@@ -15,7 +16,7 @@
 #'  \item{Area_27}{Code for full ICES area, excluding the FAO area code (27).}
 #' }
 #' 
-#' The data also contains columns for the individul components of the full ICES area code:
+#' The data also contains columns for the individual components of the full ICES area code:
 #' <Major_FA>.<SubArea>.<Division>.<SubDivision>.<Unit>
 #'
 #' @docType data

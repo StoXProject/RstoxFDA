@@ -1184,7 +1184,6 @@ stoxFunctionAttributes <- list(
       )
     )
   ),
-  
   DefinePeriod = list(
     functionType = "processData", 
     functionCategory = "baseline", 
@@ -1237,6 +1236,17 @@ stoxFunctionAttributes <- list(
       # These two are joined with AND, and must both be fulfilled:
       FileName = list(
         DefinitionMethod = "ResourceFile", 
+        UseProcessData = FALSE
+      )
+    )
+  ),
+  
+  LoadFdaStratumPolygon = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "StratumPolygon",
+    functionArgumentHierarchy = list(
+      StrataSystem = list(
         UseProcessData = FALSE
       )
     )

@@ -1,3 +1,19 @@
+context("test-StoxBaselineFunctions: LoadFdaStratumPolygon")
+p <- LoadFdaStratumPolygon(NULL, "FDIR.2017")
+expect_equal(nrow(p), 60)
+p <- LoadFdaStratumPolygon(NULL, "FDIR.2018")
+expect_equal(nrow(p), 60)
+p <- LoadFdaStratumPolygon(NULL, "ICES.2018")
+expect_equal(nrow(p), 66)
+p <- LoadFdaStratumPolygon(NULL, "NAFO")
+expect_equal(nrow(p), 27)
+p <- LoadFdaStratumPolygon(NULL, "NAFO.FDIR.2017")
+expect_equal(nrow(p), 87)
+p <- LoadFdaStratumPolygon(NULL, "NAFO.FDIR.2018")
+expect_equal(nrow(p), 87)
+expect_error(LoadFdaStratumPolygon(NULL, "NAFO.FDIR.201"), "StrataSystem NAFO.FDIR.201 not recognized.")
+
+
 context("test-StoxBaselineFunctions: ListBioticDifference")
 
 bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA")
