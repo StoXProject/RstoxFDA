@@ -707,12 +707,14 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  
 #'  If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'GroupingVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
 #'  
-#'  If the 'GroupingVariables' specify a large number of partitions of the landings, this function may
+#'  If the 'GroupingVariables' specify a very large number of partitions of the landings, this function may
 #'  exhaust available computer memory.
 #'  
-#'  By default length groups are collapsed into one length group in the result. 
+#'  #### CollapseLength
+#'  By default length groups are collapsed into one length group in the result. This does not facilitate reporting
+#'  length resolved data, such as length distributions.
 #'  The full age-length prediction may be extracted by setting the parameter 'CollapseLength' to FALSE.
-#'  This will increase the risk of exhausting available computer memory.
+#'  If this is used in combination with several grouping variables, there is some risk of exhausting available computer memory.
 #' @param RecaParameterData Parameters for Reca models.
 #' @param StoxLandingData Landings data (\code{\link[RstoxData]{StoxLandingData}}).
 #' @param GroupingVariables character vector identifying columns in 'StoxLandingData' that results should be provided for.
@@ -722,7 +724,7 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  Not to be confused with any temporal covariate.
 #' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to seed stored in 'RecaParameterData'.
-#' @param CollapseLength indicates whether length groups should be collapsed in result. Defaults to TRUE
+#' @param CollapseLength indicates whether length groups should be collapsed in result. Defaults to TRUE. See details.
 #' @return \code{\link[RstoxFDA]{RecaCatchAtAge}}
 #' @seealso \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation,
 #'  \code{\link[RstoxFDA]{ReportRecaCatchAtAge}}, 
@@ -731,6 +733,10 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #' @export
 #' @md
 RunRecaModels <- function(RecaParameterData, StoxLandingData, GroupingVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric(), CollapseLength=TRUE){
+  
+  if (length(GroupingVariables)>1 && !CollapseLength){
+    stoxWarning("Producing estimates for all length groups in combination with age and several 'GroupingVariables'. This may exhaust memory, consider the option 'CollapseLength'.")
+  }
   
   #discard fit info and convert
   RecaParameterData$FitProportionAtAge <- NULL

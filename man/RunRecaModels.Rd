@@ -29,7 +29,7 @@ Not to be confused with any temporal covariate.}
 
 \item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to seed stored in 'RecaParameterData'.}
 
-\item{CollapseLength}{indicates whether length groups should be collapsed in result. Defaults to TRUE}
+\item{CollapseLength}{indicates whether length groups should be collapsed in result. Defaults to TRUE. See details.}
 }
 \value{
 \code{\link[RstoxFDA]{RecaCatchAtAge}}
@@ -45,12 +45,15 @@ as long as all not additional values / levels for the model covariates / effects
 
 If The models are configured for stock-splitting analysis. The variable 'Stock' will be added to 'GroupingVariables' in the return value (\code{\link[RstoxFDA]{RecaCatchAtAge}})
 
-If the 'GroupingVariables' specify a large number of partitions of the landings, this function may
+If the 'GroupingVariables' specify a very large number of partitions of the landings, this function may
 exhaust available computer memory.
+\subsection{CollapseLength}{
 
-By default length groups are collapsed into one length group in the result.
+By default length groups are collapsed into one length group in the result. This does not facilitate reporting
+length resolved data, such as length distributions.
 The full age-length prediction may be extracted by setting the parameter 'CollapseLength' to FALSE.
-This will increase the risk of exhausting available computer memory.
+If this is used in combination with several grouping variables, there is some risk of exhausting available computer memory.
+}
 }
 \seealso{
 \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation,
