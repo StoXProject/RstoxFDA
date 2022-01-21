@@ -79,30 +79,30 @@
     <div id="details">
     <h2>Details</h2>
     <p>Defines an association between area codes and positions that represent that area code.
- For example an area code could be associated with the centre of mass of the area, or
- some other point within the area. This may be useful for providing approximate
- coordinates when locations are identified by area codes. The soruce of the
- area-position association may be a table or a appropriately formatted
- polygon-definition (<code><a href="https://rdrr.io/pkg/RstoxBase/man/StratumPolygon.html" class="external-link">StratumPolygon</a></code>).</p>
+For example an area code could be associated with the centre of mass of the area, or
+some other point within the area. This may be useful for providing approximate
+coordinates when locations are identified by area codes. The soruce of the
+area-position association may be a table or a appropriately formatted
+polygon-definition (<code><a href="https://rdrr.io/pkg/RstoxBase/man/StratumPolygon.html" class="external-link">StratumPolygon</a></code>).</p>
 <p>For DefinitionMethod 'ResourceFile':
- Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:</p><dl><dt>Column 1: 'Area'</dt>
+Definitions are read from a tab separated, UTF-8 encoded file with headers. Columns defined as:</p><dl><dt>Column 1: 'Area'</dt>
 <dd><p>Area code (key)</p></dd>
 
- <dt>Column 2: 'Location'</dt>
+<dt>Column 2: 'Location'</dt>
 <dd><p>optional subdivision of area. If provided, positions for missing locations should be encoded as well.</p></dd>
 
- <dt>Column 3: 'Latitude'</dt>
+<dt>Column 3: 'Latitude'</dt>
 <dd><p>WGS84 Latitude, decimal degrees</p></dd>
 
- <dt>Column 4: 'Longitude'</dt>
+<dt>Column 4: 'Longitude'</dt>
 <dd><p>WGS84 Longitude, decimal degrees</p></dd>
 
- 
+
 </dl><p>For DefinitionMethod 'StratumPolygon':
- Definitions are extracted from a <code><a href="https://rdrr.io/pkg/RstoxBase/man/StratumPolygon.html" class="external-link">StratumPolygon</a></code>:
- 'Area' in <code><a href="AreaPosition.html">AreaPosition</a></code> is derived from the column 'StratumName' in <code><a href="https://rdrr.io/pkg/RstoxBase/man/StratumPolygon.html" class="external-link">StratumPolygon</a></code>.
- 'Location' in <code><a href="AreaPosition.html">AreaPosition</a></code> is encoded as missing.
- 'Latitude' and 'Longitude' in <code><a href="AreaPosition.html">AreaPosition</a></code> are the coordinates set for each polygon in <code><a href="https://rdrr.io/pkg/RstoxBase/man/StratumPolygon.html" class="external-link">StratumPolygon</a></code>.</p>
+Definitions are extracted from a <code><a href="https://rdrr.io/pkg/RstoxBase/man/StratumPolygon.html" class="external-link">StratumPolygon</a></code>:
+'Area' in <code><a href="AreaPosition.html">AreaPosition</a></code> is derived from the column 'StratumName' in <code><a href="https://rdrr.io/pkg/RstoxBase/man/StratumPolygon.html" class="external-link">StratumPolygon</a></code>.
+'Location' in <code><a href="AreaPosition.html">AreaPosition</a></code> is encoded as missing.
+'Latitude' and 'Longitude' in <code><a href="AreaPosition.html">AreaPosition</a></code> are the coordinates set for each polygon in <code><a href="https://rdrr.io/pkg/RstoxBase/man/StratumPolygon.html" class="external-link">StratumPolygon</a></code>.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

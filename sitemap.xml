@@ -91,6 +91,9 @@
     <loc>/reference/ListBioticDifference.html</loc>
   </url>
   <url>
+    <loc>/reference/LoadFdaStratumPolygon.html</loc>
+  </url>
+  <url>
     <loc>/reference/MetierTable.html</loc>
   </url>
   <url>
@@ -125,6 +128,12 @@
   </url>
   <url>
     <loc>/reference/ReportFdaCatchAtLengthData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ReportFdaLandingData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ReportFdaLandings.html</loc>
   </url>
   <url>
     <loc>/reference/ReportFdaLengthAtAgeData.html</loc>

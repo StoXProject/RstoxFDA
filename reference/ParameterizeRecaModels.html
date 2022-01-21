@@ -80,7 +80,7 @@
 <dt>Delta.age</dt>
 <dd><p>see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>. Defaults to 0.001.</p></dd>
 <dt>Seed</dt>
-<dd><p>see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>. Defaults to random seed.</p></dd>
+<dd><p>see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>. If not provided a random seed will be set.</p></dd>
 <dt>UseCachedData</dt>
 <dd><p>if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.</p></dd>
 </dl></div>
@@ -91,26 +91,43 @@
     <div id="details">
     <h2>Details</h2>
     <p><code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
- This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.</p> 
+This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.</p><div class="section">
+<h3 id="seed">Seed<a class="anchor" aria-label="anchor" href="#seed"></a></h3>
+
+
+<p>If 'Seed' is not provided a random seed is chosen. This is stored in the returned data (RecaParameterData$GlobalVariables$Seed).
+This seed is passed to Reca, but not all versions of Reca has provided exact reproducability for a given seed,
+so the behaviour is dependent on the installed Reca-version.</p>
+</div>
+
+<div class="section">
+<h3 id="caching">Caching<a class="anchor" aria-label="anchor" href="#caching"></a></h3>
+
+
 <p>The argument 'UseCachedData' allows previously computed parameterization to be returned in stead of parameterizing again.
- If no previous run is located in the 'ResultDirectory', or the arguments that are passed to Reca differs from the previous run, 
- execution will halt with an error.</p>
-    </div>
-    <div id="resultdirectory-files">
-    <h2>ResultDirectory files</h2>
-    
+If no previous run is located in the 'ResultDirectory', or the arguments or data that are passed to Reca differs from the previous run,
+execution will halt with an error when 'UseCachedData'. In this respect it may also be useful to note a counter intuitive
+aspect of the argument 'Seed'. If 'Seed' was not provided for the previous run, the arguments will be considered equal if
+the seed is set to the value returned on the previous run (RecaParameterData$GlobalVariables$Seed).</p>
+</div>
+
+<div class="section">
+<h3 id="resultdirectory-files-">ResultDirectory files:<a class="anchor" aria-label="anchor" href="#resultdirectory-files-"></a></h3>
+
 
 <p>Various report functions may use output of this function with the function <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code> which samples the posterior distributions of parameters.
- Communication between <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> and <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code> is managed by writing and reading files, 
- and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
- For multi-chain analysis, a different directory should be provided for each chain.</p> 
+Communication between <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> and <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code> is managed by writing and reading files,
+and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
+For multi-chain analysis, a different directory should be provided for each chain.</p>
 <p>Be aware that this breaks with the general design of StoX and somewhat limits the transferrability of
- StoX projects between computers.</p>
+StoX projects between computers.</p>
+</div>
+
     </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p><code><a href="PrepareRecaEstimate.html">PrepareRecaEstimate</a></code> for model configuration, and data preparation for this function, and
- <code><a href="RunRecaModels.html">RunRecaModels</a></code> for obtaining predictions / estimates from the Reca-models.</p></div>
+<code><a href="RunRecaModels.html">RunRecaModels</a></code> for obtaining predictions / estimates from the Reca-models.</p></div>
     </div>
 
   </div>

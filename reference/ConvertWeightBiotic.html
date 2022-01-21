@@ -76,27 +76,27 @@
     <div id="details">
     <h2>Details</h2>
     <p>Different products of fish may be measured and round weight (live weight)
- or some other product type may be approximated by multiplying with a scalar conversion factor.</p> 
+or some other product type may be approximated by multiplying with a scalar conversion factor.</p>
 <p>For records where the variable 'catchcategory' on the table 'catchsample' matches the 'Species' variable in 'WeightConversionTable'
- this function converts weights to desired product type ('TargetProductType') by matching 'producttype'-variables to 'ProductType' in 'WeightConversionTable'.
- The following weights may be converted, depending on the parameter 'ConversionType':</p><dl><dt>'All' or 'CatchWeights'</dt>
+this function converts weights to desired product type ('TargetProductType') by matching 'producttype'-variables to 'ProductType' in 'WeightConversionTable'.
+The following weights may be converted, depending on the parameter 'ConversionType':</p><dl><dt>'All' or 'CatchWeights'</dt>
 <dd><p>'catchweight' is converted based on 'catchproducttype' both on the table 'catchsample'</p></dd>
 
-  <dt>'All' or 'CatchWeights'</dt>
+<dt>'All' or 'CatchWeights'</dt>
 <dd><p>'lengthsampleweight' is converted based on 'sampleproducttype' both on the table 'catchsample'</p></dd>
 
-  <dt>'All' or 'IndividualWeight'</dt>
+<dt>'All' or 'IndividualWeight'</dt>
 <dd><p>'individualweight' is converted based on 'individualproducttype' both on the table 'individual'</p></dd>
- 
- 
+
+
 </dl><p>After conversion the 'producttype'-variables will be changed to reflect the converted weight.
- That is they will be set to 'TargetProductType'.</p> 
+That is they will be set to 'TargetProductType'.</p>
 <p>If 'WeightConversionTable' contains NAs for 'WeightFactor', converted weights will be NA.
- This may be useful for dealing with species whoose weights are not needed in subsequent analysis.</p> 
+This may be useful for dealing with species whoose weights are not needed in subsequent analysis.</p>
 <p>The variables 'catchvolume', 'lengthsamplevolume', and 'individualvolume'
- are also dependent on product type. These are set to NA as weight is converted.</p> 
+are also dependent on product type. These are set to NA as weight is converted.</p>
 <p>These variables are on these tables in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
- For bioticdata that does not conform to this, no modifications are done.</p>
+For bioticdata that does not conform to this, no modifications are done.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
