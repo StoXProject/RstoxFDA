@@ -43,7 +43,7 @@ expect_true("StratumName" %in% names(ia))
 
 context("Test mergepolygons")
 ia <- RstoxFDA::ICESareas
-ia$StratumName <- paste(ia$Major_FA, ia$StratumName, sep=".")
+ia$StratumName <- paste(ia$StratumName, sep=".")
 
 ib <- ia
 ib$StratumName <- paste(ib$Major_FA, ib$SubArea, sep=".")
