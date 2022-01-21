@@ -1,4 +1,6 @@
 context("test-StoxBaselineFunctions: LoadFdaStratumPolygon")
+p <- LoadFdaStratumPolygon("sss", "FDIR.2017", UseProcessData = T)
+expect_equal(p, "sss")
 p <- LoadFdaStratumPolygon(NULL, "FDIR.2017")
 expect_equal(nrow(p), 60)
 p <- LoadFdaStratumPolygon(NULL, "FDIR.2018")

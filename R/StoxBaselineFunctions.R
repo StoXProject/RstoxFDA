@@ -1722,6 +1722,10 @@ FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
 #' @md
 LoadFdaStratumPolygon <- function(processData, StrataSystem=c("FDIR.2017", "FDIR.2018", "ICES.2018", "NAFO", "NAFO.FDIR.2017", "NAFO.FDIR.2018"), UseProcessData=F){
   
+  if (UseProcessData){
+    return(processData)
+  }
+  
   if (StrataSystem == "FDIR.2017"){
     return(RstoxFDA::mainareaFdir2017)
   }
