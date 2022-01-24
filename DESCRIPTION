@@ -36,7 +36,7 @@ Imports:
 Suggests: 
     rnaturalearth,
     Reca,
-    testthat,
+    tinytest,
     rnaturalearthdata
 Additional_repositories: 
 	https://stoxproject.github.io/repo
