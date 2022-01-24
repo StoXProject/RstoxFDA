@@ -121,8 +121,8 @@ context("Test logbookAdjustment filter gear")
 landAdj <- logbookAdjustment(land, logb, gearCodes = c("53"))
 
 landAdj <- logbookAdjustment(land, logb, gearCodes = c("11"))
-expect_true(sum(landAdj$Rundvekt[landAdj$`Redskap (kode)`=="11" & landAdj$`Hovedområde (kode)`=="12"]) != sum(land$Rundvekt[land$`Redskap (kode)`=="11" & land$`Hovedområde (kode)`=="12"]))
-expect_equal(sum(landAdj$Rundvekt[landAdj$`Redskap (kode)`!="11" & landAdj$`Hovedområde (kode)`=="12"]), sum(land$Rundvekt[land$`Redskap (kode)`!="11" & land$`Hovedområde (kode)`=="12"]))
+expect_true(sum(landAdj$Rundvekt[landAdj$`Redskap (kode)`=="11" & landAdj[["Hovedomr\u00E5de (kode)"]]=="12"]) != sum(land$Rundvekt[land$`Redskap (kode)`=="11" & land[["Hovedomr\u00E5de (kode)"]]=="12"]))
+expect_equal(sum(landAdj$Rundvekt[landAdj$`Redskap (kode)`!="11" & landAdj[["Hovedomr\u00E5de (kode)"]]=="12"]), sum(land$Rundvekt[land$`Redskap (kode)`!="11" & land[["Hovedomr\u00E5de (kode)"]]=="12"]))
 
 context("Test logbookAdjustment filter gear code type error")
 expect_error(logbookAdjustment(land, logb, gearCodes = c(53)), "'gearCodes must be provided as character")

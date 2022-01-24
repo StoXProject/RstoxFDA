@@ -30,6 +30,10 @@ bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="Rst
 nmdbiotic <- RstoxData::ReadBiotic(bioticfile)
 nmdbiotic$biotic_v3_example.xml$fishstation$stationstartdate <- nmdbiotic$biotic_v3_example.xml$fishstation$stationstopdate
 nmdbiotic <- SetTimeBiotic(nmdbiotic)
+nmdbiotic$biotic_v3_example.xml$individual$individualproducttype <- 1
+nmdbiotic$biotic_v3_example.xml$catchsample <- nmdbiotic$biotic_v3_example.xml$catchsample[nmdbiotic$biotic_v3_example.xml$catchsample$lengthmeasurement == "E",]
+nmdbiotic$biotic_v3_example.xml$catchsample$sampleproducttype <- 1
+nmdbiotic$biotic_v3_example.xml$catchsample$catchproducttype <- 1
 StoxBiotic <- RstoxData::StoxBiotic(nmdbiotic)
 
 data <- ListBioticDifference(StoxBiotic, nmdbiotic)
@@ -43,7 +47,6 @@ filterExpression$SpeciesCategory <- c(
 StoxBioticCod <- RstoxData::FilterStoxBiotic(StoxBiotic, FilterExpression = filterExpression)
 filt <- FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=4)
 expect_equal(nrow(filt$Individual), nrow(StoxBioticCod$Individual))
-
 StoxBioticCod$Individual <- StoxBioticCod$Individual[!is.na(StoxBioticCod$Individual$IndividualAge),]
 filt <- FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=1)
 expect_true(nrow(filt$Individual) < nrow(StoxBioticCod$Individual))
@@ -241,11 +244,16 @@ expect_equal(BioticDataPostInd$biotic_v3_producttypes.xml$catchsample$catchweigh
 expect_equal(BioticDataPostInd$biotic_v3_producttypes.xml$catchsample$lengthsampleweight, BioticData$biotic_v3_producttypes.xml$catchsample$lengthsampleweight)
 
 context("test-StoxBaselineFunctions: SetTimeBiotic")
-bioticfiles <- c(f1=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"), f2=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"))
+bioticfiles <- c(f1=system.file("testresources","biotic_v3_example.xml", package="RstoxFDA"))
 BioticData <- RstoxData::ReadBiotic(bioticfiles)
+BioticData$biotic_v3_example.xml$individual$individualproducttype <- 1
+BioticData$biotic_v3_example.xml$catchsample$lengthmeasurement <- "E"
+BioticData$biotic_v3_example.xml$catchsample$sampleproducttype <- 1
+BioticData$biotic_v3_example.xml$catchsample$catchproducttype <- 1
 BioticData$biotic_v3_example.xml$fishstation$stationstartdate <- BioticData$biotic_v3_example.xml$fishstation$stationstopdate
 StoxBioticPre <- RstoxData::StoxBiotic(BioticData)
 BioticDataPost <- SetTimeBiotic(BioticData)
+
 expect_true(all(!is.na(BioticDataPost$biotic_v3_example.xml$fishstation$stationstarttime)))
 StoxBioticPost <- RstoxData::StoxBiotic(BioticDataPost)
 expect_lt(sum(is.na(StoxBioticPost$Station$DateTime)), sum(is.na(StoxBioticPre$Station$DateTime)))
@@ -269,6 +277,10 @@ expect_equal(SetTimeBiotic(BioticData, Time="21:00:01Z", Overwrite = T)$biotic_v
 context("test-StoxBaselineFunctions: SetStartDateBiotic")
 bioticfiles <- system.file("testresources","biotic_v3_example.xml", package="RstoxFDA")
 BioticData <- RstoxData::ReadBiotic(bioticfiles)
+BioticData$biotic_v3_example.xml$individual$individualproducttype <- 1
+BioticData$biotic_v3_example.xml$catchsample$lengthmeasurement <- "E"
+BioticData$biotic_v3_example.xml$catchsample$sampleproducttype <- 1
+BioticData$biotic_v3_example.xml$catchsample$catchproducttype <- 1
 StoxBioticPre <- RstoxData::StoxBiotic(BioticData)
 BioticDataPost <- SetStartDateBiotic(BioticData)
 expect_true(all(!is.na(BioticDataPost$biotic_v3_example.xml$fishstation$stationstartdate)))
@@ -591,6 +603,10 @@ context("test-StoxBaselineFunctions: AppendStratumStoxBiotic")
 strp <- mainareaFdir2018
 bioticfiles <- system.file("testresources","biotic_v3_example.xml", package="RstoxFDA")
 BioticData <- RstoxData::ReadBiotic(bioticfiles)
+BioticData$biotic_v3_example.xml$individual$individualproducttype <- 1
+BioticData$biotic_v3_example.xml$catchsample$lengthmeasurement <- "E"
+BioticData$biotic_v3_example.xml$catchsample$sampleproducttype <- 1
+BioticData$biotic_v3_example.xml$catchsample$catchproducttype <- 1
 StoxBioticPre <- RstoxData::StoxBiotic(BioticData)
 StoxBioticPost <- AddStratumStoxBiotic(StoxBioticPre, strp)
 expect_true("Stratum" %in% names(StoxBioticPost$Station))

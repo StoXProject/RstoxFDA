@@ -553,7 +553,8 @@ adjustWithLogbookRefImpl <- function(landings, logbooks, speciesFAO, gearCodes=N
     }
   }
   
-  landings$lastCatch <- as.POSIXct(landings$SisteFangstdato, format="%d.%m.%Y")
+  #removed because of difference in landings formats from original reference impl (stox2.7preprocessing)
+  #landings$lastCatch <- as.POSIXct(landings$SisteFangstdato, format="%d.%m.%Y")
   
   tripids <- RstoxFDA::makeTripIds(landings, vesselIdCol = "Radiokallesignal (seddel)", lastCatchCol = "Siste fangstdato")
   logbooks <- suppressWarnings(RstoxFDA::appendTripIdLogbooks(logbooks, tripids, vesselIdCol = "RC", timeCol ="STARTTIDSPUNKT"))
