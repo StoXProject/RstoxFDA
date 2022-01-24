@@ -31,19 +31,19 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Arne Johannes Holmin \email{arnejh@hi.no}
+\strong{Maintainer}: Edvin Fuglebakk \email{edvin.fuglebakk@hi.no}
 
 Authors:
 \itemize{
-  \item Edvin Fuglebakk
+  \item Arne Johannes Holmin \email{arnejh@hi.no}
 }
 
 
-\strong{Maintainer}: Arne Johannes Holmin \email{arnejh@hi.no}
+\strong{Maintainer}: Edvin Fuglebakk \email{edvin.fuglebakk@hi.no}
 
 Authors:
 \itemize{
-  \item Edvin Fuglebakk
+  \item Arne Johannes Holmin \email{arnejh@hi.no}
 }
 
 }

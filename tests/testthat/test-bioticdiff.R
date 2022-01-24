@@ -2,6 +2,10 @@ context("Test bioticdiff")
 
 bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA")
 nmdbiotic <- RstoxData::ReadBiotic(bioticfile)
+nmdbiotic$biotic_v3_example.xml$catchsample$catchproducttype <- 1
+nmdbiotic$biotic_v3_example.xml$catchsample$sampleproducttype <- 1
+nmdbiotic$biotic_v3_example.xml$catchsample$individualproducttype <- 1
+nmdbiotic$biotic_v3_example.xml$catchsample$lengthmeasurement <- "E"
 StoxBiotic <- RstoxData::StoxBiotic(nmdbiotic)
 
 

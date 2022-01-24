@@ -2,6 +2,11 @@ context("Test von B outlier detection")
 
 bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA")
 nmdbiotic <- RstoxData::ReadBiotic(bioticfile)
+nmdbiotic$biotic_v3_example.xml$individual$individualproducttype <- 1
+nmdbiotic$biotic_v3_example.xml$catchsample <- nmdbiotic$biotic_v3_example.xml$catchsample[nmdbiotic$biotic_v3_example.xml$catchsample$lengthmeasurement == "E",]
+nmdbiotic$biotic_v3_example.xml$catchsample$sampleproducttype <- 1
+nmdbiotic$biotic_v3_example.xml$catchsample$catchproducttype <- 1
+
 StoxBiotic <- RstoxData::StoxBiotic(nmdbiotic)
 indCod <- StoxBiotic$Individual[StoxBiotic$Individual$SpeciesCategoryKey=="torsk/164712/126436/NA",]
 

@@ -1,3 +1,18 @@
+context("Test logbook against reference impl")
+log <- readRDS(system.file("testresources", "logb_cod_2021_extract.rds", package="RstoxFDA"))
+land <- readRDS(system.file("testresources", "land_cod_2021_extract.rds", package="RstoxFDA"))
+
+log <- log[!is.na(log$LOKASJON_START) & !is.na(log$START_LG) & !is.na(log$START_LT) & !is.na(log$STARTTIDSPUNKT) & !is.na(log$FANGSTART_FAO),]
+
+landAdjRef <- adjustWithLogbookRefImpl(land, log, "COD", 51)
+suppressWarnings(landAdj <- logbookAdjustment(land, log, "51", polygons = NULL))
+comp <- land[,list(weightOrig=sum(Rundvekt)), by=list(omr=get("Hovedområde (kode)"), gear=get("Redskap (kode)"))]
+comp <- merge(comp, landAdjRef[,list(weightRef=sum(Rundvekt)), by=list(omr=get("Hovedområde (kode)"), gear=get("Redskap (kode)"))])
+comp <- merge(comp, landAdj[,list(weight=sum(Rundvekt)), by=list(omr=get("Hovedområde (kode)"), gear=get("Redskap (kode)"))])
+comp$diff <- comp$weight - comp$weightRef
+comp$rdiff <- comp$diff / comp$weightRef
+expect_equal(nrow(comp), 2)
+expect_true(all(abs(comp$diff) <1e-6))
 
 context("Test tabulate Fisheries")
 data(landings)
@@ -106,14 +121,11 @@ context("Test logbookAdjustment filter gear")
 landAdj <- logbookAdjustment(land, logb, gearCodes = c("53"))
 
 landAdj <- logbookAdjustment(land, logb, gearCodes = c("11"))
-#
-# weird crash on windows. Comment out for now, as logbookAdjustment is not made public pending testing.
-#
-#expect_true(sum(landAdj$Rundvekt[landAdj$`Redskap (kode)`=="11" & landAdj$`Hovedområde (kode)`=="12"]) != sum(land$Rundvekt[land$`Redskap (kode)`=="11" & land$`Hovedområde (kode)`=="12"]))
-#expect_equal(sum(landAdj$Rundvekt[landAdj$`Redskap (kode)`!="11" & landAdj$`Hovedområde (kode)`=="12"]), sum(land$Rundvekt[land$`Redskap (kode)`!="11" & land$`Hovedområde (kode)`=="12"]))
+expect_true(sum(landAdj$Rundvekt[landAdj$`Redskap (kode)`=="11" & landAdj[["Hovedomr\u00E5de (kode)"]]=="12"]) != sum(land$Rundvekt[land$`Redskap (kode)`=="11" & land[["Hovedomr\u00E5de (kode)"]]=="12"]))
+expect_equal(sum(landAdj$Rundvekt[landAdj$`Redskap (kode)`!="11" & landAdj[["Hovedomr\u00E5de (kode)"]]=="12"]), sum(land$Rundvekt[land$`Redskap (kode)`!="11" & land[["Hovedomr\u00E5de (kode)"]]=="12"]))
 
 context("Test logbookAdjustment filter gear code type error")
-expect_error(logbookAdjustment(land, logb, gearCodes = c(53)), "'gearCodes must be provides as character")
+expect_error(logbookAdjustment(land, logb, gearCodes = c(53)), "'gearCodes must be provided as character")
 
 
 

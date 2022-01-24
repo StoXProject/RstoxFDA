@@ -173,9 +173,13 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
   if (!(tripIdCol %in% names(landings))){
     stop("'tripIdCol' is not found in 'landings'")
   }
+  if (!(catchIdCol %in% names(logbooks))){
+    stop("'catchIdCol' is not found in 'logbooks'")
+  }
   if (any(c("fraction", catchIdCol) %in% names(landings))){
     stop("'landings' may not have a column called 'fraction' or the column provided by 'catchIdCol'.")
   }
+  
   
   catchPartition <- calculateLogbookPartitionByTrip(logbooks, groupCols=catchIdCol, tripCol=tripIdCol, speciesCol = speciesColLog, weightCol = weightCol)
   
@@ -203,8 +207,8 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
   tab <- merge(catchPartition$fractions, catchPartition$groupDefinition, by="groupid")
   cols <- names(tab)[names(tab)!="groupid"]
   tab <- tab[, .SD, .SDcols=cols]
-  partitioned <- merge(partitioned, tab, by.x=c(tripIdCol, speciesColLand), by.y=c("tripid", "species"), all.x=T, allow.cartesian=T)
   
+  partitioned <- merge(partitioned, tab, by.x=c(tripIdCol, speciesColLand), by.y=c("tripid", "species"), all.x=T, allow.cartesian=T)
   # distribute values
   for (v in valueColumns){
     partitioned[[v]] <- partitioned[[v]]*partitioned$fraction    
@@ -215,7 +219,7 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
   partitioned$fraction <- NULL
   
   result <- rbind(partitioned, notPartitioned)
-  
+
   return(result)
 }
 
@@ -262,7 +266,7 @@ sourceLogbookColumns <- function(landings, logbooks, tripIdCol="tripid", catchId
   logIds <- paste(logbooks[[tripIdCol]], logbooks[[catchIdCol]], logbooks[[speciesColLog]])
   
   selection <- match(landIds, logIds)
-  mask <- selection[!is.na(selection)]
+  mask <- !is.na(selection)
   selection <- selection[!is.na(selection)]
   
   landings[["Hovedomr\u00E5de (kode)"]][mask] <- substr(logbooks$LOKASJON_START,1,2)[selection]
@@ -348,10 +352,9 @@ addLogbookColumns <- function(landings, logbooks, logbookColumns, tripIdCol="tri
 #' @param polygons \code{\link[sp]{SpatialPolygonsDataFrame}} with area names in the column 'StratumName'. If provided, area ("Hovedområde kode") will be calculated from position, rather than fetched from logbook records.
 #' @param lineIdCol character() that identifies the column in 'landings' that contain the identifier for each line on a sales note.
 #' @return 'landings' with catches redistributed over more sales-note lines corresponding to logbook-catch records / fishing operations.
-#' @noRd
+#' @export
 logbookAdjustment <- function(landings, logbooks, gearCodes=character(), speciesColLog="FANGSTART_FAO", speciesColLand="Art FAO (kode)", weightColLog="RUNDVEKT", valueColLand=c("Bruttovekt", "Produktvekt", "Rundvekt"), addColumns=character(), activityTypes=c("FIS", "REL", "SCR"), polygons=RstoxFDA::mainareaFdir2018, lineIdCol="Linjenummer"){
-  
-  
+
   #
   # Test properly against old method before exporting
   #
@@ -401,10 +404,10 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), species
   tripIds <- makeTripIds(landings)
   landings <- appendTripIdLandings(landings)
   logbooks <- appendTripIdLogbooks(logbooks, tripIds)
-  
+
   if (isGiven(gearCodes)){
     if (!is.character(gearCodes)){
-      stop(paste("'gearCodes must be provides as character"))
+      stop(paste("'gearCodes must be provided as character"))
     }
     tripids <- landings$tripid[!is.na(landings[["Redskap (kode)"]]) & (landings[["Redskap (kode)"]] %in% gearCodes)]
     logbooks <- logbooks[logbooks$tripid %in% tripids,]
@@ -460,3 +463,151 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), species
   
   return(landings)
 }
+
+
+#' Adjust landings with logbooks (reference implementation from stox2.7preprocessing package)
+#' Kept for testing. Column names adjusted to formats read by rstoxFDA.
+#' @description
+#'  Adjust landings with information from logbooks for a specific species.
+#' @details
+#'  Logbooks contain catch reports for each fishing operation as defined in legislation for different gears.
+#'  Parameters like catch date and area are defined in landings (sales notes) by a summary value for each trip.
+#'  E.g. the dominant area for the trip (the area with more catch), and the date of the last catch of the trip.
+#'  Applying this function alters the definition of some of these parameters to be resolved to fishing operation
+#'  when information is available from logbook records.
+#'  The information from logbooks are not simply copied over, but the landed weight is redistributed
+#'  to reflect the partitioning of weights reported in logbooks
+#'  In addition positions are added when logbook/VMS entries are available
+#'  (columns FOlat and FOlon are added to landings for latitdue and longitude of fishing operation, respectively).
+#'
+#'  In general, the difference in definition between logbooks and landing are less likely to be relevant
+#'  for shorter trips. Trip length potential is limited by vessel size.
+#'  Logbook records was first introduced for trawlers, and later for all vessels larger than or equal to 15 m.
+#'  Selection for certain gears or vessel sizes is supported by the parameters 'gearCodes' and 'vesselSize'
+#'
+#'  Logbook records may contain records of activities other than fishing. Some of them may relate to
+#'  activity that does not consitute removal of fish from the sea (such as transfer of fish between vessels).
+#'  Selection of activities to include is supported by the parameter 'activities'. Catch is occationally
+#'  recorded for operations which do not handle fish (such as STE for steaming or SET for setting of gear), these
+#'  are likely misrecorded and should possibly be included. Codes for transport and production (HAU and PRO) may
+#'  indicate processing and transport of the catch weight and should probably be excluded. By default only
+#'  codes for fishing (FIS), harvesting from another ships gear (REL) and research-catches (SCR) are included.
+#'
+#'  A trip may be reflected in several sales notes. This function distributes the landed
+#'  weight for each of them on the temporal and spatial spatial variables.
+#'  That is: each sales-note line with a corresponding logbook entry is replaced by
+#'  a set of sale-note lines, one for each fishing operation in the corresponding trip.
+#'  This is done regardless of parameters that may be specific to certain fishing operations,
+#'  such as gear, and it is done without attempt to make a realistic partitioning of
+#'  parameters determined at landing, such as usage.
+#'
+#'  trips are deduced by vessel identifiers (radio call-signal) and dates (date of last catch
+#'  in landings, and date of fishing operation in logbooks). Consisteecy of gears reported
+#'  between logboks and landings are not enforced.
+#'
+#'  Only codes are changed. Corresponding description columns are not. E.g.:
+#'  Area code (Hovedområde_kode) may reflect fishing operation after logbook-adustments,
+#'  while area description (Hovedområde_bokmål) will reflect dominant area for trip.
+#'
+#' @param landings landings as parsed by \code{\link[stox2.7preprocessing]{readLandings}}
+#' @param logbooks logbooks as parsed by \code{\link[RstoxData]{readErsFile}}
+#' @param speciesFAO 3-alpha FAO species code, e.g. "COD"
+#' @param gearCodes Gear codes (NS9400) that should be fetched from logbooks. If null, all available gears are included.
+#' @param vesselSize smallest vessel size to include from logbooks. If null, all availalbe vessels sizes are included.
+#' @param activities activity-types to include from logbooks. If null, all available activites are included.
+#' @return landings with columns FOlat and FOlon added, and adjusted definitions for columns:
+#' \describe{
+#'  \item{Hovedområde_kode}{dominant area for trip OR area of fishing operation}
+#'  \item{Lokasjon_kode}{dominant location (sub area) OR location of fishing operation}
+#'  \item{SisteFangstdato}{date of last catch OR date of fishing operation}
+#'  \item{Rundvekt}{live weight (round weight) listed in sales-note OR weight ascribed to fishing operation}
+#'  \item{Produktvekt}{product weight listed in sales-note OR weight ascribed to fishing operation}
+#'  \item{Bruttovekt}{gross weight of landed fish listed in sales-note OR weight ascribed to fishing operation}
+#'  Definitions depend on whether logbook information was available for the sales-note.
+#' }
+#' @noRd
+adjustWithLogbookRefImpl <- function(landings, logbooks, speciesFAO, gearCodes=NULL, vesselSize=NULL, activities=c("FIS", "REL", "SCR")){
+  logbooks <- logbooks[logbooks$FANGSTART_FAO %in% speciesFAO,]
+  if (nrow(logbooks)==0){
+    stop(paste("No logbook records found for species:", paste(speciesFAO, collapse=",")))
+  }
+  if (!is.null(gearCodes)){
+    logbooks <- logbooks[logbooks$REDSKAP_NS %in% gearCodes,]
+    if (nrow(logbooks)==0){
+      stop(paste("No logbook records found that match criteria."))
+    }
+  }
+  else{
+    gearCodes <- unique(c(landings[["Redskap (kode)"]], logbooks$REDSKAP_NS))
+  }
+  if (!is.null(vesselSize)){
+    logbooks <- logbooks[logbooks[["ST\u00D8RSTE_LENGDE"]] >= vesselSize,]
+    if (nrow(logbooks)==0){
+      stop(paste("No logbook records found that match criteria."))
+    }
+  }
+  if (!is.null(activities)){
+    logbooks <- logbooks[logbooks$AKTIVITET_KODE %in% activities,]
+    if (nrow(logbooks)==0){
+      stop(paste("No logbook records found that match criteria."))
+    }
+  }
+  
+  #removed because of difference in landings formats from original reference impl (stox2.7preprocessing)
+  #landings$lastCatch <- as.POSIXct(landings$SisteFangstdato, format="%d.%m.%Y")
+  
+  tripids <- RstoxFDA::makeTripIds(landings, vesselIdCol = "Radiokallesignal (seddel)", lastCatchCol = "Siste fangstdato")
+  logbooks <- suppressWarnings(RstoxFDA::appendTripIdLogbooks(logbooks, tripids, vesselIdCol = "RC", timeCol ="STARTTIDSPUNKT"))
+  logbooks <- logbooks[!is.na(logbooks$tripid),]
+  logbooks$FOarea <- substr(logbooks$LOKASJON_START, 1, 2)
+  logbooks$FOloc <- substr(logbooks$LOKASJON_START, 3, 4)
+  logbooks$FOlat <- logbooks$START_LT
+  logbooks$FOlon <- logbooks$START_LG
+  logbooks$FOtime <- logbooks$STARTTIDSPUNKT
+  
+  logbooks <- logbooks[!is.na(logbooks$FOarea) & !is.na(logbooks$FOloc) & !is.na(logbooks$FOlat) & !is.na(logbooks$FOlon) & !is.na(logbooks$FOtime) & !is.na(logbooks$FANGSTART_FAO),]
+  if (nrow(logbooks)==0){
+    stop(paste("No logbook records found that match criteria, and have all necessary information."))
+  }
+  
+  # calculate fraction of trip catch of species for each haul
+  # add fishin operation parameters (FO)
+  tripartitions <- RstoxFDA::calculateLogbookPartitionByTrip(logbooks, groupCols = c("FOtime", "FOarea", "FOloc", "FOlat", "FOlon", "FANGSTART_FAO"))
+  
+  tripartitions <- merge(tripartitions$fractions, tripartitions$groupDefinition, by="groupid")
+  tripartitions$FOlat <- as.numeric(tripartitions$FOlat)
+  tripartitions$FOlon <- as.numeric(tripartitions$FOlon)
+  
+  landings <- RstoxFDA::appendTripIdLandings(landings, tripIds = tripids, vesselIdCol = "Radiokallesignal (seddel)", lastCatchCol = "Siste fangstdato")
+  hasLogb <- landings[!is.na(landings$tripid) & landings$tripid %in% tripartitions$tripid &
+                        !is.na(landings[["Art FAO (kode)"]]) &
+                        landings[["Art FAO (kode)"]] == speciesFAO &
+                        landings[["Redskap (kode)"]] %in% gearCodes,] #last clause necessary because of some inconsistency in gear coding between logbooks and landings
+
+  rest <- landings[!(!is.na(landings$tripid) & landings$tripid %in% tripartitions$tripid &
+                       !is.na(landings[["Art FAO (kode)"]]) &
+                       landings[["Art FAO (kode)"]] == speciesFAO &
+                       landings[["Redskap (kode)"]] %in% gearCodes),]
+  rest$FOlon <- as.numeric(NA)
+  rest$FOlat <- as.numeric(NA)
+  
+  hasLogb <- merge(hasLogb, tripartitions, by.x=c("tripid", "Art FAO (kode)"), by.y=c("tripid", "FANGSTART_FAO"), all.x=T, allow.cartesian=T)
+  hasLogb$Rundvekt <- hasLogb$Rundvekt*hasLogb$fraction
+  hasLogb$Bruttovekt <- hasLogb$Bruttovekt*hasLogb$fraction
+  hasLogb$Produktvekt <- hasLogb$Produktvekt*hasLogb$fraction
+  hasLogb[["Hovedomr\u00E5de (kode)"]] <- hasLogb$FOarea
+  
+  hasLogb$Lokasjon_kode <- hasLogb$FOloc
+  hasLogb$SisteFangstdato <- strftime(hasLogb$FOtime, format="%d.%m.%Y")
+  hasLogb <- hasLogb[,names(hasLogb) %in% names(rest), with=F]
+  
+  landings <- rbind(rest, hasLogb)
+  
+  #
+  # fix keys (linjenummer)
+  #
+  
+  landings$Linjenummer <- 1:nrow(landings)
+  return(landings)
+}
+
