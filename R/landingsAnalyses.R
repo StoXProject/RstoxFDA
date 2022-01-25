@@ -610,4 +610,3 @@ adjustWithLogbookRefImpl <- function(landings, logbooks, speciesFAO, gearCodes=N
   landings$Linjenummer <- 1:nrow(landings)
   return(landings)
 }
-
