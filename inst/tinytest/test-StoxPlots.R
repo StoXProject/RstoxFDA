@@ -6,5 +6,8 @@ tab2 <- RstoxFDA::ReportFdaLandings(StoxLandingData, GroupingVariables = c("Gear
 FisheriesOverviewTemporal(tab1)
 FisheriesOverviewTemporal(tab2)
 
-FisheriesOverviewSpatial(tab2)
-browser()
+tab3 <- RstoxFDA::ReportFdaLandings(StoxLandingData, GroupingVariables = c("Area"), Unit = "ton")
+FisheriesOverviewSpatial(tab3, RstoxFDA::mainareaFdir2018)
+
+FisheriesOverviewTable(tab3)
+FisheriesOverviewTable(tab2)

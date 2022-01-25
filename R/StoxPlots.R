@@ -7,11 +7,11 @@
 #'  Plots landings by date of catch and by group
 #' @param \code{\link[RstoxFDA]{ReportFdaLandingData}}
 #' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
-#' @export
+#' @noRd
 FisheriesOverviewTemporal <- function(ReportFdaLandingData){
   
   if (!("CatchDate" %in% ReportFdaLandingData$GroupingVariables$GroupingVariables)){
-    stop("Requires 'CatchDate' to be in the 'GroupingVariable' og 'ReportFdaLandingData'")
+    stop("Requires 'CatchDate' to be in the 'GroupingVariable' of 'ReportFdaLandingData'")
   }
   
   ftab <- ReportFdaLandingData$FisheriesLandings
@@ -39,23 +39,69 @@ FisheriesOverviewTemporal <- function(ReportFdaLandingData){
   pl <- pl + ggplot2::xlab("catch date")
   pl <- pl + ggplot2::ggtitle(paste(groupvars, collapse=","))
   
+  pl <- pl + ggplot2::theme_minimal()
+  
   return(pl)
 }
 
 #' Plot landings
 #' @description
-#'  Plots landings 
-#' @param \code{\link[RstoxFDA]{ReportFdaLandingData}}
+#'  Plots catch density of landings on polygons.
+#' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaLandingData}}
+#' @param StratumPolygon \code{\link[RstoxBase]{StratumPolygon}}
+#' @param AreaLabels if TRUE, labels with area codes are plotted on map.
 #' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
-#' @export
-FisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon){
+#' @noRd
+FisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, AreaLabels=F){
   
-  if (!("Area" %in% ReportFdaLandingData$GroupingVariables$GroupingVariables)){
-    stop("Requires 'Area' to be in the 'GroupingVariable' og 'ReportFdaLandingData'")
+  if (!("Area" %in% ReportFdaLandingData$GroupingVariables$GroupingVariables) | length(ReportFdaLandingData$GroupingVariables$GroupingVariables)>1){
+    stop("Requires 'Area' to be the only variable in the 'GroupingVariable' of 'ReportFdaLandingData'")
+  }
+  
+  if (!all(ReportFdaLandingData$FisheriesLandings$Area %in% StratumPolygon$StratumName)){
+    stop("The provided polygons does not include all areas in 'Area'.")
   }
   
   ftab <- ReportFdaLandingData$FisheriesLandings
   groupvars <- ReportFdaLandingData$GroupingVariables$GroupingVariables[ReportFdaLandingData$GroupingVariables$GroupingVariables != "Area"]
+  
+  sfPoly <- sf::st_as_sf(StratumPolygon)
+  sfPoly$area <- sf::st_area(sfPoly)
+  
+  sfPoly <- merge(sfPoly, ReportFdaLandingData
+                $FisheriesLandings, by.y="Area", by.x="StratumName", all.x=T)
+  
+  sfPoly$CatchDensity <- sfPoly$LandedRoundWeight / as.numeric(sfPoly$area)
+  
+  world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+  
+  bbox <- sf::st_bbox(sfPoly)
+  pl <- ggplot2::ggplot(data=sfPoly)
+  pl <- pl + ggplot2::geom_sf(data=world)
+  pl <- pl + ggplot2::geom_sf(data=sfPoly, ggplot2::aes_string(fill="CatchDensity"), col="black")
+  pl <- pl + ggplot2::xlim(c(bbox[["xmin"]], bbox[["xmax"]]))
+  pl <- pl + ggplot2::ylim(c(bbox[["ymin"]], bbox[["ymax"]]))
+  
+  if (AreaLabels){
+    labelPos <- suppressWarnings(cbind(sfPoly, sf::st_coordinates(sf::st_centroid(sfPoly))))
+    pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label="StratumName"))
+  }
+  
+  pl <- pl + ggplot2::theme_minimal()
+
+  return(pl)
+}
+
+#' Plot landings
+#' @description
+#'  Plots catch by group.
+#' @param \code{\link[RstoxFDA]{ReportFdaLandingData}}
+#' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
+#' @noRd
+FisheriesOverviewTable <- function(ReportFdaLandingData){
+  
+  ftab <- ReportFdaLandingData$FisheriesLandings
+  groupvars <- ReportFdaLandingData$GroupingVariables$GroupingVariables
   
   if (length(groupvars)==0){
     ftab$group <- "All"  
@@ -72,12 +118,20 @@ FisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon){
     }
   }
   
-  ftab <- ftab[order(ftab$CatchDate),]
-  pl <- ggplot2::ggplot(data=ftab, ggplot2::aes_string(x="CatchDate", y="LandedRoundWeight", group="group"))
-  pl <- pl + ggplot2::geom_line(ggplot2::aes_string(col="group"))
+  ftab <- ftab[order(ftab$LandedRoundWeight, decreasing = T),]
+  ftab$group <- factor(ftab$group, levels = ftab$group,  ordered = T)
+  pl <- ggplot2::ggplot(data=ftab, ggplot2::aes_string(x="group", y="LandedRoundWeight"))
+  pl <- pl + ggplot2::geom_col()
   pl <- pl + ggplot2::ylab(paste("weight [", RstoxData::getUnit(ReportFdaLandingData$FisheriesLandings$LandedRoundWeight, property = "shortname"), "]", sep=""))
-  pl <- pl + ggplot2::xlab("catch date")
+  pl <- pl + ggplot2::xlab("")
   pl <- pl + ggplot2::ggtitle(paste(groupvars, collapse=","))
+  pl <- pl + ggplot2::theme_minimal()
+  if (nrow(ftab)>10){
+    pl <- pl + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1))
+  }
+  
+  
   
   return(pl)
+  
 }
