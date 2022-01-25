@@ -6,9 +6,9 @@ log <- log[!is.na(log$LOKASJON_START) & !is.na(log$START_LG) & !is.na(log$START_
 
 landAdjRef <- RstoxFDA:::adjustWithLogbookRefImpl(land, log, "COD", 51)
 suppressWarnings(landAdj <- RstoxFDA::logbookAdjustment(land, log, "51", polygons = NULL))
-comp <- land[,list(weightOrig=sum(Rundvekt)), by=list(omr=get("Hovedområde (kode)"), gear=get("Redskap (kode)"))]
-comp <- merge(comp, landAdjRef[,list(weightRef=sum(Rundvekt)), by=list(omr=get("Hovedområde (kode)"), gear=get("Redskap (kode)"))])
-comp <- merge(comp, landAdj[,list(weight=sum(Rundvekt)), by=list(omr=get("Hovedområde (kode)"), gear=get("Redskap (kode)"))])
+comp <- land[,list(weightOrig=sum(Rundvekt)), by=list(omr=get("Hovedomr\u00E5de (kode)"), gear=get("Redskap (kode)"))]
+comp <- merge(comp, landAdjRef[,list(weightRef=sum(Rundvekt)), by=list(omr=get("Hovedomr\u00E5de (kode)"), gear=get("Redskap (kode)"))])
+comp <- merge(comp, landAdj[,list(weight=sum(Rundvekt)), by=list(omr=get("Hovedomr\u00E5de (kode)"), gear=get("Redskap (kode)"))])
 comp$diff <- comp$weight - comp$weightRef
 comp$rdiff <- comp$diff / comp$weightRef
 expect_equal(nrow(comp), 2)
