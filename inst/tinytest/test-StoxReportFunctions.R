@@ -169,6 +169,12 @@ expect_true(abs(reld) < 1e-6)
 reld <- (sum(catchAtLengthReportDecomp$FdaReport$CatchAtLength) - sum(catchAtLengthReportFlat$FdaReport$CatchAtLength)) / sum(catchAtLengthReportDecomp$FdaReport$CatchAtLength)
 expect_true(abs(reld) < 1e-2)
 
+catchAtLengthReportFlatIntervalDefault <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat)
+catchAtLengthReportFlatInterval5 <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat,LengthInterval = 5)
+catchAtLengthReportFlatIntervalp6 <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat,LengthInterval = .6)
+expect_warning(catchAtLengthReportFlatIntervalp1 <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat,LengthInterval = .1), "StoX: Length interval is spesified lower than the available resolution")
+expect_equal(sum(catchAtLengthReportFlatIntervalp1$FdaReport$CatchAtLength), sum(catchAtLengthReportFlatIntervalp1$FdaReport$CatchAtLength))
+expect_true(sum(catchAtLengthReportFlatInterval5$FdaReport$SD) < sum(catchAtLengthReportFlatIntervalDefault$FdaReport$SD))
 
 #test Digits
 catchAtAgeD <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat, Decimals=-3)

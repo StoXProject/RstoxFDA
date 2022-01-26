@@ -280,19 +280,30 @@ setAgeGroup <- function(AgeReport){
 
 #' Add character description of Length groups
 #' @noRd
-setLengthGroup <- function(LengthReport){
+setLengthGroup <- function(LengthReport, interval){
   stopifnot(!("LengthGroup" %in% names(LengthReport)))
   stopifnot(("Length" %in% names(LengthReport)))
   
-  l <- unique(LengthReport$Length)
-  l <- sort(l)
-  diffs <- unique(l[2:length(l)] - l[1:(length(l)-1)])
+  if (isGiven(interval)){
+    l <- sort(unique(LengthReport$Length))
+    diffs <- unique(l[2:length(l)] - l[1:(length(l)-1)])
+    if (interval < max(diffs)){
+      stoxWarning("Length interval is specified lower than the available resolution.")
+    }
+    
+    groups <- seq(0,max(LengthReport$Length)+interval,interval)
+    names <- seq(interval,max(LengthReport$Length)+interval,interval)
+    LengthReport$Length <- as.numeric(as.character(cut(LengthReport$Length, groups, labels=names)))
+  }
+  
+  l <- sort(unique(LengthReport$Length))
+  diffs <- unique(round(l[2:length(l)] - l[1:(length(l)-1)], digits = 10))
   
   if (length(diffs)==1){
     LengthReport$LengthGroup <- sprintf("\u2329%.1f, %.1f\uFF3D", LengthReport$Length - diffs, LengthReport$Length)  
   }
   else{
-    LengthReport$LengthGroup <- sprintf("\u2329 , %.1f\uFF3D", LengthReport$Length - diffs, LengthReport$Length)  
+    LengthReport$LengthGroup <- sprintf("\u2329 , %.1f\uFF3D", LengthReport$Length)  
   }
   
   return(LengthReport)
@@ -385,6 +396,12 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
 #'  Summary statistics are obtained from the posterior distribution, and
 #'  the interval is reported as equal-tailed credible intervals.
 #'  
+#'  Different length groups than the ones reported in the argument 'RecaCatchAtAge'
+#'  may be specified with the argument 'IntervalWidth'. This will specify equi-intervalled
+#'  lengthgroups with the smallest lengthgroup starting at 0. If it does not align with the
+#'  length groups reported in 'RecaCatchAtAge' length group assignment is done to
+#'  the highest overlapping length group.
+#'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #'  
@@ -396,10 +413,12 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
 #' @param Decimals integer specifying the number of decimals to report for 'CatchAtLength', 'SD', 'Low' and 'High'. Defaults to zero.
 #' @param Unit unit for 'CatchAtLength', 'SD', 'Low' and 'High'
+#' @param LengthInterval width of length bins in cm. If not provided, the interval in 'RecaCatchAtAge' will be used.
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
 #' @export
-ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
+#' @md
+ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12)), LengthInterval=numeric()){
   
   if (!isGiven(Decimals)){
     Decimals=0
@@ -423,8 +442,8 @@ ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Dec
   stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
   totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
   
-  totalOverLength <- setLengthGroup(totalOverLength)
-  
+  totalOverLength <- setLengthGroup(totalOverLength, LengthInterval)    
+
   aggNames <- c(RecaCatchAtAge$GroupingVariables$GroupingVariables)
   
   caa <- reportParameterAtLength(totalOverLength, aggNames, "CatchAtAge", alpha = 1-IntervalWidth)
@@ -1088,7 +1107,6 @@ summaryPaaPar <- function(modelFit){
 #' @export
 #' @md
 ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSummaryData, AppendReport=FALSE){
-  
   
   if (AppendReport){
     if (!isGiven(ParameterizationSummaryData)){
