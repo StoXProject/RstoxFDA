@@ -8,10 +8,12 @@ Results from catch at age estimations. The results may be presented
  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
  
  list with two members 'FdaReport' and 'GroupingVariables'.
- 'FdaReport' is a \code{\link[data.table]{data.table}} with the columns:
+ 'FdaReport' is a \code{\link[data.table]{data.table}} which may have the following columns:
  \describe{
   \item{AgeGroup}{character. The age group the estimate is reported for. May be age or plus group}
   \item{Age}{integer. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)}
+  \item{LengthGroup}{character. The length group the estimate is reported for.}
+  \item{Length}{numeric. The upper length of the length group.}
   \item{<Statistic>}{A reported statistic}
   \item{SD}{Standard deviation for the reported statistic.}
   \item{Low}{The lower limit of the estimated interval for the reported statistic.}

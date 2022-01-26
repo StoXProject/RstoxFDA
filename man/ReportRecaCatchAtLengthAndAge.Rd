@@ -27,7 +27,7 @@ ReportRecaCatchAtLengthAndAge(
 \item{Unit}{unit for 'CatchAtAge', 'SD', 'Low' and 'High'}
 }
 \value{
-\code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
+\code{\link[RstoxFDA]{ReportRecaCatchAtLengthAndAgeData}}
 }
 \description{
 Tabulates summary statistics for total catch (number) at all age-length combinations from MCMC simulations using Reca.

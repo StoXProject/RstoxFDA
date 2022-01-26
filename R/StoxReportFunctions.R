@@ -519,7 +519,7 @@ ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Dec
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
 #' @param Decimals integer specifying the number of decimals to report for 'CatchAtAge', 'SD', 'Low' and 'High'. Defaults to zero.
 #' @param Unit unit for 'CatchAtAge', 'SD', 'Low' and 'High'
-#' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
+#' @return \code{\link[RstoxFDA]{ReportFdaCatchAtLengthAndAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
 #' @export
 #' @md
