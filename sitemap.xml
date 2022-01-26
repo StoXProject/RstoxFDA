@@ -139,6 +139,9 @@
     <loc>/reference/ReportFdaCatchAtAgeData.html</loc>
   </url>
   <url>
+    <loc>/reference/ReportFdaCatchAtLengthAndAgeData.html</loc>
+  </url>
+  <url>
     <loc>/reference/ReportFdaCatchAtLengthData.html</loc>
   </url>
   <url>
@@ -176,6 +179,9 @@
   </url>
   <url>
     <loc>/reference/ReportRecaCatchAtLength.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ReportRecaCatchAtLengthAndAge.html</loc>
   </url>
   <url>
     <loc>/reference/ReportRecaCatchStatistics.html</loc>
