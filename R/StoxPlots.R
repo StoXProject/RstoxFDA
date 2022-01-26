@@ -5,7 +5,7 @@
 #' Plot landings
 #' @description
 #'  Plots landings by date of catch and by group
-#' @param \code{\link[RstoxFDA]{ReportFdaLandingData}}
+#' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaLandingData}}
 #' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
 #' @noRd
 FisheriesOverviewTemporal <- function(ReportFdaLandingData){
@@ -95,7 +95,7 @@ FisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, AreaL
 #' Plot landings
 #' @description
 #'  Plots catch by group.
-#' @param \code{\link[RstoxFDA]{ReportFdaLandingData}}
+#' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaLandingData}}
 #' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
 #' @noRd
 FisheriesOverviewTable <- function(ReportFdaLandingData){
