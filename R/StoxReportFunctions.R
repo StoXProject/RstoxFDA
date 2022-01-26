@@ -251,13 +251,38 @@ reportParameterAtLength <- function(table, aggVariables, parameter, alpha=.1){
   
   aggNames <- aggVariables
   aggNames <- c("Length", "LengthGroup", aggNames)
-  stopifnot(length(aggNames) == (ncol(table)-2))
+  stopifnot(length(aggNames) == ncol(table)-2)
   
   result <- table[,list(par=mean(get(parameter)), SD=stats::sd(get(parameter)), Low=stats::quantile(get(parameter), probs = alpha/2.0), High=stats::quantile(get(parameter), probs = 1-(alpha/2.0))), by=aggNames]
   
   data.table::setcolorder(result ,c("LengthGroup", "Length", "par", "SD", "Low", "High", aggVariables))
   names(result) <- c("LengthGroup", "Length", parameter, "SD", "Low", "High", aggVariables)
   data.table::setorderv(result, c(aggVariables, "Length"))
+  
+  output <- list()
+  output$FdaReport <- result
+  
+  output$GroupingVariables <- data.table::data.table(GroupingVariables=aggVariables)
+  
+  return(output)
+}
+
+#' @noRd
+reportParameterAtAgeLength <- function(table, aggVariables, parameter, alpha=.1){
+  
+  stopifnot(all(c("Length", "LengthGroup", "Age", "AgeGroup") %in% names(table)))
+  
+  output <- list()
+  
+  aggNames <- aggVariables
+  aggNames <- c("Length", "LengthGroup", "Age", "AgeGroup", aggNames)
+  stopifnot(length(aggNames) == ncol(table)-2)
+  
+  result <- table[,list(par=mean(get(parameter)), SD=stats::sd(get(parameter)), Low=stats::quantile(get(parameter), probs = alpha/2.0), High=stats::quantile(get(parameter), probs = 1-(alpha/2.0))), by=aggNames]
+  
+  data.table::setcolorder(result ,c("AgeGroup", "Age", "LengthGroup", "Length", "par", "SD", "Low", "High", aggVariables))
+  names(result) <- c("AgeGroup", "Age", "LengthGroup", "Length", parameter, "SD", "Low", "High", aggVariables)
+  data.table::setorderv(result, c(aggVariables, "Age", "Length"))
   
   output <- list()
   output$FdaReport <- result
@@ -280,19 +305,30 @@ setAgeGroup <- function(AgeReport){
 
 #' Add character description of Length groups
 #' @noRd
-setLengthGroup <- function(LengthReport){
+setLengthGroup <- function(LengthReport, interval){
   stopifnot(!("LengthGroup" %in% names(LengthReport)))
   stopifnot(("Length" %in% names(LengthReport)))
   
-  l <- unique(LengthReport$Length)
-  l <- sort(l)
-  diffs <- unique(l[2:length(l)] - l[1:(length(l)-1)])
+  if (isGiven(interval)){
+    l <- sort(unique(LengthReport$Length))
+    diffs <- unique(l[2:length(l)] - l[1:(length(l)-1)])
+    if (interval < max(diffs)){
+      stoxWarning("Length interval is specified lower than the available resolution.")
+    }
+    
+    groups <- seq(0,max(LengthReport$Length)+interval,interval)
+    names <- seq(interval,max(LengthReport$Length)+interval,interval)
+    LengthReport$Length <- as.numeric(as.character(cut(LengthReport$Length, groups, labels=names)))
+  }
+  
+  l <- sort(unique(LengthReport$Length))
+  diffs <- unique(round(l[2:length(l)] - l[1:(length(l)-1)], digits = 10))
   
   if (length(diffs)==1){
     LengthReport$LengthGroup <- sprintf("\u2329%.1f, %.1f\uFF3D", LengthReport$Length - diffs, LengthReport$Length)  
   }
   else{
-    LengthReport$LengthGroup <- sprintf("\u2329 , %.1f\uFF3D", LengthReport$Length - diffs, LengthReport$Length)  
+    LengthReport$LengthGroup <- sprintf("\u2329 , %.1f\uFF3D", LengthReport$Length)  
   }
   
   return(LengthReport)
@@ -378,12 +414,18 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
   
 }
 
-#' Report length at age
+#' Report catch at length
 #' @description 
 #'  Tabulates summary statistics for total catch (number) at length from MCMC simulations using Reca.
 #'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
 #'  Summary statistics are obtained from the posterior distribution, and
 #'  the interval is reported as equal-tailed credible intervals.
+#'  
+#'  Different length groups than the ones reported in the argument 'RecaCatchAtAge'
+#'  may be specified with the argument 'IntervalWidth'. This will specify equi-intervalled
+#'  lengthgroups with the smallest lengthgroup starting at 0. If it does not align with the
+#'  length groups reported in 'RecaCatchAtAge' length group assignment is done to
+#'  the highest overlapping length group.
 #'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
@@ -396,10 +438,12 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
 #' @param Decimals integer specifying the number of decimals to report for 'CatchAtLength', 'SD', 'Low' and 'High'. Defaults to zero.
 #' @param Unit unit for 'CatchAtLength', 'SD', 'Low' and 'High'
+#' @param LengthInterval width of length bins in cm. If not provided, the interval in 'RecaCatchAtAge' will be used.
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
 #' @export
-ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
+#' @md
+ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12)), LengthInterval=numeric()){
   
   if (!isGiven(Decimals)){
     Decimals=0
@@ -423,7 +467,11 @@ ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Dec
   stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
   totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
   
-  totalOverLength <- setLengthGroup(totalOverLength)
+  totalOverLength <- setLengthGroup(totalOverLength, LengthInterval)    
+
+  #aggregate length groups
+  aggNames <- c("Iteration", "LengthGroup", RecaCatchAtAge$GroupingVariables$GroupingVariables)
+  totalOverLength <- totalOverLength[, list(Length=max(get("Length")), CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
   
   aggNames <- c(RecaCatchAtAge$GroupingVariables$GroupingVariables)
   
@@ -439,6 +487,94 @@ ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Dec
   
   if (isGiven(Decimals)){
     caa$FdaReport <- setDecimals(caa$FdaReport, c("CatchAtLength", "SD", "Low", "High"), Decimals)
+  }
+  
+  return(caa)
+  
+}
+
+#' Report catch at length and age
+#' @description 
+#'  Tabulates summary statistics for total catch (number) at all age-length combinations from MCMC simulations using Reca.
+#'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+#'  Summary statistics are obtained from the posterior distribution, and
+#'  the interval is reported as equal-tailed credible intervals.
+#'  
+#'  Different length groups than the ones reported in the argument 'RecaCatchAtAge'
+#'  may be specified with the argument 'IntervalWidth'. This will specify equi-intervalled
+#'  lengthgroups with the smallest lengthgroup starting at 0. If it does not align with the
+#'  length groups reported in 'RecaCatchAtAge' length group assignment is done to
+#'  the highest overlapping length group.
+#'  
+#'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
+#'  area, gear, stock, etc., summary statistics will be presented similarly.
+#'  
+#'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+#'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+#'  
+#'  The units considered valid for catch at length in numbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
+#' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
+#' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
+#' @param LengthInterval width of length bins in cm. If not provided, the interval in 'RecaCatchAtAge' will be used.
+#' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
+#' @param Decimals integer specifying the number of decimals to report for 'CatchAtAge', 'SD', 'Low' and 'High'. Defaults to zero.
+#' @param Unit unit for 'CatchAtAge', 'SD', 'Low' and 'High'
+#' @return \code{\link[RstoxFDA]{ReportFdaCatchAtLengthAndAgeData}}
+#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
+#' @export
+#' @md
+ReportRecaCatchAtLengthAndAge <- function(RecaCatchAtAge, PlusGroup=integer(), LengthInterval=numeric(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
+  
+  if (!isGiven(Decimals)){
+    Decimals=0
+  }
+  
+  if (isGiven(Unit)){
+    Unit <- Unit[1]
+    if (!(Unit %in% RstoxData::getUnitOptions("cardinality"))){
+      stop(paste(Unit, "is not a recognized unit catch in numbers."))
+    }
+  }
+  
+  stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  
+  if (length(IntervalWidth) == 0){
+    IntervalWidth <- 0.9
+  }
+  
+  aggNames <- c("Iteration", "Length", "Age", RecaCatchAtAge$GroupingVariables$GroupingVariables)
+  stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-1))
+  totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
+  
+  totalOverLength <- setLengthGroup(totalOverLength, LengthInterval)
+  totalOverLength <- setAgeGroup(totalOverLength)
+  
+  if (isGiven(PlusGroup)){
+    if (PlusGroup > max(totalOverLength$Age)){
+      stop("'PlusGroup' is larger than the oldest age in the model.")
+    }
+    if (PlusGroup < min(totalOverLength$Age)){
+      stop("'PlusGroup' is smaller than the smallest age in the model.")
+    }
+    
+    aggNames <- c("Iteration", "AgeGroup", "LengthGroup", RecaCatchAtAge$GroupingVariables$GroupingVariables)
+    totalOverLength$AgeGroup[totalOverLength$Age>=PlusGroup] <- paste("Age ", PlusGroup, "+", sep="")
+    totalOverLength <- totalOverLength[, list(Age=min(get("Age")), Length=max(get("Length")), CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
+  }
+  
+  aggNames <- c(RecaCatchAtAge$GroupingVariables$GroupingVariables)
+  
+  caa <- reportParameterAtAgeLength(totalOverLength, aggNames, "CatchAtAge", alpha = 1-IntervalWidth)
+  caa$FdaReport$CatchAtAge <- caa$FdaReport$CatchAtAge
+  caa$FdaReport <- setUnits(caa$FdaReport, "Length", "cm", "length")
+  caa$FdaReport <- setUnits(caa$FdaReport, "Age", "year", "age")
+  caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), "individuals", "cardinality")
+  if (isGiven(Unit)){
+    caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), Unit, "cardinality")  
+  }
+  
+  if (isGiven(Decimals)){
+    caa$FdaReport <- setDecimals(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), Decimals)
   }
   
   return(caa)
@@ -1088,7 +1224,6 @@ summaryPaaPar <- function(modelFit){
 #' @export
 #' @md
 ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSummaryData, AppendReport=FALSE){
-  
   
   if (AppendReport){
     if (!isGiven(ParameterizationSummaryData)){

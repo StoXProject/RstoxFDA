@@ -24,10 +24,12 @@ is.Date <- function(date){
 #'  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
 #'  
 #'  list with two members 'FdaReport' and 'GroupingVariables'.
-#'  'FdaReport' is a \code{\link[data.table]{data.table}} with the columns:
+#'  'FdaReport' is a \code{\link[data.table]{data.table}} which may have the following columns:
 #'  \describe{
 #'   \item{AgeGroup}{character. The age group the estimate is reported for. May be age or plus group}
 #'   \item{Age}{integer. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)}
+#'   \item{LengthGroup}{character. The length group the estimate is reported for.}
+#'   \item{Length}{numeric. The upper length of the length group.}
 #'   \item{<Statistic>}{A reported statistic}
 #'   \item{SD}{Standard deviation for the reported statistic.}
 #'   \item{Low}{The lower limit of the estimated interval for the reported statistic.}
@@ -95,6 +97,21 @@ NULL
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaCatchAtLengthData
+#' 
+NULL
+
+#' Fisheries dependent Catch At Age Report (ReportFdaCatchAtLengthAndAgeData)
+#' 
+#' @description 
+#'  A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object with the reported <Statistic> being:
+#'  
+#'  \describe{
+#'   \item{CacthAtAge}{The total catch at length in numbers.}
+#'  }
+#'  
+#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#' 
+#' @name ReportFdaCatchAtLengthAndAgeData
 #' 
 NULL
 
@@ -1408,6 +1425,11 @@ stoxFunctionAttributes <- list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "ReportFdaCatchAtLengthData"
+  ),
+  ReportRecaCatchAtLengthAndAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaCatchAtLengthAndAgeData"
   ),
   ReportRecaLengthAtAge = list(
     functionType = "modelData",

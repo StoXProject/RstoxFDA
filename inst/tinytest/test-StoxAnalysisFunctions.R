@@ -97,6 +97,7 @@ expect_equal(param$FitProportionAtAge$constant$Age[1], "S1 2")
 ecafit <- RstoxFDA:::stox2recaFit(param)
 
 result <- RstoxFDA:::RunRecaModels(param, StoxLandingData = StoxLandingData, Seed = 100)
+
 expect_true("Stock" %in% result$GroupingVariables$GroupingVariables)
 resultAgg <- RstoxFDA:::RunRecaModels(param, StoxLandingData = StoxLandingData, GroupingVariables = c("Gear"))
 expect_true(all(c("Stock", "Gear") %in% resultAgg$GroupingVariables$GroupingVariables))
