@@ -172,9 +172,27 @@ expect_true(abs(reld) < 1e-2)
 catchAtLengthReportFlatIntervalDefault <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat)
 catchAtLengthReportFlatInterval5 <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat,LengthInterval = 5)
 catchAtLengthReportFlatIntervalp6 <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat,LengthInterval = .6)
-expect_warning(catchAtLengthReportFlatIntervalp1 <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat,LengthInterval = .1), "StoX: Length interval is spesified lower than the available resolution")
+expect_warning(catchAtLengthReportFlatIntervalp1 <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat,LengthInterval = .1), "StoX: Length interval is specified lower than the available resolution")
 expect_equal(sum(catchAtLengthReportFlatIntervalp1$FdaReport$CatchAtLength), sum(catchAtLengthReportFlatIntervalp1$FdaReport$CatchAtLength))
 expect_true(sum(catchAtLengthReportFlatInterval5$FdaReport$SD) < sum(catchAtLengthReportFlatIntervalDefault$FdaReport$SD))
+rdiff <- (sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtLengthReportFlatInterval5$FdaReport$CatchAtLength)) / sum(catchAtAgeReportFlat$FdaReport$CatchAtAge)
+expect_true(abs(rdiff) < 1e-6)
+
+sumU25p5 <- sum(catchAtLengthReportFlatInterval5$FdaReport$CatchAtLength[catchAtLengthReportFlatInterval5$FdaReport$Length<30])
+sumU25pD <- sum(catchAtLengthReportFlatIntervalDefault$FdaReport$CatchAtLength[catchAtLengthReportFlatIntervalDefault$FdaReport$Length<25])
+rdiff <- (sumU25p5 - sumU25pD)/sumU25p5
+expect_true(abs(rdiff) < .1)
+
+catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
+catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat)
+catchAtLengthAndAgeReportFlat <- RstoxFDA:::ReportRecaCatchAtLengthAndAge(catchAtAgeFlat)
+rdiff <- (sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtLengthAndAgeReportFlat$FdaReport$CatchAtAge)) / sum(catchAtLengthAndAgeReportFlat$FdaReport$CatchAtAge)
+expect_true(abs(rdiff) < 1e-6)
+catchAtLengthAndAgeReportFlatPlG <- RstoxFDA:::ReportRecaCatchAtLengthAndAge(catchAtAgeFlat, PlusGroup = 5, LengthInterval = 10)
+rdiff <- (sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtLengthAndAgeReportFlatPlG$FdaReport$CatchAtAge)) / sum(catchAtLengthAndAgeReportFlatPlG$FdaReport$CatchAtAge)
+expect_true(abs(rdiff) < 1e-6)
+
+catchAtLengthAndAgeReportFlatPlG <- RstoxFDA:::ReportRecaCatchAtLengthAndAge(catchAtAgeFlat, PlusGroup = 5, LengthInterval = 10)
 
 #test Digits
 catchAtAgeD <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat, Decimals=-3)
