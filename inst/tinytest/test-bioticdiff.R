@@ -6,6 +6,7 @@ nmdbiotic$biotic_v3_example.xml$catchsample$catchproducttype <- 1
 nmdbiotic$biotic_v3_example.xml$catchsample$sampleproducttype <- 1
 nmdbiotic$biotic_v3_example.xml$individual$individualproducttype <- 1
 nmdbiotic$biotic_v3_example.xml$catchsample$lengthmeasurement <- "E"
+nmdbiotic$biotic_v3_example.xml$mission$cruise[1] <- "20170202"
 StoxBiotic <- RstoxData::StoxBiotic(nmdbiotic)
 
 

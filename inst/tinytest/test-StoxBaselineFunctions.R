@@ -1,3 +1,20 @@
+bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA")
+nmdbiotic <- RstoxData::ReadBiotic(bioticfile)
+nmdbioticPost <- RstoxFDA::SetShortGearBiotic(nmdbiotic)
+expect_true(all(nmdbioticPost$biotic_v3_example.xml$fishstation$gear=="41"))
+#check that codes that are not 4 chars long are not changed
+nmdbiotic$biotic_v3_example.xml$fishstation$gear[1]<-"21"
+nmdbioticPost <- RstoxFDA::SetShortGearBiotic(nmdbiotic)
+expect_true(all(nmdbioticPost$biotic_v3_example.xml$fishstation$gear==c("21","41")))
+#check that handles NA
+nmdbiotic$biotic_v3_example.xml$fishstation$gear[1]<-NA
+nmdbioticPost <- RstoxFDA::SetShortGearBiotic(nmdbiotic)
+expect_true(is.na(nmdbioticPost$biotic_v3_example.xml$fishstation$gear[1]))
+expect_true(nmdbioticPost$biotic_v3_example.xml$fishstation$gear[2]=="41")
+
+
+
+
 #context("test-StoxBaselineFunctions: LoadFdaStratumPolygon")
 p <- RstoxFDA::LoadFdaStratumPolygon("sss", "FDIR.2017", UseProcessData = T)
 expect_equal(p, "sss")
