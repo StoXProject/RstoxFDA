@@ -855,6 +855,37 @@ SetTimeBiotic <- function(BioticData, Time=character(), Overwrite=F){
   return(BioticData)
 }
 
+#' Set short gear codes biotic
+#' @description 
+#'  Set short gear codes for all stations
+#' @details 
+#'  Set the column 'gear' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to the first two characters / digits, 
+#'  for all rows where the gear code currently consist of four characters.
+#'  
+#'  The gear codes in NMDBiotic are conventionally organised hierarchically, so that the two first characters denote a gear group.
+#'  The two character/digit system is more convenient to work with in many circumstances.
+#'  
+#'  'gear' is on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
+#'  For bioticdata that does not conform to this, no modifications are done.
+#'  
+#' @param BioticData \code{\link[RstoxData]{BioticData}} data for which short gear codes should be set
+#' @return \code{\link[RstoxData]{BioticData}}
+#' @seealso \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
+#' @export
+SetShortGearBiotic <- function(BioticData){
+
+  for (file in names(BioticData)){
+    if ("fishstation" %in% names(BioticData[[file]]) & "gear" %in% names(BioticData[[file]]$fishstation)){
+      
+      l4codes <- (!is.na(BioticData[[file]]$fishstation$gear) & nchar(BioticData[[file]]$fishstation$gear)==4)
+      
+      BioticData[[file]]$fishstation$gear[l4codes] <- substr(BioticData[[file]]$fishstation$gear[l4codes],1,2)
+      
+    }
+  }
+  return(BioticData)
+}
+
 #' Set startdate Biotic
 #' @description 
 #'  Set start date to stop date. 

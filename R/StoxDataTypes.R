@@ -1286,7 +1286,11 @@ stoxFunctionAttributes <- list(
     functionCategory = "baseline", 
     functionOutputDataType = "BioticData"
   ),
-  
+  SetShortGearBiotic = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "BioticData"
+  ),
   SetStartDateBiotic = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
