@@ -43,20 +43,31 @@ appendTripIdLogbooks <- function(logbooks, tripIds, timeCol="STARTTIDSPUNKT", ve
     stop("The columns 'vesselId' or 'time' are not found in 'tripIds'.")
   }
 
+  if (!is.POSIXct(logbooks[[timeCol]])){
+    stop("The column 'timeCol' must be of class POSIXct")
+  }
+  
   tripIds <- tripIds[tripIds$vesselId %in% logbooks[[vesselIdCol]]]
 
   logbooks[[tripIdCol]] <- as.character(NA)
 
   #put tripID on all operation before the trip end time in descending order by time
   tripIds <- tripIds[order(tripIds$vesselId, tripIds$time, decreasing = T),]
-  logdate <- as.Date(logbooks[[timeCol]])
+  
+  #
+  # comparing dates without time is treatead as 00:00:00
+  # as.POSIXct("2018-02-02 00:00:01") > as.POSIXct("2018-02-02")
+  # add one day to tripId$time and compare with strictly less than
+  #
+  logdate <- logbooks[[timeCol]]
+  tripIds$time <- tripIds$time + as.difftime(1, units="days")
   for (i in 1:nrow(tripIds)){
     if (verbose & (i %% 1000 == 0)){
       message(paste("Prossessing trip", i, "/", nrow(tripIds), "(", tripIds$tripId[i],")"))
     }
 
     tripid <- tripIds$tripId[i]
-    logbooks[[tripIdCol]][logbooks[[vesselIdCol]]==tripIds$vesselId[i] & logdate<=tripIds$time[i]] <- tripid
+    logbooks[[tripIdCol]][logbooks[[vesselIdCol]]==tripIds$vesselId[i] & logdate<tripIds$time[i]] <- tripid
   }
 
   if (any(is.na(logbooks[[tripIdCol]]))){

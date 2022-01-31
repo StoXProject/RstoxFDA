@@ -9,7 +9,6 @@ nmdbiotic$biotic_v3_example.xml$catchsample$lengthmeasurement <- "E"
 nmdbiotic$biotic_v3_example.xml$mission$cruise[1] <- "20170202"
 StoxBiotic <- RstoxData::StoxBiotic(nmdbiotic)
 
-
 diff <- RstoxFDA:::bioticDiff(nmdbiotic, StoxBiotic)
 expect_equal(nrow(diff$mission), 0)
 expect_equal(nrow(diff$fishstation), 0)
@@ -39,4 +38,5 @@ expect_equal(nrow(diff$mission), 0)
 expect_equal(nrow(diff$fishstation), 0)
 expect_equal(nrow(diff$catchsample), 0)
 expect_equal(nrow(diff$individual), nrow(StoxBiotic$Individual)-21)
+
 

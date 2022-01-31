@@ -30,6 +30,8 @@ expect_true(nrow(tripIds)>0)
 #context("Test append trip landings")
 landA <- RstoxFDA::appendTripIdLandings(land, tripIdCol = "tt")
 expect_true(all(!is.na(landA$tt)))
+expect_equal(substr(landA$tt,6,15)[1], substr(landA$`Siste fangstdato`,1,12)[1])
+
 
 #context("Test append trip landings error: data frame")
 expect_error(RstoxFDA::appendTripIdLandings(as.data.frame(land), tripIdCol = "tt"), "Parameter 'landings' must be a data table")
