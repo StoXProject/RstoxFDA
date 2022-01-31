@@ -272,11 +272,25 @@ sourceLogbookColumns <- function(landings, logbooks, tripIdCol="tripid", catchId
   mask <- !is.na(selection)
   selection <- selection[!is.na(selection)]
   
+  
+  tz <- attr(as.POSIXlt(landings$`Siste fangstdato`[1]), "tzone")
+  if ("CET" %in% tz){
+    tz <- "CET"
+  }
+  else if ("UTC" %in% tz){
+    tz <- "UTC"
+  }
+  else {
+    warning("Not recognizing time zone of landings. Using UTC")
+    tz <- "UTC"
+  }
+  
   landings[["Hovedomr\u00E5de (kode)"]][mask] <- substr(logbooks$LOKASJON_START,1,2)[selection]
   landings[["Hovedomr\u00E5de"]][mask] <- NA
   landings$`Lokasjon (kode)`[mask] <- substr(logbooks$LOKASJON_START,3,4)[selection]
-  landings$`Siste fangstdato`[mask] <- as.POSIXct(substr(logbooks$STARTTIDSPUNKT,1,10), tz="UTC")[selection]
-  landings$Redskap[mask] <- logbooks$REDSKAP_NS[selection]
+  landings$`Siste fangstdato`[mask] <- as.POSIXct(substr(logbooks$STARTTIDSPUNKT,1,10), tz=tz)[selection]
+  landings$`Redskap (kode)`[mask] <- logbooks$REDSKAP_NS[selection]
+  landings$Redskap[mask] <- logbooks$REDSKAP[selection]
   
   return(landings)
    
