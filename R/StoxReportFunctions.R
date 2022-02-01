@@ -243,6 +243,39 @@ reportParameterAtAge <- function(table, aggVariables, parameter, alpha=.1){
 }
 
 #' @noRd
+reportCovarianceAtAge <- function(table, aggVariables, parameter){
+  
+  stopifnot(all(c("Age", "AgeGroup") %in% names(table)))
+  
+  output <- list()
+  
+  aggNames <- aggVariables
+  aggNames <- c("Age", "AgeGroup", aggNames)
+  stopifnot(length(aggNames) == (ncol(table)-2))
+  
+  iterations <- length(unique(table$Iteration))
+  result <- table[,list(mean=mean(get(parameter))), by=aggNames]
+  DevTab <- merge(table, result)
+  DevTab$Dev <- DevTab[[parameter]] - DevTab$mean
+  DevTab$VariableId <- parameter
+  for (var in aggNames){
+      DevTab$VariableId <- paste(DevTab$VariableId, DevTab[[var]], sep="/") 
+  }
+  
+  nameTab <- DevTab[!duplicated(DevTab[["VariableId"]]),.SD,.SDcols=c("VariableId", aggNames)]
+  covarTab <- DevTab[,.SD,.SDcols=c("VariableId", "Dev", "Iteration")]
+  covarTab2 <- covarTab[,list(VariableId2=get("VariableId"), Dev2=get("Dev")), by=list(Iteration=get("Iteration"))]
+  covarTab <- covarTab[covarTab2, on="Iteration", allow.cartesian=TRUE]
+  covarTab <- covarTab[,list(Covariance=sum(get("Dev")*get("Dev2"))/(iterations-1)), by=list(VariableId1=get("VariableId"), VariableId2=get("VariableId2"))]
+  
+  output <- list()
+  output$FdaCovariances <- covarTab
+  output$Variables <- nameTab
+  
+  return(output)
+}
+
+#' @noRd
 reportParameterAtLength <- function(table, aggVariables, parameter, alpha=.1){
   
   stopifnot(all(c("Length", "LengthGroup") %in% names(table)))
@@ -291,6 +324,8 @@ reportParameterAtAgeLength <- function(table, aggVariables, parameter, alpha=.1)
   
   return(output)
 }
+
+
 
 #' Add character description of Age groups
 #' @noRd
@@ -411,6 +446,80 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
   }
   
   return(caa)
+  
+}
+
+#' Report covariance of catch at age
+#' @description 
+#'  Tabulates the covariance between age groups of (number) at age from MCMC simulations using Reca.
+#'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+#'  Covariances are obtained from the posterior distribution.
+#'  
+#'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
+#'  area, gear, stock, etc., covariances are calculated between age groups for each of these aggregation variables.
+#'  
+#'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+#'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+#'  
+#'  The units considered valid for catch at age in numbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
+#' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
+#' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
+#' @param Decimals integer specifying the number of decimals to report for 'Covariance'. Defaults to zero.
+#' @param Unit unit for 'CatchAtAge'. Covariance will be provided as the square of this unit.
+#' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeCovarianceData}}
+#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length composition.
+#' @export
+#' @md
+ReportRecaCatchAtAgeCovariance <- function(RecaCatchAtAge, PlusGroup=integer(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
+  
+  if (!isGiven(Decimals)){
+    Decimals=0
+  }
+  
+  if (isGiven(Unit)){
+    Unit <- Unit[1]
+    if (!(Unit %in% RstoxData::getUnitOptions("cardinality"))){
+      stop(paste(Unit, "is not a recognized unit catch in numbers."))
+    }
+  }
+  
+  
+  stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
+  
+  aggNames <- c("Iteration", "Age", RecaCatchAtAge$GroupingVariables$GroupingVariables)
+  stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
+  totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
+  
+  totalOverLength <- setAgeGroup(totalOverLength)
+  
+  if (isGiven(PlusGroup)){
+    if (PlusGroup > max(totalOverLength$Age)){
+      stop("'PlusGroup' is larger than the oldest age in the model.")
+    }
+    if (PlusGroup < min(totalOverLength$Age)){
+      stop("'PlusGroup' is smaller than the smallest age in the model.")
+    }
+    
+    aggNames <- c("Iteration", "AgeGroup", RecaCatchAtAge$GroupingVariables$GroupingVariables)
+    totalOverLength$AgeGroup[totalOverLength$Age>=PlusGroup] <- paste("Age ", PlusGroup, "+", sep="")
+    totalOverLength <- totalOverLength[, list(Age=min(get("Age")), CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
+  }
+  
+  aggNames <- c(RecaCatchAtAge$GroupingVariables$GroupingVariables)
+  
+  totalOverLength <- setUnits(totalOverLength, c("CatchAtAge"), "individuals", "cardinality")
+  if (isGiven(Unit)){
+    totalOverLength <- setUnits(totalOverLength, c("CatchAtAge"), Unit, "cardinality")  
+  }
+  
+  cov <- reportCovarianceAtAge(totalOverLength, aggNames, "CatchAtAge")
+  cov$Variables <- setUnits(cov$Variables, c("Age"), "year", "age")
+  
+  if (isGiven(Decimals)){
+    cov$FdaCovariances <- setDecimals(cov$FdaCovariances, c("Covariance"), Decimals)
+  }
+  
+  return(cov)
   
 }
 

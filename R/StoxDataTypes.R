@@ -85,6 +85,34 @@ NULL
 #' 
 NULL
 
+#' Fisheries dependent Catch At Age Covariance Report (ReportFdaCatchAtAgeCovarianceData)
+#' 
+#' @description 
+#'  Covariances from catch at age estimations. Covariances are presented
+#'  for age groups, together with any additional grouping (aggregation variables), 
+#'  such as gear, area, stock etc.
+#'  
+#'  list with two members 'FdaCovariances' and 'Variables'.
+#'  'FdaCovariances' is a \code{\link[data.table]{data.table}} which may have the following columns:
+#'  \describe{
+#'     \item{VariableId1}{Identifies the one of the variables the covariance is calculated for}
+#'     \item{VariableId2}{Identifies the other one of the variables the covariance is calculated for}
+#'     \item{Covariance}{The covariance.}
+#'  }
+#'  \describe{
+#'   \item{VariableId}{Identifier for variable that covariances are provided for.}
+#'   \item{AgeGroup}{character. The age group for the variable. May be age or plus group}
+#'   \item{Age}{integer. The lower age group for the variable. May be an age or lower limit of plus group (inclusive)}
+#'   \item{...}{Any aggregation variables.}
+#'  }
+#' 
+#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#' 
+#' 
+#' @name ReportFdaCatchAtAgeCovarianceData
+#' 
+NULL
+
 #' Fisheries dependent Catch At Age Report (ReportFdaCatchAtAgeData)
 #' 
 #' @description 
@@ -1424,6 +1452,11 @@ stoxFunctionAttributes <- list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "ReportFdaCatchAtAgeData"
+  ),
+  ReportRecaCatchAtAgeCovariance = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaCatchAtAgeCovarianceData"
   ),
   ReportRecaCatchAtLength = list(
     functionType = "modelData",
