@@ -136,6 +136,43 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
   
 }
 
+#' @noRd
+PlotCatcAtAgeTotals <- function(ReportFdaCatchAtAgeData){
+  
+  ReportFdaCatchAtAgeData$FdaReport <- ReportFdaCatchAtAgeData$FdaReport[order(ReportFdaCatchAtAgeData$FdaReport$Age),]
+  levels <- ReportFdaCatchAtAgeData$FdaReport$AgeGroup[!duplicated(ReportFdaCatchAtAgeData$FdaReport$AgeGroup)]
+  ReportFdaCatchAtAgeData$FdaReport$AgeGroup <- factor(ReportFdaCatchAtAgeData$FdaReport$AgeGroup, levels=levels, ordered=T)
+  
+  if (length(ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables)==0){
+    ReportFdaCatchAtAgeData$FdaReport$Group <- "All"    
+  }
+  else{
+    vars <- ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables
+    g1 <- head(vars,1)
+    vars <- vars[vars!=g1]
+    ReportFdaCatchAtAgeData$FdaReport$Group <- ReportFdaCatchAtAgeData$FdaReport[[g1]]
+    while(length(vars)>0){
+      g <- head(vars,1)
+      ReportFdaCatchAtAgeData$FdaReport$Group <- paste(ReportFdaCatchAtAgeData$FdaReport$Group, ReportFdaCatchAtAgeData$FdaReport[[g]], sep="/")
+      vars <- vars[vars!=g]
+    }
+    
+    ReportFdaCatchAtAgeData$FdaReport <- ReportFdaCatchAtAgeData$FdaReport[order(ReportFdaCatchAtAgeData$FdaReport$CatchAtAge),]
+    ReportFdaCatchAtAgeData$FdaReport$Group <- factor(ReportFdaCatchAtAgeData$FdaReport$Group, ReportFdaCatchAtAgeData$FdaReport$Group[!duplicated(ReportFdaCatchAtAgeData$FdaReport$Group)], ordered=T)
+  }
+
+  
+  pl <- ggplot2::ggplot(ReportFdaCatchAtAgeData$FdaReport, ggplot2::aes_string(x="AgeGroup", y="CatchAtAge", fill="Group"))
+  pl <- pl + ggplot2::geom_col(position=ggplot2::position_dodge())
+  pl <- pl + ggplot2::geom_errorbar(position=ggplot2::position_dodge(0.9), ggplot2::aes_string(ymin="Low", ymax="High"),width=0.8/(length(ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables)+1))
+  pl <- pl + ggplot2::theme_minimal()
+  pl <- pl + ggplot2::ylab(RstoxData::getUnit(ReportFdaCatchAtAgeData$FdaReport$CatchAtAge, property = "shortname"))
+  pl <- pl + ggplot2::xlab("Age Group")
+  pl <- pl + ggplot2::ggtitle("Catch At Age")
+  
+  return(pl)
+}
+
 #' Plot covariances (catch at age)
 #' @description
 #'  Plots covariances between age groups and other grouping variables catch at age.

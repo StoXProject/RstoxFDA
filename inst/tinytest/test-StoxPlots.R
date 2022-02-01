@@ -15,7 +15,18 @@ RstoxFDA:::PlotFisheriesOverviewTable(tab2)
 
 catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
 catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.rds", package="RstoxFDA"))
+
+#test caa
+catchAtAgeCovarDecomp <- RstoxFDA:::ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup = 7)
+catchAtAgeCovarFlat <- RstoxFDA:::ReportRecaCatchAtAge(catchAtAgeFlat, PlusGroup = 7)
+RstoxFDA:::PlotCatcAtAgeTotals(catchAtAgeCovarFlat)
+RstoxFDA:::PlotCatcAtAgeTotals(catchAtAgeCovarDecomp)
+
+
+#test covar
 catchAtAgeCovarDecomp <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeDecomp, PlusGroup = 7)
 catchAtAgeCovarFlat <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeFlat, PlusGroup = 7)
 RstoxFDA:::PlotCatcAtAgeCovariances(catchAtAgeCovarFlat)
 RstoxFDA:::PlotCatcAtAgeCovariances(catchAtAgeCovarDecomp)
+
+
