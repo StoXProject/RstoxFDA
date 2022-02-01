@@ -18,7 +18,7 @@ makeTripIds(
 \item{lastCatchCol}{character() that identifies a Date column in 'landings' that contain the date of last catch for each record. Default compatible with \code{\link[RstoxData]{readLssFile}}.}
 }
 \value{
-\code{\link[data.table]{data.table}} with columns 'vesselId', 'time' and 'tripId'
+\code{\link[data.table]{data.table}} with columns 'vesselId', 'time' (POSIXct with time zone as in 'landings') and 'tripId'
 }
 \description{
 Extracts trip IDs from landings.

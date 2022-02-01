@@ -134,6 +134,26 @@ expect_true(any(is.na(unlanded$FisheriesSampling$LandedRoundWeight)))
 expect_error(RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter", "Nonesene")), "All 'GroupingVariables' must be present in 'StoxLandingData'. Missing: Nonesene")
 
 
+#Report covariances
+catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
+catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.rds", package="RstoxFDA"))
+
+catchAtAgeCovarDecomp <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeDecomp)
+expect_equal(nrow(catchAtAgeCovarDecomp$FdaCovariances), nrow(catchAtAgeCovarDecomp$Variables)**2)
+expect_equal(nrow(catchAtAgeCovarDecomp$Variables),130)
+catchAtAgeCovarFlat <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeFlat)
+expect_equal(nrow(catchAtAgeCovarFlat$FdaCovariances), nrow(catchAtAgeCovarFlat$Variables)**2)
+expect_equal(nrow(catchAtAgeCovarFlat$Variables),13)
+
+#compare with SD from regular report
+catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat)
+expect_true(all(((catchAtAgeReportFlat$FdaReport$SD - sqrt(catchAtAgeCovarFlat$FdaCovariances$Covariance[catchAtAgeCovarFlat$FdaCovariances$VariableId1==catchAtAgeCovarFlat$FdaCovariances$VariableId2]))/catchAtAgeReportFlat$FdaReport$SD)<1e-3))
+
+catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat, Unit = "10^3 individuals", Decimals = 6)
+catchAtAgeCovarFlat <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeFlat, Unit = "10^3 individuals", Decimals = 6)
+expect_true(all(((catchAtAgeReportFlat$FdaReport$SD - sqrt(catchAtAgeCovarFlat$FdaCovariances$Covariance[catchAtAgeCovarFlat$FdaCovariances$VariableId1==catchAtAgeCovarFlat$FdaCovariances$VariableId2]))/catchAtAgeReportFlat$FdaReport$SD)<1e-3))
+
+
 #context("Report Catch At Age")
 catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
 catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.rds", package="RstoxFDA"))
