@@ -3,7 +3,7 @@
 
 logb <- RstoxData::readErsFile(system.file("testresources","logbooks_mock_2018.psv", package="RstoxFDA"))
 land <- RstoxData::readLssFile(system.file("testresources","landings_trimmed_2018.lss", package="RstoxFDA"))
-land$`Siste fangstdato` <- as.POSIXct(land$`Siste fangstdato`, tz="CET") #force CET for test
+land$`Siste fangstdato` <- as.POSIXct(substr(land$`Siste fangstdato`,1,10), tz="CET") #force CET for test
 
 tripIds <- RstoxFDA::makeTripIds(land)
 expect_warning(logbTI <- RstoxFDA::appendTripIdLogbooks(logb, tripIds))
