@@ -60,7 +60,12 @@ appendTripIdLogbooks <- function(logbooks, tripIds, timeCol="STARTTIDSPUNKT", ve
   # add one day to tripId$time and compare with strictly less than
   #
   logdate <- logbooks[[timeCol]]
+  
+  #add a day and compare by strictly less, instead of less than or equal to, because POSIXct treats date-only as having time 00:00
   tripIds$time <- tripIds$time + as.difftime(1, units="days")
+  #convert time to UTC
+  tripIds$time <- as.POSIXct(format(tripIds$time, tz="UTC",usetz=TRUE), tz="UTC")
+  
   for (i in 1:nrow(tripIds)){
     if (verbose & (i %% 1000 == 0)){
       message(paste("Prossessing trip", i, "/", nrow(tripIds), "(", tripIds$tripId[i],")"))
