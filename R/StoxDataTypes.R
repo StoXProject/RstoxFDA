@@ -1609,7 +1609,7 @@ processPropertyFormats <- list(
   landingsreportvariables = list(
     class = "vector", 
     title = "One or more variables to use as aggregation variables.", 
-    possibleValues = function(StoxBioticData) {
+    possibleValues = function(StoxLandingData) {
       possibleValues <- names(StoxLandingData$Landing)[names(StoxLandingData$Landing) != "Rundvekt"]
       return(sort(possibleValues))
     }, 
