@@ -257,9 +257,11 @@ reportCovarianceAtAge <- function(table, aggVariables, parameter){
   result <- table[,list(mean=mean(get(parameter))), by=aggNames]
   DevTab <- merge(table, result)
   DevTab$Dev <- DevTab[[parameter]] - DevTab$mean
-  DevTab$VariableId <- parameter
-  for (var in aggNames){
+  DevTab$VariableId <- DevTab[["AgeGroup"]]
+  if (length(aggVariables)>0){
+    for (var in aggVariables){
       DevTab$VariableId <- paste(DevTab$VariableId, DevTab[[var]], sep="/") 
+    }
   }
   
   nameTab <- DevTab[!duplicated(DevTab[["VariableId"]]),.SD,.SDcols=c("VariableId", aggNames)]

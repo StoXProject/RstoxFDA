@@ -3,11 +3,30 @@ StoxLandingData <- readRDS(StoxLandingFile)
 
 tab1 <- RstoxFDA::ReportFdaLandings(StoxLandingData, GroupingVariables = c("Gear", "CatchDate"), Unit = "kg")
 tab2 <- RstoxFDA::ReportFdaLandings(StoxLandingData, GroupingVariables = c("Gear","Area", "CatchDate"), Unit = "ton")
-RstoxFDA:::FisheriesOverviewTemporal(tab1)
-RstoxFDA:::FisheriesOverviewTemporal(tab2)
+RstoxFDA:::PlotFisheriesOverviewTemporal(tab1)
+RstoxFDA:::PlotFisheriesOverviewTemporal(tab2)
 
 tab3 <- RstoxFDA::ReportFdaLandings(StoxLandingData, GroupingVariables = c("Area"), Unit = "ton")
-RstoxFDA:::FisheriesOverviewSpatial(tab3, RstoxFDA::mainareaFdir2018)
+RstoxFDA:::PlotFisheriesOverviewSpatial(tab3, RstoxFDA::mainareaFdir2018)
 
-RstoxFDA:::FisheriesOverviewTable(tab3)
-RstoxFDA:::FisheriesOverviewTable(tab2)
+RstoxFDA:::PlotFisheriesOverviewTable(tab3)
+RstoxFDA:::PlotFisheriesOverviewTable(tab2)
+
+
+catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
+catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.rds", package="RstoxFDA"))
+
+#test caa
+catchAtAgeCovarDecomp <- RstoxFDA:::ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup = 7)
+catchAtAgeCovarFlat <- RstoxFDA:::ReportRecaCatchAtAge(catchAtAgeFlat, PlusGroup = 7)
+RstoxFDA:::PlotCatcAtAgeTotals(catchAtAgeCovarFlat)
+RstoxFDA:::PlotCatcAtAgeTotals(catchAtAgeCovarDecomp)
+
+
+#test covar
+catchAtAgeCovarDecomp <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeDecomp, PlusGroup = 7)
+catchAtAgeCovarFlat <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeFlat, PlusGroup = 7)
+RstoxFDA:::PlotCatcAtAgeCovariances(catchAtAgeCovarFlat)
+RstoxFDA:::PlotCatcAtAgeCovariances(catchAtAgeCovarDecomp)
+
+

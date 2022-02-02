@@ -272,7 +272,6 @@ sourceLogbookColumns <- function(landings, logbooks, tripIdCol="tripid", catchId
   mask <- !is.na(selection)
   selection <- selection[!is.na(selection)]
   
-  
   tz <- attr(as.POSIXlt(landings$`Siste fangstdato`[1]), "tzone")
   if ("CET" %in% tz){
     tz <- "CET"
@@ -405,7 +404,7 @@ logbookAdjustment <- function(landings, logbooks, gearCodes=character(), species
   if (!all(valueColLand %in% names(landings))){
     stop("Some columns in 'valueColLand' are not found in 'landings'")
   }
-  
+
   if (length(activityTypes)==0){
     stop("Must provide at least one activity type ('activityTypes')")
   }
