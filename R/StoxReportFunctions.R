@@ -56,6 +56,13 @@ setUnits <- function(table, columns, unit, quantity){
 #' @md
 ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
   
+  if (!isGiven(StoxBioticData)){
+    stop("Parameter 'StoxBioticData' must be provided")
+  }
+  if (!isGiven(StoxLandingData)){
+    stop("Parameter 'StoxLandingData' must be provided")
+  }
+  
   if (!isGiven(Decimals)){
     Decimals=0
   }
@@ -157,6 +164,10 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
 #' @export
 #' @md
 ReportFdaLandings <- function(StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
+  
+  if (!isGiven(StoxLandingData)){
+    stop("Parameter 'StoxLandingData' must be provided")
+  }
   
   if (!isGiven(Decimals)){
     Decimals=0
@@ -396,6 +407,10 @@ setLengthGroup <- function(LengthReport, interval){
 #' @md
 ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
   
+  if (!isGiven(RecaCatchAtAge)){
+    stop("Parameter 'RecaCatchAtAge' must be provided")
+  }
+  
   if (!isGiven(Decimals)){
     Decimals=0
   }
@@ -473,6 +488,11 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
 #' @export
 #' @md
 ReportRecaCatchAtAgeCovariance <- function(RecaCatchAtAge, PlusGroup=integer(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
+  
+  if (!isGiven(RecaCatchAtAge)){
+    stop("Parameter 'RecaCatchAtAge' must be provided")
+  }
+  
   
   if (!isGiven(Decimals)){
     Decimals=0
@@ -556,6 +576,13 @@ ReportRecaCatchAtAgeCovariance <- function(RecaCatchAtAge, PlusGroup=integer(), 
 #' @md
 ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12)), LengthInterval=numeric()){
   
+  if (!isGiven(RecaCatchAtAge)){
+    stop("Parameter 'RecaCatchAtAge' must be provided")
+  }
+  if (!isGiven(LengthInterval)){
+    LengthInterval <- NULL
+  }
+  
   if (!isGiven(Decimals)){
     Decimals=0
   }
@@ -634,7 +661,19 @@ ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Dec
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
 #' @export
 #' @md
-ReportRecaCatchAtLengthAndAge <- function(RecaCatchAtAge, PlusGroup=integer(), LengthInterval=numeric(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
+ReportRecaCatchAtLengthAndAge <- function(RecaCatchAtAge, 
+                                          PlusGroup=integer(), 
+                                          LengthInterval=numeric(), 
+                                          IntervalWidth=numeric(), 
+                                          Decimals=integer(), 
+                                          Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
+  
+  if (!isGiven(RecaCatchAtAge)){
+    stop("Parameter 'RecaCatchAtAge' must be provided")
+  }
+  if (!isGiven(LengthInterval)){
+    LengthInterval <- NULL
+  }
   
   if (!isGiven(Decimals)){
     Decimals=0
@@ -762,6 +801,15 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
 #' @export
 #' @md
 ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10))){
+  
+  if (!isGiven(RecaCatchAtAge)){
+    stop("Parameter 'RecaCatchAtAge' must be provided")
+  }
+  if (!isGiven(PlusGroup)){
+    PlusGroup <- NULL
+  }
+  
+  
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   
   if (!isGiven(Decimals)){
@@ -844,6 +892,13 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @export
 ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=RstoxData::getUnitOptions("length", conversionRange=c(1e-7, 10))){
+  if (!isGiven(RecaCatchAtAge)){
+    stop("Parameter 'RecaCatchAtAge' must be provided")
+  }
+  if (!isGiven(PlusGroup)){
+    PlusGroup <- NULL
+  }
+  
   stopifnot(is.RecaCatchAtAge(RecaCatchAtAge))
   
   if (!isGiven(Decimals)){
@@ -904,20 +959,20 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #' Report catch statistics
 #' @description 
 #'  Report summary statistics for landed catches from MCMC simulations using Reca.
-#'  Summary statistics are obtained from the posterior distribution, and
-#'  the interval is reported as equal-tailed credible intervals are reported.
-#'  
-#'  Weights are reported in kg, lengths in cm.
+#'  This function reports estimated total catch, mean length, mean weight, and mean age.
 #'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
 #'  
-#'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
-#'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
-#'  
 #'  The units considered valid for mean lengths are those listed for quantity 'length' in \code{\link[RstoxData]{StoxUnits}}
 #'  The units considered valid for weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
 #'  The units considered valid for total catch in numbers are those listed for quantity 'cardinality' in \code{\link[RstoxData]{StoxUnits}}
+#'  
+#'  Summary statistics are obtained from the posterior distribution, and
+#'  the interval is reported as equal-tailed credible intervals are reported.
+#'  
+#'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+#'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
 #' @param DecimalOptions logical determining whether the StoX user interface should show decimal options
@@ -932,10 +987,32 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #' @param UnitMeanWeight unit for mean weight. Defaults to kg
 #' @param UnitMeanLength unit for mean length. Defaults to cm.
 #' @return \code{\link[RstoxFDA]{ReportFdaSummaryData}}
-#' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
+#' @seealso 
+#'  \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
+#'  \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting catch, mean length and mean weight by age groups
+#'  \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length distributions
+#'  \code{\link[RstoxFDA]{ReportRecaCatchAtLengthAndAge}} for reporting catch by age-group and length-group combinations.
 #' @export
 #' @md
-ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), DecimalOptions=FALSE, DecimalTotalNumber=integer(), DecimalTotalWeight=integer(), DecimalMeanAge=integer(), DecimalMeanWeight=integer(), DecimalMeanLength=integer(), UnitOptions=FALSE, UnitTotalNumber=RstoxData::getUnitOptions("cardinality", conversionRange=c(1, 1e12)), UnitTotalWeight=RstoxData::getUnitOptions("mass", conversionRange=c(1, 1e12)), UnitMeanWeight=RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10)), UnitMeanLength=RstoxData::getUnitOptions("length", conversionRange=c(1e-4, 10))){
+ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), 
+                                      DecimalOptions=FALSE, 
+                                      DecimalTotalNumber=integer(), 
+                                      DecimalTotalWeight=integer(), 
+                                      DecimalMeanAge=integer(), 
+                                      DecimalMeanWeight=integer(), 
+                                      DecimalMeanLength=integer(), 
+                                      UnitOptions=FALSE, 
+                                      UnitTotalNumber=RstoxData::getUnitOptions("cardinality", conversionRange=c(1, 1e12)), 
+                                      UnitTotalWeight=RstoxData::getUnitOptions("mass", conversionRange=c(1, 1e12)), 
+                                      UnitMeanWeight=RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10)), 
+                                      UnitMeanLength=RstoxData::getUnitOptions("length", conversionRange=c(1e-4, 10))){
+  
+  if (!isGiven(RecaCatchAtAge)){
+    stop("Parameter 'RecaCatchAtAge' must be provided")
+  }
+  if (!isGiven(IntervalWidth)){
+    IntervalWidth <- 0.9
+  }
   
   if (!isGiven(DecimalTotalNumber)){
     DecimalTotal=0  
@@ -1124,7 +1201,21 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), D
 #'  \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for some ways of preparing 'ReportFdaWeightAtAgeData' and 'ReportFdaCatchAtAgeData'.
 #'  \code{\link[RstoxData]{StoxLanding}} and \code{\link[RstoxData]{FilterStoxLanding}} for ways of preparing 'StoxLandingData'.
 #' @export
-ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, StoxLandingData, GroupingVariables=character(), DecimalWeight=integer(), DecimalFraction=integer(), UnitFraction=RstoxData::getUnitOptions("fraction")){
+ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, StoxLandingData, 
+                         GroupingVariables=character(), 
+                         DecimalWeight=integer(), 
+                         DecimalFraction=integer(), 
+                         UnitFraction=RstoxData::getUnitOptions("fraction")){
+  
+  if (!isGiven(ReportFdaCatchAtAgeData)){
+    stop("Parameter 'ReportFdaCatchAtAgeData' must be provided")
+  }
+  if (!isGiven(ReportFdaWeightAtAgeData)){
+    stop("Parameter 'ReportFdaWeightAtAgeData' must be provided")
+  }
+  if (!isGiven(StoxLandingData)){
+    stop("Parameter 'StoxLandingData' must be provided")
+  }
   
   ReportFdaCatchAtAgeData$FdaReport$CatchAtAge <- RstoxData::setUnit(ReportFdaCatchAtAgeData$FdaReport$CatchAtAge, "cardinality-N")
   ReportFdaWeightAtAgeData$FdaReport$MeanIndividualWeight <- RstoxData::setUnit(ReportFdaWeightAtAgeData$FdaReport$MeanIndividualWeight, "mass-kg")
@@ -1336,6 +1427,10 @@ summaryPaaPar <- function(modelFit){
 #' @md
 ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSummaryData, AppendReport=FALSE){
   
+  if (!isGiven(RecaParameterData)){
+    stop("Parameter 'RecaParameterData' must be provided")
+  }
+  
   if (AppendReport){
     if (!isGiven(ParameterizationSummaryData)){
       stop("Need to provide 'ParameterizationSummaryData' when 'AppendReport' is TRUE")
@@ -1445,6 +1540,10 @@ crossChainConvergence <- function(modelSummary, iterations, tolerance){
 #' @md
 ReportParameterConvergence <- function(ParameterizationSummaryData, Tolerance=numeric(), Decimals=integer()){
   
+  if (!isGiven(ParameterizationSummaryData)){
+    stop("Parameter 'ParameterizationSummaryData' must be provided")
+  }
+
   if (!isGiven(Tolerance)){
     Tolerance = 0.1
   }

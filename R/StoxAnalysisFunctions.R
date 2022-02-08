@@ -563,6 +563,11 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @export
 #' @md
 ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=character(), Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric(), UseCachedData=FALSE){
+  
+  if (!isGiven(RecaData)){
+    stop("Parameter 'RecaData' must be provided.")
+  }
+  
   RecaData <- convertStox2PrepReca(RecaData)
   Lgamodel <- match.arg(Lgamodel, Lgamodel)
   if (!isGiven(Lgamodel)){
@@ -733,6 +738,16 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #' @export
 #' @md
 RunRecaModels <- function(RecaParameterData, StoxLandingData, GroupingVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric(), CollapseLength=TRUE){
+  
+  if (!isGiven(RecaParameterData)){
+    stop("Parameter 'RecaParameterData' must be provided.")
+  }
+  if (!isGiven(StoxLandingData)){
+    stop("Parameter 'StoxLandingData' must be provided.")
+  }
+  if (!isGiven(TemporalResolution)){
+    stop("Parameter 'TemporalResolution' must be provided.")
+  }
   
   if (length(GroupingVariables)>1 && !CollapseLength){
     stoxWarning("Producing estimates for all length groups in combination with age and several 'GroupingVariables'. This may exhaust memory, consider the option 'CollapseLength'.")
