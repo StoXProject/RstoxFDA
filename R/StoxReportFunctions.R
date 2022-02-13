@@ -724,16 +724,17 @@ ReportRecaCatchAtLengthAndAge <- function(RecaCatchAtAge,
   aggNames <- c(RecaCatchAtAge$GroupingVariables$GroupingVariables)
   
   caa <- reportParameterAtAgeLength(totalOverLength, aggNames, "CatchAtAge", alpha = 1-IntervalWidth)
-  caa$FdaReport$CatchAtAge <- caa$FdaReport$CatchAtAge
+  caa$FdaReport$CatchAtAgeLength <- caa$FdaReport$CatchAtAge
+  caa$FdaReport$CatchAtAge <- NULL
   caa$FdaReport <- setUnits(caa$FdaReport, "Length", "cm", "length")
   caa$FdaReport <- setUnits(caa$FdaReport, "Age", "year", "age")
-  caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), "individuals", "cardinality")
+  caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAgeLength", "SD", "Low", "High"), "individuals", "cardinality")
   if (isGiven(Unit)){
-    caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), Unit, "cardinality")  
+    caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAgeLength", "SD", "Low", "High"), Unit, "cardinality")  
   }
   
   if (isGiven(Decimals)){
-    caa$FdaReport <- setDecimals(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), Decimals)
+    caa$FdaReport <- setDecimals(caa$FdaReport, c("CatchAtAgeLength", "SD", "Low", "High"), Decimals)
   }
   
   caa$NbyLengthAge <- caa$FdaReport

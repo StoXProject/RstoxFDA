@@ -7,8 +7,7 @@
 Results from catch at age estimations. The results may be presented
  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
  
- list with two members, the first is a data table named for its putput, the second is a data table named 'GroupingVariables'.
- the first is a data table is a \code{\link[data.table]{data.table}} which may have the following columns:
+ ReportFdaByAgeData is a \code{\link[data.table]{data.table}} which may have the following columns:
  \describe{
   \item{AgeGroup}{character. The age group the estimate is reported for. May be age or plus group}
   \item{Age}{integer. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)}
@@ -20,8 +19,6 @@ Results from catch at age estimations. The results may be presented
   \item{High}{The higher limit of the estimated interval for the reported statistic.}
   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
  }
- 'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
-
 
  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 }

@@ -145,6 +145,11 @@ expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$catchsample$catchprodu
 expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$catchsample$sampleproducttype[!is.na(BioticData$biotic_v3_producttypes.xml$catchsample$sampleproducttype)]=="1"))
 expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$individual$individualproducttype[!is.na(BioticData$biotic_v3_producttypes.xml$individual$individualproducttype)]=="1"))
 
+#check official conversion factors
+fdirtab <- RstoxFDA::DefineWeightConversionFactor(DefinitionMethod = "FDIR.VIII.2022")
+expect_true(all(fdirtab$WeightFactor[fdirtab$ProductType==3] < fdirtab$WeightFactor[fdirtab$ProductType==4]))
+expect_equal(sum(duplicated(fdirtab$Species)), nrow(fdirtab)/2)
+
 #
 # checks on catchweightconversion
 #
