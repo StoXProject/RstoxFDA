@@ -206,7 +206,7 @@ expect_true(abs(rdiff) < .1)
 catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
 catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat)
 catchAtLengthAndAgeReportFlat <- RstoxFDA:::ReportRecaCatchAtLengthAndAge(catchAtAgeFlat)
-browser()
+
 rdiff <- (sum(catchAtAgeReportFlat$NbyAge$CatchAtAge) - sum(catchAtLengthAndAgeReportFlat$NbyLengthAge$CatchAtAgeLength)) / sum(catchAtLengthAndAgeReportFlat$NbyLengthAge$CatchAtAgeLength)
 expect_true(abs(rdiff) < 1e-6)
 catchAtLengthAndAgeReportFlatPlG <- RstoxFDA:::ReportRecaCatchAtLengthAndAge(catchAtAgeFlat, PlusGroup = 5, LengthInterval = 10)

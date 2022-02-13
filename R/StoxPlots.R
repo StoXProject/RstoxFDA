@@ -148,11 +148,11 @@ PlotCatcAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   }
   else{
     vars <- ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables
-    g1 <- head(vars,1)
+    g1 <- utils::head(vars,1)
     vars <- vars[vars!=g1]
     ReportFdaCatchAtAgeData$NbyAge$Group <- ReportFdaCatchAtAgeData$NbyAge[[g1]]
     while(length(vars)>0){
-      g <- head(vars,1)
+      g <- utils::head(vars,1)
       ReportFdaCatchAtAgeData$NbyAge$Group <- paste(ReportFdaCatchAtAgeData$NbyAge$Group, ReportFdaCatchAtAgeData$NbyAge[[g]], sep="/")
       vars <- vars[vars!=g]
     }
