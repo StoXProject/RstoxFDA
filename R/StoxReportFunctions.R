@@ -452,17 +452,20 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
   
   caa <- reportParameterAtAge(totalOverLength, aggNames, "CatchAtAge", alpha = 1-IntervalWidth)
   
-  caa$FdaReport <- setUnits(caa$FdaReport, "Age", "year", "age")
-  caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), "individuals", "cardinality")
+  caa$NbyAge <- caa$FdaReport
+  caa$FdaReport <- NULL
+  
+  caa$NbyAge <- setUnits(caa$NbyAge, "Age", "year", "age")
+  caa$NbyAge <- setUnits(caa$NbyAge, c("CatchAtAge", "SD", "Low", "High"), "individuals", "cardinality")
   if (isGiven(Unit)){
-    caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), Unit, "cardinality")  
+    caa$NbyAge <- setUnits(caa$NbyAge, c("CatchAtAge", "SD", "Low", "High"), Unit, "cardinality")  
   }
   
   if (isGiven(Decimals)){
-    caa$FdaReport <- setDecimals(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), Decimals)
+    caa$NbyAge <- setDecimals(caa$NbyAge, c("CatchAtAge", "SD", "Low", "High"), Decimals)
   }
   
-  return(caa)
+  return(caa[c("NbyAge", "GroupingVariables")])
   
 }
 
@@ -535,13 +538,16 @@ ReportRecaCatchAtAgeCovariance <- function(RecaCatchAtAge, PlusGroup=integer(), 
   }
   
   cov <- reportCovarianceAtAge(totalOverLength, aggNames, "CatchAtAge")
+  
+  cov$CovarianceNbyAge <- cov$FdaCovariances
+  cov$FdaCovariances <- NULL
   cov$Variables <- setUnits(cov$Variables, c("Age"), "year", "age")
   
   if (isGiven(Decimals)){
-    cov$FdaCovariances <- setDecimals(cov$FdaCovariances, c("Covariance"), Decimals)
+    cov$CovarianceNbyAge <- setDecimals(cov$CovarianceNbyAge, c("Covariance"), Decimals)
   }
   
-  return(cov)
+  return(cov[c("CovarianceNbyAge", "Variables")])
   
 }
 
@@ -616,18 +622,21 @@ ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Dec
   caa <- reportParameterAtLength(totalOverLength, aggNames, "CatchAtAge", alpha = 1-IntervalWidth)
   caa$FdaReport$CatchAtLength <- caa$FdaReport$CatchAtAge
   caa$FdaReport$CatchAtAge <- NULL
+  
+  caa$NbyLength <- caa$FdaReport
+  caa$FdaReport <- NULL
 
-  caa$FdaReport <- setUnits(caa$FdaReport, "Length", "cm", "length")
-  caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtLength", "SD", "Low", "High"), "individuals", "cardinality")
+  caa$NbyLength <- setUnits(caa$NbyLength, "Length", "cm", "length")
+  caa$NbyLength <- setUnits(caa$NbyLength, c("CatchAtLength", "SD", "Low", "High"), "individuals", "cardinality")
   if (isGiven(Unit)){
-    caa$FdaReport <- setUnits(caa$FdaReport, c("CatchAtLength", "SD", "Low", "High"), Unit, "cardinality")  
+    caa$NbyLength <- setUnits(caa$NbyLength, c("CatchAtLength", "SD", "Low", "High"), Unit, "cardinality")  
   }
   
   if (isGiven(Decimals)){
-    caa$FdaReport <- setDecimals(caa$FdaReport, c("CatchAtLength", "SD", "Low", "High"), Decimals)
+    caa$NbyLength <- setDecimals(caa$NbyLength, c("CatchAtLength", "SD", "Low", "High"), Decimals)
   }
   
-  return(caa)
+  return(caa[c("NbyLength", "GroupingVariables")])
   
 }
 
@@ -727,7 +736,10 @@ ReportRecaCatchAtLengthAndAge <- function(RecaCatchAtAge,
     caa$FdaReport <- setDecimals(caa$FdaReport, c("CatchAtAge", "SD", "Low", "High"), Decimals)
   }
   
-  return(caa)
+  caa$NbyLengthAge <- caa$FdaReport
+  caa$FdaReport <- NULL
+  
+  return(caa[c("NbyLengthAge", "GroupingVariables")])
   
 }
 
@@ -837,14 +849,14 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
   
   #set age groups with catches below threshold to NA
   caa<-ReportRecaCatchAtAge(RecaCatchAtAge, PlusGroup = PlusGroup)
-  caa$FdaReport$SD <- NULL
-  caa$FdaReport$Low <- NULL
-  caa$FdaReport$High <- NULL
-  caa$FdaReport$include <- caa$FdaReport$CatchAtAge >= Threshold
-  caa$FdaReport$order <- 1:nrow(caa$FdaReport)
-  caa$FdaReport$CatchAtAge <- NULL
+  caa$NbyAge$SD <- NULL
+  caa$NbyAge$Low <- NULL
+  caa$NbyAge$High <- NULL
+  caa$NbyAge$include <- caa$NbyAge$CatchAtAge >= Threshold
+  caa$NbyAge$order <- 1:nrow(caa$NbyAge)
+  caa$NbyAge$CatchAtAge <- NULL
   
-  mwaa$FdaReport <- merge(mwaa$FdaReport, caa$FdaReport)
+  mwaa$FdaReport <- merge(mwaa$FdaReport, caa$NbyAge)
   stopifnot(nrow(mwaa$FdaReport) == nrow(caa$FdaReport))
   mwaa$FdaReport$MeanIndividualWeight[!mwaa$FdaReport$include] <- NA
   mwaa$FdaReport$SD[!mwaa$FdaReport$include] <- NA
@@ -864,7 +876,10 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
     mwaa$FdaReport <- setDecimals(mwaa$FdaReport, c("MeanIndividualWeight", "SD", "Low", "High"), Decimals)
   }
   
-  return(mwaa)
+  mwaa$MeanWeightByAge <- mwaa$FdaReport
+  mwaa$FdaReport <- NULL
+  
+  return(mwaa[c("MeanWeightByAge", "GroupingVariables")])
 
 }
 
@@ -926,14 +941,14 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
   
   #set age groups with catches below threshold to NA
   caa<-ReportRecaCatchAtAge(RecaCatchAtAge, PlusGroup = PlusGroup)
-  caa$FdaReport$SD <- NULL
-  caa$FdaReport$Low <- NULL
-  caa$FdaReport$High <- NULL
-  caa$FdaReport$include <- caa$FdaReport$CatchAtAge >= Threshold
-  caa$FdaReport$order <- 1:nrow(caa$FdaReport)
-  caa$FdaReport$CatchAtAge <- NULL
+  caa$NbyAge$SD <- NULL
+  caa$NbyAge$Low <- NULL
+  caa$NbyAge$High <- NULL
+  caa$NbyAge$include <- caa$NbyAge$CatchAtAge >= Threshold
+  caa$NbyAge$order <- 1:nrow(caa$NbyAge)
+  caa$NbyAge$CatchAtAge <- NULL
   
-  mla$FdaReport <- merge(mla$FdaReport, caa$FdaReport)
+  mla$FdaReport <- merge(mla$FdaReport, caa$NbyAge)
   stopifnot(nrow(mla$FdaReport) == nrow(caa$FdaReport))
   mla$FdaReport$MeanIndividualLength[!mla$FdaReport$include] <- NA
   mla$FdaReport$SD[!mla$FdaReport$include] <- NA
@@ -953,7 +968,10 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
     mla$FdaReport <- setDecimals(mla$FdaReport, c("MeanIndividualLength", "SD", "Low", "High"), Decimals)
   }
   
-  return(mla)
+  mla$MeanLengthByAge <- mla$FdaReport
+  mla$FdaReport <- NULL
+  
+  return(mla[c("MeanLengthByAge","GroupingVariables")])
 }
 
 #' Report catch statistics
@@ -1122,39 +1140,39 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   ss <- RecaCatchAtAge
   ss$CatchAtAge <- mm
   TotalWeight<-ReportRecaCatchAtAge(ss, PlusGroup = min(RecaCatchAtAge$CatchAtAge$Age))
-  names(TotalWeight$FdaReport)[names(TotalWeight$FdaReport)=="CatchAtAge"] <- "TotalWeight"
+  names(TotalWeight$NbyAge)[names(TotalWeight$NbyAge)=="CatchAtAge"] <- "TotalWeight"
   
-  TotalWeight$FdaReport$TotalWeight <- RstoxData::setUnit(TotalWeight$FdaReport$TotalWeight, NA)
-  TotalWeight$FdaReport$TotalWeight <- RstoxData::setUnit(TotalWeight$FdaReport$TotalWeight, RstoxData::findUnit("mass", "kg"), assertNew = T)
-  TotalWeight$FdaReport$SD <- RstoxData::setUnit(TotalWeight$FdaReport$SD, NA)
-  TotalWeight$FdaReport$SD <- RstoxData::setUnit(TotalWeight$FdaReport$SD, RstoxData::findUnit("mass", "kg"), assertNew = T)
-  TotalWeight$FdaReport$Low <- RstoxData::setUnit(TotalWeight$FdaReport$Low, NA)
-  TotalWeight$FdaReport$Low <- RstoxData::setUnit(TotalWeight$FdaReport$Low, RstoxData::findUnit("mass", "kg"), assertNew = T)
-  TotalWeight$FdaReport$High <- RstoxData::setUnit(TotalWeight$FdaReport$High, NA)
-  TotalWeight$FdaReport$High <- RstoxData::setUnit(TotalWeight$FdaReport$High, RstoxData::findUnit("mass", "kg"), assertNew = T)
+  TotalWeight$NbyAge$TotalWeight <- RstoxData::setUnit(TotalWeight$NbyAge$TotalWeight, NA)
+  TotalWeight$NbyAge$TotalWeight <- RstoxData::setUnit(TotalWeight$NbyAge$TotalWeight, RstoxData::findUnit("mass", "kg"), assertNew = T)
+  TotalWeight$NbyAge$SD <- RstoxData::setUnit(TotalWeight$NbyAge$SD, NA)
+  TotalWeight$NbyAge$SD <- RstoxData::setUnit(TotalWeight$NbyAge$SD, RstoxData::findUnit("mass", "kg"), assertNew = T)
+  TotalWeight$NbyAge$Low <- RstoxData::setUnit(TotalWeight$NbyAge$Low, NA)
+  TotalWeight$NbyAge$Low <- RstoxData::setUnit(TotalWeight$NbyAge$Low, RstoxData::findUnit("mass", "kg"), assertNew = T)
+  TotalWeight$NbyAge$High <- RstoxData::setUnit(TotalWeight$NbyAge$High, NA)
+  TotalWeight$NbyAge$High <- RstoxData::setUnit(TotalWeight$NbyAge$High, RstoxData::findUnit("mass", "kg"), assertNew = T)
   
-  TotalWeight$FdaReport$AgeGroup <- NULL
-  TotalWeight$FdaReport$Age <- NULL
+  TotalWeight$NbyAge$AgeGroup <- NULL
+  TotalWeight$NbyAge$Age <- NULL
   
   if (isGiven(DecimalTotalWeight)){
-    TotalWeight$FdaReport <- setDecimals(TotalWeight$FdaReport, c("TotalWeight", "SD", "Low", "High"), DecimalTotalWeight)
+    TotalWeight$NbyAge <- setDecimals(TotalWeight$NbyAge, c("TotalWeight", "SD", "Low", "High"), DecimalTotalWeight)
   }
   if (isGiven(UnitTotalWeight)){
-    TotalWeight$FdaReport <- setUnits(TotalWeight$FdaReport, c("TotalWeight", "SD", "Low", "High"), UnitTotalWeight, "mass")
+    TotalWeight$NbyAge <- setUnits(TotalWeight$NbyAge, c("TotalWeight", "SD", "Low", "High"), UnitTotalWeight, "mass")
   }
   
   
   # total number
   TotalNumber<-ReportRecaCatchAtAge(RecaCatchAtAge, PlusGroup = min(RecaCatchAtAge$CatchAtAge$Age), Unit = "individuals")
-  names(TotalNumber$FdaReport)[names(TotalNumber$FdaReport)=="CatchAtAge"] <- "TotalNumber"
-  TotalNumber$FdaReport$AgeGroup <- NULL
-  TotalNumber$FdaReport$Age <- NULL
+  names(TotalNumber$NbyAge)[names(TotalNumber$NbyAge)=="CatchAtAge"] <- "TotalNumber"
+  TotalNumber$NbyAge$AgeGroup <- NULL
+  TotalNumber$NbyAge$Age <- NULL
   
   if (isGiven(DecimalTotalNumber)){
-    TotalNumber$FdaReport <- setDecimals(TotalNumber$FdaReport, c("TotalNumber", "SD", "Low", "High"), DecimalTotalNumber)
+    TotalNumber$NbyAge <- setDecimals(TotalNumber$NbyAge, c("TotalNumber", "SD", "Low", "High"), DecimalTotalNumber)
   }
   if (isGiven(UnitTotalNumber)){
-    TotalNumber$FdaReport <- setUnits(TotalNumber$FdaReport, c("TotalNumber", "SD", "Low", "High"), UnitTotalNumber, "cardinality")
+    TotalNumber$NbyAge <- setUnits(TotalNumber$NbyAge, c("TotalNumber", "SD", "Low", "High"), UnitTotalNumber, "cardinality")
   }
   
   # combine
@@ -1162,8 +1180,8 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   output$MeanAge <- meanAge$FdaReport
   output$MeanWeight <- meanWeight$FdaReport
   output$MeanLength <- meanLength$FdaReport
-  output$TotalWeight <- TotalWeight$FdaReport
-  output$TotalNumber <- TotalNumber$FdaReport
+  output$TotalWeight <- TotalWeight$NbyAge
+  output$TotalNumber <- TotalNumber$NbyAge
   output$GroupingVariables <- meanAge$GroupingVariables
   
   return(output)
@@ -1217,8 +1235,8 @@ ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, Stox
     stop("Parameter 'StoxLandingData' must be provided")
   }
   
-  ReportFdaCatchAtAgeData$FdaReport$CatchAtAge <- RstoxData::setUnit(ReportFdaCatchAtAgeData$FdaReport$CatchAtAge, "cardinality-N")
-  ReportFdaWeightAtAgeData$FdaReport$MeanIndividualWeight <- RstoxData::setUnit(ReportFdaWeightAtAgeData$FdaReport$MeanIndividualWeight, "mass-kg")
+  ReportFdaCatchAtAgeData$NbyAge$CatchAtAge <- RstoxData::setUnit(ReportFdaCatchAtAgeData$NbyAge$CatchAtAge, "cardinality-N")
+  ReportFdaWeightAtAgeData$MeanWeightByAge$MeanIndividualWeight <- RstoxData::setUnit(ReportFdaWeightAtAgeData$MeanWeightByAge$MeanIndividualWeight, "mass-kg")
   
   if (!isGiven(DecimalWeight)){
     DecimalWeight = 0
@@ -1243,21 +1261,21 @@ ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, Stox
   # set a temporary aggregationvariable if none is requested.
   if (is.null(aggVars)){
     aggVars <- c("DummyAgg")
-    stopifnot(!("DummyAgg" %in% names(ReportFdaWeightAtAgeData$FdaReport)))
-    stopifnot(!("DummyAgg" %in% names(ReportFdaCatchAtAgeData$FdaReport)))
+    stopifnot(!("DummyAgg" %in% names(ReportFdaWeightAtAgeData$MeanWeightByAge)))
+    stopifnot(!("DummyAgg" %in% names(ReportFdaCatchAtAgeData$NbyAge)))
     stopifnot(!("DummyAgg" %in% names(StoxLandingData$Landing)))
-    ReportFdaWeightAtAgeData$FdaReport$DummyAgg <- "1"
+    ReportFdaWeightAtAgeData$MeanWeightByAge$DummyAgg <- "1"
     ReportFdaWeightAtAgeData$GroupingVariables <- data.table::data.table(GroupingVariables=c("DummyAgg", ReportFdaWeightAtAgeData$GroupingVariables$GroupingVariables))
-    ReportFdaCatchAtAgeData$FdaReport$DummyAgg <- "1"
+    ReportFdaCatchAtAgeData$NbyAge$DummyAgg <- "1"
     ReportFdaCatchAtAgeData$GroupingVariables <- data.table::data.table(GroupingVariables=c("DummyAgg", ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables))
     StoxLandingData$Landing$DummyAgg <- "1"
   }
   
   msg <- "All 'GroupingVariables' must be present in both 'ReportFdaCatchAtAgeData', 'ReportFdaWeightAtAgeData' and 'StoxLandingData'"
-  if (!all(aggVars %in% names(ReportFdaCatchAtAgeData$FdaReport))){
+  if (!all(aggVars %in% names(ReportFdaCatchAtAgeData$NbyAge))){
     stop(msg)
   }
-  if (!all(aggVars %in% names(ReportFdaWeightAtAgeData$FdaReport))){
+  if (!all(aggVars %in% names(ReportFdaWeightAtAgeData$MeanWeightByAge))){
     stop(msg)
   }
   if (!all(aggVars %in% names(StoxLandingData$Landing))){
@@ -1275,16 +1293,16 @@ ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, Stox
   
   msg <- "'ReportFdaCatchAtAgeData' and 'ReportFdaWeightAtAgeData' must be decomposed on the same age groups"
   
-  if (!all(ReportFdaWeightAtAgeData$FdaReport$AgeGroup %in% ReportFdaCatchAtAgeData$FdaReport$AgeGroup)){
+  if (!all(ReportFdaWeightAtAgeData$MeanWeightByAge$AgeGroup %in% ReportFdaCatchAtAgeData$NbyAge$AgeGroup)){
     stop(msg)
   }
-  if (!all(ReportFdaCatchAtAgeData$FdaReport$AgeGroup %in% ReportFdaWeightAtAgeData$FdaReport$AgeGroup)){
+  if (!all(ReportFdaCatchAtAgeData$NbyAge$AgeGroup %in% ReportFdaWeightAtAgeData$MeanWeightByAge$AgeGroup)){
     stop(msg)
   }
 
   #merge reports and estimate total for their aggragtion variables
-  jointTab <- merge(ReportFdaCatchAtAgeData$FdaReport, ReportFdaWeightAtAgeData$FdaReport, by=c("Age", "AgeGroup", ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables), suffixes = c("mw", "caa"))
-  stopifnot(nrow(jointTab) == nrow(ReportFdaCatchAtAgeData$FdaReport))
+  jointTab <- merge(ReportFdaCatchAtAgeData$NbyAge, ReportFdaWeightAtAgeData$MeanWeightByAge, by=c("Age", "AgeGroup", ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables), suffixes = c("mw", "caa"))
+  stopifnot(nrow(jointTab) == nrow(ReportFdaCatchAtAgeData$NbyAge))
   
   jointTab$TotalWeightEstimated <- jointTab$CatchAtAge*jointTab$MeanIndividualWeight
   

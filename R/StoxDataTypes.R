@@ -23,8 +23,8 @@ is.Date <- function(date){
 #'  Results from catch at age estimations. The results may be presented
 #'  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
 #'  
-#'  list with two members 'FdaReport' and 'GroupingVariables'.
-#'  'FdaReport' is a \code{\link[data.table]{data.table}} which may have the following columns:
+#'  list with two members, the first is a data table named for its putput, the second is a data table named 'GroupingVariables'.
+#'  the first is a data table is a \code{\link[data.table]{data.table}} which may have the following columns:
 #'  \describe{
 #'   \item{AgeGroup}{character. The age group the estimate is reported for. May be age or plus group}
 #'   \item{Age}{integer. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)}
@@ -190,20 +190,22 @@ NULL
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
 #' @export
 is.ReportFdaByAgeData <- function(ReportFdaByAgeData){
-  
   if (!is.list(ReportFdaByAgeData)){
     return(FALSE)
   }
-  if (!all(c("GroupingVariables", "FdaReport") %in% names(ReportFdaByAgeData))){
+  if (!all(c("GroupingVariables") %in% names(ReportFdaByAgeData))){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportFdaByAgeData$FdaReport)){
+  if (length(ReportFdaByAgeData)<2){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(ReportFdaByAgeData[[1]])){
     return(FALSE)
   }
   if (!data.table::is.data.table(ReportFdaByAgeData$GroupingVariables)){
     return(FALSE)
   }
-  if (!all(c("Age", "Low", "High", "SD") %in% names(ReportFdaByAgeData$FdaReport))){
+  if (!all(c("Age", "Low", "High", "SD") %in% names(ReportFdaByAgeData[[1]]))){
     return(FALSE)
   }
   if (!all(c("GroupingVariables") %in% names(ReportFdaByAgeData$GroupingVariables))){
@@ -396,7 +398,10 @@ is.Translation <- function(Translation){
   if (!data.table::is.data.table(Translation)){
     return(FALSE)
   }
-  if (!all(c("VariableName", "Value",	"NewValue") %in% names(Translation))){
+  if (!all(c("NewValue") %in% names(Translation))){
+    return(FALSE)
+  }
+  if (ncol(Translation)<2){
     return(FALSE)
   }
   return(TRUE)
