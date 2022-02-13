@@ -54,7 +54,7 @@ from the weight of other fish products, such as gutted fish.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">DefineWeightConversionFactor</span><span class="op">(</span>
   <span class="va">processData</span>,
-  DefinitionMethod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ResourceFile"</span><span class="op">)</span>,
+  DefinitionMethod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ResourceFile"</span>, <span class="st">"FDIR.VIII.2022"</span><span class="op">)</span>,
   FileName <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,
   UseProcessData <span class="op">=</span> <span class="cn">F</span>
 <span class="op">)</span></code></pre></div>
@@ -65,7 +65,7 @@ from the weight of other fish products, such as gutted fish.</p>
     <dl><dt>processData</dt>
 <dd><p><code><a href="WeightConversionTable.html">WeightConversionTable</a></code> as returned from this function</p></dd>
 <dt>DefinitionMethod</dt>
-<dd><p>'ResourceFile'. See details.</p></dd>
+<dd><p>'ResourceFile' or 'FDIR.VIII.2022'. See details.</p></dd>
 <dt>FileName</dt>
 <dd><p>path to resource file</p></dd>
 <dt>UseProcessData</dt>
@@ -91,7 +91,8 @@ Definitions are read from a tab separated, UTF-8 encoded file with headers. Colu
 <dd><p>scalar value that weights for the given 'ProductType' can be multiplied with to approximate the desired product type (w.g. round fish).</p></dd>
 
 
-</dl><p>Missing values for WeightFactor are interpreted as NA, and will result in NA for weights after conversion.</p>
+</dl><p>For DefinitionMethod 'FDIR.VIII.2022', the table <code><a href="FDIR.factors.VIII.2022.html">FDIR.factors.VIII.2022</a></code> will be used</p>
+<p>Missing values for WeightFactor are interpreted as NA, and will result in NA for weights after conversion.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
