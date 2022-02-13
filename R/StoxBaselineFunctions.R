@@ -739,7 +739,8 @@ appendGear <- function(table, gearcolumn, gearDefinition, colName){
 #'  Adds a column to StoxLandingData with gear groups
 #' @details 
 #'  Gear groups are defined as translations from a gear code to a gear group.
-#'  The provided Translation should map values ('Value' in Translation) for the variable 'Gear' in 'StoxBioticData' ('VariableName' in Translation) to a gear group ('NewValue' in Translation).
+#'  Translation need to be defined for the VariableName 'Gear' (see \code{\link[RstoxData]{Translation}}). 
+#'  The provided Translation should map values ('Gear' in Translation) for the variable 'Gear' in 'StoxBioticData' to a gear group ('NewValue' in Translation).
 #'  The gear group will be added to 'StoxLandingData' as the column 'GearGroup'
 #'  
 #'  For comparison or co-analysis with sample data, a \code{\link[RstoxData]{Translation}} should be defined for \code{\link[RstoxData]{StoxBioticData}}
@@ -760,10 +761,11 @@ AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
   if (!is.Translation(Translation)){
     stop("Translation is not a valid Translation table.")
   }
-  if (!any(Translation$VariableName=="Gear")){
+  if (!("Gear" %in% names(Translation))){
     stop("Translation table contains no translation for variable 'Gear'")
   }
-  geardef <- Translation[Translation$VariableName=="Gear",c("Value", "NewValue")]
+  
+  geardef <- Translation[,.SD, .SDcols=c("Gear", "NewValue")]
   stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
   StoxLandingData$Landing<-appendGear(StoxLandingData$Landing, "Gear", geardef, "GearGroup")
   return(StoxLandingData)
@@ -774,7 +776,8 @@ AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
 #'  Adds a column to StoxBioticData with gear groups
 #' @details 
 #'  Gear groups are defined as translations from a gear code to a gear group.
-#'  The provided Translation should map values ('Value' in Translation) for the variable 'Gear'on the table 'Haul' in 'StoxBioticData' ('VariableName' in Translation) to a gear group ('NewValue' in Translation).
+#'  Translation need to be defined for the VariableName 'Gear' (see \code{\link[RstoxData]{Translation}}). 
+#'  The provided Translation should map values ('Gear' in Translation) for the variable 'Gear'on the table 'Haul' in 'StoxBioticData' to a gear group ('NewValue' in Translation).
 #'  The gear group will be added to 'StoxBioticData' as the column 'GearGroup'
 #'  
 #'  For comparison or co-analysis with landing data, a \code{\link[RstoxData]{Translation}} should be defined for \code{\link[RstoxData]{StoxLandingData}}
@@ -792,7 +795,7 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
   if (!is.Translation(Translation)){
     stop("Translation is not a valid Translation table.")
   }
-  if (!any(Translation$VariableName=="Gear")){
+  if (!("Gear" %in% names(Translation))){
     stop("Translation table contains no translation for variable 'Gear'")
   }
   if (any(is.na(StoxBioticData$Haul$Gear))){
@@ -804,8 +807,7 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
     stop("'StoxBioticData' has missing values for the variable 'Gear' on the table 'Haul'.")
   }
   
-  
-  geardef <- Translation[Translation$VariableName=="Gear",c("Value", "NewValue")]
+  geardef <- Translation[,.SD, .SDcols=c("Gear", "NewValue")]
   StoxBioticData$Haul<-appendGear(StoxBioticData$Haul, "Gear", geardef, "GearGroup")
   return(StoxBioticData)
 }
