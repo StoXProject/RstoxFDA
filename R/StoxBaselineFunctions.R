@@ -64,7 +64,7 @@ checkSymmetry <- function(tab){
 #' @md
 AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVariable = c("None", "Location", "Coastal")){
   
-  LocationVariable <- match.arg(LocationVariable)
+  LocationVariable <- match.arg(LocationVariable, LocationVariable)
   
   latColName="Latitude"    
   lonColName="Longitude"
@@ -658,7 +658,7 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
 #' @md
 AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=c("Stratum", "Area")){
   
-  ColumnName <- match.arg(ColumnName)
+  ColumnName <- match.arg(ColumnName, ColumnName)
   
   cname <- "cname"    
   latColumn <- "Latitude"    
@@ -1510,20 +1510,32 @@ DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("Re
 #'  \item{Column 4: 'WeightFactor'}{scalar value that weights for the given 'ProductType' can be multiplied with to approximate the desired product type (w.g. round fish).}
 #'  }
 #'  
+#'  For DefinitionMethod 'FDIR.VIII.2022', the table \code{\link[RstoxFDA]{FDIR.factors.VIII.2022}} will be used
+#'  
 #'  Missing values for WeightFactor are interpreted as NA, and will result in NA for weights after conversion.
 #'  
 #' @param processData \code{\link[RstoxFDA]{WeightConversionTable}} as returned from this function
-#' @param DefinitionMethod 'ResourceFile'. See details.
+#' @param DefinitionMethod 'ResourceFile' or 'FDIR.VIII.2022'. See details.
 #' @param FileName path to resource file
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{WeightConversionTable}}
 #' @seealso \code{\link[RstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.
 #' @export
 #' @md
-DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("ResourceFile"), FileName = character(), UseProcessData=F){
+DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("ResourceFile", "FDIR.VIII.2022"), FileName = character(), UseProcessData=F){
   
   if (UseProcessData){
     return(processData)
+  }
+  
+  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
+  
+  if (!isGiven(DefinitionMethod)){
+    stop("'DefinitionMethod' must be provided.")
+  }
+  
+  if (DefinitionMethod == "FDIR.VIII.2022"){
+    return(RstoxFDA::FDIR.factors.VIII.2022)
   }
   
   encoding <- "UTF-8"

@@ -6,7 +6,7 @@
 \usage{
 DefineWeightConversionFactor(
   processData,
-  DefinitionMethod = c("ResourceFile"),
+  DefinitionMethod = c("ResourceFile", "FDIR.VIII.2022"),
   FileName = character(),
   UseProcessData = F
 )
@@ -14,7 +14,7 @@ DefineWeightConversionFactor(
 \arguments{
 \item{processData}{\code{\link[RstoxFDA]{WeightConversionTable}} as returned from this function}
 
-\item{DefinitionMethod}{'ResourceFile'. See details.}
+\item{DefinitionMethod}{'ResourceFile' or 'FDIR.VIII.2022'. See details.}
 
 \item{FileName}{path to resource file}
 
@@ -36,6 +36,8 @@ Definitions are read from a tab separated, UTF-8 encoded file with headers. Colu
 \item{Column 3: 'ProductType'}{Identifier for the type of product that the conversion applies to}
 \item{Column 4: 'WeightFactor'}{scalar value that weights for the given 'ProductType' can be multiplied with to approximate the desired product type (w.g. round fish).}
 }
+
+For DefinitionMethod 'FDIR.VIII.2022', the table \code{\link[RstoxFDA]{FDIR.factors.VIII.2022}} will be used
 
 Missing values for WeightFactor are interpreted as NA, and will result in NA for weights after conversion.
 }
