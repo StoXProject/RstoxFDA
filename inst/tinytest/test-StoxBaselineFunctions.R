@@ -145,6 +145,11 @@ expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$catchsample$catchprodu
 expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$catchsample$sampleproducttype[!is.na(BioticData$biotic_v3_producttypes.xml$catchsample$sampleproducttype)]=="1"))
 expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$individual$individualproducttype[!is.na(BioticData$biotic_v3_producttypes.xml$individual$individualproducttype)]=="1"))
 
+#check official conversion factors
+fdirtab <- RstoxFDA::DefineWeightConversionFactor(DefinitionMethod = "FDIR.VIII.2022")
+expect_true(all(fdirtab$WeightFactor[fdirtab$ProductType==3] < fdirtab$WeightFactor[fdirtab$ProductType==4]))
+expect_equal(sum(duplicated(fdirtab$Species)), nrow(fdirtab)/2)
+
 #
 # checks on catchweightconversion
 #
@@ -310,7 +315,7 @@ expect_equal(RstoxFDA::SetStartDateBiotic(BioticData)$biotic_v3_example.xml$fish
 expect_equal(RstoxFDA::SetStartDateBiotic(BioticData, Overwrite = T)$biotic_v3_example.xml$fishstation$stationstartdate[1], "2018-04-04Z")
 
 #context("test-StoxBaselineFunctions: AddGearGroupStoxLanding")
-gearDef <- RstoxData::DefineTranslation(DefinitionMethod = "ResourceFile", FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"), ValueColumn = "Value", NewValueColumn = "NewValue")
+gearDef <- RstoxData::DefineTranslation(DefinitionMethod = "ResourceFile", FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"), ValueColumn = "Value", NewValueColumn = "NewValue", VariableName = "Gear")
 landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
 stoxLandingPre <- RstoxData:::StoxLanding(landingH)
 stoxLandingPost <- RstoxFDA::AddGearGroupStoxLanding(stoxLandingPre, gearDef)
@@ -318,7 +323,7 @@ expect_true("GearGroup" %in% names(stoxLandingPost$Landing))
 expect_true(all(!is.na(stoxLandingPost$Landing$GearGroup)))
 
 #context("test-StoxBaselineFunctions: AddGearGroupStoxBiotic")
-gearDef <- RstoxData::DefineTranslation(DefinitionMethod = "ResourceFile", FileName=system.file("testresources","geargroupsBiotic.txt", package="RstoxFDA"), ValueColumn = "Value", NewValueColumn = "NewValue")
+gearDef <- RstoxData::DefineTranslation(DefinitionMethod = "ResourceFile", FileName=system.file("testresources","geargroupsBiotic.txt", package="RstoxFDA"), ValueColumn = "Value", NewValueColumn = "NewValue", VariableName = "Gear")
 stoxbiotic <- readRDS(system.file("testresources","StoxBioticData.rds", package="RstoxFDA"))
 stoxbioticPost <- RstoxFDA::AddGearGroupStoxBiotic(stoxbiotic, gearDef)
 expect_true("GearGroup" %in% names(stoxbioticPost$Haul))

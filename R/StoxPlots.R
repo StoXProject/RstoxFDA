@@ -139,34 +139,34 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @noRd
 PlotCatcAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   
-  ReportFdaCatchAtAgeData$FdaReport <- ReportFdaCatchAtAgeData$FdaReport[order(ReportFdaCatchAtAgeData$FdaReport$Age),]
-  levels <- ReportFdaCatchAtAgeData$FdaReport$AgeGroup[!duplicated(ReportFdaCatchAtAgeData$FdaReport$AgeGroup)]
-  ReportFdaCatchAtAgeData$FdaReport$AgeGroup <- factor(ReportFdaCatchAtAgeData$FdaReport$AgeGroup, levels=levels, ordered=T)
+  ReportFdaCatchAtAgeData$NbyAge <- ReportFdaCatchAtAgeData$NbyAge[order(ReportFdaCatchAtAgeData$NbyAge$Age),]
+  levels <- ReportFdaCatchAtAgeData$NbyAge$AgeGroup[!duplicated(ReportFdaCatchAtAgeData$NbyAge$AgeGroup)]
+  ReportFdaCatchAtAgeData$NbyAge$AgeGroup <- factor(ReportFdaCatchAtAgeData$NbyAge$AgeGroup, levels=levels, ordered=T)
   
   if (length(ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables)==0){
-    ReportFdaCatchAtAgeData$FdaReport$Group <- "All"    
+    ReportFdaCatchAtAgeData$NbyAge$Group <- "All"    
   }
   else{
     vars <- ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables
-    g1 <- head(vars,1)
+    g1 <- utils::head(vars,1)
     vars <- vars[vars!=g1]
-    ReportFdaCatchAtAgeData$FdaReport$Group <- ReportFdaCatchAtAgeData$FdaReport[[g1]]
+    ReportFdaCatchAtAgeData$NbyAge$Group <- ReportFdaCatchAtAgeData$NbyAge[[g1]]
     while(length(vars)>0){
-      g <- head(vars,1)
-      ReportFdaCatchAtAgeData$FdaReport$Group <- paste(ReportFdaCatchAtAgeData$FdaReport$Group, ReportFdaCatchAtAgeData$FdaReport[[g]], sep="/")
+      g <- utils::head(vars,1)
+      ReportFdaCatchAtAgeData$NbyAge$Group <- paste(ReportFdaCatchAtAgeData$NbyAge$Group, ReportFdaCatchAtAgeData$NbyAge[[g]], sep="/")
       vars <- vars[vars!=g]
     }
     
-    ReportFdaCatchAtAgeData$FdaReport <- ReportFdaCatchAtAgeData$FdaReport[order(ReportFdaCatchAtAgeData$FdaReport$CatchAtAge),]
-    ReportFdaCatchAtAgeData$FdaReport$Group <- factor(ReportFdaCatchAtAgeData$FdaReport$Group, ReportFdaCatchAtAgeData$FdaReport$Group[!duplicated(ReportFdaCatchAtAgeData$FdaReport$Group)], ordered=T)
+    ReportFdaCatchAtAgeData$NbyAge <- ReportFdaCatchAtAgeData$NbyAge[order(ReportFdaCatchAtAgeData$NbyAge$CatchAtAge),]
+    ReportFdaCatchAtAgeData$NbyAge$Group <- factor(ReportFdaCatchAtAgeData$NbyAge$Group, ReportFdaCatchAtAgeData$NbyAge$Group[!duplicated(ReportFdaCatchAtAgeData$NbyAge$Group)], ordered=T)
   }
 
   
-  pl <- ggplot2::ggplot(ReportFdaCatchAtAgeData$FdaReport, ggplot2::aes_string(x="AgeGroup", y="CatchAtAge", fill="Group"))
+  pl <- ggplot2::ggplot(ReportFdaCatchAtAgeData$NbyAge, ggplot2::aes_string(x="AgeGroup", y="CatchAtAge", fill="Group"))
   pl <- pl + ggplot2::geom_col(position=ggplot2::position_dodge())
   pl <- pl + ggplot2::geom_errorbar(position=ggplot2::position_dodge(0.9), ggplot2::aes_string(ymin="Low", ymax="High"),width=0.8/(length(ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables)+1))
   pl <- pl + ggplot2::theme_minimal()
-  pl <- pl + ggplot2::ylab(RstoxData::getUnit(ReportFdaCatchAtAgeData$FdaReport$CatchAtAge, property = "shortname"))
+  pl <- pl + ggplot2::ylab(RstoxData::getUnit(ReportFdaCatchAtAgeData$NbyAge$CatchAtAge, property = "shortname"))
   pl <- pl + ggplot2::xlab("Age Group")
   pl <- pl + ggplot2::ggtitle("Catch At Age")
   
@@ -183,16 +183,16 @@ PlotCatcAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
   
   ReportFdaCatchAtAgeCovarianceData$Variables <- ReportFdaCatchAtAgeCovarianceData$Variables[order(ReportFdaCatchAtAgeCovarianceData$Variables$Age, ReportFdaCatchAtAgeCovarianceData$Variables$VariableId),]
   
-  ReportFdaCatchAtAgeCovarianceData$FdaCovariances$VariableId1 <- factor(ReportFdaCatchAtAgeCovarianceData$FdaCovariances$VariableId1, levels=ReportFdaCatchAtAgeCovarianceData$Variables$VariableId, ordered = T)
-  ReportFdaCatchAtAgeCovarianceData$FdaCovariances$VariableId2 <- factor(ReportFdaCatchAtAgeCovarianceData$FdaCovariances$VariableId2, levels=ReportFdaCatchAtAgeCovarianceData$Variables$VariableId, ordered = T)
+  ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge$VariableId1 <- factor(ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge$VariableId1, levels=ReportFdaCatchAtAgeCovarianceData$Variables$VariableId, ordered = T)
+  ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge$VariableId2 <- factor(ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge$VariableId2, levels=ReportFdaCatchAtAgeCovarianceData$Variables$VariableId, ordered = T)
   
-  pl <- ggplot2::ggplot(data=ReportFdaCatchAtAgeCovarianceData$FdaCovariances, ggplot2::aes_string(x="VariableId1", y="VariableId2", fill="Covariance"))
+  pl <- ggplot2::ggplot(data=ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge, ggplot2::aes_string(x="VariableId1", y="VariableId2", fill="Covariance"))
   pl <- pl + ggplot2::geom_tile()
   pl <- pl + ggplot2::theme_minimal()
   pl <- pl + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1))
   pl <- pl + ggplot2::theme(axis.title = ggplot2::element_blank())
   pl <- pl + ggplot2::scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
-                             midpoint = 0, limit = c(min(ReportFdaCatchAtAgeCovarianceData$FdaCovariances$Covariance),max(ReportFdaCatchAtAgeCovarianceData$FdaCovariances$Covariance)))
+                             midpoint = 0, limit = c(min(ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge$Covariance),max(ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge$Covariance)))
   pl <- pl + ggplot2::ggtitle("Catch At Age")
   
   return(pl)

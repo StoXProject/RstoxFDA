@@ -19,7 +19,8 @@ Adds a column to StoxBioticData with gear groups
 }
 \details{
 Gear groups are defined as translations from a gear code to a gear group.
-The provided Translation should map values ('Value' in Translation) for the variable 'Gear'on the table 'Haul' in 'StoxBioticData' ('VariableName' in Translation) to a gear group ('NewValue' in Translation).
+Translation need to be defined for the VariableName 'Gear' (see \code{\link[RstoxData]{Translation}}).
+The provided Translation should map values ('Gear' in Translation) for the variable 'Gear'on the table 'Haul' in 'StoxBioticData' to a gear group ('NewValue' in Translation).
 The gear group will be added to 'StoxBioticData' as the column 'GearGroup'
 
 For comparison or co-analysis with landing data, a \code{\link[RstoxData]{Translation}} should be defined for \code{\link[RstoxData]{StoxLandingData}}

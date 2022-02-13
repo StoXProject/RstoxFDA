@@ -84,6 +84,19 @@ expect_true(all(dmAgeLength$DataMatrix$part.year > 0))
 expect_true(all(dmAgeLength$DataMatrix$part.year <= 1))
 expect_equal(max(dmAgeLength$DataMatrix$samplingID), length(unique(fishdata[1:10,"catchId"])))
 
+
+# test getDataMatrixAgeLength: leap-year
+fd <- fishdata[1:10,]
+fd$date <- rep(as.POSIXct("2020-01-01"), nrow(fd))
+fd$date[1] <- as.POSIXct("2020-12-31 CET")
+
+dmAgeLength <- RstoxFDA:::getDataMatrixAgeLength(fd, NULL)
+expect_equal(dmAgeLength$DataMatrix$part.year[1], 1)
+expect_equal(dmAgeLength$DataMatrix$part.year[2], 1/366)
+expect_true(all(dmAgeLength$DataMatrix$part.year > 0))
+expect_true(all(dmAgeLength$DataMatrix$part.year <= 1))
+expect_equal(max(dmAgeLength$DataMatrix$samplingID), length(unique(fishdata[1:10,"catchId"])))
+
 #context("tets getDataMatrixAgeLength: nFish error")
 expect_error(RstoxFDA:::getDataMatrixAgeLength(fishdata, NULL)) #delprøve on some sample
 nfe <- nFishAll

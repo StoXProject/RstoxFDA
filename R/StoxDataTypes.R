@@ -23,8 +23,7 @@ is.Date <- function(date){
 #'  Results from catch at age estimations. The results may be presented
 #'  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
 #'  
-#'  list with two members 'FdaReport' and 'GroupingVariables'.
-#'  'FdaReport' is a \code{\link[data.table]{data.table}} which may have the following columns:
+#'  ReportFdaByAgeData is a \code{\link[data.table]{data.table}} which may have the following columns:
 #'  \describe{
 #'   \item{AgeGroup}{character. The age group the estimate is reported for. May be age or plus group}
 #'   \item{Age}{integer. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)}
@@ -36,8 +35,6 @@ is.Date <- function(date){
 #'   \item{High}{The higher limit of the estimated interval for the reported statistic.}
 #'   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
 #'  }
-#'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
-#' 
 #' 
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #' 
@@ -47,6 +44,7 @@ NULL
 
 
 #' Total catch statistics (ReportFdaSummaryData)
+#' 
 #' @description 
 #'  Results from catch estimations. The results may be presented
 #'  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
@@ -73,13 +71,16 @@ NULL
 #' Fisheries dependent Catch At Age Report (ReportFdaCatchAtAgeData)
 #' 
 #' @description 
-#'  A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object with the reported <Statistic> being:
+#'  A list with two members: 'NbyAge' and 'GroupingVariables'.
 #'  
 #'  \describe{
-#'   \item{CacthAtAge}{The total catch at age in numbers.}
+#'   \item{NbyAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'CatchAtAge': the total catch at age in numbers.}
+#'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  
+#'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaCatchAtAgeData
 #' 
@@ -92,12 +93,12 @@ NULL
 #'  for age groups, together with any additional grouping (aggregation variables), 
 #'  such as gear, area, stock etc.
 #'  
-#'  list with two members 'FdaCovariances' and 'Variables'.
-#'  'FdaCovariances' is a \code{\link[data.table]{data.table}} which may have the following columns:
+#'  list with two members 'CovarianceNbyAge' and 'Variables'.
+#'  'CovarianceNbyAge' is a \code{\link[data.table]{data.table}} which may have the following columns:
 #'  \describe{
 #'     \item{VariableId1}{Identifies the one of the variables the covariance is calculated for}
 #'     \item{VariableId2}{Identifies the other one of the variables the covariance is calculated for}
-#'     \item{Covariance}{The covariance.}
+#'     \item{Covariance}{The covariance of catch at age in numbers between groups identified by 'Variable1' and 'Variable2'.}
 #'  }
 #'  \describe{
 #'   \item{VariableId}{Identifier for variable that covariances are provided for.}
@@ -113,16 +114,20 @@ NULL
 #' 
 NULL
 
-#' Fisheries dependent Catch At Age Report (ReportFdaCatchAtAgeData)
+#' Fisheries dependent Catch At Age Report (ReportFdaCatchAtLengthData)
 #' 
 #' @description 
-#'  A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object with the reported <Statistic> being:
+#'  A list with two members: 'NbyLength', and 'GroupingVariables'.
 #'  
 #'  \describe{
-#'   \item{CacthAtLength}{The total catch at length in numbers.}
+#'   \item{NbyLength}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'CacthAtLength': the total catch at length in numbers.}
+#'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  
+#'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
+#' 
 #' 
 #' @name ReportFdaCatchAtLengthData
 #' 
@@ -131,13 +136,16 @@ NULL
 #' Fisheries dependent Catch At Age Report (ReportFdaCatchAtLengthAndAgeData)
 #' 
 #' @description 
-#'  A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object with the reported <Statistic> being:
+#'  A list with two members: 'NbyLengthAge', and 'GroupingVariables'.
 #'  
 #'  \describe{
-#'   \item{CacthAtAge}{The total catch at length in numbers.}
+#'   \item{NbyLengthAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'CatchAtAgeLength': the total catch at length and age in numbers.}
+#'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  
+#'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaCatchAtLengthAndAgeData
 #' 
@@ -146,14 +154,16 @@ NULL
 #' Fisheries dependent Length At Age Report (ReportFdaLengthAtAgeData)
 #' 
 #' @description 
-#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object
-#'  with the reported <Statistic> being:
+#'  A list with two members: 'MeanLengthByAge', and 'GroupingVariables'.
 #'  
 #'  \describe{
-#'   \item{MeanIndividualLength}{The mean length at age.}
+#'   \item{MeanLengthByAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'MeanIndividualLength': the mean length.}
+#'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  
+#'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #'  
 #'  Note that the summary statistics are reported for summaries of mean lengths, 
 #'  so that e.g. SD report the standard deviation of the means,
@@ -166,14 +176,16 @@ NULL
 #' Reca Weight At Age Report (ReportFdaWeightAtAgeData)
 #' 
 #' @description 
-#'  Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object
-#'  with the reported <Statistic> being:
+#'  A list with two members: 'MeanWeightByAge', and 'GroupingVariables'.
 #'  
 #'  \describe{
-#'   \item{MeanIndividualWeight}{The mean weight at age}
+#'   \item{MeanWeightByAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'MeanIndividualWeight': the mean weight}
+#'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  
+#'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #'  
 #'  Note that the summary statistics are reported for summaries
 #'  of mean weights, so that e.g. SD report the standard deviation of the means,
@@ -190,20 +202,22 @@ NULL
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
 #' @export
 is.ReportFdaByAgeData <- function(ReportFdaByAgeData){
-  
   if (!is.list(ReportFdaByAgeData)){
     return(FALSE)
   }
-  if (!all(c("GroupingVariables", "FdaReport") %in% names(ReportFdaByAgeData))){
+  if (!all(c("GroupingVariables") %in% names(ReportFdaByAgeData))){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportFdaByAgeData$FdaReport)){
+  if (length(ReportFdaByAgeData)<2){
+    return(FALSE)
+  }
+  if (!data.table::is.data.table(ReportFdaByAgeData[[1]])){
     return(FALSE)
   }
   if (!data.table::is.data.table(ReportFdaByAgeData$GroupingVariables)){
     return(FALSE)
   }
-  if (!all(c("Age", "Low", "High", "SD") %in% names(ReportFdaByAgeData$FdaReport))){
+  if (!all(c("Age", "Low", "High", "SD") %in% names(ReportFdaByAgeData[[1]]))){
     return(FALSE)
   }
   if (!all(c("GroupingVariables") %in% names(ReportFdaByAgeData$GroupingVariables))){
@@ -396,7 +410,10 @@ is.Translation <- function(Translation){
   if (!data.table::is.data.table(Translation)){
     return(FALSE)
   }
-  if (!all(c("VariableName", "Value",	"NewValue") %in% names(Translation))){
+  if (!all(c("NewValue") %in% names(Translation))){
+    return(FALSE)
+  }
+  if (ncol(Translation)<2){
     return(FALSE)
   }
   return(TRUE)

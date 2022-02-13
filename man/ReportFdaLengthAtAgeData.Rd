@@ -4,14 +4,16 @@
 \alias{ReportFdaLengthAtAgeData}
 \title{Fisheries dependent Length At Age Report (ReportFdaLengthAtAgeData)}
 \description{
-Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object
- with the reported <Statistic> being:
+A list with two members: 'MeanLengthByAge', and 'GroupingVariables'.
  
  \describe{
-  \item{MeanIndividualLength}{The mean length at age.}
+  \item{MeanLengthByAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'MeanIndividualLength': the mean length.}
+  \item{GroupingVariables}{Any specified Grouping variables.}
  }
  
  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+ 
+ 'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
  
  Note that the summary statistics are reported for summaries of mean lengths, 
  so that e.g. SD report the standard deviation of the means,

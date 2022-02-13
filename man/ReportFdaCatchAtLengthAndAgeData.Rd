@@ -4,11 +4,14 @@
 \alias{ReportFdaCatchAtLengthAndAgeData}
 \title{Fisheries dependent Catch At Age Report (ReportFdaCatchAtLengthAndAgeData)}
 \description{
-A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object with the reported <Statistic> being:
+A list with two members: 'NbyLengthAge', and 'GroupingVariables'.
  
  \describe{
-  \item{CacthAtAge}{The total catch at length in numbers.}
+  \item{NbyLengthAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'CatchAtAgeLength': the total catch at length and age in numbers.}
+  \item{GroupingVariables}{Any specified Grouping variables.}
  }
  
  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+ 
+ 'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 }

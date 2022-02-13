@@ -139,19 +139,19 @@ catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds",
 catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.rds", package="RstoxFDA"))
 
 catchAtAgeCovarDecomp <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeDecomp)
-expect_equal(nrow(catchAtAgeCovarDecomp$FdaCovariances), nrow(catchAtAgeCovarDecomp$Variables)**2)
+expect_equal(nrow(catchAtAgeCovarDecomp$CovarianceNbyAge), nrow(catchAtAgeCovarDecomp$Variables)**2)
 expect_equal(nrow(catchAtAgeCovarDecomp$Variables),130)
 catchAtAgeCovarFlat <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeFlat)
-expect_equal(nrow(catchAtAgeCovarFlat$FdaCovariances), nrow(catchAtAgeCovarFlat$Variables)**2)
+expect_equal(nrow(catchAtAgeCovarFlat$CovarianceNbyAge), nrow(catchAtAgeCovarFlat$Variables)**2)
 expect_equal(nrow(catchAtAgeCovarFlat$Variables),13)
 
 #compare with SD from regular report
 catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat)
-expect_true(all(((catchAtAgeReportFlat$FdaReport$SD - sqrt(catchAtAgeCovarFlat$FdaCovariances$Covariance[catchAtAgeCovarFlat$FdaCovariances$VariableId1==catchAtAgeCovarFlat$FdaCovariances$VariableId2]))/catchAtAgeReportFlat$FdaReport$SD)<1e-3))
+expect_true(all(((catchAtAgeReportFlat$NbyAge$SD - sqrt(catchAtAgeCovarFlat$CovarianceNbyAge$Covariance[catchAtAgeCovarFlat$FdaCovariances$VariableId1==catchAtAgeCovarFlat$FdaCovariances$VariableId2]))/catchAtAgeReportFlat$NbyAge$SD)<1e-3))
 
 catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat, Unit = "10^3 individuals", Decimals = 6)
 catchAtAgeCovarFlat <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeFlat, Unit = "10^3 individuals", Decimals = 6)
-expect_true(all(((catchAtAgeReportFlat$FdaReport$SD - sqrt(catchAtAgeCovarFlat$FdaCovariances$Covariance[catchAtAgeCovarFlat$FdaCovariances$VariableId1==catchAtAgeCovarFlat$FdaCovariances$VariableId2]))/catchAtAgeReportFlat$FdaReport$SD)<1e-3))
+expect_true(all(((catchAtAgeReportFlat$NbyAge$SD - sqrt(catchAtAgeCovarFlat$CovarianceNbyAge$Covariance[catchAtAgeCovarFlat$FdaCovariances$VariableId1==catchAtAgeCovarFlat$FdaCovariances$VariableId2]))/catchAtAgeReportFlat$NbyAge$SD)<1e-3))
 
 
 #context("Report Catch At Age")
@@ -164,15 +164,15 @@ catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat)
 expect_true(RstoxFDA::is.ReportFdaByAgeData(catchAtAgeReportDecomp))
 expect_true(RstoxFDA::is.ReportFdaByAgeData(catchAtAgeReportFlat))
 
-diff <- sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtAgeReportDecomp$FdaReport$CatchAtAge)
-reldiff <- abs(diff/sum(catchAtAgeReportFlat$FdaReport$CatchAtAge))
+diff <- sum(catchAtAgeReportFlat$NbyAge$CatchAtAge) - sum(catchAtAgeReportDecomp$NbyAge$CatchAtAge)
+reldiff <- abs(diff/sum(catchAtAgeReportFlat$NbyAge$CatchAtAge))
 
 expect_true(reldiff < .001)
 expect_equal(length(catchAtAgeReportFlat$GroupingVariables$GroupingVariables), 0)
-expect_equal(ncol(catchAtAgeReportFlat$FdaReport), 6)
+expect_equal(ncol(catchAtAgeReportFlat$NbyAge), 6)
 
 expect_equal(length(catchAtAgeReportDecomp$GroupingVariables$GroupingVariables), 2)
-expect_equal(ncol(catchAtAgeReportDecomp$FdaReport), 8)
+expect_equal(ncol(catchAtAgeReportDecomp$NbyAge), 8)
 
 #context("Report Catch At Length")
 catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
@@ -181,149 +181,150 @@ catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.r
 catchAtLengthReportDecomp <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeDecomp)
 catchAtLengthReportFlat <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat)
 
-expect_true(nrow(catchAtLengthReportDecomp$FdaReport) > nrow(catchAtLengthReportFlat$FdaReport))
+expect_true(nrow(catchAtLengthReportDecomp$NbyLength) > nrow(catchAtLengthReportFlat$NbyLength))
 #check relative different to caa
-reld <- (sum(catchAtLengthReportDecomp$FdaReport$CatchAtLength) - sum(catchAtAgeReportDecomp$FdaReport$CatchAtAge)) / sum(catchAtLengthReportDecomp$FdaReport$CatchAtLength)
+reld <- (sum(catchAtLengthReportDecomp$NbyLength$CatchAtLength) - sum(catchAtAgeReportDecomp$NbyAge$CatchAtAge)) / sum(catchAtLengthReportDecomp$NbyLength$CatchAtLength)
 expect_true(abs(reld) < 1e-6)
 #check relative different to flat
-reld <- (sum(catchAtLengthReportDecomp$FdaReport$CatchAtLength) - sum(catchAtLengthReportFlat$FdaReport$CatchAtLength)) / sum(catchAtLengthReportDecomp$FdaReport$CatchAtLength)
+reld <- (sum(catchAtLengthReportDecomp$NbyLength$CatchAtLength) - sum(catchAtLengthReportFlat$NbyLength$CatchAtLength)) / sum(catchAtLengthReportDecomp$NbyLength$CatchAtLength)
 expect_true(abs(reld) < 1e-2)
 
 catchAtLengthReportFlatIntervalDefault <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat)
 catchAtLengthReportFlatInterval5 <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat,LengthInterval = 5)
 catchAtLengthReportFlatIntervalp6 <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat,LengthInterval = .6)
 expect_warning(catchAtLengthReportFlatIntervalp1 <- RstoxFDA::ReportRecaCatchAtLength(catchAtAgeFlat,LengthInterval = .1), "StoX: Length interval is specified lower than the available resolution")
-expect_equal(sum(catchAtLengthReportFlatIntervalp1$FdaReport$CatchAtLength), sum(catchAtLengthReportFlatIntervalp1$FdaReport$CatchAtLength))
-expect_true(sum(catchAtLengthReportFlatInterval5$FdaReport$SD) < sum(catchAtLengthReportFlatIntervalDefault$FdaReport$SD))
-rdiff <- (sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtLengthReportFlatInterval5$FdaReport$CatchAtLength)) / sum(catchAtAgeReportFlat$FdaReport$CatchAtAge)
+expect_equal(sum(catchAtLengthReportFlatIntervalp1$NbyLength$CatchAtLength), sum(catchAtLengthReportFlatIntervalp1$NbyLength$CatchAtLength))
+expect_true(sum(catchAtLengthReportFlatInterval5$NbyLength$SD) < sum(catchAtLengthReportFlatIntervalDefault$NbyLength$SD))
+rdiff <- (sum(catchAtAgeReportFlat$NbyAge$CatchAtAge) - sum(catchAtLengthReportFlatInterval5$NbyLength$CatchAtLength)) / sum(catchAtAgeReportFlat$NbyAge$CatchAtAge)
 expect_true(abs(rdiff) < 1e-6)
 
-sumU25p5 <- sum(catchAtLengthReportFlatInterval5$FdaReport$CatchAtLength[catchAtLengthReportFlatInterval5$FdaReport$Length<30])
-sumU25pD <- sum(catchAtLengthReportFlatIntervalDefault$FdaReport$CatchAtLength[catchAtLengthReportFlatIntervalDefault$FdaReport$Length<25])
+sumU25p5 <- sum(catchAtLengthReportFlatInterval5$NbyLength$CatchAtLength[catchAtLengthReportFlatInterval5$NbyLength$Length<30])
+sumU25pD <- sum(catchAtLengthReportFlatIntervalDefault$NbyLength$CatchAtLength[catchAtLengthReportFlatIntervalDefault$NbyLength$Length<25])
 rdiff <- (sumU25p5 - sumU25pD)/sumU25p5
 expect_true(abs(rdiff) < .1)
 
 catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
 catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat)
 catchAtLengthAndAgeReportFlat <- RstoxFDA:::ReportRecaCatchAtLengthAndAge(catchAtAgeFlat)
-rdiff <- (sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtLengthAndAgeReportFlat$FdaReport$CatchAtAge)) / sum(catchAtLengthAndAgeReportFlat$FdaReport$CatchAtAge)
+
+rdiff <- (sum(catchAtAgeReportFlat$NbyAge$CatchAtAge) - sum(catchAtLengthAndAgeReportFlat$NbyLengthAge$CatchAtAgeLength)) / sum(catchAtLengthAndAgeReportFlat$NbyLengthAge$CatchAtAgeLength)
 expect_true(abs(rdiff) < 1e-6)
 catchAtLengthAndAgeReportFlatPlG <- RstoxFDA:::ReportRecaCatchAtLengthAndAge(catchAtAgeFlat, PlusGroup = 5, LengthInterval = 10)
-rdiff <- (sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtLengthAndAgeReportFlatPlG$FdaReport$CatchAtAge)) / sum(catchAtLengthAndAgeReportFlatPlG$FdaReport$CatchAtAge)
+rdiff <- (sum(catchAtAgeReportFlat$NbyAge$CatchAtAge) - sum(catchAtLengthAndAgeReportFlatPlG$NbyLengthAge$CatchAtAgeLength)) / sum(catchAtLengthAndAgeReportFlatPlG$NbyLengthAge$CatchAtAgeLength)
 expect_true(abs(rdiff) < 1e-6)
 
 catchAtLengthAndAgeReportFlatPlG <- RstoxFDA:::ReportRecaCatchAtLengthAndAge(catchAtAgeFlat, PlusGroup = 5, LengthInterval = 10)
 
 #test Digits
 catchAtAgeD <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat, Decimals=-3)
-expect_true(all(catchAtAgeD$FdaReport$SD[1] != catchAtAgeReportFlat$FdaReport$SD[1]))
+expect_true(all(catchAtAgeD$NbyAge$SD[1] != catchAtAgeReportFlat$NbyAge$SD[1]))
 catchAtAgeD <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat, Decimals=0)
-expect_true(all(catchAtAgeD$FdaReport$SD == catchAtAgeReportFlat$FdaReport$SD))
+expect_true(all(catchAtAgeD$NbyAge$SD == catchAtAgeReportFlat$NbyAge$SD))
 
 #test plusgroup
 catchAtAgeReportDecompPlusGr <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5)
-diff <- sum(catchAtAgeReportDecomp$FdaReport$CatchAtAge) - sum(catchAtAgeReportDecompPlusGr$FdaReport$CatchAtAge)
-reldiff <- abs(diff/sum(catchAtAgeReportDecompPlusGr$FdaReport$CatchAtAge))
+diff <- sum(catchAtAgeReportDecomp$NbyAge$CatchAtAge) - sum(catchAtAgeReportDecompPlusGr$NbyAge$CatchAtAge)
+reldiff <- abs(diff/sum(catchAtAgeReportDecompPlusGr$NbyAge$CatchAtAge))
 expect_true(reldiff < .001)
-expect_equal(nrow(catchAtAgeReportDecompPlusGr$FdaReport), 40)
+expect_equal(nrow(catchAtAgeReportDecompPlusGr$NbyAge), 40)
 expect_equal(nrow(catchAtAgeReportDecompPlusGr$GroupingVariables), 2)
 
 catchAtAgeReportFlatPlusGr <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat, PlusGroup=5)
-diff <- sum(catchAtAgeReportFlat$FdaReport$CatchAtAge) - sum(catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge)
-reldiff <- abs(diff/sum(catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge))
+diff <- sum(catchAtAgeReportFlat$NbyAge$CatchAtAge) - sum(catchAtAgeReportFlatPlusGr$NbyAge$CatchAtAge)
+reldiff <- abs(diff/sum(catchAtAgeReportFlatPlusGr$NbyAge$CatchAtAge))
 expect_true(reldiff <.001)
-expect_equal(nrow(catchAtAgeReportFlatPlusGr$FdaReport), 4)
+expect_equal(nrow(catchAtAgeReportFlatPlusGr$NbyAge), 4)
 expect_equal(nrow(catchAtAgeReportFlatPlusGr$GroupingVariables), 0)
-expect_equal(RstoxData::getUnit(catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge, property = "name"), "individuals")
+expect_equal(RstoxData::getUnit(catchAtAgeReportFlatPlusGr$NbyAge$CatchAtAge, property = "name"), "individuals")
 
 catchAtAgeReportMi <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat, PlusGroup=5, Unit = "10^6 individuals", Decimals = 6)
-expect_equal(RstoxData::getUnit(catchAtAgeReportMi$FdaReport$CatchAtAge, property = "symbol"), "MN")
-expect_equal(catchAtAgeReportMi$FdaReport$CatchAtAge[1:3]*1e6, catchAtAgeReportFlatPlusGr$FdaReport$CatchAtAge[1:3])
-expect_equal(catchAtAgeReportMi$FdaReport$SD[1:3]*1e6, catchAtAgeReportFlatPlusGr$FdaReport$SD[1:3])
+expect_equal(RstoxData::getUnit(catchAtAgeReportMi$NbyAge$CatchAtAge, property = "symbol"), "MN")
+expect_equal(catchAtAgeReportMi$NbyAge$CatchAtAge[1:3]*1e6, catchAtAgeReportFlatPlusGr$NbyAge$CatchAtAge[1:3])
+expect_equal(catchAtAgeReportMi$NbyAge$SD[1:3]*1e6, catchAtAgeReportFlatPlusGr$NbyAge$SD[1:3])
 
 
 # Report Mean weight
 
 MeanWeightReportDecomp <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimals = 4, Unit = "kg")
 expect_true(RstoxFDA::is.ReportFdaByAgeData(MeanWeightReportDecomp))
-expect_equal(RstoxData::getUnit(MeanWeightReportDecomp$FdaReport$MeanIndividualWeight), "mass-kg")
+expect_equal(RstoxData::getUnit(MeanWeightReportDecomp$MeanWeightByAge$MeanIndividualWeight), "mass-kg")
 
 MeanWeightReportDecimal <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4)
 MeanWeightReportDecimalG <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=1, Unit="g")
-expect_equal(MeanWeightReportDecimalG$FdaReport$MeanIndividualWeight[1:2], MeanWeightReportDecomp$FdaReport$MeanIndividualWeight[1:2]*1000)
+expect_equal(MeanWeightReportDecimalG$MeanWeightByAge$MeanIndividualWeight[1:2], MeanWeightReportDecomp$MeanWeightByAge$MeanIndividualWeight[1:2]*1000)
 
 MeanWeightReportTk <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4, Threshold = 1000)
 MeanWeightReportT10k <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4, Threshold = 10000)
-expect_true(sum(is.na(MeanWeightReportTk$FdaReport$MeanIndividualWeight)) < sum(is.na(MeanWeightReportT10k$FdaReport$MeanIndividualWeight)))
+expect_true(sum(is.na(MeanWeightReportTk$MeanWeightByAge$MeanIndividualWeight)) < sum(is.na(MeanWeightReportT10k$MeanWeightByAge$MeanIndividualWeight)))
 
 # Report Mean weight Plus gr
 MeanWeightReportDecomp <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimals = 6)
-expect_true(MeanWeightReportDecimal$FdaReport$Low[1] != MeanWeightReportDecomp$FdaReport$Low[1])
+expect_true(MeanWeightReportDecimal$MeanWeightByAge$Low[1] != MeanWeightReportDecomp$MeanWeightByAge$Low[1])
 MeanWeightReportDecompPlusGr <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
 
-expect_true(nrow(MeanWeightReportDecompPlusGr$FdaReport) < nrow(MeanWeightReportDecomp$FdaReport))
+expect_true(nrow(MeanWeightReportDecompPlusGr$MeanWeightByAge) < nrow(MeanWeightReportDecomp$MeanWeightByAge))
 
 #ages not in plusgroup should be equal for calculation w and wo plusgroups
-expect_equal(MeanWeightReportDecomp$FdaReport$MeanIndividualWeight[MeanWeightReportDecomp$FdaReport$Age<5],
-             MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$FdaReport$Age<5])
+expect_equal(MeanWeightReportDecomp$MeanWeightByAge$MeanIndividualWeight[MeanWeightReportDecomp$MeanWeightByAge$Age<5],
+             MeanWeightReportDecompPlusGr$MeanWeightByAge$MeanIndividualWeight[MeanWeightReportDecompPlusGr$MeanWeightByAge$Age<5])
 
 # mean for plus group should be larger than oldes age not in plus group
-expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$FdaReport$Age==5] >
-          MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$FdaReport$Age==4]))
+expect_true(all(MeanWeightReportDecompPlusGr$MeanWeightByAge$MeanIndividualWeight[MeanWeightReportDecompPlusGr$MeanWeightByAge$Age==5] >
+          MeanWeightReportDecompPlusGr$MeanWeightByAge$MeanIndividualWeight[MeanWeightReportDecompPlusGr$MeanWeightByAge$Age==4]))
 
 #mean for plusgr should be larger than lowest age in plusgr
-expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$FdaReport$Age==5] >
-          MeanWeightReportDecomp$FdaReport$MeanIndividualWeight[MeanWeightReportDecomp$FdaReport$Age==5]))
+expect_true(all(MeanWeightReportDecompPlusGr$MeanWeightByAge$MeanIndividualWeight[MeanWeightReportDecompPlusGr$MeanWeightByAge$Age==5] >
+          MeanWeightReportDecomp$MeanWeightByAge$MeanIndividualWeight[MeanWeightReportDecomp$MeanWeightByAge$Age==5]))
 #mean for plusgr should be smaller than largest age in plusgr
 # beware of artifacts for small age groups (convergence or data issues). Using age group 13, rather than 14
 
-expect_true(all(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanWeightReportDecompPlusGr$FdaReport$Age==5] <
-          MeanWeightReportDecomp$FdaReport$MeanIndividualWeight[MeanWeightReportDecomp$FdaReport$Age==13]))
+expect_true(all(MeanWeightReportDecompPlusGr$MeanWeightByAge$MeanIndividualWeight[MeanWeightReportDecompPlusGr$MeanWeightByAge$Age==5] <
+          MeanWeightReportDecomp$MeanWeightByAge$MeanIndividualWeight[MeanWeightReportDecomp$MeanWeightByAge$Age==13]))
 
 
 
 # Report Mean length
 MeanLengthReportDecomp <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Unit="cm")
 expect_true(RstoxFDA::is.ReportFdaByAgeData(MeanLengthReportDecomp))
-expect_true(!all(nchar(as.character(MeanLengthReportDecomp$FdaReport$MeanIndividualLength[MeanLengthReportDecomp$FdaReport$MeanIndividualLength>0]))>5))
-expect_equal(RstoxData::getUnit(MeanLengthReportDecomp$FdaReport$MeanIndividualLength), "length-cm")
+expect_true(!all(nchar(as.character(MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength[MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength>0]))>5))
+expect_equal(RstoxData::getUnit(MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength), "length-cm")
 
 MeanLengthReportDecompMM <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Unit = "mm", Decimals=0)
-expect_equal(RstoxData::getUnit(MeanLengthReportDecompMM$FdaReport$MeanIndividualLength), "length-mm")
-expect_equal(MeanLengthReportDecomp$FdaReport$MeanIndividualLength[3:4]*10, MeanLengthReportDecompMM$FdaReport$MeanIndividualLength[3:4])
-expect_equal(MeanLengthReportDecomp$FdaReport$Low[3:4]*10, MeanLengthReportDecompMM$FdaReport$Low[3:4])
+expect_equal(RstoxData::getUnit(MeanLengthReportDecompMM$MeanLengthByAge$MeanIndividualLength), "length-mm")
+expect_equal(MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength[3:4]*10, MeanLengthReportDecompMM$MeanLengthByAge$MeanIndividualLength[3:4])
+expect_equal(MeanLengthReportDecomp$MeanLengthByAge$Low[3:4]*10, MeanLengthReportDecompMM$MeanLengthByAge$Low[3:4])
 
 MeanLengthReportDecimals <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Decimals = 4)
-expect_true(all(nchar(as.character(MeanLengthReportDecimals$FdaReport$MeanIndividualLength[MeanLengthReportDecimals$FdaReport$MeanIndividualLength>0]))>5))
+expect_true(all(nchar(as.character(MeanLengthReportDecimals$MeanLengthByAge$MeanIndividualLength[MeanLengthReportDecimals$MeanLengthByAge$MeanIndividualLength>0]))>5))
 
 MeanLengthReportTk <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Decimals = 4, Threshold = 1000)
-expect_true(all(is.na(MeanLengthReportTk$FdaReport$MeanIndividualLength) == is.na(MeanWeightReportTk$FdaReport$MeanIndividualWeight)))
+expect_true(all(is.na(MeanLengthReportTk$MeanLengthByAge$MeanIndividualLength) == is.na(MeanWeightReportTk$MeanLengthByAge$MeanIndividualWeight)))
 
 # Report Mean length Plus gr
 MeanLengthReportDecompPlusGr <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, PlusGroup=5)
 
-expect_true(nrow(MeanLengthReportDecompPlusGr$FdaReport) < nrow(MeanLengthReportDecomp$FdaReport))
+expect_true(nrow(MeanLengthReportDecompPlusGr$MeanLengthByAge) < nrow(MeanLengthReportDecomp$MeanLengthByAge))
 
 #ages not in plusgroup should be equal for calculation w and wo plusgroups
-expect_equal(MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age<5],
-             MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age<5])
+expect_equal(MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualWeight[MeanLengthReportDecomp$MeanLengthByAge$Age<5],
+             MeanLengthReportDecompPlusGr$MeanLengthByAge$MeanIndividualWeight[MeanLengthReportDecompPlusGr$MeanLengthByAge$Age<5])
 
 # mean for plus group should be larger than oldes age not in plus group
-expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age==5] >
-                  MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age==4]))
+expect_true(all(MeanLengthReportDecompPlusGr$MeanLengthByAge$MeanIndividualWeight[MeanLengthReportDecompPlusGr$MeanLengthByAge$Age==5] >
+                  MeanLengthReportDecompPlusGr$MeanLengthByAge$MeanIndividualWeight[MeanLengthReportDecompPlusGr$MeanLengthByAge$Age==4]))
 
 #mean for plusgr should be larger than lowest age in plusgr
-expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age==5] >
-                  MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age==5]))
+expect_true(all(MeanLengthReportDecompPlusGr$MeanLengthByAge$MeanIndividualWeight[MeanLengthReportDecompPlusGr$MeanLengthByAge$Age==5] >
+                  MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualWeight[MeanLengthReportDecomp$MeanLengthByAge$Age==5]))
 #mean for plusgr should be smaller than largest age in plusgr
 # beware of artifacts for small age groups (convergence or data issues). Using age group 13, rather than 14
-expect_true(all(MeanLengthReportDecompPlusGr$FdaReport$MeanIndividualWeight[MeanLengthReportDecompPlusGr$FdaReport$Age==5] <
-                  MeanLengthReportDecomp$FdaReport$MeanIndividualWeight[MeanLengthReportDecomp$FdaReport$Age==13]))
+expect_true(all(MeanLengthReportDecompPlusGr$MeanLengthByAge$MeanIndividualWeight[MeanLengthReportDecompPlusGr$MeanLengthByAge$Age==5] <
+                  MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualWeight[MeanLengthReportDecomp$MeanLengthByAge$Age==13]))
 
 #context("Test SOP w NAs")
 catchAtAgeReportDecompPlusGr <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
 MeanWeightReportDecompPlusGr <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6, Threshold = 1000)
-expect_true(sum(is.na(MeanWeightReportDecompPlusGr$FdaReport$MeanIndividualWeight))>1)
+expect_true(sum(is.na(MeanWeightReportDecompPlusGr$MeanWeightByAge$MeanIndividualWeight))>1)
 sopTabNa <- RstoxFDA::ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"))
 expect_true(RstoxFDA::is.ReportFdaSOP(sopTabNa))
 sopTabNa <- sopTabNa$SopReport
@@ -381,8 +382,8 @@ expect_true(all(is.na(sopTab$RelativeDifference[sopTab$Gear==53])))
 expect_true(all(!is.na(sopTab$RelativeDifference[sopTab$Gear==11])))
 
 # Check that NAs are reported for incomplete estimates (and incomplete landings)
-catchAtAgeReportDecompPlusGr$FdaReport$Gear[catchAtAgeReportDecompPlusGr$FdaReport$Gear==53] <- 52
-MeanWeightReportDecompPlusGr$FdaReport$Gear[MeanWeightReportDecompPlusGr$FdaReport$Gear==53] <- 52
+catchAtAgeReportDecompPlusGr$NbyAge$Gear[catchAtAgeReportDecompPlusGr$NbyAge$Gear==53] <- 52
+MeanWeightReportDecompPlusGr$MeanWeightByAge$Gear[MeanWeightReportDecompPlusGr$MeanWeightByAge$Gear==53] <- 52
 sopTab <- RstoxFDA::ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"))
 expect_true(RstoxFDA::is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport

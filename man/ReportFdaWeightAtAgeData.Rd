@@ -4,14 +4,16 @@
 \alias{ReportFdaWeightAtAgeData}
 \title{Reca Weight At Age Report (ReportFdaWeightAtAgeData)}
 \description{
-Results from Reca catch at age estimations. A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object
- with the reported <Statistic> being:
+A list with two members: 'MeanWeightByAge', and 'GroupingVariables'.
  
  \describe{
-  \item{MeanIndividualWeight}{The mean weight at age}
+  \item{MeanWeightByAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'MeanIndividualWeight': the mean weight}
+  \item{GroupingVariables}{Any specified Grouping variables.}
  }
  
  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+ 
+ 'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
  
  Note that the summary statistics are reported for summaries
  of mean weights, so that e.g. SD report the standard deviation of the means,

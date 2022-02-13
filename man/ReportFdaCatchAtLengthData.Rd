@@ -2,13 +2,16 @@
 % Please edit documentation in R/StoxDataTypes.R
 \name{ReportFdaCatchAtLengthData}
 \alias{ReportFdaCatchAtLengthData}
-\title{Fisheries dependent Catch At Age Report (ReportFdaCatchAtAgeData)}
+\title{Fisheries dependent Catch At Age Report (ReportFdaCatchAtLengthData)}
 \description{
-A \code{\link[RstoxFDA]{ReportFdaByAgeData}} object with the reported <Statistic> being:
+A list with two members: 'NbyLength', and 'GroupingVariables'.
  
  \describe{
-  \item{CacthAtLength}{The total catch at length in numbers.}
+  \item{NbyLength}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'CacthAtLength': the total catch at length in numbers.}
+  \item{GroupingVariables}{Any specified Grouping variables.}
  }
  
  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+ 
+ 'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 }

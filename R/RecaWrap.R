@@ -287,17 +287,18 @@ getDataMatrixAgeLength <- function(samples, nFish=NULL, hatchday=1){
   if (!("Otolithtype" %in% names(samples))){
     samples$Otolithtype <- as.integer(NA)
   }
+  
   DataMatrix <- samples[,c("catchId", "sampleId", "date", "Age", "Length", "Weight", "Otolithtype")]
-  DataMatrix$day <- (as.integer(strftime(DataMatrix$date, "%j")) + 2 - hatchday) #srtftime returns 0-based day of the year
-  sel <- DataMatrix$day <= 0
-
+  DataMatrix$day <- as.integer(difftime(DataMatrix$date, paste(substr(DataMatrix$date,1,4), "01-01", sep="-"), units="days")) +1 - (hatchday-1)
+  sel <- DataMatrix$day < 0
+  
   DataMatrix[sel,"Age"] <- DataMatrix[sel,"Age"] - 1L
   DataMatrix[sel,"day"] <- 366 + DataMatrix[sel,"day"] #day is negative in this case, hence the + operator
-  DataMatrix$date <- DataMatrix$day / 366
-
-  DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "sampleId", "Otolithtype")]
+  DataMatrix$frac <- DataMatrix$day / 366
+  
+  DataMatrix <- DataMatrix[,c("Age", "frac", "Length", "catchId", "sampleId", "Otolithtype")]
   DataMatrix <- addPartCount(DataMatrix, nFish)
-  DataMatrix <- DataMatrix[,c("Age", "date", "Length", "catchId", "partnumber", "partcount", "Otolithtype")]
+  DataMatrix <- DataMatrix[,c("Age", "frac", "Length", "catchId", "partnumber", "partcount", "Otolithtype")]
   names(DataMatrix) <- c("age", "part.year", "lengthCM", "catchId", "partnumber", "partcount", "otolithtype")
   DataMatrix <- addSamplingId(DataMatrix)
   DataMatrix <- DataMatrix[order(DataMatrix$catchId),]
