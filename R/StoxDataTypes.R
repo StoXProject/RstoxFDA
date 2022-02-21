@@ -977,6 +977,16 @@ is.AreaPosition <- function(AreaPosition){
 #'
 NULL
 
+
+#' Landing data (LandingData)
+#'
+#' @description 
+#'  See \code{\link[RstoxData]{LandingData}}
+#'
+#' @name LandingData
+#'
+NULL
+
 #' Check if argument is CarNeighbours
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
@@ -1127,6 +1137,13 @@ is.StockSplittingParameters <- function(StockSplittingParameters){
 #' @export
 stoxFunctionAttributes <- list(
   
+  ReadLandingFDA = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "LandingData", 
+    functionParameterFormat = list(FileNames = "filePaths"), 
+    functionArgumentHierarchy = list()
+  ), 
   DefineStockSplittingParameters = list(
     functionType = "processData", 
     functionCategory = "baseline", 

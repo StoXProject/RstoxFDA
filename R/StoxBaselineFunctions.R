@@ -47,6 +47,96 @@ checkSymmetry <- function(tab){
 }
 
 
+#' Read landing files
+#' @description 
+#'  This function reads multiple landing files (sales-notes) to a list with a list of tables for each file.
+#'  It extends upon \code{\link[RstoxData]{ReadLanding}} in that it supports additional input formats.
+#'  
+#' @details 
+#'  Norwegian sales-notes data are archived and curated by the Norwegian Directorate of Fisheries (FDIR).
+#'  Data is made public or is transferred to the Institute of Marine Research (IMR) in various formats.
+#'  Some of these formats are also archived by the Norwegian Marine Datacenter (NMD) at IMR.
+#'  
+#'  Some of the supported formats are missing columns supported by \code{\link[RstoxData]{LandingData}},
+#'  these columns are set to NA. Likewise some formats have additional columns, not supported by \code{\link[RstoxData]{LandingData}},
+#'  these are ignored.
+#' 
+#'  Formats may be one of the following
+#'  \describe{
+#'   \item{landingerv2}{XML-files given in the namespace http://www.imr.no/formats/landinger/v2. Default encoding: UTF-8 (enforced by format)}
+#'   \item{lss}{Lss format, used for official deliveries from Fdir to IMR (2005-). Default encoding: Latin-1 (iso-8859-1)}
+#'   \item{FDIR.2021}{Sales notes from FDIRs open data sets, as formatted in their 2021 release. Default encoding: UTF-8.}
+#'  }
+#'  
+#'  Files in the format 'landingerv2' and 'lss' may be obtained from the NMD landings API at IMR.
+#'  
+#'  The lss format has been using various naming conventions. Data is read by colmn index, and strict checking of column names is not performed.
+#'  
+#' @param FileNames The paths of the landing files.
+#' @param Format The file format of the landing files.
+#' @param FileEncoding encoding for the files that should be read. If not given the default encoding for each format is used.
+#' @export
+ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"), FileEncoding=c("Default", "UTF-8", "Latin-1")){
+  
+  if (isGiven(FileEncoding)){
+    FileEncoding <- "Default"
+  }
+  
+  FileEncoding <- match.arg(FileEncoding, FileEncoding)
+  Format <- match.arg(Format, Format)
+  
+  if (!isGiven(Format)){
+    stop("Argument 'Format' must be provided")
+  }
+  
+  if (Format == "landingerv2"){
+    if (isGiven(FileEncoding) & !(FileEncoding %in% c("UTF-8", "Default"))){
+      stop("Format landingerv2 only supports encoding UTF-8")
+    }
+    
+    for (file in FileNames){
+      if (!endsWith(file, "xml") & !endsWith(file, "zip")){
+        stop(paste("File name", file, "does not end with xml or zip. Choose appropriate format."))
+      }
+    }
+    
+    return(RstoxData::ReadLanding(FileNames))
+  }
+  else if (Format == "lss"){
+    if (FileEncoding == "Default"){
+      FileEncoding <- "Latin-1"
+    }
+    output <- list()
+    for (file in FileNames){
+      filepath <- path.expand(file)
+      bn <- basename(filepath)
+      suppressWarnings(conv <- RstoxData::convertToLandingData(RstoxData::readLssFile(filepath, encoding=FileEncoding, strict=T)))
+      output[[bn]] <- conv$ConvertedData
+    }
+    return(output)
+  }
+  else if (Format == "FDIR.2021"){
+    if (FileEncoding == "Default"){
+      FileEncoding <- "UTF-8"
+    }
+    output <- list()
+    for (file in FileNames){
+      filepath <- path.expand(file)
+      bn <- basename(filepath)
+      openfdir <- readFdirOpenLandings(filepath, encoding=FileEncoding)
+      lss <- convertToLssData(openFdirData=openfdir)
+      conv <- RstoxData::convertToLandingData(lss)
+      output[[bn]] <- conv$ConvertedData
+    }
+    return(output)
+        
+  }
+  else{
+    stop(paste("Format", Format, "not recognized."))
+  }
+  
+}
+
 #' Append position to landings data
 #' @description
 #'  StoX function
