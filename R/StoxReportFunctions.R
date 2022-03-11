@@ -124,7 +124,6 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   
   tab <- merge(landingsTab, sampledTab, by=GroupingVariables, all=T)
   tab <- tab[order(tab$LandedRoundWeight, decreasing = T),]
-  
   tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), "kg", "mass")
   if (isGiven(Unit)){
     tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), Unit, "mass")
@@ -1155,11 +1154,11 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   TotalWeight$NbyAge$AgeGroup <- NULL
   TotalWeight$NbyAge$Age <- NULL
   
-  if (isGiven(DecimalTotalWeight)){
-    TotalWeight$NbyAge <- setDecimals(TotalWeight$NbyAge, c("TotalWeight", "SD", "Low", "High"), DecimalTotalWeight)
-  }
   if (isGiven(UnitTotalWeight)){
     TotalWeight$NbyAge <- setUnits(TotalWeight$NbyAge, c("TotalWeight", "SD", "Low", "High"), UnitTotalWeight, "mass")
+  }
+  if (isGiven(DecimalTotalWeight)){
+    TotalWeight$NbyAge <- setDecimals(TotalWeight$NbyAge, c("TotalWeight", "SD", "Low", "High"), DecimalTotalWeight)
   }
   
   
@@ -1169,11 +1168,11 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   TotalNumber$NbyAge$AgeGroup <- NULL
   TotalNumber$NbyAge$Age <- NULL
   
-  if (isGiven(DecimalTotalNumber)){
-    TotalNumber$NbyAge <- setDecimals(TotalNumber$NbyAge, c("TotalNumber", "SD", "Low", "High"), DecimalTotalNumber)
-  }
   if (isGiven(UnitTotalNumber)){
     TotalNumber$NbyAge <- setUnits(TotalNumber$NbyAge, c("TotalNumber", "SD", "Low", "High"), UnitTotalNumber, "cardinality")
+  }
+  if (isGiven(DecimalTotalNumber)){
+    TotalNumber$NbyAge <- setDecimals(TotalNumber$NbyAge, c("TotalNumber", "SD", "Low", "High"), DecimalTotalNumber)
   }
   
   # combine

@@ -117,6 +117,7 @@ expect_true(is.na(RstoxData::getUnit(SamplingReport$FisheriesSampling$Catches)))
 
 SamplingReportKt <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"), Unit="kiloton", Decimals = 6)
 expect_equal(SamplingReportKt$FisheriesSampling$LandedRoundWeight[1:2], SamplingReport$FisheriesSampling$LandedRoundWeight[1:2]/1e6)
+expect_equal(SamplingReportKt$FisheriesSampling$WeightOfSampledCatches[1:2], SamplingReport$FisheriesSampling$WeightOfSampledCatches[1:2]/1e6)
 expect_equal(RstoxData::getUnit(SamplingReportKt$FisheriesSampling$WeightOfSampledCatches), "mass-kt")
 expect_equal(RstoxData::getUnit(SamplingReportKt$FisheriesSampling$LandedRoundWeight), "mass-kt")
 expect_true(is.na(RstoxData::getUnit(SamplingReportKt$FisheriesSampling$Catches)))
