@@ -1134,6 +1134,7 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   # hack to use ReportRecaCatchAtAge
   # ReportRecaCatchAtAge has already set units.
   #
+
   mm <- merge(RecaCatchAtAge$CatchAtAge, RecaCatchAtAge$MeanWeight)
   mm$CatchAtAge <- mm$CatchAtAge*mm$MeanIndividualWeight
   mm$MeanIndividualWeight <- NULL

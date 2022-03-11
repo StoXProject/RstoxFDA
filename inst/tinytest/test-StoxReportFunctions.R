@@ -72,6 +72,7 @@ expect_equal(RstoxData::getUnit(catchReportFlat$MeanLength$Low), "length-mm")
 expect_equal(RstoxData::getUnit(catchReportFlat$TotalWeight$High), "mass-kg")
 expect_equal(RstoxData::getUnit(catchReportFlat$TotalNumber$TotalNumber), "cardinality-N")
 
+
 catchReportFlatOU <- RstoxFDA::ReportRecaCatchStatistics(catchAtAgeFlat, UnitTotalNumber = "10^3 individuals", DecimalTotalNumber = 6, DecimalTotalWeight = 6, UnitTotalWeight = "kiloton", UnitMeanWeight = "kg", UnitMeanLength = "cm", DecimalMeanLength = 2)
 expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanAge$MeanIndividualAge), "age-year")
 expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanWeight$MeanIndividualWeight), "mass-kg")
@@ -84,6 +85,9 @@ expect_equal(catchReportFlatOU$MeanWeight$MeanIndividualWeight[1]*1000, catchRep
 expect_true(abs(catchReportFlatOU$MeanLength$MeanIndividualLength[1]*10 - catchReportFlat$MeanLength$MeanIndividualLength[1])/catchReportFlat$MeanLength$MeanIndividualLength[1] < 1e-2)
 expect_equal(catchReportFlatOU$TotalWeight$TotalWeight[1]*1e6, catchReportFlat$TotalWeight$TotalWeight[1])
 expect_equal(catchReportFlatOU$TotalNumber$TotalNumber[1]*1e3, catchReportFlat$TotalNumber$TotalNumber[1])
+
+catchReportFlatT <- RstoxFDA::ReportRecaCatchStatistics(catchAtAgeFlat, UnitTotalNumber = "10^3 individuals", DecimalTotalNumber = 6, DecimalTotalWeight = 6, UnitTotalWeight = "ton", UnitMeanWeight = "kg", UnitMeanLength = "cm", DecimalMeanLength = 2)
+expect_equal(catchReportFlatT$TotalWeight$TotalWeight[1]*1e3, catchReportFlat$TotalWeight$TotalWeight[1])
 
 #context("Test StoxReportFunctions: ReportFdaLandings")
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
@@ -153,7 +157,6 @@ expect_true(all(((catchAtAgeReportFlat$NbyAge$SD - sqrt(catchAtAgeCovarFlat$Cova
 catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat, Unit = "10^3 individuals", Decimals = 6)
 catchAtAgeCovarFlat <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeFlat, Unit = "10^3 individuals", Decimals = 6)
 expect_true(all(((catchAtAgeReportFlat$NbyAge$SD - sqrt(catchAtAgeCovarFlat$CovarianceNbyAge$Covariance[catchAtAgeCovarFlat$FdaCovariances$VariableId1==catchAtAgeCovarFlat$FdaCovariances$VariableId2]))/catchAtAgeReportFlat$NbyAge$SD)<1e-3))
-
 
 #context("Report Catch At Age")
 catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
