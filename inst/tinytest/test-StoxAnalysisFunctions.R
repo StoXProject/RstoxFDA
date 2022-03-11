@@ -111,6 +111,12 @@ expect_true("Stock" %in% names(result$CatchAtAge))
 expect_true("Stock" %in% names(result$MeanLength))
 expect_true("Stock" %in% names(result$MeanWeight))
 
+#stock splitting w warning
+StoxBioticData$Individual$otolithtype[1] <- 9
+expect_warning(RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseStockSplitting=T, UseStockSplittingError=T, StockSplittingParameters=manual), "StoX: Some aged fish does not have Otolithtype set, or have it set to an unrecognized value. This may slow down Stox processing of Reca results.")
+StoxBioticData$Individual$IndividualAge[1] <- NA
+expect_silent(RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseStockSplitting=T, UseStockSplittingError=T, StockSplittingParameters=manual))
+
 #context("PrepRecaEstimate: AgerrorMatrix")
 ageerorfile <- system.file("testresources","AgeErrorHirstEtAl2012.txt", package="RstoxFDA")
 ageerror <- RstoxFDA::DefineAgeErrorMatrix(FileName = ageerorfile)
