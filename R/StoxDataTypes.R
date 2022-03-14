@@ -16,6 +16,58 @@ is.Date <- function(date){
   return(FALSE)
 }
 
+#' Check if input conforms to StoxBioticData.
+#' Should perhaps be moved to RstoxData together with is.StoxLandingData
+#' @noRd
+is.StoxBioticData <- function(StoxBioticData, raiseErrors=F){
+  if (!is.list(StoxBioticData)){
+    return(FALSE)
+  }
+  if (!all(sapply(StoxBioticData, FUN=data.table::is.data.table))){
+    return(FALSE)
+  }
+  if (!all(c("Cruise", "Station", "Haul", "SpeciesCategory", "Sample", "Individual") %in% names(StoxBioticData))){
+    return(FALSE)
+  }
+  if (any(duplicated(StoxBioticData$Cruise$Cruise))){
+    if (raiseErrors){
+      stop("Duplicate Cruise keys")
+    }
+    return(FALSE)
+  }
+  if (any(duplicated(StoxBioticData$Station$Station))){
+    if (raiseErrors){
+      stop("Duplicate Station keys")
+    }
+    return(FALSE)
+  }
+  if (any(duplicated(StoxBioticData$Haul$Haul))){
+    if (raiseErrors){
+      stop("Duplicate Haul keys")
+    }
+    return(FALSE)
+  }
+  # species category only have component key
+  if (any(duplicated(paste(StoxBioticData$SpeciesCategory$CruiseKey, StoxBioticData$SpeciesCategory$StationKey, StoxBioticData$SpeciesCategory$HaulKey, StoxBioticData$SpeciesCategory$SpeciesCategory)))){
+    if (raiseErrors){
+      stop("Duplicate SpeciesCategory keys")
+    }
+    return(FALSE)
+  }
+  if (any(duplicated(StoxBioticData$Sample$Sample))){
+    if (raiseErrors){
+      stop("Duplicate Sample keys")
+    }
+    return(FALSE)
+  }
+  if (any(duplicated(StoxBioticData$Individual$Individual))){
+    if (raiseErrors){
+      stop("Duplicate Individual keys")
+    }
+    return(FALSE)
+  }
+  return(TRUE)
+}
 
 #' Age group statistics (ReportFdaByAgeData)
 #' 
@@ -977,6 +1029,16 @@ is.AreaPosition <- function(AreaPosition){
 #'
 NULL
 
+
+#' Landing data (LandingData)
+#'
+#' @description 
+#'  See \code{\link[RstoxData]{LandingData}}
+#'
+#' @name LandingData
+#'
+NULL
+
 #' Check if argument is CarNeighbours
 #' @description
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
@@ -1127,6 +1189,13 @@ is.StockSplittingParameters <- function(StockSplittingParameters){
 #' @export
 stoxFunctionAttributes <- list(
   
+  ReadLandingFDA = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "LandingData", 
+    functionParameterFormat = list(FileNames = "filePaths"), 
+    functionArgumentHierarchy = list()
+  ), 
   DefineStockSplittingParameters = list(
     functionType = "processData", 
     functionCategory = "baseline", 

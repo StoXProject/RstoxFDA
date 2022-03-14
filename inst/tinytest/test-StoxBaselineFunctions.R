@@ -1,3 +1,28 @@
+fdiropen <- system.file("testresources", "landingsvariants", "openfdir.2021.csv", package="RstoxFDA")
+xmllandings <- system.file("testresources", "landingsvariants", "landing.xml", package="RstoxFDA")
+lss1 <- system.file("testresources", "landingsvariants", "lss_2005.psv", package="RstoxFDA")
+lss2 <- system.file("testresources", "landingsvariants", "lss_2017.psv", package="RstoxFDA")
+lss3 <- system.file("testresources", "landingsvariants", "lss_2018.psv", package="RstoxFDA")
+xmlread <- RstoxFDA:::ReadLandingFDA(xmllandings)
+expect_true(RstoxData::is.LandingData(xmlread))
+expect_error(RstoxFDA:::ReadLandingFDA(lss1))
+lss1read <- RstoxFDA:::ReadLandingFDA(lss1, Format="lss")
+expect_true(RstoxData::is.LandingData(lss1read))
+sd <- RstoxData::StoxLanding(lss1read)
+expect_true(RstoxData::is.StoxLandingData(sd))
+lss2read <- RstoxFDA:::ReadLandingFDA(lss2, Format="lss")
+expect_true(RstoxData::is.LandingData(lss2read))
+sd <- RstoxData::StoxLanding(lss2read)
+expect_true(RstoxData::is.StoxLandingData(sd))
+lss3read <- RstoxFDA:::ReadLandingFDA(lss3, Format="lss")
+expect_true(RstoxData::is.LandingData(lss3read))
+sd <- RstoxData::StoxLanding(lss3read)
+expect_true(RstoxData::is.StoxLandingData(sd))
+openFdirRead <- RstoxFDA:::ReadLandingFDA(fdiropen, Format="FDIR.2021")
+expect_true(RstoxData::is.LandingData(openFdirRead))
+sd <- RstoxData::StoxLanding(openFdirRead)
+expect_true(RstoxData::is.StoxLandingData(sd))
+
 bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA")
 nmdbiotic <- RstoxData::ReadBiotic(bioticfile)
 nmdbioticPost <- RstoxFDA::SetShortGearBiotic(nmdbiotic)
@@ -63,6 +88,11 @@ filterExpression$SpeciesCategory <- c(
 )
 StoxBioticCod <- RstoxData::FilterStoxBiotic(StoxBiotic, FilterExpression = filterExpression)
 filt <- RstoxFDA::FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=4)
+
+#test that filter does not set fractional age in output
+remainder<-round(filt$Individual$IndividualAge) -filt$Individual$IndividualAge
+expect_true(all(remainder[!is.na(remainder)]==0))
+
 expect_equal(nrow(filt$Individual), nrow(StoxBioticCod$Individual))
 StoxBioticCod$Individual <- StoxBioticCod$Individual[!is.na(StoxBioticCod$Individual$IndividualAge),]
 filt <- RstoxFDA::FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=1)

@@ -5,6 +5,10 @@ StoxBioticData <- readRDS(StoxBioticFile)
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
 
+StoxBioticDataWDupl <- StoxBioticData
+StoxBioticDataWDupl$Station <- rbind(StoxBioticDataWDupl$Station, StoxBioticDataWDupl$Station)
+expect_error(RstoxFDA:::PrepareRecaEstimate(StoxBioticDataWDupl, StoxLandingData, FixedEffects = c(), RandomEffects = c()), "Malformed StoxBioticData.")
+
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
 
 fpath <- RstoxFDA:::makeTempDirReca()
@@ -110,6 +114,12 @@ expect_true(RstoxFDA::is.RecaCatchAtAge(result))
 expect_true("Stock" %in% names(result$CatchAtAge))
 expect_true("Stock" %in% names(result$MeanLength))
 expect_true("Stock" %in% names(result$MeanWeight))
+
+#stock splitting w warning
+StoxBioticData$Individual$otolithtype[1] <- 9
+expect_warning(RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseStockSplitting=T, UseStockSplittingError=T, StockSplittingParameters=manual), "StoX: Some aged fish does not have Otolithtype set, or have it set to an unrecognized value. This may slow down Stox processing of Reca results.")
+StoxBioticData$Individual$IndividualAge[1] <- NA
+expect_silent(RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseStockSplitting=T, UseStockSplittingError=T, StockSplittingParameters=manual))
 
 #context("PrepRecaEstimate: AgerrorMatrix")
 ageerorfile <- system.file("testresources","AgeErrorHirstEtAl2012.txt", package="RstoxFDA")

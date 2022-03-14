@@ -95,24 +95,19 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
     missing <- GroupingVariables[!(GroupingVariables %in% names(flatbiotic))]
     stop(paste("All 'GroupingVariables' must be present in 'StoxBioticData'. Missing:", paste(missing, sep=",")))
   }
-  
-  
-  bioticAggList <- list()
-  for (v in GroupingVariables){
-    bioticAggList[[v]] <- flatbiotic[[v]]
-  }
 
-  samples <- flatbiotic[,c(GroupingVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "StationKey", "IndividualKey"), with=F]
-  sampledTab <- data.table::data.table(stats::aggregate(list(Catches=samples$StationKey), by=bioticAggList, FUN=function(x){length(unique(x))}))
-  vessels <- data.table::data.table(stats::aggregate(list(Vessels=samples$CatchPlatform), by=bioticAggList, FUN=function(x){length(unique(x))}))
+  samples <- flatbiotic[,c(GroupingVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "StationKey", "IndividualKey", "Sample"), with=F]
+  
+  sampledTab <- samples[,list(Catches=length(unique(get("StationKey")))), by=GroupingVariables]
+  vessels <- samples[,list(Vessels=length(unique(get("CatchPlatform")))), by=GroupingVariables]
   sampledTab <- merge(sampledTab, vessels, by=GroupingVariables)
-  weights <- data.table::data.table(stats::aggregate(list(WeightMeasurments=samples$IndividualRoundWeight), by=bioticAggList, FUN=function(x){sum(!is.na(x))}))
+  weights <- samples[,list(WeightMeasurments=sum(!is.na(get("IndividualRoundWeight")))),by=GroupingVariables]
   sampledTab <- merge(sampledTab, weights, by=GroupingVariables)
-  lengths <- data.table::data.table(stats::aggregate(list(LengthMeasurments=samples$IndividualTotalLength), by=bioticAggList, FUN=function(x){sum(!is.na(x))}))
+  lengths <- samples[,list(LengthMeasurments=sum(!is.na(get("IndividualTotalLength")))),by=GroupingVariables]
   sampledTab <- merge(sampledTab, lengths, by=GroupingVariables)
-  ages <- data.table::data.table(stats::aggregate(list(AgeReadings=samples$IndividualAge), by=bioticAggList, FUN=function(x){sum(!is.na(x))}))
+  ages <- samples[,list(AgeReadings=sum(!is.na(get("IndividualAge")))),by=GroupingVariables]
   sampledTab <- merge(sampledTab, ages, by=GroupingVariables)
-  sampledWeights <- data.table::data.table(stats::aggregate(list(WeightOfSampledCatches=samples$CatchFractionWeight), by=bioticAggList, FUN=function(x){sum(x, na.rm=T)}))
+  sampledWeights <- samples[,list(WeightOfSampledCatches=sum(get("CatchFractionWeight")[!duplicated(get("Sample"))], na.rm=T)), by=GroupingVariables]
   sampledTab <- merge(sampledTab, sampledWeights, by=GroupingVariables)
   
   landingsAggList <- list()
@@ -120,11 +115,10 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
     landingsAggList[[v]] <- flatlandings[[v]]
   }
   landings <- flatlandings[,c(GroupingVariables, "RoundWeight"), with=F]
-  landingsTab <- data.table::data.table(stats::aggregate(list(LandedRoundWeight=landings$RoundWeight), by=landingsAggList, FUN=function(x){sum(x, na.rm=T)}))
+  landingsTab <- landings[,list(LandedRoundWeight=sum(get("RoundWeight"), na.rm=T)), by=GroupingVariables]
   
   tab <- merge(landingsTab, sampledTab, by=GroupingVariables, all=T)
   tab <- tab[order(tab$LandedRoundWeight, decreasing = T),]
-  
   tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), "kg", "mass")
   if (isGiven(Unit)){
     tab <- setUnits(tab, c("WeightOfSampledCatches", "LandedRoundWeight"), Unit, "mass")
@@ -359,7 +353,15 @@ setLengthGroup <- function(LengthReport, interval){
   
   if (isGiven(interval)){
     l <- sort(unique(LengthReport$Length))
-    diffs <- unique(l[2:length(l)] - l[1:(length(l)-1)])
+    
+    #Handle collapsed length groups
+    if (length(l)==1){
+      diffs <- l
+    }
+    else{
+      diffs <- unique(l[2:length(l)] - l[1:(length(l)-1)])  
+    }
+    
     if (interval < max(diffs)){
       stoxWarning("Length interval is specified lower than the available resolution.")
     }
@@ -370,7 +372,13 @@ setLengthGroup <- function(LengthReport, interval){
   }
   
   l <- sort(unique(LengthReport$Length))
-  diffs <- unique(round(l[2:length(l)] - l[1:(length(l)-1)], digits = 10))
+  #Handle collapsed length groups
+  if (length(l)==1){
+    diffs <- l
+  }
+  else{
+    diffs <- unique(round(l[2:length(l)] - l[1:(length(l)-1)], digits = 10))    
+  }
   
   if (length(diffs)==1){
     LengthReport$LengthGroup <- sprintf("\u2329%.1f, %.1f\uFF3D", LengthReport$Length - diffs, LengthReport$Length)  
@@ -1135,6 +1143,7 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   # hack to use ReportRecaCatchAtAge
   # ReportRecaCatchAtAge has already set units.
   #
+
   mm <- merge(RecaCatchAtAge$CatchAtAge, RecaCatchAtAge$MeanWeight)
   mm$CatchAtAge <- mm$CatchAtAge*mm$MeanIndividualWeight
   mm$MeanIndividualWeight <- NULL
@@ -1155,11 +1164,11 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   TotalWeight$NbyAge$AgeGroup <- NULL
   TotalWeight$NbyAge$Age <- NULL
   
-  if (isGiven(DecimalTotalWeight)){
-    TotalWeight$NbyAge <- setDecimals(TotalWeight$NbyAge, c("TotalWeight", "SD", "Low", "High"), DecimalTotalWeight)
-  }
   if (isGiven(UnitTotalWeight)){
     TotalWeight$NbyAge <- setUnits(TotalWeight$NbyAge, c("TotalWeight", "SD", "Low", "High"), UnitTotalWeight, "mass")
+  }
+  if (isGiven(DecimalTotalWeight)){
+    TotalWeight$NbyAge <- setDecimals(TotalWeight$NbyAge, c("TotalWeight", "SD", "Low", "High"), DecimalTotalWeight)
   }
   
   
@@ -1169,11 +1178,11 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   TotalNumber$NbyAge$AgeGroup <- NULL
   TotalNumber$NbyAge$Age <- NULL
   
-  if (isGiven(DecimalTotalNumber)){
-    TotalNumber$NbyAge <- setDecimals(TotalNumber$NbyAge, c("TotalNumber", "SD", "Low", "High"), DecimalTotalNumber)
-  }
   if (isGiven(UnitTotalNumber)){
     TotalNumber$NbyAge <- setUnits(TotalNumber$NbyAge, c("TotalNumber", "SD", "Low", "High"), UnitTotalNumber, "cardinality")
+  }
+  if (isGiven(DecimalTotalNumber)){
+    TotalNumber$NbyAge <- setDecimals(TotalNumber$NbyAge, c("TotalNumber", "SD", "Low", "High"), DecimalTotalNumber)
   }
   
   # combine
