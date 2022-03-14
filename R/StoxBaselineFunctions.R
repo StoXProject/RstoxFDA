@@ -1728,7 +1728,7 @@ FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData,
   }
   
   #make sure temp columns are not taken.
-  stopifnot(!any(c("vonBFilter", "month") %in% names(StoxBioticData$Individual)))
+  stopifnot(!any(c("vonBFilter", "month", "IndividualAgeFractional") %in% names(StoxBioticData$Individual)))
   
   #adjust ages to resolution 1/12 yr
   if (any(is.na(StoxBioticData$Station$DateTime))){
@@ -1738,11 +1738,11 @@ FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData,
   stationinfo$month <- as.numeric(substr(stationinfo$DateTime, 6,7))
   stationinfo <- stationinfo[,c("CruiseKey", "StationKey", "month")]
   StoxBioticData$Individual <- merge(StoxBioticData$Individual, stationinfo)
-  StoxBioticData$Individual$IndividualAge <- StoxBioticData$Individual$IndividualAge + 1/StoxBioticData$Individual$month
+  StoxBioticData$Individual$IndividualAgeFractional <- StoxBioticData$Individual$IndividualAge + 1/StoxBioticData$Individual$month
   
   StoxBioticData$Individual$vonBFilter <- filterVonBsigmaMask(StoxBioticData$Individual, 
                                                               Linf,K,sigma,kAl,kAu,
-                                                              ageCol="IndividualAge", 
+                                                              ageCol="IndividualAgeFractional", 
                                                               lengthCol="IndividualTotalLength")
   
   filterExpression <- list()
@@ -1753,6 +1753,7 @@ FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData,
   StoxBioticData <- RstoxData::FilterStoxBiotic(StoxBioticData, filterExpression, FilterUpwards = FilterUpwards)
   StoxBioticData$Individual$vonBFilter <- NULL
   StoxBioticData$Individual$month <- NULL
+  StoxBioticData$Individual$IndividualAgeFractional <- NULL
   return(StoxBioticData)
 
 }

@@ -88,6 +88,11 @@ filterExpression$SpeciesCategory <- c(
 )
 StoxBioticCod <- RstoxData::FilterStoxBiotic(StoxBiotic, FilterExpression = filterExpression)
 filt <- RstoxFDA::FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=4)
+
+#test that filter does not set fractional age in output
+remainder<-round(filt$Individual$IndividualAge) -filt$Individual$IndividualAge
+expect_true(all(remainder[!is.na(remainder)]==0))
+
 expect_equal(nrow(filt$Individual), nrow(StoxBioticCod$Individual))
 StoxBioticCod$Individual <- StoxBioticCod$Individual[!is.na(StoxBioticCod$Individual$IndividualAge),]
 filt <- RstoxFDA::FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=1)
