@@ -114,6 +114,8 @@ StoxLandingData <- readRDS(StoxLandingFile)
 StoxLandingData$Landing$Quarter <- quarters(StoxLandingData$Landing$CatchDate)
 
 SamplingReport <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"))
+expect_true(abs(sum(StoxBioticData$Sample$CatchFractionWeight, na.rm=T) - sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches)) / sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches) < .01)
+expect_true(abs(sum(StoxLandingData$Landing$RoundWeight, na.rm=T) - sum(SamplingReport$FisheriesSampling$LandedRoundWeight)) / sum(SamplingReport$FisheriesSampling$LandedRoundWeight) < .01)
 expect_true(RstoxFDA::is.ReportFdaSamplingData(SamplingReport))
 expect_true(all(!is.na(SamplingReport$FisheriesSampling$LandedRoundWeight)))
 expect_equal(RstoxData::getUnit(SamplingReport$FisheriesSampling$WeightOfSampledCatches), "mass-kg")
