@@ -324,7 +324,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     interaction <- c()
   }
   else{
-    stop(paste("Opion", CellEffect, "is not supported for parameter 'CellEffect'"))
+    stop(paste("Option", CellEffect, "is not supported for parameter 'CellEffect'"))
   }
   
   if (!isGiven(HatchDay)){
@@ -355,7 +355,12 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     LengthResolution <- NULL
   }
 
-  stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
+  if (!is.StoxBioticData(StoxBioticData)){
+    stop("Malformed StoxBioticData.")
+  }
+  if (!RstoxData::is.StoxLandingData(StoxLandingData)){
+    stop("Malformed StoxLandingData")
+  }
 
   #
   # checks for NAs in covariates

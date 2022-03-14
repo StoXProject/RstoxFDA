@@ -5,6 +5,10 @@ StoxBioticData <- readRDS(StoxBioticFile)
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
 
+StoxBioticDataWDupl <- StoxBioticData
+StoxBioticDataWDupl$Station <- rbind(StoxBioticDataWDupl$Station, StoxBioticDataWDupl$Station)
+expect_error(RstoxFDA:::PrepareRecaEstimate(StoxBioticDataWDupl, StoxLandingData, FixedEffects = c(), RandomEffects = c()), "Malformed StoxBioticData.")
+
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
 
 fpath <- RstoxFDA:::makeTempDirReca()
