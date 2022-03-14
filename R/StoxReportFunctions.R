@@ -353,7 +353,15 @@ setLengthGroup <- function(LengthReport, interval){
   
   if (isGiven(interval)){
     l <- sort(unique(LengthReport$Length))
-    diffs <- unique(l[2:length(l)] - l[1:(length(l)-1)])
+    
+    #Handle collapsed length groups
+    if (length(l)==1){
+      diffs <- l
+    }
+    else{
+      diffs <- unique(l[2:length(l)] - l[1:(length(l)-1)])  
+    }
+    
     if (interval < max(diffs)){
       stoxWarning("Length interval is specified lower than the available resolution.")
     }
@@ -364,7 +372,13 @@ setLengthGroup <- function(LengthReport, interval){
   }
   
   l <- sort(unique(LengthReport$Length))
-  diffs <- unique(round(l[2:length(l)] - l[1:(length(l)-1)], digits = 10))
+  #Handle collapsed length groups
+  if (length(l)==1){
+    diffs <- l
+  }
+  else{
+    diffs <- unique(round(l[2:length(l)] - l[1:(length(l)-1)], digits = 10))    
+  }
   
   if (length(diffs)==1){
     LengthReport$LengthGroup <- sprintf("\u2329%.1f, %.1f\uFF3D", LengthReport$Length - diffs, LengthReport$Length)  
