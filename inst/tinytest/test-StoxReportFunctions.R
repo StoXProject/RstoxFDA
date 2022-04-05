@@ -1,4 +1,15 @@
 
+# Test for issue that occured occationally, when abundance of an age group was 0 for some simulations in certain covariate combinations.
+PlusGroupIssue <- readRDS(system.file("testresources","RecaCatchAtAgePlusGroupIsse.rds", package="RstoxFDA"))
+plMeans <- RstoxFDA:::getPlusGroupMeans(PlusGroupIssue, "MeanWeight", "MeanIndividualWeight", PlusGroup = 14)
+expect_true(any(is.na(plMeans$MeanIndividualWeight)))
+decomp <- RstoxFDA::ReportRecaWeightAtAge(PlusGroupIssue, 14)
+
+expect_true(!any(is.na(decomp$MeanWeightByAge$MeanIndividualWeight)))
+expect_true(!any(is.na(decomp$MeanWeightByAge$SD)))
+expect_true(!any(is.na(decomp$MeanWeightByAge$Low)))
+expect_true(!any(is.na(decomp$MeanWeightByAge$High)))
+
 #context("Test StoxReportFunctions: ReportRecaParameterStatistics")
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)

@@ -233,7 +233,9 @@ reportParameterAtAge <- function(table, aggVariables, parameter, alpha=.1){
   aggNames <- c("Age", "AgeGroup", aggNames)
   stopifnot(length(aggNames) == (ncol(table)-2))
 
-  result <- table[,list(par=mean(get(parameter)), SD=stats::sd(get(parameter)), Low=stats::quantile(get(parameter), probs = alpha/2.0), High=stats::quantile(get(parameter), probs = 1-(alpha/2.0))), by=aggNames]
+  # NAs may occur fore mean parameters when CatchAtAge is 0 for certain iterations.
+  # consider reporting number of iterations used as column in result (sum(!is.na(parameter)))
+  result <- table[,list(par=mean(get(parameter), na.rm=T), SD=stats::sd(get(parameter), na.rm=T), Low=stats::quantile(get(parameter), probs = alpha/2.0, na.rm=T), High=stats::quantile(get(parameter), probs = 1-(alpha/2.0), na.rm=T)), by=aggNames]
   
   data.table::setcolorder(result ,c("AgeGroup", "Age", "par", "SD", "Low", "High", aggVariables))
   names(result) <- c("AgeGroup", "Age", parameter, "SD", "Low", "High", aggVariables)
@@ -787,6 +789,7 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
     # set to the mean returned from ECA for non-plusgroups
     
     mw[[parameter]][mw$Age>=PlusGroup] <- mw$Total[mw$Age>=PlusGroup] / mw$CatchAtAge[mw$Age>=PlusGroup]
+    mw[[parameter]][mw$Age>=PlusGroup & mw$CatchAtAge==0] <- NA #set mean of parameter to NA, when CatchAtAge for PlusGroup is 0
     mw[[parameter]][mw$Age<PlusGroup] <- mw$meanparam[mw$Age<PlusGroup]
     mw$Total <- NULL
     mw$CatchAtAge <- NULL
@@ -799,18 +802,23 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
 
 #' Report weight at age
 #' @description 
-#'  Tabulates summary statistics for mean weights (kg) at age from MCMC simulations using Reca.
-#'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
-#'  Summary statistics are obtained from the posterior distribution, and
-#'  the interval is reported as 90% equal-tailed credible intervals.
+#'  Tabulates summary statistics for mean weights at age from MCMC simulations using Reca.
 #'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
+#'  
+#'  Mean weight for plus-groups are a weighted by the relative catch-at-age in each composite age group.
+#'  For iterations where all of the plus-group ages have a zero catch at age, this weight is not defined,
+#'  and summary statistics are obtained from the remaining iterations.
 #'  
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 #'  
 #'  The units considered valid for mean weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
+#'  
+#'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
+#'  Summary statistics are obtained from the posterior distribution, and
+#'  the interval is reported as 90% equal-tailed credible intervals.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
@@ -894,10 +902,14 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 
 #' Report length at age
 #' @description 
-#'  Tabulates summary statistics for mean length (cm) at age from MCMC simulations using Reca.
+#'  Tabulates summary statistics for mean length at age from MCMC simulations using Reca.
 #'  MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels}}.
 #'  Summary statistics are obtained from the posterior distribution, and
 #'  the interval is reported as equal-tailed credible intervals are reported.
+#'  
+#'  Mean length for plus-groups are a weighted by the relative catch-at-age in each composite age group.
+#'  For iterations where all of the plus-group ages have a zero catch at age, this weight is not defined,
+#'  and summary statistics are obtained from the remaining iterations.
 #'  
 #'  If 'RecaCatchAtAge' contains estimate for a set of aggregation variables, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
