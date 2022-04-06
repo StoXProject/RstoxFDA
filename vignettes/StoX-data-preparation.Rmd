@@ -1,0 +1,154 @@
+---
+title: "StoX-data-preparation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{StoX-data-preparation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+knitr::opts_chunk$set(include = FALSE)
+library(RstoxFDA)
+```
+
+# FDA data preparation in StoX
+This vignette introduces common tasks in data preparation for fisheries dependent analysis (FDA), and the functions that RstoxFDA provides for the StoX framework to support these tasks. These functions are mostly motivated by needs in fisheries-dependent analysis at the Institute of Marine Research (IMR), and supports common data-transformation, annotation and re-coding / code translation. FDA at IMR typically involve using census data from the Norwegian Directorate of Fisheries (FDIR) and reporting to the International Counsel for Exploration of the Seas (ICES). The data-preparation functions will be introduced in the context of setting up the StoX baseline for catch at age estimation with the package 'Reca', but most tasks are relevant for other estimation methods as well.
+
+As StoX is composed of several R-packages. Functions will be referred to by their package name with the notation _package::function_. In the StoX user interface, the package that functions belong to are not visible. Any data formats are similarly denoted *package::format*.
+
+While this vignette introduces some tools to assist correct usage of FDA-data, no attempt is made at introducing unfamiliar users to the peculiarities of fisheries dependent sampling. For IMR samples a provisional guide to FDA-data can be found at: https://hinnsiden.no/organisasjon/fiskeridynamikk/PublishingImages/Sider/side/Kilder%20%e2%80%93%20fiskeriavhengige%20data.pdf.
+
+## Sample data
+StoX supports several input formats for biological samples, which can be read by the function _RstoxData::ReadBiotic_. These formats are not strictly distinguished in StoX and are all stored in the format *RstoxData::BioticData*. In order to standardize downstream functions, StoX also offers an internal format *RstoxData::StoxBioticData* and it is usually desirable to convert your biological data to that format via the RstoxData-function _RstoxData::StoxBiotic_. Some data transformation, filtering, and re-coding is necessary to do before converting to *RstoxData::StoxBioticData*, and some are necessary to do after converting. Data-preparation that can be done both before and after converting is generally desirable to do before, as error messages then provide a clearer link to the raw data.
+
+### NMDbiotic
+Biological samples at IMR are archived in a versioned format called NMDbiotic (https://www.imr.no/formats/nmdbiotic/). If the source for your biological data is NMDbiotic, you may find that information is recorded somewhat differently than what allows for straightforward conversion with _RstoxData::StoxBiotic_. For instance, you may find that fishing date is recorded as the end of the fishing operation, since that was the day the catch was sampled, and that the corresponding fields for the start of the fishing operation is missing. If not all data in the input file are relevant for analysis, the number of data issues to handle can be greatly reduced by first applying the necessary filtering with _RstoxData::FilterBiotic_
+
+#### Fishing time information
+You may also find that the time (hour and minute) is not filled, since that detail may not be available to samplers. Unfortunately, both of these fields ('stationstartdate' and 'stationstarttime' in *RstoxData::BioticData* / NMDbiotic) must be set in order for the conversion with _RstoxData::StoxBiotic_ to preserve time information. The downstream analysis may be as simple as annotating quarter or month to the data, and in that case it is clear that this kind of precision is not warranted. For situations like these, the function _RstoxFDA::SetStartDateBiotic_ allows you to impute the start date to be equal to the stop date of the fishing operation, and the function _RstoxFDA::SetTimeBiotic_ allows you to set an arbitrary time of the day to records where time is missing.
+
+#### Position information
+Some sampling still record position of catches only in terms of area codes. In order for visualisations and annotation of other area codes to be supported by *RstoxData::StoxBioticData*, positional data must be provided. If the area codes provided in the NMDbiotic records provide sufficient precision, you may consider imputing positions from area codes, using _RstoxFDA::SetAreaPositionsBiotic_. See the section 'Area codes' for more details. Before that can be done, some particularities of the IMR archive may need to be handled. Catch locations are often provided via the 'FDIR Statistical areas and locations', which is a two-code system where the first code represents an area (*RstoxData::BioticData*: area), and the second a finer area coding system within that area (*RstoxData::BioticData*: location). Both of these codes are defined as integers, and FDIR uses the convention to prefix single digit integers with a leading '0', E.g: '01' or '09'. In IMR records, several conventions have been used and the area '01' may be recorded as either '01', '1' or ' 1' (note the whitespace), and perhaps additional variants. This may be corrected by using _RstoxBase::DefineTranslation_ and _RstoxBase::TranslateBiotic_.
+
+In addition to this FDIR revised their coding system in 2018, following a similar revision to the ICES areas. In NMDbiotic the old and revised are represented as to different systems of encoding (signified by the field NMDbiotic: system), but they are nearly identical and are in practice used interchangeably. _RstoxFDA::SetAreaPositionsBiotic_ may therefore have to occur twice in a StoX project. Once for system '2' (old convention) and once for system '10' (new convention).
+
+#### Gear codes
+NMDbiotic uses a four digit gear-coding system which is organized so that the two first digits code for gear-groups. If that coarser gear-definition is sufficient for analysis, downstream processing may be simplified by recoding the gear column to only the first two digits. This is supported with the function _RstoxFDA::SetShortGearBiotic_.
+
+#### Non standard measurments
+The practicalities of fisheries sampling often dictate that partially processed products, such as gutted fish, are measured. *RstoxData::StoxBioticData* only supports Live (Round) weights and total-length measurements, but weights in FDA-data are often provided as gutted (with or without head) and occasionally only head-lengths are provided (along with age). If conversions via scalar factors or simple regressions are acceptable, data can be made fit for _RstoxData::StoxBiotic_ by use of the functions _RstoxFDA::ConvertWeightBiotic_ and _RstoxFDA::ConvertLengthBiotic_. Conversion tables for these functions must first be defined by the functions _RstoxFDA::DefineLengthConversionParameters_, and _RstoxFDA::DefineWeightConversionFactor_. The latter offers the selection of some built-in official conversion factors, that can be used. Otherwise conversion tables must be provided as resource files. 
+
+#### Quality filters
+It has been common practice to remove extreme outliers from data. As most of these outliers are erroneous records, it is desirable to remove them from database records, or correct them if infromation is available. RstoxFDA provides some outlier-filters. These are mainly provided in order to reproduce legacy workflows, and may be relevant to apply mostly to older data. They may also be used in conjunction with report functions to verify that extreme outliers are uncommon or absent. The function _RstoxFDA::FilterAgeLengthOutliersStoxBiotic_ provides a filter against a von-Bertalannfy regression for removing extreme age-length relationships. The function _RstoxFDA::FilterWeightLengthOutliersStoxBiotic_ provides a filter against a log-linear model to remove extreme weight-length relationships.
+
+### StoX-project
+In summary, depending on the exact data issues at hand, sample data in a StoX project may be handled by a sequence of processes exemplified in the following table:
+
+| Process name | Function | Description |
+|-------|------|---------|--------|
+| ReadSamples | ReadBiotic | Reads in *RstoxData::BioticData* with biological samples from NMDbiotic xml-files |
+| FilterSamples | FilterBiotic | Reduces data set to relevant sampling programs, relevant species, relevant catch fractions, etc. |
+| SetTime | SetTimeBiotic | Sets 'stationstarttime' on the table 'fishstation' in *RstoxData::BioticData* to a fixed time of day, wherever 'stationstarttime' is not already set |
+| SetStartDate | SetStartDateBiotic | Sets 'stationstartdate' on the table 'fishstation' in *RstoxData::BioticData* equal to 'stationstopdate', wherever 'stationstartdate' is not already set  |
+| LoadConversionFactors | DefineWeightConversionFactor | Loads built-in official conversion factors |
+| ConvertWeight | ConvertWeightBiotic | Converts weight-fields in *RstoxData::BioticData* to desired product type, using the table defined by LoadConversionFactors |
+| ReadLengthParameters | DefineLengthConversionParameters | Reads regression parameters for converting length |
+| ConvertLength | ConvertLengthBiotic | Converts 'length' on the table 'individual' in *RstoxData::BioticData* to desired measurement type, using parameters defined by ReadLengthParameters |
+| StoxBiotic | StoxBiotic | Converts *RstoxData::BioticData* to *RstoxData::StoxBiotic* |
+
+## Census data
+FDA analysis very often involve some kind of ratio-estimation dependent on a census of landed weight by species, or fishing effort by gear. At IMR we typically get such census data via mandatory reporting to FDIR. While RstoxData provides support for reading sales-notes from Fdir in a standardized format via the function _ReadLanding_, it is often convenient to use other formats. RstoxFDA therefore offers an alternative function for reading sales-notes: _ReadLandingFDA_ that allows for some additional formats, some of these only available internally at IMR. _ReadLandingFDA_ returns data that is compatible with _ReadLanding_ and can be used in any function that accepts data from _ReadLanding_. While RstoxData offers the function _FilterLanding_, that provides filtering options for that format, the StoX user interface performs best if data is converted to a more aggregated format before further processing. The RstoxData function _StoxLanding_ aggregates sales-notes and is supported by most further processing.
+
+### StoX-project
+Typically landings data are included in the StoX project by a sequence of processes exemplified by the table below:
+
+| Process name | Function | Description |
+|-------|------|---------|--------|
+| ReadLandings | ReadLandingFDA | Reads in *RstoxData::LandingData* with sales-notes data from one of several available file formats |
+| StoxLanding | StoxLanding |Converts *RstoxData::LandingData* to the aggregated *RstoxData::StoxLandingData* |
+| FilterLandings | FilterStoxLanding | Reduces data to relevant sampling frame, removing landings by area, vessel flag etc. |
+
+
+## Area codes
+Area codes are commonly used for stratification or domain definitions, and FDA frequently encounter situations where a clear definition of areas are useful. This is provided in StoX as spatial strata-files which are named polygons describing exactly what an area-code represents in terms of latitudes and longitudes connected by straight lines. RstoxBase provides the function _RstoxBase::DefineStratumPolygon_ that allows custom spatial strata-system / area codes to be defined. Since FDA frequently make use of standardized areas for reporting, some of these are provided by RstoxFDA as built-in options via the function _RstoxFDA::LoadFdaStratumPolygon_. These area definitions are compatible with those provided by _RstoxBase::DefineStratumPolygon_, and can be used in any function that accepts the output of _RstoxBase::DefineStratumPolygon_, but alleviates the need to obtain resource files for common coding systems such as the statistical areas used by ICES or FDIR.
+
+In general, FDA make use of these area definitions for several purposes besides representing stratification of samples. In particular they are used to impute positions for data where only area-codes are recorded, to annotate data with spatial domain information that is used in reporting, and as post-stratified categorical variables or covariates in estimation models. So in contrast to StoX survey-estimation projects, FDA-projects you may well end up loading several area-definitions.
+
+### Imputing positions
+Positions can be imputed from area codes, when that gives acceptable precision. That is, a single position within an each area (typically the centroid) are used to represent the area and injected into data that does not have exact positional information. This is most commonly done in order to convert back to other area codes. While that may seem like a roundabout approach, it offers great flexibility in how area codes or stratification systems used in models are defined, and makes it easy to annotate several area-code definitions to data, which is often necessary for purposes of reporting. For this use case it is important to check that the area codes that positions are imputed from are not too much coarser, and preferably contained within, the area codes that will later be inferred from imputed positions. If area definitions are loaded into StoX via _RstoxFDA::LoadFdaStratumPolygon_ or _RstoxBase::DefineStratumPolygon_, the overlap between different areas may be visualized by selecting the 'Show in Map'-option.
+
+In order to impute positions, the coupling between area codes and positions must first be defined. This is done with the function _RstoxFDA::DefineAreaPosition_. If area codes are defined with polygons of sufficient quality using _RstoxFDA::LoadFdaStratumPolygon_ or _RstoxBase::DefineStratumPolygon_, _RstoxFDA::DefineAreaPosition_ can use these as input and provide a mapping between area codes and positions that is derived directly from the polygons. Otherwise, such a mapping must be provided as a resource file. Positions may then be filled into samples (*RstoxData::BioticData*) with _RstoxFDA::SetAreaPositionsBiotic_ or added as new columns to landings (*RstoxData::StoxLandingData*) with _RstoxFDA::AddAreaPositionStoxLanding_.
+
+### Annotating area codes
+For data with exact positional information, columns with area codes may be added using _RstoxFDA::AddStratumStoxBiotic_ and _RstoxFDA::AddStratumStoxLanding_. The latter provides several options for the name of the column to be added, which can be used to either add a column, or change the existing area column in *RstoxData::StoxLandingData*. By adding several AddStratumStoxLanding-processes to the StoX project, one area-column (Stratum) can be used as strata or model covariate, and one area-column (Area) can be used as a domain definition for reporting purposes.
+
+### Neighbour matrix
+Reca offers a special kind of random effect, called a CAR-effect, which is often used for spatial covariates and requires a definition of neighborhood between for instance areas. If direct spatial neighbors are desired, and if polygons are provided with sufficient quality, the function _RstoxFDA::DefineCarNeighbours_ can be used to calculate such neighborhood-information from areas defined with _RstoxFDA::LoadFdaStratumPolygon_ or _RstoxBase::DefineStratumPolygon_.
+
+### StoX-project
+Area codes can be used for imputing positions and annotating area codes to data with position, as examplified by the the sequence of processes in the table below:
+
+| Process name | Function | Description |
+|-------|------|---------|--------|
+| ReadSamples | ReadBiotic | Reads in *RstoxData::BioticData* with biological samples from NMDbiotic xml-files |
+| LoadFdir | LoadFdaStratumPolygon | Loads built-in polygons for the FDIR areas |
+| AreaPosition | DefineAreaPosition | Makes a table mapping areas to positions based on polygons defined by LoadFdir |
+| SetPositions | SetAreaPositionsBiotic | Set 'latitudestart' and 'longitudestart' on the table 'fishstation' in *RstoxData::BioticData* based on the fields 'area', 'location' and 'system', using the table defined by LoadFdir. Note that this is done before converstion to StoxBiotic for sample data |
+| StoxBiotic | StoxBiotic | Converts *RstoxData::BioticData* to *RstoxData::StoxBiotic* |
+| ReadLandings | ReadLandingFDA | Reads in *RstoxData::LandingData* with sales-notes data from one of several available file formats |
+| StoxLanding | StoxLanding |Converts *RstoxData::LandingData* to the aggregated *RstoxData::StoxLandingData* |
+| AddPositions | AddAreaPositionStoxLanding | Add the columns 'Latitude' and 'Longitude' based on the field 'Area', using the table defined by LoadFdir. Note that this is done after conversion to StoxLanding for landing-data |
+| DefineStrata | DefineStratumPolygon | Read strata definition from custom polygon file |
+| AddStratumSamples | AddStratumStoxBiotic | Add the column 'Stratum' to *RstoxData::StoxBioticData* based on definition read by DefineStrata |
+| AddStratumLandings | AddStratumStoxLanding | Add the column 'Stratum' to *RstoxData::StoxLandingData* based on definition read by DefineStrata |
+| LoadICES | LoadFdaStratumPolygon | Loads built-in polygons for the ICES areas |
+| AddDomainLandings | AddStratumStoxLanding | Change the column 'Area' in *RstoxData::StoxLandingData* based on definition read by LoadICES |
+
+## Harmonising codes
+In FDA samples must typically be assigned to partitions of the census. Typically the landings are partitioned by area, gear and time, and these variables must be represented with the same coding systems in both samples (*RstoxData::StoxBioticData*) and landings (*RstoxData::StoxLandingData*). The samples and landings may be provided with different coding systems for instance for gear. Or data may be provided with different resolution, or too high resolution to adequately utilize the available samples. 
+
+### Area codes
+The section 'Area' describes how the spatial component can be handled with _RstoxFDA::AddStratumStoxBiotic_ and _RstoxFDA::AddStratumStoxLanding_, which result in both samples and landings bwing annotated with the same area codes. 
+
+### Temporal codes (Period)
+The temporal component can be handled with the functions _RstoxFDA::AddPeriodStoxBiotic_ and _RstoxFDA::AddPeriodStoxLanding_. Similarly to _RstoxFDA::AddStratumStoxLanding_, _RstoxFDA::AddPeriodStoxLanding_ offers several options for the name of the column that the temporal category (period) will be added to, so that it is possible to add one column (Period) for use as strata or covariate, and one (ReportPeriod) for defining domains for reporting. Both _RstoxFDA::AddPeriodStoxBiotic_ and _RstoxFDA::AddPeriodStoxLanding_ requires the definition of the temporal category to be provided by the function _RstoxFDA::DefinePeriod_. They can both refer the same instance of _RstoxFDA::DefinePeriod_, and in fact that is advisable, in order to ensure that the same coding system is used. _RstoxFDA::DefinePeriod_ defines a mapping between dates and periods, and allows for 'Quarter', 'Month' or custom periods to be defined.
+
+### Gear codes
+Gear codes can be handled with the functions _RstoxFDA::AddGearGroupStoxBiotic_ and _RstoxFDA::AddGearGroupStoxLanding_, which adds a new column 'GearGroup' to these tables. The mapping between gear codes are provided as a resource file for both of these, and is read into Stox with the function _RstoxData::DefineTranslation_, setting up a mapping between the variable 'Gear' and 'NewValue'. 'NewValue' is the harmonized code that will be used for both samples and landings. _RstoxData::DefineTranslation_ allows several 'Gear' values to be mapped to the same 'NewValue', so that gears may be grouped in this fashion. _RstoxFDA::AddGearGroupStoxBiotic_ and _RstoxFDA::AddGearGroupStoxLanding_ adds the codes from 'NewValue' in a new column named 'GearGroup'.
+
+### StoX-project
+Coding systems may be harmonized between samples and landings by a sequence of StoX-processes exemplified in the table below:
+
+| Process name | Function | Description |
+|-------|------|---------|--------|
+| DefineGearGroupLandings | DefineTranslation | Reads resource file mapping gear to gear-groups for landings |
+| DefineGearGroupSamples | DefineTranslation | Reads resource file mapping gear to the same gear-groups  for samples |
+| DefinePeriod | DefinePeriod | Defines mapping from date to quarter |
+| ReadSamples | ReadBiotic | Reads in *RstoxData::BioticData* with biological samples from NMDbiotic xml-files |
+| StoxBiotic | StoxBiotic | Converts *RstoxData::BioticData* to *RstoxData::StoxBioticData* |
+| AddGearSamples | AddGearGroupStoxBiotic | Add the column 'GearGroup' to *RstoxData::StoxBioticData* using the definition from DefineGearGroupSamples |
+| AddPeriodSamples | AddPeriodStoxLanding | Add the column 'Period' to *RstoxData::StoxBioticData* using the definition from DefinePeriod. |
+| ReadLandings | ReadLandingFDA | Reads in *RstoxData::LandingData* with sales-notes data from one of several available file formats |
+| StoxLanding | StoxLanding | Converts *RstoxData::LandingData* to the aggregated *RstoxData::StoxLandingData* |
+| AddGearLandings | AddGearGroupStoxLanding | Add the column 'GearGroup' to *RstoxData::StoxLandingData* using the defintion from DefineGearGroupLandings |
+| AddPeriodLandings | AddPeriodStoxLanding | Add the column 'Period' to *RstoxData::StoxLandingData* using the definition from DefinePeriod. |
+
+## Extending StoxBioticData
+Some information that may be stored in *RstoxData::BioticData* does not have corresponding columns in  *RstoxData::StoxBioticData*. These columns may be added by using _RstoxData::AddToStoxBiotic_, and may in some cases be used by downstream processes. For instance stock-typing or maturity may be needed, which is encoded in *RstoxData::BioticData* (NMDbiotic: maturationstage and NMDbiotic: otolithtype).
+
+## Reca parameters
+Some complex parameters for the Reca-models must be defined in the Stox-Baseline, if Reca is configured to use them. These are:
+\describe{
+\item{_RstoxFDA::DefineStockSplittingParameters_}{Defines uncertainty parameters for stock-splitting (coastal-cod analysis)}
+\item{_RstoxFDA::DefineAgeErrorMatrix_}{Defines uncertainty parameters for age readings.}
+\item{_RstoxFDA::DefineCarNeighbours_}{Define the neighbour-matrix for the CAR-variable.}
+}
+All of these require resource files, except _RstoxFDA::DefineCarNeighbours_, which may also be calculated from area defintion, as also described in the section 'Area codes'.
