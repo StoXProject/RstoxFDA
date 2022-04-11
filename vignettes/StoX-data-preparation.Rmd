@@ -1,9 +1,9 @@
 ---
-title: "StoX data preparation (baseline)"
+title: "StoX FDA data preparation (baseline)"
 author: "Edvin Fuglebakk"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{StoX-data-preparation}
+  %\VignetteIndexEntry{StoX FDA data preparation (baseline)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -25,7 +25,7 @@ library(RstoxFDA)
 
 This vignette introduces common tasks in data preparation for fisheries dependent analysis (FDA), and the functions that RstoxFDA provides for "baseline"-models in the StoX framework to support these tasks. Familiarity with the StoX framework is assumed. These functions are mostly motivated by needs in fisheries-dependent analysis at the Institute of Marine Research (IMR), and supports common data-transformation, annotation and code translation. FDA at IMR typically involve using census data from the Norwegian Directorate of Fisheries (FDIR) and reporting to the International Counsel for Exploration of the Seas (ICES). The data-preparation functions will be introduced in the context of setting up the StoX baseline for catch at age estimation with the package 'Reca', but most tasks are relevant for other estimation methods or reporting as well. 
 
-This document introduces some problems and tasks, and the how RstoxFDA-functions may be applied to solve them. The details of how to use the functions introduced here is provided as function documentation viewable in the StoX "function description"-tab, or in an R-console via '?', e.g:
+This document introduces some problems and tasks, and how RstoxFDA-functions may be applied to solve them. The details of how to use the functions introduced here is provided as function documentation viewable in the StoX "function description"-tab, or in an R-console via '?', e.g:
 
 ```{r docfunction, echo=TRUE}
 ?RstoxFDA::ConvertWeightBiotic
@@ -40,10 +40,13 @@ Documentation for data formats are provided in the same way. E.g.:
 
 As StoX is composed of several R-packages. Functions will be referred to by their package name with the notation _package::function_. In the StoX user interface, the package that functions belong to are not visible. Any data formats are similarly denoted **package::format**.
 
-While this vignette introduces some tools to assist correct usage of FDA-data, no attempt is made at introducing unfamiliar users to the peculiarities of fisheries dependent sampling. For IMR samples a provisional guide to FDA-data can be found at the [IMR intranet](https://hinnsiden.no/organisasjon/fiskeridynamikk/PublishingImages/Sider/side/Kilder%20%e2%80%93%20fiskeriavhengige%20data.pdf).
+## Obtaining data
+While this vignette introduces some tools to assist correct usage of FDA-data, no attempt is made at introducing unfamiliar users to the peculiarities of fisheries dependent sampling. For IMR samples a provisional guide to FDA-data (in Norwegian) can be found at the [IMR intranet: Kilder fiskeriavhengige data](https://hinnsiden.no/organisasjon/fiskeridynamikk/PublishingImages/Sider/side/Kilder%20%e2%80%93%20fiskeriavhengige%20data.pdf), and for census data some introduction (in Norwegian) can be found at the [IMR intranet: Fiskeridata](https://hinnsiden.no/tema/Fiskeridata/Sider/side.aspx)
+
+Within the IMR-computer-network both landing data and sample data can be obtained from the [dataset explorer](http://datasetexplorer.hi.no). Consider using the tools-menu to download landing data, and to compile sample data, if the pre-compiled data sets under 'commercial sampling' are not suitable. Otherwise landing data is available in various formats as described at the [IMR intranet: Fiskeridata](https://hinnsiden.no/tema/Fiskeridata/Sider/side.aspx), and some data is publicly available directly from [FDIR](https://www.fiskeridir.no/Tall-og-analyse/AApne-data/AApne-datasett) (also in Norwegian).
 
 ## Installation
-RstoxFDA is an optional package in StoX. In order to use the functions introduced in this vignette in the StoX user interface, make sure RstoxFDA is installed. See installation instructions on [github](https://github.com/StoXProject/RstoxFDA).
+RstoxFDA is an optional package in StoX. In order to use the functions introduced in this vignette in the StoX user interface, make sure RstoxFDA is installed. See installation instructions on [github: StoXProject/RstoxFDA](https://github.com/StoXProject/RstoxFDA). To install the StoX user interface, see instructions on [github: StoXProject/StoX](https://github.com/StoXProject/StoX)
 
 # Data formats in StoX
 StoX support several types of input, such as records of biological measurements (biotic-data), records of acoustic observations (acoustic-data) and records of total weight landed (landing-data). For FDA, it is mainly biotic-data and landing-data, that are of interest. For each of these types of input, StoX may support several file-formats, but most of the data-processing and visualization supported by StoX requires that the various input format are converted to StoX-specific standards. Biotic-data must be converted to **RstoxData::StoxBioticData**, which is supported by the function _RstoxData::StoxBiotic_, and landing data must be converted to **RstoxData::StoxLandingData**, which is supported by the function _StoxLanding_. This makes sure that StoX-functions and visualisations in the StoX user-interface can rely on some unified definitions for important variables. In cases when a unified definition is not needed, StoX functions may be configured to handle other columns than the standard variables. Such columns may then be added to the standard StoX-formats by use of functions like _RstoxData::AddToStoxBiotic_.
@@ -194,4 +197,4 @@ _RstoxFDA::DefineCarNeighbours_
 All of these require resource files, except _RstoxFDA::DefineCarNeighbours_, which may also be calculated from area defintion, as also described in the section 'Area codes'.
 
 # Analysis
-The functions introduced in this vignette should enable you to use IMR samples and FDIR landings to obtain **RstoxData::StoxBiotic** and **RstoxData::StoxLanding** data with complete records and hamronized code, ready for further analysis or reporting. Relevant analysis and reporting functions will be introduced in other vignettes.
+The functions introduced in this vignette should enable you to use IMR samples and FDIR landings to obtain **RstoxData::StoxBiotic** and **RstoxData::StoxLanding** data with complete records and hamronized code, ready for further analysis or reporting. Relevant analysis and reporting functions will be introduced in other vignettes. See for instance [Stox Fisheries overview (report)](Stox-FDA-overview.html) for obtaining reports on fishing activity and how it is sampled.
