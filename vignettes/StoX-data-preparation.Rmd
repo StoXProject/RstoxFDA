@@ -89,7 +89,7 @@ When records are missing, or suspect data are encountered, it is important to pr
 In summary, depending on the exact data issues at hand, sample data in a StoX project may be handled by a sequence of processes exemplified in the following table:
 
 | Process name | Function | Description |
-|-------|------|---------|--------|
+|-------------|---------|--------|
 | ReadSamples | ReadBiotic | Reads in **RstoxData::BioticData** with biological samples from NMDbiotic xml-files |
 | FilterSamples | FilterBiotic | Reduces data set to relevant sampling programs, relevant species, relevant catch fractions, etc. |
 | SetTime | SetTimeBiotic | Sets 'stationstarttime' on the table 'fishstation' in **RstoxData::BioticData** to a fixed time of day, wherever 'stationstarttime' is not already set |
