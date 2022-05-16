@@ -189,5 +189,6 @@ Rognebakke et al. 2016
 
 Gelman & Rubin 1992
   : Gelman, Andrew, and Donald B. Rubin. 1992. “Inference from Iterative Simulation Using Multiple Sequences.” Statistical Science 7 (4). https://doi.org/10.1214/ss/1177011136.
+  
 
 
