@@ -1,2 +1,0 @@
-StockNameCC	StockNameS	ProbabilityType1As1	ProbabilityType5As1	ProbabilityType2As2	ProbabilityType4As2	ProbabilityType2As4	ProbabilityType4As4	ProbabilityType1As5	ProbabilityType5As5
-"Coastal Cod"	"NEA cod"	.8	.2	.6	.4	.4	.6	.2	.8

@@ -1,4 +1,0 @@
-Description	Species	MeasurementType	Alpha	Beta
-"COD headless to totallength"	164712	K	1.289	1.414
-"COD headless to totallength"	164712	K	2	2
-"COD headlength to totallength"	164712	D	3	3.65

@@ -1,4 +1,0 @@
-# Esample metier configuration with comment
-metier	target	gearcode
-OTB_DEF	HAD,COD	51
-OTB_DEF	COD,HAD	50

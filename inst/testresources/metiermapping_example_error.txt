@@ -1,3 +1,0 @@
-# Esample metier configuration with comment
-metier	gearcode	area
-OTB_DEF	51	08
