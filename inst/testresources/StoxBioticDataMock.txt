@@ -1,0 +1,4 @@
+serialnumber	gear	area	location
+10001	3159	0	5
+10002	3600	2	9
+10003	4144	3	25

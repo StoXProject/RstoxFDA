@@ -1,0 +1,3 @@
+VariableName	Value	NewValue
+Gear	3530	PelTrawl
+Gear		Other

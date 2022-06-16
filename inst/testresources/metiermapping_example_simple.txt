@@ -1,0 +1,5 @@
+# Esample metier configuration with comment
+metier	gearcode
+OTB_DEF	51
+# comment char test
+OTB_DEF	31
