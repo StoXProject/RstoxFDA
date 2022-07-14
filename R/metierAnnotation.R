@@ -205,7 +205,7 @@ is.MetierTable <- function(table, throwError=F){
 #'  Logical values ('meshedGear' and 'meshedSelectivityDevice') should be encoded with 'T' for true and 'F' for false.
 #' @param filename character() path to file that contains metier definitions. See details for format.
 #' @param encoding The character encoding of the file identified by 'filename'
-#' @return \code{\link[RstoxFDA]{MetierTable}} containing metier definitons.
+#' @return \code{\link[RstoxFDA]{MetierTable}} containing metier definitions.
 #' @export
 readMetierTable <- function(filename, encoding="UTF8"){
   

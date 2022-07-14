@@ -136,4 +136,20 @@ and \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for making 'GearGroup' part 
 \code{\link[RstoxFDA]{DefineAgeErrorMatrix}} for making an age-error matrix available for the Reca-analysis.
 \code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters,
 and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
+
+Other Reca functions: 
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineAgeErrorMatrix}()},
+\code{\link{DefineStockSplittingParameters}()},
+\code{\link{ParameterizeRecaModels}()},
+\code{\link{ReportRecaCatchAtAgeCovariance}()},
+\code{\link{ReportRecaCatchAtAge}()},
+\code{\link{ReportRecaCatchAtLengthAndAge}()},
+\code{\link{ReportRecaCatchAtLength}()},
+\code{\link{ReportRecaCatchStatistics}()},
+\code{\link{ReportRecaLengthAtAge}()},
+\code{\link{ReportRecaParameterStatistics}()},
+\code{\link{ReportRecaWeightAtAge}()},
+\code{\link{RunRecaModels}()}
 }
+\concept{Reca functions}

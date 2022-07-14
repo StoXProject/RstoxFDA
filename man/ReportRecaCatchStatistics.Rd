@@ -73,4 +73,20 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting catch, mean length and mean weight by age groups
 \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length distributions
 \code{\link[RstoxFDA]{ReportRecaCatchAtLengthAndAge}} for reporting catch by age-group and length-group combinations.
+
+Other Reca functions: 
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineAgeErrorMatrix}()},
+\code{\link{DefineStockSplittingParameters}()},
+\code{\link{ParameterizeRecaModels}()},
+\code{\link{PrepareRecaEstimate}()},
+\code{\link{ReportRecaCatchAtAgeCovariance}()},
+\code{\link{ReportRecaCatchAtAge}()},
+\code{\link{ReportRecaCatchAtLengthAndAge}()},
+\code{\link{ReportRecaCatchAtLength}()},
+\code{\link{ReportRecaLengthAtAge}()},
+\code{\link{ReportRecaParameterStatistics}()},
+\code{\link{ReportRecaWeightAtAge}()},
+\code{\link{RunRecaModels}()}
 }
+\concept{Reca functions}

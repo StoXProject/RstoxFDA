@@ -41,3 +41,4 @@ Norwegian sales-notes data are archived and curated by the Norwegian Directorate
  
  The lss format has been using various naming conventions. Data is read by colmn index, and strict checking of column names is not performed.
 }
+\concept{IO functions}

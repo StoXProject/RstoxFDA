@@ -1,8 +1,8 @@
 ---
-title: "Stox-Reca (analysis)"
+title: "StoX-Reca (analysis)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Stox-Reca (analysis)}
+  %\VignetteIndexEntry{StoX-Reca (analysis)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

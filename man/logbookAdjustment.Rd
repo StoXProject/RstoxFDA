@@ -63,3 +63,14 @@ Imputes landings for logbook records, redistributes catches, and adds informatio
  
  Sales-note lines identifiers are made unique after imputation and redistribution ('lineIdCol').
 }
+\seealso{
+Other logbook functions: 
+\code{\link{addLogbookColumns}()},
+\code{\link{appendTripIdLandings}()},
+\code{\link{appendTripIdLogbooks}()},
+\code{\link{calculateLogbookPartitionByTrip}()},
+\code{\link{imputeCatchesLandings}()},
+\code{\link{makeTripIds}()},
+\code{\link{sourceLogbookColumns}()}
+}
+\concept{logbook functions}

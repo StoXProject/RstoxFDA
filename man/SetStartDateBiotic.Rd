@@ -15,7 +15,7 @@ SetStartDateBiotic(BioticData, Overwrite = F)
 \code{\link[RstoxData]{BioticData}}
 }
 \description{
-Set start date to stop date.
+Set start date to stop date. Appropriate when BioticData is read from NMDbiotic.
 }
 \details{
 Set the column 'stationstartdate' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}}
@@ -30,4 +30,21 @@ For bioticdata that does not conform to this, no modifications are done.
 }
 \seealso{
 \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
+
+Other nmdbiotic functions: 
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{ListBioticDifference}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{SetTimeBiotic}()}
+
+Other temporal coding functions: 
+\code{\link{AddPeriodStoxBiotic}()},
+\code{\link{AddPeriodStoxLanding}()},
+\code{\link{DefinePeriod}()},
+\code{\link{SetTimeBiotic}()},
+\code{\link{categoriseDate}()}
 }
+\concept{nmdbiotic functions}
+\concept{temporal coding functions}

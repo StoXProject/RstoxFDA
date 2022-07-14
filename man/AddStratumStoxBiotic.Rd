@@ -26,4 +26,17 @@ The strata are added to the new column 'Stratum'.
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Stratum' as an effect in Reca-estimation,
 \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
 and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
+
+Other spatial coding functions: 
+\code{\link{AddAreaPositionStoxLanding}()},
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineAreaPosition}()},
+\code{\link{DefineCarNeighbours}()},
+\code{\link{LoadFdaStratumPolygon}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{appendAreaCode}()},
+\code{\link{appendPosition}()},
+\code{\link{mergePolygons}()},
+\code{\link{plotArea}()}
 }
+\concept{spatial coding functions}

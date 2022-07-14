@@ -38,3 +38,17 @@ Appends columns with positions to a data table, based on an area code.
  Datum and projection is not enforced, but a warning is issued if 'areaPolygons' does not pass some
  checks to verify that it is not a planar projection.
 }
+\seealso{
+Other spatial coding functions: 
+\code{\link{AddAreaPositionStoxLanding}()},
+\code{\link{AddStratumStoxBiotic}()},
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineAreaPosition}()},
+\code{\link{DefineCarNeighbours}()},
+\code{\link{LoadFdaStratumPolygon}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{appendAreaCode}()},
+\code{\link{mergePolygons}()},
+\code{\link{plotArea}()}
+}
+\concept{spatial coding functions}

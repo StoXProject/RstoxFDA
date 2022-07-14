@@ -69,4 +69,9 @@ This function is intended to provide the same filtering that is offered in ECA 3
 }
 \seealso{
 \code{\link[RstoxFDA]{FilterWeightLengthOutliersStoxBiotic}}
+
+Other data QA functions: 
+\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
+\code{\link{ListBioticDifference}()}
 }
+\concept{data QA functions}

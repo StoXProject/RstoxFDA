@@ -18,7 +18,7 @@ UTC-time formatted as \code{\link[base]{strptime}}-string: \%H:\%M:\%SZ, e.g. 12
 \code{\link[RstoxData]{BioticData}}
 }
 \description{
-Set start time to a fixed time for all stations.
+Set start time to a fixed time for all stations. Appropriate when BioticData is read from NMDbiotic.
 }
 \details{
 Set the column 'stationstarttime' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to a fixed time.
@@ -32,4 +32,21 @@ Set the column 'stationstarttime' on the table 'fishstation' in \code{\link[Rsto
 }
 \seealso{
 \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
+
+Other nmdbiotic functions: 
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{ListBioticDifference}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{SetStartDateBiotic}()}
+
+Other temporal coding functions: 
+\code{\link{AddPeriodStoxBiotic}()},
+\code{\link{AddPeriodStoxLanding}()},
+\code{\link{DefinePeriod}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{categoriseDate}()}
 }
+\concept{nmdbiotic functions}
+\concept{temporal coding functions}

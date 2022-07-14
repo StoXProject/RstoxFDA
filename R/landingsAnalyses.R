@@ -51,6 +51,7 @@ tabulateFisheries <- function(data, weightCol="LiveWeightKG", cellCols=c("Metier
 #'    landings <- RstoxData::readLssFile(lssfile)
 #'    tripIds <- makeTripIds(landings)
 #'  }
+#' @family logbook functions
 #' @export
 makeTripIds <- function(landings, vesselIdCol="Radiokallesignal (seddel)", lastCatchCol="Siste fangstdato"){
 
@@ -100,6 +101,7 @@ makeTripIds <- function(landings, vesselIdCol="Radiokallesignal (seddel)", lastC
 #'                               by="tripid",
 #'                               all.x=T)
 #'  }
+#' @family logbook functions
 #' @export
 appendTripIdLandings <- function(landings, tripIds=NULL, vesselIdCol="Radiokallesignal (seddel)", lastCatchCol="Siste fangstdato", tripIdCol="tripid"){
 
@@ -167,6 +169,7 @@ appendTripIdLandings <- function(landings, tripIds=NULL, vesselIdCol="Radiokalle
 #' @seealso 
 #'  \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, and \code{\link[RstoxFDA]{appendTripIdLogbooks}} for obtaining 'landings' with trip-ids.
 #' @return \code{\link[data.table]{data.table}} with 'landings' that have artificial landings imputed, each catch identified by the added column 'catchIdCol'.
+#' @family logbook functions
 #' @export
 imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchIdCol, speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO", weightCol="RUNDVEKT", valueColumns=c("Bruttovekt", "Produktvekt", "Rundvekt")){
   
@@ -252,6 +255,7 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
 #' @param speciesColLog character() that identifies the column in 'logbooks' that identify species caught.
 #' @seealso 
 #'  \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, \code{\link[RstoxFDA]{appendTripIdLogbooks}}, and \code{\link[RstoxFDA]{imputeCatchesLandings}} for obtaining 'landings' and 'logbooks' with trip-ids and catch-ids.
+#' @family logbook functions
 #' @export
 sourceLogbookColumns <- function(landings, logbooks, tripIdCol="tripid", catchIdCol, speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO"){
   
@@ -313,6 +317,7 @@ sourceLogbookColumns <- function(landings, logbooks, tripIdCol="tripid", catchId
 #' @param speciesColLog character() that identifies the column in 'logbooks' that identify species caught.
 #' @seealso 
 #'  \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, \code{\link[RstoxFDA]{appendTripIdLogbooks}}, and \code{\link[RstoxFDA]{imputeCatchesLandings}} for obtaining 'landings' and 'logbooks' with trip-ids and catch-ids.
+#' @family logbook functions
 #' @export
 addLogbookColumns <- function(landings, logbooks, logbookColumns, tripIdCol="tripid", catchIdCol, speciesColLand="Art FAO (kode)", speciesColLog="FANGSTART_FAO"){
   
@@ -368,6 +373,7 @@ addLogbookColumns <- function(landings, logbooks, logbookColumns, tripIdCol="tri
 #' @param polygons \code{\link[sp]{SpatialPolygonsDataFrame}} with area names in the column 'StratumName'. If provided, area ("Hovedområde kode") will be calculated from position, rather than fetched from logbook records.
 #' @param lineIdCol character() that identifies the column in 'landings' that contain the identifier for each line on a sales note.
 #' @return 'landings' with catches redistributed over more sales-note lines corresponding to logbook-catch records / fishing operations.
+#' @family logbook functions
 #' @export
 logbookAdjustment <- function(landings, logbooks, gearCodes=character(), speciesColLog="FANGSTART_FAO", speciesColLand="Art FAO (kode)", weightColLog="RUNDVEKT", valueColLand=c("Bruttovekt", "Produktvekt", "Rundvekt"), addColumns=character(), activityTypes=c("FIS", "REL", "SCR"), polygons=RstoxFDA::mainareaFdir2018, lineIdCol="Linjenummer"){
 

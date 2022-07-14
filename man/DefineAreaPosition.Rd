@@ -54,4 +54,17 @@ Definitions are extracted from a \code{\link[RstoxBase]{StratumPolygon}}:
 }
 \seealso{
 \code{\link[RstoxFDA]{SetAreaPositionsBiotic}} and \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to data.
+
+Other spatial coding functions: 
+\code{\link{AddAreaPositionStoxLanding}()},
+\code{\link{AddStratumStoxBiotic}()},
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineCarNeighbours}()},
+\code{\link{LoadFdaStratumPolygon}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{appendAreaCode}()},
+\code{\link{appendPosition}()},
+\code{\link{mergePolygons}()},
+\code{\link{plotArea}()}
 }
+\concept{spatial coding functions}

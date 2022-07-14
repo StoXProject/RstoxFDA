@@ -27,7 +27,7 @@ SetAreaPositionsBiotic(
 \code{\link[RstoxData]{BioticData}}
 }
 \description{
-Sets start position based on area codes.
+Sets start position based on area codes. Appropriate when BioticData is read from NMDbiotic.
 }
 \details{
 Positions are filled in the columns 'latitudestart' and 'longitudestart' on 'fishstation'
@@ -44,4 +44,26 @@ For bioticdata that does not conform to this, no modifications are done.
 }
 \seealso{
 \code{\link[RstoxFDA]{DefineAreaPosition}} for configuring definitions of positions for area codes.
+
+Other nmdbiotic functions: 
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{ListBioticDifference}()},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()}
+
+Other spatial coding functions: 
+\code{\link{AddAreaPositionStoxLanding}()},
+\code{\link{AddStratumStoxBiotic}()},
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineAreaPosition}()},
+\code{\link{DefineCarNeighbours}()},
+\code{\link{LoadFdaStratumPolygon}()},
+\code{\link{appendAreaCode}()},
+\code{\link{appendPosition}()},
+\code{\link{mergePolygons}()},
+\code{\link{plotArea}()}
 }
+\concept{nmdbiotic functions}
+\concept{spatial coding functions}

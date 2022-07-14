@@ -67,4 +67,9 @@ Some parameterizations that have been used for some stocks at IMR:
 }
 \seealso{
 \code{\link[RstoxFDA]{FilterAgeLengthOutliersStoxBiotic}}
+
+Other data QA functions: 
+\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
+\code{\link{ListBioticDifference}()}
 }
+\concept{data QA functions}

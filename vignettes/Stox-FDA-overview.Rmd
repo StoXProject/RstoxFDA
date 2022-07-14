@@ -1,8 +1,8 @@
 ---
-title: "Stox Fisheries overview (report)"
+title: "StoX Fisheries overview (report)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Stox Fisheries overview (report)}
+  %\VignetteIndexEntry{StoX Fisheries overview (report)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

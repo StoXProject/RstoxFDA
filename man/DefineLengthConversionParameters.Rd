@@ -41,4 +41,10 @@ See also \code{\link[RstoxFDA]{LengthConversionTable}}
 }
 \seealso{
 \code{\link[RstoxFDA]{ConvertLengthBiotic}} for applying length conversion to data
+
+Other parameter conversion functions: 
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{DefineWeightConversionFactor}()}
 }
+\concept{parameter conversion functions}

@@ -10,6 +10,7 @@
 #'
 #' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with location names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 #'
+#' @family area code polygons
 #' @keywords datasets
 #'
 #' @examples

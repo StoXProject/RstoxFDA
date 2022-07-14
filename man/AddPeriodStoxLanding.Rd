@@ -36,4 +36,12 @@ two choices are offered for the name of the added column (see argument 'ColumnNa
 \code{\link[RstoxFDA]{AddStratumStoxBiotic}} for similar function for sample data,
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
 and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
+
+Other temporal coding functions: 
+\code{\link{AddPeriodStoxBiotic}()},
+\code{\link{DefinePeriod}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()},
+\code{\link{categoriseDate}()}
 }
+\concept{temporal coding functions}

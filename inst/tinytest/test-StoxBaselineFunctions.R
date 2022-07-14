@@ -63,7 +63,10 @@ p <- RstoxFDA::LoadFdaStratumPolygon(NULL, "ICES.SubDivision.2018")
 expect_equal(nrow(p), length(unique(paste(RstoxFDA::ICESareas$SubArea[!is.na(RstoxFDA::ICESareas$SubDivision)], RstoxFDA::ICESareas$Division[!is.na(RstoxFDA::ICESareas$SubDivision)], RstoxFDA::ICESareas$SubDivision[!is.na(RstoxFDA::ICESareas$SubDivision)], sep="."))))
 p <- RstoxFDA::LoadFdaStratumPolygon(NULL, "ICES.Unit.2018")
 expect_equal(nrow(p), length(unique(paste(RstoxFDA::ICESareas$SubArea[!is.na(RstoxFDA::ICESareas$Unit)], RstoxFDA::ICESareas$Division[!is.na(RstoxFDA::ICESareas$Unit)], RstoxFDA::ICESareas$SubDivision[!is.na(RstoxFDA::ICESareas$Unit)], RstoxFDA::ICESareas$Unit[!is.na(RstoxFDA::ICESareas$Unit)], sep="."))))
+p <- RstoxFDA::LoadFdaStratumPolygon(NULL, "ICES.Rectangles.2018")
+expect_true(all(nchar(p$StratumName)==4))
 expect_error(RstoxFDA::LoadFdaStratumPolygon(NULL, "NAFO.FDIR.201"), "StrataSystem NAFO.FDIR.201 not recognized.")
+
 
 
 #context("test-StoxBaselineFunctions: ListBioticDifference")

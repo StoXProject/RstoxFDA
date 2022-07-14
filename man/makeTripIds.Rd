@@ -31,3 +31,14 @@ Extracts trip IDs from landings.
    tripIds <- makeTripIds(landings)
  }
 }
+\seealso{
+Other logbook functions: 
+\code{\link{addLogbookColumns}()},
+\code{\link{appendTripIdLandings}()},
+\code{\link{appendTripIdLogbooks}()},
+\code{\link{calculateLogbookPartitionByTrip}()},
+\code{\link{imputeCatchesLandings}()},
+\code{\link{logbookAdjustment}()},
+\code{\link{sourceLogbookColumns}()}
+}
+\concept{logbook functions}

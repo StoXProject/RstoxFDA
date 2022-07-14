@@ -15,7 +15,7 @@ ListBioticDifference(StoxBioticData, BioticData)
 \code{\link[RstoxData]{BioticData}} with data that is not found in 'StoxBioticData'.
 }
 \description{
-List the difference between a NMDbiotic v 3.x data set and a StoxBiotic data set.
+List the difference between a NMDbiotic v 3.x data set and a StoxBiotic data set. Appropriate when BioticData is read from NMDbiotic.
 }
 \details{
 Lists all missions, fishstations, catchsamples and individuals from a NMDbiotic v 3.x data set
@@ -23,3 +23,18 @@ that is not present in a given StoxBiotic data set.
 
 This may be used to summarize the effect of filters and data conversions.
 }
+\seealso{
+Other nmdbiotic functions: 
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()}
+
+Other data QA functions: 
+\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
+\code{\link{FilterWeightLengthOutliersStoxBiotic}()}
+}
+\concept{data QA functions}
+\concept{nmdbiotic functions}

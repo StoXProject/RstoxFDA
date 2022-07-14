@@ -39,6 +39,7 @@
 #'                   NAFOareas[,c("StratumName")]),
 #'           projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
 #'           +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
+#' @family spatial coding functions
 #' @export
 plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="StratumName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL, polygonColor="blue"){
 
@@ -270,6 +271,7 @@ writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
 #' @param shape \code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert
 #' @param mergeCol name of column that should be used for merging, all polygons with the same value in this column will be merged into one.
 #' @return \code{\link[sp]{SpatialPolygonsDataFrame}} with polygons merged
+#' @family spatial coding functions
 #' @export
 mergePolygons <- function(shape, mergeCol){
   

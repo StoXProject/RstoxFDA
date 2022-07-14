@@ -50,3 +50,14 @@ if 'tripIds' is NULL, trip IDs will be constructed from landings using \code{\li
                               all.x=T)
  }
 }
+\seealso{
+Other logbook functions: 
+\code{\link{addLogbookColumns}()},
+\code{\link{appendTripIdLogbooks}()},
+\code{\link{calculateLogbookPartitionByTrip}()},
+\code{\link{imputeCatchesLandings}()},
+\code{\link{logbookAdjustment}()},
+\code{\link{makeTripIds}()},
+\code{\link{sourceLogbookColumns}()}
+}
+\concept{logbook functions}
