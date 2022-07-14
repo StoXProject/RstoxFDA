@@ -4,3 +4,5 @@
 ^appveyor\.yml$
 ^\.github
 ^LICENSE$
+^doc$
+^Meta$

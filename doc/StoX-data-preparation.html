@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Edvin Fuglebakk" />
+
+
+<title>StoX FDA data preparation (baseline)</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">StoX FDA data preparation (baseline)</h1>
+<h4 class="author">Edvin Fuglebakk</h4>
+
+
+
+<p>This vignette introduces common tasks in data preparation for fisheries dependent analysis (FDA), and the functions that RstoxFDA provides for “baseline”-models in the StoX framework to support these tasks. Familiarity with the StoX framework is assumed. These functions are mostly motivated by needs in fisheries-dependent analysis at the Institute of Marine Research (IMR), and supports common data-transformation, annotation and code translation. FDA at IMR typically involve using census data from the Norwegian Directorate of Fisheries (FDIR) and reporting to the International Counsel for Exploration of the Seas (ICES). The data-preparation functions will be introduced in the context of setting up the StoX baseline for catch at age estimation with the package ‘Reca’, but most tasks are relevant for other estimation methods or reporting as well.</p>
+<p>This document introduces some problems and tasks, and how RstoxFDA-functions may be applied to solve them. The details of how to use the functions introduced here is provided as function documentation viewable in the StoX “function description”-tab, or in an R-console via ‘?’, e.g:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>?RstoxFDA<span class="sc">::</span>ConvertWeightBiotic</span></code></pre></div>
+<p>Documentation for data formats are provided in the same way. E.g.:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>?RstoxBase<span class="sc">::</span>StratumPolygon</span></code></pre></div>
+<p>As StoX is composed of several R-packages. Functions will be referred to by their package name with the notation <em>package::function</em>. In the StoX user interface, the package that functions belong to are not visible. Any data formats are similarly denoted <strong>package::format</strong>.</p>
+<div id="obtaining-data" class="section level2">
+<h2>Obtaining data</h2>
+<p>While this vignette introduces some tools to assist correct usage of FDA-data, no attempt is made at introducing unfamiliar users to the peculiarities of fisheries dependent sampling. For IMR samples a provisional guide to FDA-data (in Norwegian) can be found at the <a href="https://hinnsiden.no/organisasjon/fiskeridynamikk/PublishingImages/Sider/side/Kilder%20%e2%80%93%20fiskeriavhengige%20data.pdf">IMR intranet: Kilder fiskeriavhengige data</a>, and for census data some introduction (in Norwegian) can be found at the <a href="https://hinnsiden.no/tema/Fiskeridata/Sider/side.aspx">IMR intranet: Fiskeridata</a></p>
+<p>Within the IMR-computer-network both landing data and sample data can be obtained from the <a href="http://datasetexplorer.hi.no">dataset explorer</a>. Consider using the tools-menu to download landing data and to compile sample data, if the pre-compiled data sets under ‘commercial sampling’ are not suitable. Otherwise landing data is available in various formats as described at the <a href="https://hinnsiden.no/tema/Fiskeridata/Sider/side.aspx">IMR intranet: Fiskeridata</a>, and some data is publicly available directly from <a href="https://www.fiskeridir.no/Tall-og-analyse/AApne-data/AApne-datasett">FDIR</a> (also in Norwegian).</p>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>RstoxFDA is an optional package in StoX. In order to use the functions introduced in this vignette in the StoX user interface, make sure RstoxFDA is installed. See installation instructions on <a href="https://github.com/StoXProject/RstoxFDA">github: StoXProject/RstoxFDA</a>. To install the StoX user interface, see instructions on <a href="https://github.com/StoXProject/StoX">github: StoXProject/StoX</a></p>
+</div>
+<div id="data-formats-in-stox" class="section level1">
+<h1>Data formats in StoX</h1>
+<p>StoX support several types of input, such as records of biological measurements (biotic-data), records of acoustic observations (acoustic-data) and records of total weight landed (landing-data). For FDA, it is mainly biotic-data and landing-data, that are of interest. For each of these types of input, StoX may support several file-formats, but most of the data-processing and visualization supported by StoX requires that the various input format are converted to StoX-specific standards. Biotic-data must be converted to <strong>RstoxData::StoxBioticData</strong>, which can be done by the function <em>RstoxData::StoxBiotic</em>, and landing data must be converted to <strong>RstoxData::StoxLandingData</strong>, which is can be done the function <em>RstoxData::StoxLanding</em>. This makes sure that StoX-functions and visualisations in the StoX user-interface can rely on some unified definitions for important variables. In cases when a unified definition is not needed, StoX functions may be configured to handle other columns than the standard variables. Such columns may then be added to the standard StoX-formats by use of functions like <em>RstoxData::AddToStoxBiotic</em>.</p>
+<p>In addition to the data types, parameters and configurations may be read from various kind of ‘resource-files’. The format of these files are described in the documentation for the functions that import them. E.g:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>?RstoxFDA<span class="sc">::</span>DefineLengthConversionParameters</span></code></pre></div>
+</div>
+<div id="sample-data" class="section level1">
+<h1>Sample data</h1>
+<p>StoX supports several input formats for biological samples, which can be read by the function <em>RstoxData::ReadBiotic</em>. This function reads biotic data into an internal structure, <strong>RstoxData::BioticData</strong>, which is rather loosely defined. Data are organized into several tables with different columns, and include some information about the source of the data, but otherwise <strong>RstoxData::BioticData</strong> does not provide a very strict format. Biotic data therefore have to be converted to <strong>RstoxData::StoxBioticData</strong>, and it is usually desirable to convert your biological data to that format with the function <em>RstoxData::StoxBiotic</em>. Some data transformation, filtering, and re-coding is necessary to do before converting to <strong>RstoxData::StoxBioticData</strong>. Since the <strong>RstoxData::BioticData</strong> is defined in a very flexible manner, some of the functions that are provided to perform such data-transformations and re-codings only make sense for particular sources of the biotic-data. Since the source of biotic-data at IMR typically is NMDbiotic, some functions specific to handling that data source will be introduced here.</p>
+<div id="filtering" class="section level3">
+<h3>Filtering</h3>
+<p>Some data-preparation or filtering is necessary to do before converting to <strong>RstoxData::StoxBioticData</strong>, and some are necessary to do after converting. Data-preparation that can be done both before and after converting is generally desirable to do before, since error messages then provide a clearer link to the raw data, and since it generally reduces the amount of data that needs to be further processed. However, there are also some concerns to consider with respect-to re-use of StoX-projects. StoX is typically used for analyses that are performed on an annual basis, with minor modifications to the data preparation for each year. In this setting it is useful to be able to make a copy of a StoX-project from a previous year, and then make necessary modifications to that copy. It should then be kept in mind, that <strong>RstoxData::BioticData</strong> contains tables with names corresponding to input data-files, and input data-files should ideally have different names for different years. This means that filters configured by <em>RstoxData::FilterBiotic</em>, must typically all be changed from one year to the next, while filters configured with <em>RstoxData::FilterStoxBiotic</em> are typically reusable.</p>
+</div>
+<div id="nmdbiotic" class="section level2">
+<h2>NMDbiotic</h2>
+<p>Biological samples at IMR are archived in a versioned data-format called NMDbiotic (<a href="https://www.imr.no/formats/nmdbiotic/" class="uri">https://www.imr.no/formats/nmdbiotic/</a>). If the source for your biological data is NMDbiotic, you may find that information is recorded somewhat differently than what allows for straightforward conversion with <em>RstoxData::StoxBiotic</em>. For instance, you may find that fishing date is recorded as the end of the fishing operation, that not all catches have a position, or that fish weights are measured of gutted fish, rather than unprocessed fish. And you will find that gear codes are different from those used in the landing-data. RstoxData provide some functions for dealing with these kind of issues, which are presented below. If not all data in the input file are relevant for analysis, the number of data issues to handle can be greatly reduced by first applying the necessary filtering with <em>RstoxData::FilterBiotic</em>. As mentioned above, use of <em>RstoxData::FilterBiotic</em> rather than <em>RstoxData::FilterStoxBiotic</em>, does come with the caveat that filters are less re-usable if the same analysis is to be done for several years of data. So a good rule of thumb is to try to solve standard filters, that will apply for coming years as well in <em>RstoxData::FilterStoxBiotic</em>, possibly through the use of <em>RstoxData::AddToStoxBiotic</em>.</p>
+<div id="fishing-time-information" class="section level3">
+<h3>Fishing time information</h3>
+<p>you may find that fishing date is recorded as the end of the fishing operation, since that was the day the catch was sampled, and that the corresponding fields for the start of the fishing operation is missing. You may also find that the time (hour and minute) is not filled, since that detail may not be available to samplers. Unfortunately, both of these fields (‘stationstartdate’ and ‘stationstarttime’ in <strong>RstoxData::BioticData</strong> / NMDbiotic) must be set in order for the conversion with <em>RstoxData::StoxBiotic</em> to preserve time information. The downstream analysis may be as simple as annotating quarter or month to the data, and in that case it is clear that it is not warranted to know the hour and minute of the catch, or to distinguish the start of the fishin operation from the end of it. For situations like these, the function <em>RstoxFDA::SetStartDateBiotic</em> allows you to impute the start date so that it becomes equal to the stop date of the fishing operation, and the function <em>RstoxFDA::SetTimeBiotic</em> allows you to set an arbitrary time of the day to records where time is missing.</p>
+</div>
+<div id="position-information" class="section level3">
+<h3>Position information</h3>
+<p>Some sampling still record position of catches only in terms of area codes. In order for visualisations and annotation of other area codes to be supported by <strong>RstoxData::StoxBioticData</strong>, positional data must be provided. If the area codes provided in the NMDbiotic records provide sufficient precision, you may consider imputing positions from area codes, using <em>RstoxFDA::SetAreaPositionsBiotic</em>. See the section ‘Area codes’ for more details. Before that can be done, some particularities of the IMR data archive may need to be handled. Catch locations are often provided via the ‘FDIR Statistical areas and locations’, which is a two-code system where the first code represents an area (NMDbiotic: area), and the second a finer area coding system within that area (NMDbiotic: location). Both of these codes are defined as integers, and FDIR uses the convention to prefix single digit integers with a leading ‘0’, E.g: ‘01’ or ‘09’. In IMR records, several conventions have been used and the area ‘01’ may be recorded as either ‘01’, ‘1’ or ’ 1’ (note the whitespace), and perhaps additional variants. This may be corrected by using <em>RstoxBase::DefineTranslation</em> and <em>RstoxBase::TranslateBiotic</em>.</p>
+<p>In addition to this issue, FDIR revised their coding system in 2018, following a similar revision to the ICES areas. In NMDbiotic the old and revised definitions are represented as to different systems of area-coding (signified by the field NMDbiotic: system), but they are nearly identical and are often used interchangeably. <em>RstoxFDA::SetAreaPositionsBiotic</em> may therefore have to occur twice in a StoX project. Once for system ‘2’ (old definition) and once for system ‘10’ (new definition).</p>
+</div>
+<div id="gear-codes" class="section level3">
+<h3>Gear codes</h3>
+<p>NMDbiotic uses a four digit gear-coding system which is organized so that the two first digits code for gear-groups. If that coarser gear-definition is sufficient for analysis, downstream processing may be simplified by re-coding the gear column to only the first two digits. This is supported with the function <em>RstoxFDA::SetShortGearBiotic</em>.</p>
+</div>
+<div id="non-standard-fish-measurments" class="section level3">
+<h3>Non standard fish measurments</h3>
+<p>The practicalities of fisheries sampling often dictate that partially processed products, such as gutted fish, are measured. <strong>RstoxData::StoxBioticData</strong> only supports Live (Round) weights and total-length measurements, but weights in FDA-data are often provided as gutted (with or without head) and occasionally only head-lengths are provided (along with age). If conversions via scalar factors or simple regressions are acceptable, data can be made fit for <em>RstoxData::StoxBiotic</em> by use of the functions <em>RstoxFDA::ConvertWeightBiotic</em> and <em>RstoxFDA::ConvertLengthBiotic</em>. Conversion tables for these functions must first be defined by the functions <em>RstoxFDA::DefineLengthConversionParameters</em>, and <em>RstoxFDA::DefineWeightConversionFactor</em>. The latter offers the selection of some built-in official conversion factors, that can be used. Otherwise conversion tables must be provided as resource files.</p>
+</div>
+<div id="quality-filters" class="section level3">
+<h3>Quality filters</h3>
+<p>It has been common practice to remove extreme outliers from data. As most of these outliers are erroneous records, it is desirable to remove them from database records, or correct them if information is available, rather than removing them in analysis. RstoxFDA provides some outlier-filters. These are mainly provided in order to reproduce legacy workflows, and may be relevant to apply mostly to older data. They may also be used in conjunction with report functions to verify that extreme outliers are uncommon or absent. The function <em>RstoxFDA::FilterAgeLengthOutliersStoxBiotic</em> provides a filter with a von-Bertalannfy regression for removing extreme age-length relationships. The function <em>RstoxFDA::FilterWeightLengthOutliersStoxBiotic</em> provides a filter with a log-linear model to remove extreme weight-length relationships.</p>
+<p>When records are missing, or suspect data are encountered, it is important to provide feedback to data-collectors, so that they can correct the record when possible. In order to progress with analysis, and possibly detecting more data-issues, one may want to filter out offending data, and include them again later if they are corrected in databases. Dedicated filters for this purpose is recommended (<em>RstoxData::FilterBiotic</em>). If these filters are organised carefully, a report of what is filtered out may be generated by the function <em>RstoxFDA::ListBioticDifference</em>, which lists the difference between the output of a processes that proivde <strong>RstoxData::StoxBioticData</strong> to one providing data in <strong>RstoxData::BioticData</strong>. That kind of workflow allows you to discover several issues before reporting back to data-collectors, and provide a convenient format for reporting issues.</p>
+</div>
+</div>
+<div id="example-stox-project" class="section level2">
+<h2>Example: StoX-project</h2>
+<p>In summary, depending on the exact data issues at hand, sample data in a StoX project may be handled by a sequence of processes exemplified in the following table:</p>
+<table>
+<colgroup>
+<col width="43%" />
+<col width="30%" />
+<col width="26%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Process name</th>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ReadSamples</td>
+<td>ReadBiotic</td>
+<td>Reads in <strong>RstoxData::BioticData</strong> with biological samples from NMDbiotic xml-files</td>
+</tr>
+<tr class="even">
+<td>FilterSamples</td>
+<td>FilterBiotic</td>
+<td>Reduces data set to relevant sampling programs, relevant species, relevant catch fractions, etc.</td>
+</tr>
+<tr class="odd">
+<td>SetTime</td>
+<td>SetTimeBiotic</td>
+<td>Sets ‘stationstarttime’ on the table ‘fishstation’ in <strong>RstoxData::BioticData</strong> to a fixed time of day, wherever ‘stationstarttime’ is not already set</td>
+</tr>
+<tr class="even">
+<td>SetStartDate</td>
+<td>SetStartDateBiotic</td>
+<td>Sets ‘stationstartdate’ on the table ‘fishstation’ in <strong>RstoxData::BioticData</strong> equal to ‘stationstopdate’, wherever ‘stationstartdate’ is not already set</td>
+</tr>
+<tr class="odd">
+<td>LoadConversionFactors</td>
+<td>DefineWeightConversionFactor</td>
+<td>Loads built-in official conversion factors</td>
+</tr>
+<tr class="even">
+<td>ConvertWeight</td>
+<td>ConvertWeightBiotic</td>
+<td>Converts weight-fields in <strong>RstoxData::BioticData</strong> to desired product type, using the table defined by LoadConversionFactors</td>
+</tr>
+<tr class="odd">
+<td>ReadLengthParameters</td>
+<td>DefineLengthConversionParameters</td>
+<td>Reads regression parameters for converting length</td>
+</tr>
+<tr class="even">
+<td>ConvertLength</td>
+<td>ConvertLengthBiotic</td>
+<td>Converts ‘length’ on the table ‘individual’ in <strong>RstoxData::BioticData</strong> to desired measurement type, using parameters defined by ReadLengthParameters</td>
+</tr>
+<tr class="odd">
+<td>StoxBiotic</td>
+<td>StoxBiotic</td>
+<td>Converts <strong>RstoxData::BioticData</strong> to <strong>RstoxData::StoxBiotic</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="landing-data" class="section level1">
+<h1>Landing data</h1>
+<p>FDA analysis very often involve some kind of ratio-estimation dependent on a census of landed weight by species, or fishing effort by gear. At IMR we typically get such census data via mandatory reporting to FDIR. While RstoxData provides support for reading sales-notes from FDIR in a standardized format via the function <em>ReadLanding</em>, it is often convenient to use other formats. RstoxFDA therefore offers an alternative function for reading sales-notes: <em>ReadLandingFDA</em> that allows for some additional formats, some of these only available internally at IMR. <em>ReadLandingFDA</em> returns data that is compatible with <em>RstoxData::ReadLanding</em> and can be used in any function that accepts <strong>RstoxDAta::LandingData</strong>. While RstoxData offers the function <em>RstoxData::FilterLanding</em>, that provides filtering options for that format, the StoX user interface performs best if data is converted to a more aggregated format before further processing. The RstoxData function <em>RstoxData::StoxLanding</em> aggregates sales-notes to the format <strong>RstoxDAta::StoxLandingData</strong> and is supported by most further processing.</p>
+<div id="example-stox-project-1" class="section level2">
+<h2>Example: StoX-project</h2>
+<p>Typically, landings data are included in the StoX project by a sequence of processes exemplified by the table below:</p>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="20%" />
+<col width="30%" />
+<col width="26%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Process name</th>
+<th>Function</th>
+<th>Description</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ReadLandings</td>
+<td>ReadLandingFDA</td>
+<td>Reads in <strong>RstoxData::LandingData</strong> with sales-notes data from one of several available file formats</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>StoxLanding</td>
+<td>StoxLanding</td>
+<td>Converts <strong>RstoxData::LandingData</strong> to the aggregated <strong>RstoxData::StoxLandingData</strong></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>FilterLandings</td>
+<td>FilterStoxLanding</td>
+<td>Reduces data to relevant sampling frame, removing landings by area, vessel flag etc.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="area-codes" class="section level1">
+<h1>Area codes</h1>
+<p>Area codes are commonly used for stratification or domain definitions, and FDA frequently encounter situations where a clear definition of areas are useful. This is provided in StoX as spatial strata-files, which are named polygons describing exactly what an area-code represents in terms of latitudes and longitudes connected by straight lines. RstoxBase provides the function <em>RstoxBase::DefineStratumPolygon</em> that allows custom spatial strata-system / area codes to be defined. Since FDA frequently make use of standardized areas for reporting, some of these are provided by RstoxFDA as built-in options via the function <em>RstoxFDA::LoadFdaStratumPolygon</em>. These area definitions are compatible with those provided by <em>RstoxBase::DefineStratumPolygon</em>, and can be used in any function that accepts <strong>RstoxBase::StratumPolygon</strong>, but alleviates the need to obtain resource files for common coding systems such as the statistical areas used by ICES or FDIR.</p>
+<p>In general, FDA make use of these area definitions for several purposes besides representing stratification of samples. In particular they are used to impute positions for data where only area-codes are recorded, to annotate data with spatial domain information that is used in reporting, and as post-stratified categorical variables or covariates in estimation models. So in contrast to StoX survey-estimation projects, FDA-projects may well end up reading or loading several area-definitions.</p>
+<div id="imputing-positions" class="section level2">
+<h2>Imputing positions</h2>
+<p>Positions can be imputed from area codes, when that gives acceptable precision. That is, a single position within each area (typically the centroid) are used to represent the area and is injected into data that does not have exact positional information. This is most commonly done in order to convert back to other area codes. While that may seem like a roundabout approach, it offers great flexibility in how area codes or stratification systems used in models are defined, and makes it easy to annotate several area-code definitions to data, which is often necessary for purposes of reporting. For these use cases it is important to check that the area codes that positions are imputed from are not too much coarser, and preferably contained within, the area codes that will later be inferred from imputed positions. If area definitions are loaded into StoX via <em>RstoxFDA::LoadFdaStratumPolygon</em> or <em>RstoxBase::DefineStratumPolygon</em>, the overlap between different areas may be visualized by selecting the ‘Show in Map’-option.</p>
+<p>In order to impute positions, the coupling between area codes and positions must first be defined. This is done with the function <em>RstoxFDA::DefineAreaPosition</em>. If area codes are defined with polygons of sufficient quality using <em>RstoxFDA::LoadFdaStratumPolygon</em> or <em>RstoxBase::DefineStratumPolygon</em>, <em>RstoxFDA::DefineAreaPosition</em> can use these as input and provide a mapping between area codes and positions that is derived directly from the polygons. Otherwise, such a mapping must be provided as a resource file. Missing positions may then be filled into samples (<strong>RstoxData::BioticData</strong>) with <em>RstoxFDA::SetAreaPositionsBiotic</em> or added as new columns to landings (<strong>RstoxData::StoxLandingData</strong>) with <em>RstoxFDA::AddAreaPositionStoxLanding</em>. Note that since the format <strong>RstoxData::BioticData</strong> already have columns for positions, <em>RstoxFDA::SetAreaPositionsBiotic</em> fills in missing values in an already existing column, and this happens before converting to <strong>StoxBioticData</strong>. Landings don’t have exact positions, so for the case of landings the positions are added to <strong>RstoxData::StoxLandingData</strong>.</p>
+</div>
+<div id="annotating-area-codes" class="section level2">
+<h2>Annotating area codes</h2>
+<p>For data with positional information, columns with area codes may be added using <em>RstoxFDA::AddStratumStoxBiotic</em> and <em>RstoxFDA::AddStratumStoxLanding</em>. The latter provides several options for the name of the column to be added, which can be used to either add a column, or change the existing area column in <strong>RstoxData::StoxLandingData</strong>. By adding several AddStratumStoxLanding-processes to the StoX project, one area-column (‘Stratum’) can be used as strata or model covariate, and one area-column (‘Area’) can be used as a domain definition for reporting purposes.</p>
+</div>
+<div id="neighbour-matrix" class="section level2">
+<h2>Neighbour matrix</h2>
+<p>Reca offers a special kind of random effect, called a CAR-effect, which is often used for spatial covariates and requires a definition of neighborhood between for instance areas. If direct spatial neighbors are desired, and if polygons are provided with sufficient quality, the function <em>RstoxFDA::DefineCarNeighbours</em> can be used to calculate such neighborhood-information from areas defined with <em>RstoxFDA::LoadFdaStratumPolygon</em> or <em>RstoxBase::DefineStratumPolygon</em>.</p>
+</div>
+<div id="example-stox-project-2" class="section level2">
+<h2>Example: StoX-project</h2>
+<p>Area codes can be used for imputing positions and annotating area codes to data with position, as exemplified by the the sequence of processes in the table below:</p>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="20%" />
+<col width="30%" />
+<col width="26%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Process name</th>
+<th>Function</th>
+<th>Description</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ReadSamples</td>
+<td>ReadBiotic</td>
+<td>Reads in <strong>RstoxData::BioticData</strong> with biological samples from NMDbiotic xml-files</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>LoadFdir</td>
+<td>LoadFdaStratumPolygon</td>
+<td>Loads built-in polygons for the FDIR areas</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>AreaPosition</td>
+<td>DefineAreaPosition</td>
+<td>Makes a table mapping areas to positions based on polygons defined by LoadFdir</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>SetPositions</td>
+<td>SetAreaPositionsBiotic</td>
+<td>Set ‘latitudestart’ and ‘longitudestart’ on the table ‘fishstation’ in <strong>RstoxData::BioticData</strong> based on the fields ‘area’, ‘location’ and ‘system’, using the table defined by LoadFdir. Note that this is done before converstion to StoxBiotic for sample data</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>StoxBiotic</td>
+<td>StoxBiotic</td>
+<td>Converts <strong>RstoxData::BioticData</strong> to <strong>RstoxData::StoxBiotic</strong></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>ReadLandings</td>
+<td>ReadLandingFDA</td>
+<td>Reads in <strong>RstoxData::LandingData</strong> with sales-notes data from one of several available file formats</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>StoxLanding</td>
+<td>StoxLanding</td>
+<td>Converts <strong>RstoxData::LandingData</strong> to the aggregated <strong>RstoxData::StoxLandingData</strong></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>AddPositions</td>
+<td>AddAreaPositionStoxLanding</td>
+<td>Add the columns ‘Latitude’ and ‘Longitude’ based on the field ‘Area’, using the table defined by LoadFdir. Note that this is done after conversion to StoxLanding for landing-data</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>DefineStrata</td>
+<td>DefineStratumPolygon</td>
+<td>Read strata definition from custom polygon file</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>AddStratumSamples</td>
+<td>AddStratumStoxBiotic</td>
+<td>Add the column ‘Stratum’ to <strong>RstoxData::StoxBioticData</strong> based on definition read by DefineStrata</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>AddStratumLandings</td>
+<td>AddStratumStoxLanding</td>
+<td>Add the column ‘Stratum’ to <strong>RstoxData::StoxLandingData</strong> based on definition read by DefineStrata</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>LoadICES</td>
+<td>LoadFdaStratumPolygon</td>
+<td>Loads built-in polygons for the ICES areas</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>AddDomainLandings</td>
+<td>AddStratumStoxLanding</td>
+<td>Change the column ‘Area’ in <strong>RstoxData::StoxLandingData</strong> based on definition read by LoadICES</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="harmonising-codes" class="section level1">
+<h1>Harmonising codes</h1>
+<p>In FDA samples must typically be assigned to partitions of the census. Typically the landings are partitioned by a spatial component (area), gear and a temporal component (period), and these variables must be represented with the same coding systems in both samples (<strong>RstoxData::StoxBioticData</strong>) and landings (<strong>RstoxData::StoxLandingData</strong>). The samples and landings may be provided with different coding systems for instance for gear. Or data may be provided with different resolution, or too high resolution to adequately utilize the available samples. If that is the case, re-coding and re-grouping of codes are necessary, and functions for achieving that is introduced below.</p>
+<div id="spatial-component-area-codes" class="section level2">
+<h2>Spatial component (Area codes)</h2>
+<p>The section ‘Area’ describes how the spatial component can be handled with <em>RstoxFDA::AddStratumStoxBiotic</em> and <em>RstoxFDA::AddStratumStoxLanding</em>, which result in both samples and landings being annotated with the same area codes.</p>
+</div>
+<div id="temporal-component-period-codes" class="section level2">
+<h2>Temporal component (Period codes)</h2>
+<p>The temporal component can be handled with the functions <em>RstoxFDA::AddPeriodStoxBiotic</em> and <em>RstoxFDA::AddPeriodStoxLanding</em>. Similarly to <em>RstoxFDA::AddStratumStoxLanding</em>, <em>RstoxFDA::AddPeriodStoxLanding</em> offers several options for the name of the column that the temporal category (period) will be added to, so that it is possible to add one variable (‘Period’) for use as strata or covariate, and one varaible (‘ReportPeriod’) for defining domains for reporting. Both <em>RstoxFDA::AddPeriodStoxBiotic</em> and <em>RstoxFDA::AddPeriodStoxLanding</em> requires the definition of the temporal category to be provided by the function <em>RstoxFDA::DefinePeriod</em>. They can both refer the same instance of <em>RstoxFDA::DefinePeriod</em>, and in fact that is advisable, in order to ensure that the same coding system is used. <em>RstoxFDA::DefinePeriod</em> defines a mapping between dates and periods, and allows for ‘Quarter’, ‘Month’ or custom periods to be defined.</p>
+</div>
+<div id="gear-codes-1" class="section level2">
+<h2>Gear codes</h2>
+<p>Gear codes can be handled with the functions <em>RstoxFDA::AddGearGroupStoxBiotic</em> and <em>RstoxFDA::AddGearGroupStoxLanding</em>, which adds a new column ‘GearGroup’ to these tables. The mapping between gear codes are provided as a resource file for both of these, and is read into Stox with the function <em>RstoxData::DefineTranslation</em>, setting up a mapping between the variable ‘Gear’ and ‘NewValue’. ‘NewValue’ is the harmonized code that will be used for both samples and landings. <em>RstoxData::DefineTranslation</em> allows several ‘Gear’ values to be mapped to the same ‘NewValue’, so that gears may be grouped in this fashion. <em>RstoxFDA::AddGearGroupStoxBiotic</em> and <em>RstoxFDA::AddGearGroupStoxLanding</em> adds the codes from ‘NewValue’ in a new column named ‘GearGroup’. As for the spatial and temporal components, estimation and reporting may be treated differently. This can be achieved by re-coding the ‘Gear’-variable of either <strong>RstoxData::StoxBiotic</strong> or <strong>RstoxData::StoxLanding</strong> <em>after</em> ‘GearGroup’ has been added. The functions <em>RstoxData::TranslateStoxBiotic</em> and <em>RstoxData::TranslateStoxLanding</em> may be utilised for that purpose.</p>
+<p>When the source for the FDA is landings data from FDIR and samples from IMR (NMDbiotic), one cannot immediately use a common gear-definition for both landings and samples. The approach outlined above rather defines common gear groups via two instances of <em>RstoxData::DefineTranslation</em>. Another approach is to first translate the ‘Gear’-variable for the samples to the same coding system used by landings, and then use a common gear-grouping to add ‘GearGroup’. Particularly if 2-digit gear codes are used for the sample-data, one needs to be careful with this approach to make sure that the re-coding of the sample-gears are complete. Otherwise the ‘Gear’-column in the sample data will contain two-digit codes from two different coding-standards.</p>
+</div>
+<div id="example-stox-project-3" class="section level2">
+<h2>Example: StoX-project</h2>
+<p>Coding systems may be harmonized between samples and landings by a sequence of StoX-processes exemplified in the table below:</p>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="20%" />
+<col width="30%" />
+<col width="26%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Process name</th>
+<th>Function</th>
+<th>Description</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DefineGearGroupLandings</td>
+<td>DefineTranslation</td>
+<td>Reads resource file mapping gear to gear-groups for landings</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>DefineGearGroupSamples</td>
+<td>DefineTranslation</td>
+<td>Reads resource file mapping gear to the same gear-groups for samples</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>DefinePeriod</td>
+<td>DefinePeriod</td>
+<td>Defines mapping from date to quarter</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>ReadSamples</td>
+<td>ReadBiotic</td>
+<td>Reads in <strong>RstoxData::BioticData</strong> with biological samples from NMDbiotic xml-files</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>StoxBiotic</td>
+<td>StoxBiotic</td>
+<td>Converts <strong>RstoxData::BioticData</strong> to <strong>RstoxData::StoxBioticData</strong></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>AddGearSamples</td>
+<td>AddGearGroupStoxBiotic</td>
+<td>Add the column ‘GearGroup’ to <strong>RstoxData::StoxBioticData</strong> using the definition from DefineGearGroupSamples</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>AddPeriodSamples</td>
+<td>AddPeriodStoxLanding</td>
+<td>Add the column ‘Period’ to <strong>RstoxData::StoxBioticData</strong> using the definition from DefinePeriod.</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>ReadLandings</td>
+<td>ReadLandingFDA</td>
+<td>Reads in <strong>RstoxData::LandingData</strong> with sales-notes data from one of several available file formats</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>StoxLanding</td>
+<td>StoxLanding</td>
+<td>Converts <strong>RstoxData::LandingData</strong> to the aggregated <strong>RstoxData::StoxLandingData</strong></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>AddGearLandings</td>
+<td>AddGearGroupStoxLanding</td>
+<td>Add the column ‘GearGroup’ to <strong>RstoxData::StoxLandingData</strong> using the defintion from DefineGearGroupLandings</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>AddPeriodLandings</td>
+<td>AddPeriodStoxLanding</td>
+<td>Add the column ‘Period’ to <strong>RstoxData::StoxLandingData</strong> using the definition from DefinePeriod.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="stock-splitting-coastal-cod-analysis" class="section level1">
+<h1>Stock-splitting (coastal cod analysis)</h1>
+<p>At IMR some species are stock-typed based on otolith readings, and Reca provides an analysis to estimate the catch at age in two domains defined by these stocks. This is an example that relies on variables not supported by <strong>RstoxData::StoxBiotic</strong>, and the column with the stock-types need to be added by using <em>RstoxData::AddToStoxBiotic</em>. In addition some model parameters for that analysis can be defined in the StoX-baseline, which is described in the section ‘Reca parameters’</p>
+</div>
+<div id="reca-parameters" class="section level1">
+<h1>Reca parameters</h1>
+<p>For estimation with the package Reca, some complex parameters for the statistical models must be defined in the Stox-Baseline, if Reca is configured to use them. These are:</p>
+<dl>
+<dt><em>RstoxFDA::DefineStockSplittingParameters</em></dt>
+<dd>Defines uncertainty parameters for stock-splitting (coastal-cod analysis).
+</dd>
+<dt><em>RstoxFDA::DefineAgeErrorMatrix</em></dt>
+<dd>Defines uncertainty parameters for age readings.
+</dd>
+<dt><em>RstoxFDA::DefineCarNeighbours</em></dt>
+<dd>Define the neighbour-matrix for the CAR-variable.
+</dd>
+</dl>
+<p>All of these require resource files, except <em>RstoxFDA::DefineCarNeighbours</em>, which may also be calculated from area defintions, as also described in the section ‘Area codes’.</p>
+</div>
+<div id="analysis" class="section level1">
+<h1>Analysis</h1>
+<p>The functions introduced in this vignette should enable you to use IMR samples and FDIR landings to obtain <strong>RstoxData::StoxBiotic</strong> and <strong>RstoxData::StoxLanding</strong> data with complete records and harmonized code, ready for further analysis or reporting. Relevant analysis and reporting functions are introduced in other vignettes. See for instance <a href="Stox-FDA-overview.html">Stox Fisheries overview (report)</a> for obtaining reports on fishing activity and how it is sampled, or <a href="stox-reca.html">Stox-Reca (analysis)</a> for estimating Catch At Age with Reca.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
