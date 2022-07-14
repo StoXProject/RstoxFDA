@@ -255,3 +255,37 @@ readFdirOpenLandings <- function(filename, encoding="UTF-8"){
 
   return(ss)
 }
+
+#' Reads landings archive
+#' @description 
+#'  Reads aggregated sales notes from archive format deliver by FDIR to IMR. E.g. sluttseddel_1978_2004_medVerdi.csv
+#' @param filename file to read the archive from
+#' @param encoding encoding of the file identified by filename
+#' @return LandingsArchiveData
+#' @export
+readFdirLandingsArchive <- function(filename, encoding = "Latin-1"){
+  
+  spec_arch <- list(
+    AAR = "integer",
+    AAR2 = "integer",
+    FARTLAND = "character",
+    LEVAAR = "integer",
+    LEVMND = "integer",
+    KYST = "character",
+    HOMR = "character",
+    LOK = "character",
+    REDS = "character",
+    LEVHERRD = "character",
+    LEVHERRD2 = "character",
+    LEVFYLKE = "character",
+    FISK = "character",
+    FISK_NAVN = "character",
+    BIPROD = "character",
+    ANVEND = "character",
+    UTBET = "numeric",
+    VEKT = "numeric"
+  )
+  
+  landings <- data.table::fread(filename, encoding = encoding, na.strings = c("(null)"), sep=";", dec=",", header = T, colClasses = unlist(spec_arch))
+  return(landings)
+}
