@@ -25,6 +25,22 @@
       <ul class="nav navbar-nav"><li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a>
+    </li>
+    <li>
+      <a href="../articles/Stox-FDA-overview.html">Stox Fisheries overview (report)</a>
+    </li>
+    <li>
+      <a href="../articles/stox-reca.html">Stox-Reca (analysis)</a>
+    </li>
+  </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/StoXProject/RstoxFDA/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -50,57 +66,86 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plotBubbleMap</span><span class="op">(</span>
-  <span class="va">data</span>,
-  <span class="va">areaCol</span>,
-  <span class="va">quantityCol</span>,
-  <span class="va">areaDef</span>,
-  areaNameCol <span class="op">=</span> <span class="st">"StratumName"</span>,
-  legendTitle <span class="op">=</span> <span class="va">quantityCol</span>,
-  areaLabels <span class="op">=</span> <span class="cn">T</span>,
-  xlim <span class="op">=</span> <span class="cn">NULL</span>,
-  ylim <span class="op">=</span> <span class="cn">NULL</span>,
-  areaLabelSize <span class="op">=</span> <span class="fl">2</span>,
-  bubbleColor <span class="op">=</span> <span class="st">"darkred"</span>,
-  bubbleSize <span class="op">=</span> <span class="fl">10</span>,
-  bubbleShape <span class="op">=</span> <span class="fl">21</span>,
-  title <span class="op">=</span> <span class="st">""</span>,
-  projection <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotBubbleMap</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">areaCol</span>,</span>
+<span>  <span class="va">quantityCol</span>,</span>
+<span>  <span class="va">areaDef</span>,</span>
+<span>  areaNameCol <span class="op">=</span> <span class="st">"StratumName"</span>,</span>
+<span>  legendTitle <span class="op">=</span> <span class="va">quantityCol</span>,</span>
+<span>  areaLabels <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>  xlim <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ylim <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  areaLabelSize <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  bubbleColor <span class="op">=</span> <span class="st">"darkred"</span>,</span>
+<span>  bubbleSize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  bubbleShape <span class="op">=</span> <span class="fl">21</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  projection <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>data</dt>
 <dd><p>data.frame with quantities to be plotted</p></dd>
+
+
 <dt>areaCol</dt>
 <dd><p>character() identifing column in 'data' that specify area codes, must correspond to 'areaNameCol'</p></dd>
+
+
 <dt>quantityCol</dt>
 <dd><p>character() identifing column in 'data' that specify quantities to be plotted</p></dd>
+
+
 <dt>areaDef</dt>
 <dd><p><code><a href="https://rdrr.io/pkg/sp/man/SpatialPolygons.html" class="external-link">SpatialPolygonsDataFrame</a></code></p></dd>
+
+
 <dt>areaNameCol</dt>
 <dd><p>identifies column in 'areaDef' with label names for the areas, must correspond to 'areaCol'</p></dd>
+
+
 <dt>legendTitle</dt>
 <dd><p>title for the legend (explains what the quantities are)</p></dd>
+
+
 <dt>areaLabels</dt>
 <dd><p>logical whether to plot area labels</p></dd>
+
+
 <dt>xlim</dt>
 <dd><p>x axis limits in degrees longitude</p></dd>
+
+
 <dt>ylim</dt>
 <dd><p>y axis limits in degrees latitude</p></dd>
+
+
 <dt>areaLabelSize</dt>
 <dd><p>size for any area labels</p></dd>
+
+
 <dt>bubbleColor</dt>
 <dd><p>color of the bubbles</p></dd>
+
+
 <dt>bubbleSize</dt>
 <dd><p>size for the bubbles</p></dd>
+
+
 <dt>bubbleShape</dt>
 <dd><p>shape of the "bubbles". Default to circle (21). Use e.g. 22 for squares (consult list of pch values)</p></dd>
+
+
 <dt>title</dt>
 <dd><p>plot title</p></dd>
+
+
 <dt>projection</dt>
 <dd><p>proj4string or EPSG code specifying the desired projection, see <code><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></code>. Defaults to mercator projection</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -110,11 +155,11 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"> <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">landings</span><span class="op">)</span></span>
-<span class="r-in"> <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ICESareas</span><span class="op">)</span></span>
-<span class="r-in"> <span class="fu">plotBubbleMap</span><span class="op">(</span><span class="va">landings</span>, <span class="st">"Area"</span>, <span class="st">"LiveWeightKG"</span>,</span>
-<span class="r-in">       areaDef <span class="op">=</span> <span class="va">ICESareas</span>, areaNameCol <span class="op">=</span> <span class="st">"Area_Full"</span>,</span>
-<span class="r-in">       bubbleSize <span class="op">=</span> <span class="fl">20</span>, title<span class="op">=</span><span class="st">"Landings on ICES areas"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span> <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">landings</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ICESareas</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="fu">plotBubbleMap</span><span class="op">(</span><span class="va">landings</span>, <span class="st">"Area"</span>, <span class="st">"LiveWeightKG"</span>,</span></span>
+<span class="r-in"><span>       areaDef <span class="op">=</span> <span class="va">ICESareas</span>, areaNameCol <span class="op">=</span> <span class="st">"Area_Full"</span>,</span></span>
+<span class="r-in"><span>       bubbleSize <span class="op">=</span> <span class="fl">20</span>, title<span class="op">=</span><span class="st">"Landings on ICES areas"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched off</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched on</span>
 <span class="r-plt img"><img src="plotBubbleMap-1.png" alt="" width="700" height="433"></span>
@@ -132,7 +177,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

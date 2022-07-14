@@ -25,6 +25,22 @@
       <ul class="nav navbar-nav"><li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a>
+    </li>
+    <li>
+      <a href="../articles/Stox-FDA-overview.html">Stox Fisheries overview (report)</a>
+    </li>
+    <li>
+      <a href="../articles/stox-reca.html">Stox-Reca (analysis)</a>
+    </li>
+  </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/StoXProject/RstoxFDA/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -50,22 +66,31 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">SetTimeBiotic</span><span class="op">(</span><span class="va">BioticData</span>, Time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>, Overwrite <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">SetTimeBiotic</span><span class="op">(</span><span class="va">BioticData</span>, Time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>, Overwrite <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>BioticData</dt>
 <dd><p><code><a href="https://rdrr.io/pkg/RstoxData/man/BioticData.html" class="external-link">BioticData</a></code> data for which time should be set</p></dd>
+
+
 <dt>Time</dt>
 <dd><p>character encoding time. Defaults to 12:00:00Z if not given, otherwise provide 
 UTC-time formatted as <code><a href="https://rdrr.io/r/base/strptime.html" class="external-link">strptime</a></code>-string: %H:%M:%SZ, e.g. 12:00:00Z</p></dd>
+
+
 <dt>Overwrite</dt>
 <dd><p>if True any existing values in stationstarttime will be overwritten.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code><a href="https://rdrr.io/pkg/RstoxData/man/BioticData.html" class="external-link">BioticData</a></code></p>
+    
+
+<p><code><a href="https://rdrr.io/pkg/RstoxData/man/BioticData.html" class="external-link">BioticData</a></code></p>
+
+
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -93,7 +118,7 @@ UTC-time formatted as <code><a href="https://rdrr.io/r/base/strptime.html" class
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

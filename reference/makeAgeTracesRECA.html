@@ -25,6 +25,22 @@
       <ul class="nav navbar-nav"><li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a>
+    </li>
+    <li>
+      <a href="../articles/Stox-FDA-overview.html">Stox Fisheries overview (report)</a>
+    </li>
+    <li>
+      <a href="../articles/stox-reca.html">Stox-Reca (analysis)</a>
+    </li>
+  </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/StoXProject/RstoxFDA/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -50,21 +66,28 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">makeAgeTracesRECA</span><span class="op">(</span><span class="va">prediction</span>, unit <span class="op">=</span> <span class="st">"millions"</span>, plusGroup <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">makeAgeTracesRECA</span><span class="op">(</span><span class="va">prediction</span>, unit <span class="op">=</span> <span class="st">"millions"</span>, plusGroup <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>prediction</dt>
 <dd><p>as returned by <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code> or <code><a href="runRECA.html">runRECA</a></code>.</p></dd>
+
+
 <dt>unit</dt>
 <dd><p>unit of traced estimates. See details.</p></dd>
+
+
 <dt>plusGroup</dt>
 <dd><p>Fish this age or older will be grouped in one trace.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>data.table() with one column for each age (or plus group), and one row for each iteration of <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code>.</p>
+    
+
+<p>data.table() with one column for each age (or plus group), and one row for each iteration of <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -94,8 +117,8 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"> <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">recaPrediction</span><span class="op">)</span></span>
-<span class="r-in"> <span class="fu">makeAgeTracesRECA</span><span class="op">(</span><span class="va">recaPrediction</span>, plusGroup<span class="op">=</span><span class="fl">13</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span> <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">recaPrediction</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="fu">makeAgeTracesRECA</span><span class="op">(</span><span class="va">recaPrediction</span>, plusGroup<span class="op">=</span><span class="fl">13</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            2        3        4        5        6        7         8         9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1: 5.071436 57.52779 157.2190 49.13707 17.90393 6.670291 2.0559312 0.4991370</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2: 6.748423 55.24290 145.8560 46.99602 23.01269 7.917396 2.3648727 0.6610583</span>
@@ -214,7 +237,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>
