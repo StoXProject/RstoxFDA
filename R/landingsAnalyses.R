@@ -5,7 +5,7 @@
 #'  A fishery will be decomposed into cells, within which total weight will be reported.
 #' @param data data.frame containg fisheries data
 #' @param weightCol character() column in 'data' that contains catch weights
-#' @param cellCols charcter() vector of columns in 'data' defining cells
+#' @param cellCols character() vector of columns in 'data' defining cells
 #' @param complete logical() whether all combinations of the columns in cellCols should be tabulated, even if they contain no catch.
 #' @return \code{\link[data.table]{data.table}} with the cells specified in cellCols tabulated by decreasing weight and with the columns 'weight', 'frac' and 'cumFrac' containing the weight in each cells and the fraction and cumulative fraction of total weight in that cell.
 #' @family landings functions

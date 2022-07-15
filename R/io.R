@@ -291,3 +291,52 @@ readFdirLandingsArchive <- function(filename, encoding = "Latin-1"){
   landings <- data.table::fread(filename, encoding = encoding, na.strings = c("(null)"), sep=";", dec=",", header = T, colClasses = unlist(spec_arch))
   return(landings)
 }
+
+#' Parses logbooks (lst)
+#' @description
+#'  Parses logbooks from tabular format (.lst) delivered by Directorate of Fisheries (FDIR).
+#'  This format is not matched with WMS records and contains less detail than the format read by
+#'  \code{\link[RstoxData]{readErsFile}}
+#'  
+#' @param filename file to read the logbook records from
+#' @param encoding encoding of the file identified by filename
+#' @return LstLogbookData
+#' @family IO functions
+#' @family logbook functions
+#' @export
+readLstFile <- function(filename, encoding = "Latin-1"){
+  
+  spec_logb <- list(
+    FAAR = "character",
+    REGM = "character",
+    RKAL = "character",
+    FM = "character",
+    FD = "character",
+    DBNR = "character",
+    TUR = "character",
+    AM = "character",
+    AD = "character",
+    AH = "character",
+    LM = "character",
+    LD = "character",
+    LH = "character",
+    RE = "character",
+    MA = "character",
+    HA = "character",
+    VAR = "numeric",
+    OMRA = "character",
+    OKSO = "character",
+    HO = "character",
+    LO = "character",
+    LENG = "numeric",
+    BTON = "character",
+    TENH = "character",
+    HEST = "character",
+    FISK = "character",
+    VEKT = "numeric"
+  )
+  
+  logbooks <- data.table::fread(filename, encoding = encoding, na.strings = c(""), sep=";", dec=".", header = T, colClasses = unlist(spec_logb))
+  return(logbooks)
+  
+}
