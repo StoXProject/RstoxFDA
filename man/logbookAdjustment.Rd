@@ -72,5 +72,18 @@ Other logbook functions:
 \code{\link{imputeCatchesLandings}()},
 \code{\link{makeTripIds}()},
 \code{\link{sourceLogbookColumns}()}
+
+Other landings functions: 
+\code{\link{ReadLandingFDA}()},
+\code{\link{ReportFdaLandings}()},
+\code{\link{ReportFdaSampling}()},
+\code{\link{addLogbookColumns}()},
+\code{\link{appendTripIdLandings}()},
+\code{\link{imputeCatchesLandings}()},
+\code{\link{makeTripIds}()},
+\code{\link{plotBubbleMap}()},
+\code{\link{sourceLogbookColumns}()},
+\code{\link{tabulateFisheries}()}
 }
+\concept{landings functions}
 \concept{logbook functions}

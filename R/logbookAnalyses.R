@@ -138,6 +138,7 @@ NULL
 #'   fractions <- calculateLogbookPartitionByTrip(logbooksWtripIds, "mainArea")
 #'  }
 #' @family logbook functions
+#' @importFrom data.table .SD
 #' @export
 calculateLogbookPartitionByTrip <- function(logbooks, groupCols, tripCol="tripid", speciesCol="FANGSTART_FAO", weightCol="RUNDVEKT"){
 

@@ -1,5 +1,6 @@
 
 #' @noRd
+#' @importFrom data.table .SD
 bioticDiff <- function(biotic, StoxBiotic){
   
   if (!all(unlist(lapply(biotic, function(x){startsWith(x$metadata$useXsd, "nmdbioticv3")})))){

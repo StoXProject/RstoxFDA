@@ -76,6 +76,7 @@ checkSymmetry <- function(tab){
 #' @param Format The file format of the landing files.
 #' @param FileEncoding encoding for the files that should be read. If not given the default encoding for each format is used.
 #' @family IO functions
+#' @family landings functions
 #' @export
 ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"), FileEncoding=c("Default", "UTF-8", "Latin-1")){
   
@@ -856,6 +857,7 @@ appendGear <- function(table, gearcolumn, gearDefinition, colName){
 #'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'GearGroup' as an effect in Reca-estimation,
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'GearGroup' as an aggregation variable when comparing sampling with landed volume.
 #' @family gear coding functions
+#' @importFrom data.table .SD
 #' @export
 #' @md
 AddGearGroupStoxLanding <- function(StoxLandingData, Translation){

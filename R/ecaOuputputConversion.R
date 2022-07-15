@@ -81,12 +81,12 @@ convertCovariateMap2Stox <- function(prepObj){
   CovariateMap <- packCMlist(prepObj$CovariateMaps, "CovariateMaps")
   for (n in names(CovariateMap)){
     if (class(CovariateMap[[n]]) != "list"){
-      newMap[[n]] <- data.table(values=CovariateMap[[n]])
+      newMap[[n]] <- data.table::data.table(values=CovariateMap[[n]])
     }
     else if (is.null(names(CovariateMap[[n]]))){
-      newMap[[n]] <- data.table(names=1:length(CovariateMap[[n]]), values=unlist(CovariateMap[[n]]))  
+      newMap[[n]] <- data.table::data.table(names=1:length(CovariateMap[[n]]), values=unlist(CovariateMap[[n]]))  
     }else{
-      newMap[[n]] <- data.table(names=names(CovariateMap[[n]]), values=unlist(CovariateMap[[n]]))  
+      newMap[[n]] <- data.table::data.table(names=names(CovariateMap[[n]]), values=unlist(CovariateMap[[n]]))  
     }
     
   }
@@ -128,7 +128,7 @@ convertModelFit2Stox <- function(paramfit, paramtype, covariate, covariateMaps){
 #' @noRd
 convertModelFit <- function(modelfit, covariateMaps, model){
   output <- list()
-  output$LogLikelihood <- as.data.table(modelfit$LogLikelihood)
+  output$LogLikelihood <- data.table::as.data.table(modelfit$LogLikelihood)
   names(output$LogLikelihood) <- "LogLikelihood"
   output$LogLikelihood$Iteration <- 1:nrow(output$LogLikelihood)
   covariates <- names(modelfit$Intercept$cov)
@@ -175,12 +175,12 @@ convertModelFit <- function(modelfit, covariateMaps, model){
   
   # For PorportionAtAge, there may be only the tau-parameter for covariate catchSample.
   if ("catchSample" %in% names(modelfit$Intercept$tau) & is.null(output[["catchSample"]])){
-    output[["catchSample"]] <- data.table(Iteration=1:length(modelfit$Intercept$tau$catchSample), tau_Intercept=modelfit$Intercept$tau$catchSample)
+    output[["catchSample"]] <- data.table::data.table(Iteration=1:length(modelfit$Intercept$tau$catchSample), tau_Intercept=modelfit$Intercept$tau$catchSample)
   }
   
   # For LengthGivenAge and WeightGivenLength there may be the tau-parameter for fish
   if ("fish" %in% names(modelfit$Intercept$tau) & is.null(output[["fish"]])){
-    output[["fish"]] <- data.table(Iteration=1:length(modelfit$Intercept$tau$fish), tau_Intercept=modelfit$Intercept$tau$fish)
+    output[["fish"]] <- data.table::data.table(Iteration=1:length(modelfit$Intercept$tau$fish), tau_Intercept=modelfit$Intercept$tau$fish)
   }
   
   return(output)
@@ -634,7 +634,7 @@ convertStockSplittingParameters2stox <- function(CCerrorList, covariateMaps){
   
   stopifnot(!is.null(covariateMaps$StockSplitting))
   
-  tab <- data.table(StockNameCC=covariateMaps$StockSplitting$StockNameCC,
+  tab <- data.table::data.table(StockNameCC=covariateMaps$StockSplitting$StockNameCC,
                     StockNameS=covariateMaps$StockSplitting$StockNameS,
                     ProbabilityType1As1 = CCerrorList$ptype1.CC,
                     ProbabilityType5As1 = CCerrorList$ptype1.S,

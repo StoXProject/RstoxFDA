@@ -147,6 +147,7 @@ getLssSpec <- function(){
 }
 
 #' @noRd
+#' @importFrom data.table .SD
 convertToLssData <- function(LandingData=NULL, openFdirData=NULL){
   
   if (sum(c(!is.null(LandingData), !is.null(openFdirData))) != 1){
@@ -261,7 +262,8 @@ readFdirOpenLandings <- function(filename, encoding="UTF-8"){
 #'  Reads aggregated sales notes from archive format deliver by FDIR to IMR. E.g. sluttseddel_1978_2004_medVerdi.csv
 #' @param filename file to read the archive from
 #' @param encoding encoding of the file identified by filename
-#' @return LandingsArchiveData
+#' @return \code{\link[RstoxFDA]{LandingsArchiveData}}
+#' @family IO functions
 #' @export
 readFdirLandingsArchive <- function(filename, encoding = "Latin-1"){
   

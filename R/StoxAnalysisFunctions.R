@@ -377,7 +377,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   # Landings compilation are only done to ensure coding consistency.
   # The temporal resolution doesnt matter.
   #
-  quarter <- quarter(StoxLandingData$Landing$CatchDate)
+  quarter <- data.table::quarter(StoxLandingData$Landing$CatchDate)
   date <- NULL
   month <- NULL
 
@@ -692,7 +692,7 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
   month <- NULL
   date <- NULL
   if (TemporalResolution == "Quarter"){
-    quarter <- quarter(StoxLandingData$Landing$CatchDate)
+    quarter <- data.table::quarter(StoxLandingData$Landing$CatchDate)
   }
   else if (TemporalResolution == "Month"){
     month <- month(StoxLandingData$Landing$CatchDate)

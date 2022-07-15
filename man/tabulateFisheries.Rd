@@ -33,3 +33,17 @@ A fishery will be decomposed into cells, within which total weight will be repor
  data(landings)
  tabulateFisheries(landings)
 }
+\seealso{
+Other landings functions: 
+\code{\link{ReadLandingFDA}()},
+\code{\link{ReportFdaLandings}()},
+\code{\link{ReportFdaSampling}()},
+\code{\link{addLogbookColumns}()},
+\code{\link{appendTripIdLandings}()},
+\code{\link{imputeCatchesLandings}()},
+\code{\link{logbookAdjustment}()},
+\code{\link{makeTripIds}()},
+\code{\link{plotBubbleMap}()},
+\code{\link{sourceLogbookColumns}()}
+}
+\concept{landings functions}

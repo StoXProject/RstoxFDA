@@ -27,6 +27,6 @@ Landings (aggregated sales notes). Format used for landings archive delivered to
   \item{BIPROD}{character. Code for the product landed (0 codes for main-product, 1-8 codes for bi-products.)}
   \item{ANVEND}{character. Code for the usage of the landing (human consumption vs industiral usage). See code lists.)}
   \item{UTBET}{numeric. The prize paid to fisher in Norwegian currency at the time of purchase. Consult supplementary documentation for details.}
-  \item{VEKT}{numeric. Live weight (Round weight) of landed catch in kg.}
+  \item{VEKT}{numeric. Live weight (Round weight) of landed catch in kg. Listed as zero for bi-products.}
  }
 }

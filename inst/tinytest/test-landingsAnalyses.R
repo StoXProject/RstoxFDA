@@ -1,3 +1,4 @@
+library(data.table)
 #context("Test logbook against reference impl")
 log <- readRDS(system.file("testresources", "logb_cod_2021_extract.rds", package="RstoxFDA"))
 land <- readRDS(system.file("testresources", "land_cod_2021_extract.rds", package="RstoxFDA"))

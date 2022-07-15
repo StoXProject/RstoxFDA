@@ -12,8 +12,13 @@ readFdirLandingsArchive(filename, encoding = "Latin-1")
 \item{encoding}{encoding of the file identified by filename}
 }
 \value{
-LandingsArchiveData
+\code{\link[RstoxFDA]{LandingsArchiveData}}
 }
 \description{
 Reads aggregated sales notes from archive format deliver by FDIR to IMR. E.g. sluttseddel_1978_2004_medVerdi.csv
 }
+\seealso{
+Other IO functions: 
+\code{\link{ReadLandingFDA}()}
+}
+\concept{IO functions}

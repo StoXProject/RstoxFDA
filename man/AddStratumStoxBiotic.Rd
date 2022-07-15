@@ -37,6 +37,7 @@ Other spatial coding functions:
 \code{\link{appendAreaCode}()},
 \code{\link{appendPosition}()},
 \code{\link{mergePolygons}()},
-\code{\link{plotArea}()}
+\code{\link{plotArea}()},
+\code{\link{writeSpDataFrameAsWKT}()}
 }
 \concept{spatial coding functions}

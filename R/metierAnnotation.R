@@ -308,7 +308,7 @@ checkMetierTable <- function(metiertable, target=F, meshSize=F, selDev=F, selDev
     stop(paste("The provided metier table cannot be used with this selection of data columns. Some metiers have conflicting definitions:", paste(badMets, collapse=",")))
   }
 
-  metiertable <- metiertable[!dupliactedMetDef]
+  metiertable <- metiertable[!dupliactedMetDef,]
 
   if (any(!is.na(metiertable$gearcode) & is.na(metiertable$meshedGear)) & !all(is.na(metiertable$meshedGear))){
     stop("The parameter 'meshedGear' is only provided for some gears")
@@ -476,7 +476,6 @@ checkSelectivityDevice <- function(selectivityDeviceVector, metiertable){
 #'  annotatedShrimp <- annotated[annotated$targetFAO %in% c("PAN", "PRA"),]
 #'  table(annotatedShrimp$metier5, annotatedShrimp$metier6)
 #'
-#' @import data.table
 #' @export
 appendMetier <- function(data, metiertable, gearColumn, targetColumn=NULL, meshSizeColumn=NULL, selectivityDeviceColumn=NULL, selectivityDeviceMeshSizeColumn=NULL, metierColName="metier"){
 

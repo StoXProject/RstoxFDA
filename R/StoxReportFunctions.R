@@ -52,6 +52,7 @@ setUnits <- function(table, columns, unit, quantity){
 #' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.
 #' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
+#' @family landings functions
 #' @export
 #' @md
 ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
@@ -155,6 +156,7 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
 #' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.
 #' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
 #' @return \code{\link[RstoxFDA]{ReportFdaLandingData}}
+#' @family landings functions
 #' @export
 #' @md
 ReportFdaLandings <- function(StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
@@ -250,6 +252,7 @@ reportParameterAtAge <- function(table, aggVariables, parameter, alpha=.1){
 }
 
 #' @noRd
+#' @importFrom data.table .SD
 reportCovarianceAtAge <- function(table, aggVariables, parameter){
   
   stopifnot(all(c("Age", "AgeGroup") %in% names(table)))

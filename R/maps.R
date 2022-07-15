@@ -145,6 +145,7 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 #'  plotBubbleMap(landings, "Area", "LiveWeightKG",
 #'        areaDef = ICESareas, areaNameCol = "Area_Full",
 #'        bubbleSize = 20, title="Landings on ICES areas")
+#' @family landings functions
 #' @export
 plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="StratumName", legendTitle=quantityCol, areaLabels=T, xlim=NULL, ylim=NULL, areaLabelSize=2, bubbleColor="darkred", bubbleSize=10, bubbleShape=21, title="", projection=NULL){
   requireNamespace("rnaturalearth")
@@ -235,6 +236,7 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="Stra
 #' @param shape \code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert
 #' @param output filename to save output to
 #' @param namecol name of column in 'shape' that are to be used as strata names. Defaults to 'StratumName' pr the definition of \code{\link[RstoxBase]{StratumPolygon}}
+#' @family spatial coding functions
 #' @export
 writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
   requireNamespace("rgeos", quietly = TRUE)
