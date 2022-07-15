@@ -9,7 +9,7 @@ readFdirLandingsArchive(filename, encoding = "Latin-1")
 \arguments{
 \item{filename}{file to read the archive from}
 
-\item{encoding}{encoding of the file identified by filename}
+\item{encoding}{encoding of the file identified by filename, must be accepted by \code{\link[data.table]{fread}}.}
 }
 \value{
 \code{\link[RstoxFDA]{LandingsArchiveData}}
@@ -19,6 +19,7 @@ Reads aggregated sales notes from archive format deliver by FDIR to IMR. E.g. sl
 }
 \seealso{
 Other IO functions: 
-\code{\link{ReadLandingFDA}()}
+\code{\link{ReadLandingFDA}()},
+\code{\link{readLstFile}()}
 }
 \concept{IO functions}

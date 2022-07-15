@@ -43,7 +43,8 @@ Norwegian sales-notes data are archived and curated by the Norwegian Directorate
 }
 \seealso{
 Other IO functions: 
-\code{\link{readFdirLandingsArchive}()}
+\code{\link{readFdirLandingsArchive}()},
+\code{\link{readLstFile}()}
 
 Other landings functions: 
 \code{\link{ReportFdaLandings}()},

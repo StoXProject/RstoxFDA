@@ -46,9 +46,11 @@ Other logbook functions:
 \code{\link{appendTripIdLandings}()},
 \code{\link{appendTripIdLogbooks}()},
 \code{\link{calculateLogbookPartitionByTrip}()},
+\code{\link{convertToErsData}()},
 \code{\link{imputeCatchesLandings}()},
 \code{\link{logbookAdjustment}()},
 \code{\link{makeTripIds}()},
+\code{\link{readLstFile}()},
 \code{\link{sourceLogbookColumns}()}
 
 Other landings functions: 

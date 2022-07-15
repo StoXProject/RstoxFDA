@@ -16,7 +16,7 @@ tabulateFisheries(
 
 \item{weightCol}{character() column in 'data' that contains catch weights}
 
-\item{cellCols}{charcter() vector of columns in 'data' defining cells}
+\item{cellCols}{character() vector of columns in 'data' defining cells}
 
 \item{complete}{logical() whether all combinations of the columns in cellCols should be tabulated, even if they contain no catch.}
 }

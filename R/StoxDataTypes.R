@@ -131,7 +131,7 @@ NULL
 #'   \item{RE}{character. Gear. Main gear for fishing operation definitions that allow several.}
 #'   \item{MA}{character. Mesh size (mm) for meshed gear.}
 #'   \item{HA}{character. Number of hauls/sets for fishing operation definitions that allow several.}
-#'   \item{VAR}{numeric. Total fishing time (centi-hours).}
+#'   \item{VAR}{numeric. Total fishing time (hours).}
 #'   \item{OMRA}{character. International area code (ICES, NAFO, etc.)}
 #'   \item{OKSO}{character. Economic zone. Three letter code.}
 #'   \item{HO}{character. Main area of catch. As identified by the column 'StratumName' in \code{\link[RstoxFDA]{mainareaFdir2017}} or \code{\link[RstoxFDA]{mainareaFdir2018}})}
