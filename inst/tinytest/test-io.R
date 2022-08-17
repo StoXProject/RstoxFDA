@@ -29,3 +29,11 @@ expect_equal(sum(erslogb$RUNDVEKT), sum(logb$VEKT))
 expect_equal(sum(erslogb$VARIGHET), sum(logb$VAR)*60)
 expect_true(all(paste(logb$HO, logb$LO, sep="") %in% erslogb$LOKASJON_START))
 expect_equal(nrow(logb), nrow(erslogb))
+
+#test variant wo header
+lst_logb_woh <- system.file("testresources", "logbookvariants", "logbook_wo_header.lst", package="RstoxFDA")
+expect_warning(logb <- RstoxFDA:::readLstFile(lst_logb_woh))
+expect_equal(ncol(logb), 27)
+expect_true(sum(logb$VAR)>0)
+expect_true(sum(logb$VEKT)>0)
+expect_true(sum(logb$LENG)>0)

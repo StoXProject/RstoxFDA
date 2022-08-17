@@ -297,6 +297,9 @@ readFdirLandingsArchive <- function(filename, encoding = "Latin-1"){
 #'  Parses logbooks from tabular format (.lst) delivered by Directorate of Fisheries (FDIR).
 #'  This format is not matched with WMS records and contains less detail than the format read by
 #'  \code{\link[RstoxData]{readErsFile}}
+#' @details 
+#'  A variant of .lst does not provide headers. These are read with assumed standard order of headers,
+#'  and a warning is issued.
 #'  
 #' @param filename file to read the logbook records from
 #' @param encoding encoding of the file identified by filename, must be accepted by \code{\link[data.table]{fread}}.
@@ -335,6 +338,19 @@ readLstFile <- function(filename, encoding = "Latin-1"){
     FISK = "character",
     VEKT = "numeric"
   )
+  
+  ss <- data.table::fread(filename, encoding = encoding, na.strings = c(""), sep=";", dec=".", header = T, nrows = 1)
+  if (any(names(ss) != names(spec_logb))){
+    warning("Expected headers not found. Assuming: ", paste(names(spec_logb), collapse=","))
+    if (length(names(ss)) != length(names(spec_logb))){
+      stop("Malformed .lst file, unexpected number of columns.")
+    }
+    
+    headers <- names(spec_logb)
+    names(spec_logb) <- NULL
+    logbooks <- data.table::fread(filename, encoding = encoding, na.strings = c(""), sep=";", dec=".", header = T, col.names=headers, colClasses = unlist(spec_logb))
+    return(logbooks)
+  }
   
   logbooks <- data.table::fread(filename, encoding = encoding, na.strings = c(""), sep=";", dec=".", header = T, colClasses = unlist(spec_logb))
   return(logbooks)
