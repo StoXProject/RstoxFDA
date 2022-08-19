@@ -58,4 +58,12 @@ That is a category starting with 1. Jan is added if not present, and likewise a 
 }
 \seealso{
 \code{\link[RstoxFDA]{AddPeriodStoxBiotic}} and \code{\link[RstoxFDA]{AddPeriodStoxLanding}} for adding Periods to data.
+
+Other temporal coding functions: 
+\code{\link{AddPeriodStoxBiotic}()},
+\code{\link{AddPeriodStoxLanding}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()},
+\code{\link{categoriseDate}()}
 }
+\concept{temporal coding functions}

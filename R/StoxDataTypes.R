@@ -69,6 +69,86 @@ is.StoxBioticData <- function(StoxBioticData, raiseErrors=F){
   return(TRUE)
 }
 
+#' Landings archive (LandingsArchiveData)
+#' 
+#' @description 
+#'  Landings (aggregated sales notes). Format used for landings archive delivered to IMR by FDIR.
+#'  Additional documentation (in Norwegian) can be found in the files:
+#'  docs/documentation_landingsdata_archive_norwegian.csv
+#'  docs/selected_code_lists_landingsdata_archive_norwegian.xlsx
+#'  docs/supplementary_documentation_landingsdata_archive_norwegian.csv
+#'  \describe{
+#'   \item{AAR}{integer. Two last digits of year of catch}
+#'   \item{AAR2}{integer. Year of catch (4 digits)}
+#'   \item{FARTLAND}{character. Code for vessel flag (NOR for Norwegian, UTL for non-Norwegian)}
+#'   \item{LEVAAR}{integer. Two last digits of year of landing)}
+#'   \item{LEVMND}{integer. Month of landing (1=January, 12=December))}
+#'   \item{KYST}{integer. Code for whether the catch was caught within the coastal region (12 nautical miles from the coast). Code 0 denotes oceanic catch, code 8 and 9 denotes coastal catch.)}
+#'   \item{HOMR}{character. Main area of catch. As identified by the column 'StratumName' in \code{\link[RstoxFDA]{mainareaFdir2017}}), except that leading zeroes are not used for the areas 0-9.}
+#'   \item{LOK}{character. Location of catch. As identified by the column 'Lokasjon' in \code{\link[RstoxFDA]{locationsFdir2017}}), together with Main area (the column HAVOMR), except neither use leading zeroes.}
+#'   \item{REDS}{character. Gear code as defined by the standard NS9400. See code lists.}
+#'   \item{LEVHERRD}{character. Code for the muncipality (kommune) the catch was landed. Not using leading zeroes}
+#'   \item{LEVHERRD2}{character. Code for the muncipality (kommune) the catch was landed. Using leading zeroes}
+#'   \item{LEVFYLKE}{character. Code for the muncipality (fylke) the catch was landed. Using leading zeroes}
+#'   \item{FISK}{character. Code for the species landed}
+#'   \item{FISK_NAVN}{character. Norwegian name of the species landed.}
+#'   \item{BIPROD}{character. Code for the product landed (0 codes for main-product, 1-8 codes for bi-products.)}
+#'   \item{ANVEND}{character. Code for the usage of the landing (human consumption vs industiral usage). See code lists.)}
+#'   \item{UTBET}{numeric. The prize paid to fisher in Norwegian currency at the time of purchase. Consult supplementary documentation for details.}
+#'   \item{VEKT}{numeric. Live weight (Round weight) of landed catch in kg. Listed as zero for bi-products.}
+#'  }
+#' 
+#' 
+#' @name LandingsArchiveData
+#' 
+NULL
+
+#' Landings archive (LandingsArchiveData)
+#' 
+#' @description 
+#'  Logbooks read from the lst format delivered by Directorate of Fisheries (FDIR).
+#' 
+#'  This format is not matched with WMS records and contains less detail than the format read by
+#'  \code{\link[RstoxData]{readErsFile}}
+#' 
+#'  Each row represent one fishing operation, which is defined in the legislation current at the time of reporting.
+#'  
+#'  Additional documentation (in Norwegian) can be found in the file:
+#'  doc/documentation_logbookdata_lst.xls
+#'  \describe{
+#'   \item{FAAR}{character. Year of catch (4 digits)}
+#'   \item{REGM}{character License number of fishing vessel (registreringsmerke)}
+#'   \item{FM}{character. Month of catch. number with leading zeroes. 1=January, 12=December}
+#'   \item{FD}{character. Day of catch. number with leading zeroes}
+#'   \item{DBNR}{character. Logbook number.}
+#'   \item{TUR}{character. Trip number.}
+#'   \item{FM}{character. Month of departure (start of trip). number with leading zeroes. 1=January, 12=December}
+#'   \item{FD}{character. Day of departure (start of trip). number with leading zeroes.}
+#'   \item{AH}{character. Port of departure (start of trip). Code identifying port.}
+#'   \item{LM}{character. Month of landing of catch. number with leading zeroes. 1=January, 12=December}
+#'   \item{LD}{character. Day of landing of catch. number with leading zeroes.}
+#'   \item{LH}{character. Port where catch was landed. Code identifying port.}
+#'   \item{RE}{character. Gear. Main gear for fishing operation definitions that allow several.}
+#'   \item{MA}{character. Mesh size (mm) for meshed gear.}
+#'   \item{HA}{character. Number of hauls/sets for fishing operation definitions that allow several.}
+#'   \item{VAR}{numeric. Total fishing time (hours).}
+#'   \item{OMRA}{character. International area code (ICES, NAFO, etc.)}
+#'   \item{OKSO}{character. Economic zone. Three letter code.}
+#'   \item{HO}{character. Main area of catch. As identified by the column 'StratumName' in \code{\link[RstoxFDA]{mainareaFdir2017}} or \code{\link[RstoxFDA]{mainareaFdir2018}})}
+#'   \item{LO}{character. Location of catch. As identified by the column 'Lokasjon' in \code{\link[RstoxFDA]{locationsFdir2017}} or \code{\link[RstoxFDA]{locationsFdir2018}}, together with Main area (the column HAVOMR)}
+#'   \item{LENG}{numeric. vessel length (m).}
+#'   \item{BTON}{character. Gross tonnage of vessel.}
+#'   \item{TENH}{character. Tonnage units of vessel.}
+#'   \item{HEST}{character. Engine effect of vessel (Hp)}
+#'   \item{FISK}{character. Code for the species landed. NS9400.}
+#'   \item{VEKT}{numeric Liveweight (Roundweight) in kg.}
+#'  }
+#' 
+#' 
+#' @name LstLogbookData
+#' 
+NULL
+
 #' Age group statistics (ReportFdaByAgeData)
 #' 
 #' @description 

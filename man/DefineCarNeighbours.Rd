@@ -55,4 +55,18 @@ runing time and correctness of calcuation may depend on the quality and complexi
 }
 \seealso{
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of the definition in Reca-estimates, and \code{\link[RstoxBase]{DefineStratumPolygon}} for how to define a spatial variable from a strata-definition.
+
+Other spatial coding functions: 
+\code{\link{AddAreaPositionStoxLanding}()},
+\code{\link{AddStratumStoxBiotic}()},
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineAreaPosition}()},
+\code{\link{LoadFdaStratumPolygon}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{appendAreaCode}()},
+\code{\link{appendPosition}()},
+\code{\link{mergePolygons}()},
+\code{\link{plotArea}()},
+\code{\link{writeSpDataFrameAsWKT}()}
 }
+\concept{spatial coding functions}

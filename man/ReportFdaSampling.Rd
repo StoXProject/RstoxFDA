@@ -44,3 +44,17 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 
 The units considered valid for weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
 }
+\seealso{
+Other landings functions: 
+\code{\link{ReadLandingFDA}()},
+\code{\link{ReportFdaLandings}()},
+\code{\link{addLogbookColumns}()},
+\code{\link{appendTripIdLandings}()},
+\code{\link{imputeCatchesLandings}()},
+\code{\link{logbookAdjustment}()},
+\code{\link{makeTripIds}()},
+\code{\link{plotBubbleMap}()},
+\code{\link{sourceLogbookColumns}()},
+\code{\link{tabulateFisheries}()}
+}
+\concept{landings functions}

@@ -41,4 +41,29 @@ Add columns to landings from corresponding logbook entries.
 }
 \seealso{
 \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, \code{\link[RstoxFDA]{appendTripIdLogbooks}}, and \code{\link[RstoxFDA]{imputeCatchesLandings}} for obtaining 'landings' and 'logbooks' with trip-ids and catch-ids.
+
+Other logbook functions: 
+\code{\link{appendTripIdLandings}()},
+\code{\link{appendTripIdLogbooks}()},
+\code{\link{calculateLogbookPartitionByTrip}()},
+\code{\link{convertToErsData}()},
+\code{\link{imputeCatchesLandings}()},
+\code{\link{logbookAdjustment}()},
+\code{\link{makeTripIds}()},
+\code{\link{readLstFile}()},
+\code{\link{sourceLogbookColumns}()}
+
+Other landings functions: 
+\code{\link{ReadLandingFDA}()},
+\code{\link{ReportFdaLandings}()},
+\code{\link{ReportFdaSampling}()},
+\code{\link{appendTripIdLandings}()},
+\code{\link{imputeCatchesLandings}()},
+\code{\link{logbookAdjustment}()},
+\code{\link{makeTripIds}()},
+\code{\link{plotBubbleMap}()},
+\code{\link{sourceLogbookColumns}()},
+\code{\link{tabulateFisheries}()}
 }
+\concept{landings functions}
+\concept{logbook functions}

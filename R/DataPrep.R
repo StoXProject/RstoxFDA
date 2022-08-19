@@ -46,6 +46,7 @@ readTabSepFile <- function(filepath, encoding="UTF-8", col_classes = NULL, col_n
 #'  categoriseDate(dates, temporalType = "custom", FUN=inDecember, seasonal = FALSE)
 #'
 #' @return character() a vector of values for the categorical variable, corresponding to the dates in 'date'
+#' @family temporal coding functions
 #' @export
 categoriseDate <- function(date, temporalType="quarter", seasonal=T, FUN=NULL){
 
@@ -146,10 +147,11 @@ convertCodes <- function(code, conversionTable){
 #' @param colName name of column to be appended to 'table'
 #' @param StratumName name of column in 'areaPolygons' that identify the area name
 #' @return 'table' with the area appended in the column 'colName'
+#' @family spatial coding functions
 #' @export
 appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, StratumName="StratumName"){
   if (!data.table::is.data.table(table)){
-    stop("Paramter 'table' must be a data.table")
+    stop("Parameter 'table' must be a data.table")
   }
   if (colName %in% names(table)){
     stop(paste("Column name", colName, "already exists."))
@@ -203,6 +205,7 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
 #' @param lonColName name of the longitude column to be appended to 'table'
 #' @param StratumName name of the column in 'areaPolygons' that identifies the area.
 #' @return 'table' with the positions appended in the columns 'latColName' and 'lonColName'.
+#' @family spatial coding functions
 #' @export
 appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName, StratumName="StratumName"){
   if (latColName %in% names(table)){

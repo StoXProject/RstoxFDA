@@ -147,6 +147,7 @@ getLssSpec <- function(){
 }
 
 #' @noRd
+#' @importFrom data.table .SD
 convertToLssData <- function(LandingData=NULL, openFdirData=NULL){
   
   if (sum(c(!is.null(LandingData), !is.null(openFdirData))) != 1){
@@ -254,4 +255,179 @@ readFdirOpenLandings <- function(filename, encoding="UTF-8"){
   ss$`Siste fangstdato` <- as.POSIXct(ss$`Siste fangstdato`, format="%d.%m.%Y", tz="CET")
 
   return(ss)
+}
+
+#' Reads landings archive
+#' @description 
+#'  Reads aggregated sales notes from archive format deliver by FDIR to IMR. E.g. sluttseddel_1978_2004_medVerdi.csv
+#' @param filename file to read the archive from
+#' @param encoding encoding of the file identified by filename, must be accepted by \code{\link[data.table]{fread}}.
+#' @return \code{\link[RstoxFDA]{LandingsArchiveData}}
+#' @family IO functions
+#' @export
+readFdirLandingsArchive <- function(filename, encoding = "Latin-1"){
+  
+  spec_arch <- list(
+    AAR = "integer",
+    AAR2 = "integer",
+    FARTLAND = "character",
+    LEVAAR = "integer",
+    LEVMND = "integer",
+    KYST = "character",
+    HOMR = "character",
+    LOK = "character",
+    REDS = "character",
+    LEVHERRD = "character",
+    LEVHERRD2 = "character",
+    LEVFYLKE = "character",
+    FISK = "character",
+    FISK_NAVN = "character",
+    BIPROD = "character",
+    ANVEND = "character",
+    UTBET = "numeric",
+    VEKT = "numeric"
+  )
+  
+  landings <- data.table::fread(filename, encoding = encoding, na.strings = c("(null)"), sep=";", dec=",", header = T, colClasses = unlist(spec_arch))
+  return(landings)
+}
+
+#' Parses logbooks (lst)
+#' @description
+#'  Parses logbooks from tabular format (.lst) delivered by Directorate of Fisheries (FDIR).
+#'  This format is not matched with WMS records and contains less detail than the format read by
+#'  \code{\link[RstoxData]{readErsFile}}
+#' @details 
+#'  A variant of .lst does not provide headers. These are read with assumed standard order of headers,
+#'  and a warning is issued.
+#'  
+#' @param filename file to read the logbook records from
+#' @param encoding encoding of the file identified by filename, must be accepted by \code{\link[data.table]{fread}}.
+#' @return LstLogbookData
+#' @family IO functions
+#' @family logbook functions
+#' @export
+readLstFile <- function(filename, encoding = "Latin-1"){
+  
+  spec_logb <- list(
+    FAAR = "character",
+    REGM = "character",
+    RKAL = "character",
+    FM = "character",
+    FD = "character",
+    DBNR = "character",
+    TUR = "character",
+    AM = "character",
+    AD = "character",
+    AH = "character",
+    LM = "character",
+    LD = "character",
+    LH = "character",
+    RE = "character",
+    MA = "character",
+    HA = "character",
+    VAR = "numeric",
+    OMRA = "character",
+    OKSO = "character",
+    HO = "character",
+    LO = "character",
+    LENG = "numeric",
+    BTON = "character",
+    TENH = "character",
+    HEST = "character",
+    FISK = "character",
+    VEKT = "numeric"
+  )
+  
+  ss <- data.table::fread(filename, encoding = encoding, na.strings = c(""), sep=";", dec=".", header = T, nrows = 1)
+  if (any(names(ss) != names(spec_logb))){
+    warning("Expected headers not found. Assuming: ", paste(names(spec_logb), collapse=","))
+    if (length(names(ss)) != length(names(spec_logb))){
+      stop("Malformed .lst file, unexpected number of columns.")
+    }
+    
+    headers <- names(spec_logb)
+    names(spec_logb) <- NULL
+    logbooks <- data.table::fread(filename, encoding = encoding, na.strings = c(""), sep=";", dec=".", header = T, col.names=headers, colClasses = unlist(spec_logb))
+    return(logbooks)
+  }
+  
+  logbooks <- data.table::fread(filename, encoding = encoding, na.strings = c(""), sep=";", dec=".", header = T, colClasses = unlist(spec_logb))
+  return(logbooks)
+  
+}
+
+#' Convert logbook data
+#' @description
+#'  Convert \code{\link[RstoxFDA]{LstLogbookData}} to the format provided by \code{\link[RstoxData]{readErsFile}}.
+#'  Not all records can be filled, and some are left blank.
+#'  
+#'  \code{\link[RstoxFDA]{LstLogbookData}} contains records for fishing date, but not exact time, which is required for conversion of time information. 
+#'  In order to set start time of fishing operations, the a time of day need to be provided via the parameter 'timestring'
+#'  UTC times are assumed.
+#'
+#' @param LstLogbookData \code{\link[RstoxFDA]{LstLogbookData}} to be converted
+#' @param timestring string representing the time of day (UTC) to assume for fishing operations. Format: %H:%M:%S.
+#' @family logbook functions
+#' @return \code{\link[data.table]{data.table}} formatted as return from \code{\link[RstoxData]{readErsFile}}.
+#' @md
+#' @export
+convertToErsData <- function(LstLogbookData, timestring="12:00:00"){
+  nachar <- as.character(rep(NA, nrow(LstLogbookData)))
+  nanum <- as.numeric(rep(NA, nrow(LstLogbookData)))
+  ersdata <- data.table::data.table(
+    RC = LstLogbookData$RKAL,
+    REGM = LstLogbookData$REGM,
+    STORSTE_LENGDE = LstLogbookData$LENG,
+    BRUTTOTONNASJE = as.integer(LstLogbookData$BTON),
+    MOTORKRAFT = as.integer(LstLogbookData$HEST),
+    TM1 = nachar,
+    AKTIVITET_KODE = nachar,
+    AKTIVITET = nachar,
+    PUMPET_FRA = nachar,
+    FANGSTAR = as.integer(LstLogbookData$FAAR),
+    STARTTIDSPUNKT = paste(paste(LstLogbookData$FAAR, LstLogbookData$FM, LstLogbookData$FD, sep="-"), timestring, sep=" "),
+    START_LT = nanum,
+    START_LG = nanum,
+    SONE = LstLogbookData$OKSO,
+    KVOTETYPE_KODE = nachar,
+    KVOTETYPE = nachar,
+    REDSKAP_FAO = nachar,
+    REDSKAP_NS = LstLogbookData$RE,
+    REDSKAP = nachar,
+    REDSKAPSSPESIFIKASJON_KODE = nachar,
+    REDSKAPSSPESIFIKASJON = nachar,
+    MASKEVIDDE = as.integer(LstLogbookData$MA),
+    REDSKAP_PROBLEMER_KODE = nachar,
+    REDSKAP_PROBLEMER = nachar,
+    STOPPTIDSPUNKT = nachar,
+    STOPP_LT = nanum,
+    STOPP_LG = nanum,
+    VARIGHET = LstLogbookData$VAR*60,
+    INNSATS = nanum,
+    SILD_BESTAND_KODE = nachar,
+    SILD_BESTAND_NS = nachar,
+    SILD_BESTAND = nachar,
+    HOVEDART_FAO = nachar,
+    HOVEDART_NS = nachar,
+    HOVEDART = nachar,
+    INT_OMR_GML_START = nachar,
+    INT_OMR_NY_START = nachar,
+    INT_OMR_GML_STOPP = nachar,
+    INT_OMR_NY_STOPP = nachar,
+    HAV_DYBDE_START = nanum,
+    HAV_DYBDE_STOPP = nanum,
+    LOKASJON_START = paste(LstLogbookData$HO, LstLogbookData$LO, sep=""),
+    LOKASJON_STOPP = nachar,
+    TREKK_AVSTAND_METER = nanum,
+    FANGSTART_FAO = nachar,
+    FANGSTART_NS = LstLogbookData$FISK,
+    FANGSTART = nachar,
+    RUNDVEKT = LstLogbookData$VEKT
+  )
+  
+  ersdata$STARTTIDSPUNKT <- as.POSIXct(ersdata$STARTTIDSPUNKT, format="%Y-%m-%d %H:%M:%S", tz="UTC")
+  
+  return(ersdata)
+
 }

@@ -205,7 +205,7 @@ is.MetierTable <- function(table, throwError=F){
 #'  Logical values ('meshedGear' and 'meshedSelectivityDevice') should be encoded with 'T' for true and 'F' for false.
 #' @param filename character() path to file that contains metier definitions. See details for format.
 #' @param encoding The character encoding of the file identified by 'filename'
-#' @return \code{\link[RstoxFDA]{MetierTable}} containing metier definitons.
+#' @return \code{\link[RstoxFDA]{MetierTable}} containing metier definitions.
 #' @export
 readMetierTable <- function(filename, encoding="UTF8"){
   
@@ -308,7 +308,7 @@ checkMetierTable <- function(metiertable, target=F, meshSize=F, selDev=F, selDev
     stop(paste("The provided metier table cannot be used with this selection of data columns. Some metiers have conflicting definitions:", paste(badMets, collapse=",")))
   }
 
-  metiertable <- metiertable[!dupliactedMetDef]
+  metiertable <- metiertable[!dupliactedMetDef,]
 
   if (any(!is.na(metiertable$gearcode) & is.na(metiertable$meshedGear)) & !all(is.na(metiertable$meshedGear))){
     stop("The parameter 'meshedGear' is only provided for some gears")
@@ -476,7 +476,6 @@ checkSelectivityDevice <- function(selectivityDeviceVector, metiertable){
 #'  annotatedShrimp <- annotated[annotated$targetFAO %in% c("PAN", "PRA"),]
 #'  table(annotatedShrimp$metier5, annotatedShrimp$metier6)
 #'
-#' @import data.table
 #' @export
 appendMetier <- function(data, metiertable, gearColumn, targetColumn=NULL, meshSizeColumn=NULL, selectivityDeviceColumn=NULL, selectivityDeviceMeshSizeColumn=NULL, metierColName="metier"){
 

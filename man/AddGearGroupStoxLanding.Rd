@@ -31,4 +31,9 @@ with the same gear groups.
 \code{\link[RstoxFDA]{AddGearGroupStoxBiotic}} for similar function for sample data,
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'GearGroup' as an effect in Reca-estimation,
 and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'GearGroup' as an aggregation variable when comparing sampling with landed volume.
+
+Other gear coding functions: 
+\code{\link{AddGearGroupStoxBiotic}()},
+\code{\link{SetShortGearBiotic}()}
 }
+\concept{gear coding functions}

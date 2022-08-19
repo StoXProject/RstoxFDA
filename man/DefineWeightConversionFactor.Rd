@@ -43,4 +43,10 @@ Missing values for WeightFactor are interpreted as NA, and will result in NA for
 }
 \seealso{
 \code{\link[RstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.
+
+Other parameter conversion functions: 
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{DefineLengthConversionParameters}()}
 }
+\concept{parameter conversion functions}

@@ -1,0 +1,18 @@
+AAR;77;Fangstår, 2 siffer
+AAR2;1977;Fangstår, 4 siffer
+FARTLAND;NOR;Farøynasjon, NOR vs UTL
+LEVAAR;77;Leveringsår
+LEVMND;7;Leveringsmåned
+KYST;0;0=hav, 8=kyst, 9=kommune/herred
+HOMR;28;Hovedområde
+LOK;0;Lokasjon
+REDS;50;Redskap
+LEVHERRD;1259;Leveringskommune/herred
+LEVHERRD2;1259;Leveringskommune/herred med ledende 0
+LEVFYLKE;12;Leveringsfylke
+FISK;D07;Fiskeslag 
+FISK_NAVN;Blålange;Fiskeslag 
+BIPROD;0;Hovedprodukt 0 vs biprodukt 1-8
+ANVEND;2;Anvendelse
+UTBET;13;Utbetalt fisker, se dok
+VEKT;7;Rundvekt kg

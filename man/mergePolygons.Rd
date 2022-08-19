@@ -20,3 +20,18 @@ Merge \code{\link[sp]{SpatialPolygonsDataFrame}}, such as \code{\link[RstoxBase]
 \details{
 All columns must have the same value for all polygons that are to be merged. If columns are not consistent in this regard, an error is raised.
 }
+\seealso{
+Other spatial coding functions: 
+\code{\link{AddAreaPositionStoxLanding}()},
+\code{\link{AddStratumStoxBiotic}()},
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineAreaPosition}()},
+\code{\link{DefineCarNeighbours}()},
+\code{\link{LoadFdaStratumPolygon}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{appendAreaCode}()},
+\code{\link{appendPosition}()},
+\code{\link{plotArea}()},
+\code{\link{writeSpDataFrameAsWKT}()}
+}
+\concept{spatial coding functions}

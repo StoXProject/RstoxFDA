@@ -67,3 +67,17 @@ The quantities (quantityCol) is aggregated (summed, ignoring NAs) over combinati
        areaDef = ICESareas, areaNameCol = "Area_Full",
        bubbleSize = 20, title="Landings on ICES areas")
 }
+\seealso{
+Other landings functions: 
+\code{\link{ReadLandingFDA}()},
+\code{\link{ReportFdaLandings}()},
+\code{\link{ReportFdaSampling}()},
+\code{\link{addLogbookColumns}()},
+\code{\link{appendTripIdLandings}()},
+\code{\link{imputeCatchesLandings}()},
+\code{\link{logbookAdjustment}()},
+\code{\link{makeTripIds}()},
+\code{\link{sourceLogbookColumns}()},
+\code{\link{tabulateFisheries}()}
+}
+\concept{landings functions}

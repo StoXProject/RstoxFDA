@@ -36,4 +36,20 @@ the intercept of age 2 in area 47 in the Proportion-At-Age model.
 \seealso{
 \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation
 \code{\link[RstoxFDA]{ReportParameterConvergence}} for convergence checks.
+
+Other Reca functions: 
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineAgeErrorMatrix}()},
+\code{\link{DefineStockSplittingParameters}()},
+\code{\link{ParameterizeRecaModels}()},
+\code{\link{PrepareRecaEstimate}()},
+\code{\link{ReportRecaCatchAtAgeCovariance}()},
+\code{\link{ReportRecaCatchAtAge}()},
+\code{\link{ReportRecaCatchAtLengthAndAge}()},
+\code{\link{ReportRecaCatchAtLength}()},
+\code{\link{ReportRecaCatchStatistics}()},
+\code{\link{ReportRecaLengthAtAge}()},
+\code{\link{ReportRecaWeightAtAge}()},
+\code{\link{RunRecaModels}()}
 }
+\concept{Reca functions}

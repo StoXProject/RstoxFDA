@@ -59,4 +59,29 @@ The result of imputation have added lines for each corresponding catch in logboo
 }
 \seealso{
 \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, and \code{\link[RstoxFDA]{appendTripIdLogbooks}} for obtaining 'landings' with trip-ids.
+
+Other logbook functions: 
+\code{\link{addLogbookColumns}()},
+\code{\link{appendTripIdLandings}()},
+\code{\link{appendTripIdLogbooks}()},
+\code{\link{calculateLogbookPartitionByTrip}()},
+\code{\link{convertToErsData}()},
+\code{\link{logbookAdjustment}()},
+\code{\link{makeTripIds}()},
+\code{\link{readLstFile}()},
+\code{\link{sourceLogbookColumns}()}
+
+Other landings functions: 
+\code{\link{ReadLandingFDA}()},
+\code{\link{ReportFdaLandings}()},
+\code{\link{ReportFdaSampling}()},
+\code{\link{addLogbookColumns}()},
+\code{\link{appendTripIdLandings}()},
+\code{\link{logbookAdjustment}()},
+\code{\link{makeTripIds}()},
+\code{\link{plotBubbleMap}()},
+\code{\link{sourceLogbookColumns}()},
+\code{\link{tabulateFisheries}()}
 }
+\concept{landings functions}
+\concept{logbook functions}

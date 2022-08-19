@@ -43,4 +43,19 @@ For bioticdata that does not conform to this, no modifications are done.
 }
 \seealso{
 \code{\link[RstoxFDA]{DefineLengthConversionParameters}} for configuration of length parameters.
+
+Other nmdbiotic functions: 
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{ListBioticDifference}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()}
+
+Other parameter conversion functions: 
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{DefineLengthConversionParameters}()},
+\code{\link{DefineWeightConversionFactor}()}
 }
+\concept{nmdbiotic functions}
+\concept{parameter conversion functions}

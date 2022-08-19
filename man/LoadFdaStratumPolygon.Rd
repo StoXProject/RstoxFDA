@@ -7,8 +7,8 @@
 LoadFdaStratumPolygon(
   processData,
   StrataSystem = c("FDIR.2017", "FDIR.2018", "ICES.2018", "ICES.SubArea.2018",
-    "ICES.Division.2018", "ICES.SubDivision.2018", "ICES.Unit.2018", "NAFO",
-    "NAFO.FDIR.2017", "NAFO.FDIR.2018"),
+    "ICES.Division.2018", "ICES.SubDivision.2018", "ICES.Unit.2018",
+    "ICES.Rectangles.2018", "NAFO", "NAFO.FDIR.2017", "NAFO.FDIR.2018"),
   UseProcessData = F
 )
 }
@@ -33,11 +33,12 @@ The options available are:
 \describe{
 \item{"FDIR.2017"}{Main areas defined by the Norwegian Directorate of Fisheries, as they where defined to 2017 inclusive. Derived from \code{\link[RstoxFDA]{mainareaFdir2017}}.}
 \item{"FDIR.2018"}{Main areas defined by the Norwegian Directorate of Fisheries, as they have been defined from 2018 inclusive. Derived from \code{\link[RstoxFDA]{mainareaFdir2018}}.}
-\item{"ICES.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from \code{\link[RstoxFDA]{ICESareas}}.}
-\item{"ICES.SubArea.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from \code{\link[RstoxFDA]{ICESsubArea}}.}
-\item{"ICES.Division.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from \code{\link[RstoxFDA]{ICESdivision}}.}
-\item{"ICES.SubDivision.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from \code{\link[RstoxFDA]{ICESsubDivision}}.}
-\item{"ICES.Unit.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from \code{\link[RstoxFDA]{ICESunit}}.}
+\item{"ICES.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (Sub-area, division, sub-division or unit), and the full naming convention is used (e.g. 27.3.d.27 or 27.4.b). Derived from \code{\link[RstoxFDA]{ICESareas}}.}
+\item{"ICES.SubArea.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided as 'sub-areas' where they are defined, and the full naming convention is used (e.g. 27.3). Derived from \code{\link[RstoxFDA]{ICESsubArea}}.}
+\item{"ICES.Division.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided as 'divisions' where they are defined, and the full naming convention is used (e.g. 27.3.d). Derived from \code{\link[RstoxFDA]{ICESdivision}}.}
+\item{"ICES.SubDivision.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided as 'sub-divisions' where they are defined, and the full naming convention is used (e.g. 27.3.d.27). Derived from \code{\link[RstoxFDA]{ICESsubDivision}}.}
+\item{"ICES.Unit.2018"}{ICES areas as they have been defined from 2018 inclusive. Areas are provided as 'unit' where they are defined, and the full naming convention is used (e.g. 27.3.d.28.1). Derived from \code{\link[RstoxFDA]{ICESunit}}.}
+\item{"ICES.Rectangles.2018"}{ICES rectangles (e.g. 15C2) as they have been defined from 2018 inclusive. Derived from \code{\link[RstoxFDA]{ICESrectangles}}.}
 \item{"NAFO"}{NAFO areas. NAFO naming convention is used. Derived from \code{\link[RstoxFDA]{NAFOareas}}.}
 \item{"NAFO.FDIR.2017"}{NAFO areas combined with FDIR.2017. The naming convention of the Norwegian Directorate of fisheries is used.}
 \item{"NAFO.FDIR.2018"}{NAFO areas combined with FDIR.2018. The naming convention of the Norwegian Directorate of fisheries is used.}
@@ -46,3 +47,18 @@ The options available are:
 FDIR.2017 corresponds to the area coding referred to as system 2 at IMR.
 FDIR.2018 corresponds to the area coding referred to as system 10 at IMR.
 }
+\seealso{
+Other spatial coding functions: 
+\code{\link{AddAreaPositionStoxLanding}()},
+\code{\link{AddStratumStoxBiotic}()},
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineAreaPosition}()},
+\code{\link{DefineCarNeighbours}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{appendAreaCode}()},
+\code{\link{appendPosition}()},
+\code{\link{mergePolygons}()},
+\code{\link{plotArea}()},
+\code{\link{writeSpDataFrameAsWKT}()}
+}
+\concept{spatial coding functions}

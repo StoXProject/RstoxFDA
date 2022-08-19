@@ -30,3 +30,18 @@ When 'LocationVariable' is specified as 'None' Area is looked up from 'AreaPosit
 When 'LocationVariable' is specified as 'Location', 'Area' and 'Location' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 When 'LocationVariable' is specified as 'Coastal', 'Area' and 'Costal' in 'StoxLandingData' is looked up against 'Area' and 'Location' in 'AreaPosition'.
 }
+\seealso{
+Other spatial coding functions: 
+\code{\link{AddStratumStoxBiotic}()},
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineAreaPosition}()},
+\code{\link{DefineCarNeighbours}()},
+\code{\link{LoadFdaStratumPolygon}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{appendAreaCode}()},
+\code{\link{appendPosition}()},
+\code{\link{mergePolygons}()},
+\code{\link{plotArea}()},
+\code{\link{writeSpDataFrameAsWKT}()}
+}
+\concept{spatial coding functions}

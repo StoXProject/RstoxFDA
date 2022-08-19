@@ -16,7 +16,7 @@ tabulateFisheries(
 
 \item{weightCol}{character() column in 'data' that contains catch weights}
 
-\item{cellCols}{charcter() vector of columns in 'data' defining cells}
+\item{cellCols}{character() vector of columns in 'data' defining cells}
 
 \item{complete}{logical() whether all combinations of the columns in cellCols should be tabulated, even if they contain no catch.}
 }
@@ -33,3 +33,17 @@ A fishery will be decomposed into cells, within which total weight will be repor
  data(landings)
  tabulateFisheries(landings)
 }
+\seealso{
+Other landings functions: 
+\code{\link{ReadLandingFDA}()},
+\code{\link{ReportFdaLandings}()},
+\code{\link{ReportFdaSampling}()},
+\code{\link{addLogbookColumns}()},
+\code{\link{appendTripIdLandings}()},
+\code{\link{imputeCatchesLandings}()},
+\code{\link{logbookAdjustment}()},
+\code{\link{makeTripIds}()},
+\code{\link{plotBubbleMap}()},
+\code{\link{sourceLogbookColumns}()}
+}
+\concept{landings functions}

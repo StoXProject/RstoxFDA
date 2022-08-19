@@ -12,7 +12,7 @@ readMetierTable(filename, encoding = "UTF8")
 \item{encoding}{The character encoding of the file identified by 'filename'}
 }
 \value{
-\code{\link[RstoxFDA]{MetierTable}} containing metier definitons.
+\code{\link[RstoxFDA]{MetierTable}} containing metier definitions.
 }
 \description{
 Reads a table of metier definitions.

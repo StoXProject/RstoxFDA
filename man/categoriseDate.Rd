@@ -34,3 +34,12 @@ define a categorical variable based for a vector of dates
  categoriseDate(dates, temporalType = "custom", FUN=inDecember, seasonal = FALSE)
 
 }
+\seealso{
+Other temporal coding functions: 
+\code{\link{AddPeriodStoxBiotic}()},
+\code{\link{AddPeriodStoxLanding}()},
+\code{\link{DefinePeriod}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()}
+}
+\concept{temporal coding functions}

@@ -50,4 +50,20 @@ the interval is reported as 90\% equal-tailed credible intervals.
 }
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
+
+Other Reca functions: 
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{DefineAgeErrorMatrix}()},
+\code{\link{DefineStockSplittingParameters}()},
+\code{\link{ParameterizeRecaModels}()},
+\code{\link{PrepareRecaEstimate}()},
+\code{\link{ReportRecaCatchAtAgeCovariance}()},
+\code{\link{ReportRecaCatchAtAge}()},
+\code{\link{ReportRecaCatchAtLengthAndAge}()},
+\code{\link{ReportRecaCatchAtLength}()},
+\code{\link{ReportRecaCatchStatistics}()},
+\code{\link{ReportRecaLengthAtAge}()},
+\code{\link{ReportRecaParameterStatistics}()},
+\code{\link{RunRecaModels}()}
 }
+\concept{Reca functions}

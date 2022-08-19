@@ -40,5 +40,18 @@ The data also contains columns for the individual components of the full ICES ar
 \seealso{
 \code{\link[RstoxFDA]{ICESsubArea}}, \code{\link[RstoxFDA]{ICESdivision}}, \code{\link[RstoxFDA]{ICESsubDivision}}, and \code{\link[RstoxFDA]{ICESunit}}
 for polygon files separating the different levels of ICES areas.
+
+Other area code polygons: 
+\code{\link{ICESdivision}},
+\code{\link{ICESrectangles}},
+\code{\link{ICESsubArea}},
+\code{\link{ICESsubDivision}},
+\code{\link{ICESunit}},
+\code{\link{NAFOareas}},
+\code{\link{locationsFdir2017}},
+\code{\link{locationsFdir2018}},
+\code{\link{mainareaFdir2017}},
+\code{\link{mainareaFdir2018}}
 }
+\concept{area code polygons}
 \keyword{datasets}

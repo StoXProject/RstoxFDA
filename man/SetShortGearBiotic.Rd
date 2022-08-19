@@ -13,7 +13,7 @@ SetShortGearBiotic(BioticData)
 \code{\link[RstoxData]{BioticData}}
 }
 \description{
-Set short gear codes for all stations
+Set short gear codes for all stations. Appropriate when BioticData is read from NMDbiotic.
 }
 \details{
 Set the column 'gear' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to the first two characters / digits, 
@@ -27,4 +27,18 @@ Set the column 'gear' on the table 'fishstation' in \code{\link[RstoxData]{Bioti
 }
 \seealso{
 \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
+
+Other nmdbiotic functions: 
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{ListBioticDifference}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()}
+
+Other gear coding functions: 
+\code{\link{AddGearGroupStoxBiotic}()},
+\code{\link{AddGearGroupStoxLanding}()}
 }
+\concept{gear coding functions}
+\concept{nmdbiotic functions}

@@ -27,3 +27,12 @@ Add a column 'Period' to 'Station' on StoxBioticData with a temporal category, s
 Temporal definitions (\code{\link[RstoxFDA]{TemporalDefinition}}) may be produced by
 \code{\link[RstoxFDA]{DefinePeriod}}
 }
+\seealso{
+Other temporal coding functions: 
+\code{\link{AddPeriodStoxLanding}()},
+\code{\link{DefinePeriod}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()},
+\code{\link{categoriseDate}()}
+}
+\concept{temporal coding functions}

@@ -24,7 +24,7 @@ ConvertWeightBiotic(
 \code{\link[RstoxData]{BioticData}} with converted weights.
 }
 \description{
-Convert weights to approximate weight for desired product type.
+Convert weights to approximate weight for desired product type. Appropriate when BioticData is read from NMDbiotic.
 }
 \details{
 Different products of fish may be measured and round weight (live weight)
@@ -53,4 +53,19 @@ For bioticdata that does not conform to this, no modifications are done.
 }
 \seealso{
 \code{\link[RstoxFDA]{DefineWeightConversionFactor}} for configuration of weight conversion parameters.
+
+Other nmdbiotic functions: 
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ListBioticDifference}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()}
+
+Other parameter conversion functions: 
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{DefineLengthConversionParameters}()},
+\code{\link{DefineWeightConversionFactor}()}
 }
+\concept{nmdbiotic functions}
+\concept{parameter conversion functions}
