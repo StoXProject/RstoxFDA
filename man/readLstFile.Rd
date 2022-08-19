@@ -19,6 +19,10 @@ Parses logbooks from tabular format (.lst) delivered by Directorate of Fisheries
  This format is not matched with WMS records and contains less detail than the format read by
  \code{\link[RstoxData]{readErsFile}}
 }
+\details{
+A variant of .lst does not provide headers. These are read with assumed standard order of headers,
+ and a warning is issued.
+}
 \seealso{
 Other IO functions: 
 \code{\link{ReadLandingFDA}()},

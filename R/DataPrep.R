@@ -151,7 +151,7 @@ convertCodes <- function(code, conversionTable){
 #' @export
 appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, StratumName="StratumName"){
   if (!data.table::is.data.table(table)){
-    stop("Paramter 'table' must be a data.table")
+    stop("Parameter 'table' must be a data.table")
   }
   if (colName %in% names(table)){
     stop(paste("Column name", colName, "already exists."))

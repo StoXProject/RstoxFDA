@@ -122,7 +122,7 @@ appendTripIdLandings <- function(landings, tripIds=NULL, vesselIdCol="Radiokalle
   }
 
   if (tripIdCol %in% names(landings)){
-    stop("The column", tripIdCol,"already exist in 'landings'.")
+    stop("The column ", tripIdCol," already exist in 'landings'.")
   }
   if (!all(c(lastCatchCol, vesselIdCol) %in% names(landings))){
     stop("The columns identified by 'datecol' or 'vesselIdCol' are not found in 'landings'.")
@@ -188,7 +188,7 @@ imputeCatchesLandings <- function(landings, logbooks, tripIdCol="tripid", catchI
     stop("'catchIdCol' is not found in 'logbooks'")
   }
   if (any(c("fraction", catchIdCol) %in% names(landings))){
-    stop("'landings' may not have a column called 'fraction' or the column provided by 'catchIdCol'.")
+    stop("'landings' should not have a column called 'fraction' or the column provided by 'catchIdCol'.")
   }
   
   
