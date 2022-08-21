@@ -53,10 +53,10 @@
       <a href="../articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a>
     </li>
     <li>
-      <a href="../articles/Stox-FDA-overview.html">Stox Fisheries overview (report)</a>
+      <a href="../articles/Stox-FDA-overview.html">StoX Fisheries overview (report)</a>
     </li>
     <li>
-      <a href="../articles/stox-reca.html">Stox-Reca (analysis)</a>
+      <a href="../articles/stox-reca.html">StoX-Reca (analysis)</a>
     </li>
   </ul>
 </li>
@@ -131,7 +131,8 @@
 <div class="section level3">
 <h3 id="nmdbiotic">NMDbiotic<a class="anchor" aria-label="anchor" href="#nmdbiotic"></a>
 </h3>
-<p>Biological samples at IMR are archived in a versioned data-format called NMDbiotic (<a href="https://www.imr.no/formats/nmdbiotic/" class="external-link uri">https://www.imr.no/formats/nmdbiotic/</a>). If the source for your biological data is NMDbiotic, you may find that information is recorded somewhat differently than what allows for straightforward conversion with <em>RstoxData::StoxBiotic</em>. For instance, you may find that fishing date is recorded as the end of the fishing operation, that not all catches have a position, or that fish weights are measured of gutted fish, rather than unprocessed fish. And you will find that gear codes are different from those used in the landing-data. RstoxData provide some functions for dealing with these kind of issues, which are presented below. If not all data in the input file are relevant for analysis, the number of data issues to handle can be greatly reduced by first applying the necessary filtering with <em>RstoxData::FilterBiotic</em>. As mentioned above, use of <em>RstoxData::FilterBiotic</em> rather than <em>RstoxData::FilterStoxBiotic</em>, does come with the caveat that filters are less re-usable if the same analysis is to be done for several years of data. So a good rule of thumb is to try to solve standard filters, that will apply for coming years as well in <em>RstoxData::FilterStoxBiotic</em>, possibly through the use of <em>RstoxData::AddToStoxBiotic</em>.</p>
+<p>Biological samples at IMR are archived in a versioned data-format called NMDbiotic (<a href="https://www.imr.no/formats/nmdbiotic/" class="external-link uri">https://www.imr.no/formats/nmdbiotic/</a>). If the source for your biological data is NMDbiotic, you may find that information is recorded somewhat differently than what allows for straightforward conversion with <em>RstoxData::StoxBiotic</em>. For instance, you may find that fishing date is recorded as the end of the fishing operation, that not all catches have a position, or that fish weights are measured of gutted fish, rather than unprocessed fish. And you will find that gear codes are different from those used in the landing-data. RstoxData provide some functions for dealing with these kind of issues, which are presented below. These functions are specific to <strong>RstoxData::BioticData</strong> that are read from NMDbiotic files. If the source if something else (e.g. ICES biotic) it will usually not make sense to apply these functions, and the exact behaviour is specified in the function documentation.</p>
+<p>If not all data in the input file are relevant for analysis, the number of data issues to handle can be greatly reduced by first applying the necessary filtering with <em>RstoxData::FilterBiotic</em>. As mentioned above, use of <em>RstoxData::FilterBiotic</em> rather than <em>RstoxData::FilterStoxBiotic</em>, does come with the caveat that filters are less re-usable if the same analysis is to be done for several years of data. So a good rule of thumb is to try to solve standard filters, that will apply for coming years as well in <em>RstoxData::FilterStoxBiotic</em>, possibly through the use of <em>RstoxData::AddToStoxBiotic</em>.</p>
 <div class="section level4">
 <h4 id="fishing-time-information">Fishing time information<a class="anchor" aria-label="anchor" href="#fishing-time-information"></a>
 </h4>
@@ -550,7 +551,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

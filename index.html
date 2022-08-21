@@ -54,10 +54,10 @@
       <a href="articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a>
     </li>
     <li>
-      <a href="articles/Stox-FDA-overview.html">Stox Fisheries overview (report)</a>
+      <a href="articles/Stox-FDA-overview.html">StoX Fisheries overview (report)</a>
     </li>
     <li>
-      <a href="articles/stox-reca.html">Stox-Reca (analysis)</a>
+      <a href="articles/stox-reca.html">StoX-Reca (analysis)</a>
     </li>
   </ul>
 </li>
@@ -85,18 +85,28 @@
 <div class="page-header"><h1 id="rstoxfda">RstoxFDA<a class="anchor" aria-label="anchor" href="#rstoxfda"></a>
 </h1></div>
 
-<p>Fisheries Dependent Analysis with Rstox.</p>
-<p>Install from github with: devtools::install_github(“<a href="https://github.com/StoXProject/RstoxFDA" class="external-link uri">https://github.com/StoXProject/RstoxFDA</a>”). Precompiled versions at <a href="https://stoxproject.github.io/repo/" class="external-link uri">https://stoxproject.github.io/repo/</a> may also be considered.</p>
+<p>Fisheries Dependent Analysis with Rstox. Documentation can be found at: <a href="https://stoxproject.github.io/RstoxFDA/index.html" class="external-link uri">https://stoxproject.github.io/RstoxFDA/index.html</a> . Functions, data formats, and data objects are documented under ‘Reference’ while tutorials to get started are provided under ‘Articles’.</p>
 <div class="section level2">
-<h2 id="reca">Reca<a class="anchor" aria-label="anchor" href="#reca"></a>
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>RstoxFDA contains functions for adapting data to Reca, running estimates, and plotting or tabulating results. These functions are formulated to be adaptable to other data formats than just the ones supported by Rstox.</p>
-<p>Reca is available at: <a href="https://github.com/NorskRegnesentral/Reca" class="external-link uri">https://github.com/NorskRegnesentral/Reca</a> . For Windows and Linux, Reca can be installed via devtools::install_github(“<a href="https://github.com/NorskRegnesentral/Reca" class="external-link uri">https://github.com/NorskRegnesentral/Reca</a>”). For Mac, one might consider the fork at: <a href="https://github.com/StoXProject/reca" class="external-link uri">https://github.com/StoXProject/reca</a>. Precompiled versions at <a href="https://stoxproject.github.io/repo/" class="external-link uri">https://stoxproject.github.io/repo/</a> may also be considered: install.packages(“Reca”, repos=c(“<a href="https://stoxproject.github.io/repo/" class="external-link uri">https://stoxproject.github.io/repo/</a>”)).</p>
+<p>Install from the StoX project repository with: install.packages(“RstoxFDA”, repos = “<a href="https://stoxproject.github.io/repo/" class="external-link uri">https://stoxproject.github.io/repo/</a>”).</p>
 </div>
 <div class="section level2">
 <h2 id="stox">StoX<a class="anchor" aria-label="anchor" href="#stox"></a>
 </h2>
-<p>RstoxFDA contains functions that adheres to StoX 3.0 function-contracts so that they can be included in StoX-processes. This includes functions for a StoX-Reca template.</p>
+<p>RstoxFDA contains functions that adheres to StoX 3 function-contracts so that they can be included in StoX-processes via the StoX user interfaces. This includes functions for a StoX-Reca template. RstoxFDA does not come bundled with StoX, and needs to be installed in addition to the StoX packages, by following the instructions above.</p>
+</div>
+<div class="section level2">
+<h2 id="not-stox">Not StoX<a class="anchor" aria-label="anchor" href="#not-stox"></a>
+</h2>
+<p>RstoxFDA is an analysis-library that also works independently of StoX and not all functions are available in the StoX user interface. The functions that are available in the StoX user interface are starts with a capital letter, as does data formats and data objects.</p>
+</div>
+<div class="section level2">
+<h2 id="reca">Reca<a class="anchor" aria-label="anchor" href="#reca"></a>
+</h2>
+<p>RstoxFDA contains functions for adapting data to Reca, running estimates, and plotting or tabulating results. These functions are formulated to be adaptable to other data formats than just the ones supported by Rstox.</p>
+<p>Reca is available at: <a href="https://github.com/NorskRegnesentral/Reca" class="external-link uri">https://github.com/NorskRegnesentral/Reca</a> . For Windows and Linux, Reca can be installed via devtools::install_github(“<a href="https://github.com/NorskRegnesentral/Reca" class="external-link uri">https://github.com/NorskRegnesentral/Reca</a>”). For Mac, one might consider the fork at: <a href="https://github.com/StoXProject/reca" class="external-link uri">https://github.com/StoXProject/reca</a>.</p>
+<p>Precompiled versions at <a href="https://stoxproject.github.io/repo/" class="external-link uri">https://stoxproject.github.io/repo/</a> may also be considered: install.packages(“Reca”, repos=c(“<a href="https://stoxproject.github.io/repo/" class="external-link uri">https://stoxproject.github.io/repo/</a>”)).</p>
 </div>
 </div>
   </div>
@@ -151,7 +161,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

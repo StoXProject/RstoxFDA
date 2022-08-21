@@ -115,6 +115,9 @@
     <loc>/reference/LandingData.html</loc>
   </url>
   <url>
+    <loc>/reference/LandingsArchiveData.html</loc>
+  </url>
+  <url>
     <loc>/reference/LengthConversionTable.html</loc>
   </url>
   <url>
@@ -122,6 +125,9 @@
   </url>
   <url>
     <loc>/reference/LoadFdaStratumPolygon.html</loc>
+  </url>
+  <url>
+    <loc>/reference/LstLogbookData.html</loc>
   </url>
   <url>
     <loc>/reference/MetierTable.html</loc>
@@ -289,6 +295,9 @@
     <loc>/reference/convertCodes.html</loc>
   </url>
   <url>
+    <loc>/reference/convertToErsData.html</loc>
+  </url>
+  <url>
     <loc>/reference/filterLogLinear.html</loc>
   </url>
   <url>
@@ -416,6 +425,12 @@
   </url>
   <url>
     <loc>/reference/rEcaDataReport.html</loc>
+  </url>
+  <url>
+    <loc>/reference/readFdirLandingsArchive.html</loc>
+  </url>
+  <url>
+    <loc>/reference/readLstFile.html</loc>
   </url>
   <url>
     <loc>/reference/readMetierTable.html</loc>

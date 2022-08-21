@@ -35,10 +35,10 @@
       <a href="../articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a>
     </li>
     <li>
-      <a href="../articles/Stox-FDA-overview.html">Stox Fisheries overview (report)</a>
+      <a href="../articles/Stox-FDA-overview.html">StoX Fisheries overview (report)</a>
     </li>
     <li>
-      <a href="../articles/stox-reca.html">Stox-Reca (analysis)</a>
+      <a href="../articles/stox-reca.html">StoX-Reca (analysis)</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -69,8 +69,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">LoadFdaStratumPolygon</span><span class="op">(</span></span>
 <span>  <span class="va">processData</span>,</span>
 <span>  StrataSystem <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FDIR.2017"</span>, <span class="st">"FDIR.2018"</span>, <span class="st">"ICES.2018"</span>, <span class="st">"ICES.SubArea.2018"</span>,</span>
-<span>    <span class="st">"ICES.Division.2018"</span>, <span class="st">"ICES.SubDivision.2018"</span>, <span class="st">"ICES.Unit.2018"</span>, <span class="st">"NAFO"</span>,</span>
-<span>    <span class="st">"NAFO.FDIR.2017"</span>, <span class="st">"NAFO.FDIR.2018"</span><span class="op">)</span>,</span>
+<span>    <span class="st">"ICES.Division.2018"</span>, <span class="st">"ICES.SubDivision.2018"</span>, <span class="st">"ICES.Unit.2018"</span>,</span>
+<span>    <span class="st">"ICES.Rectangles.2018"</span>, <span class="st">"NAFO"</span>, <span class="st">"NAFO.FDIR.2017"</span>, <span class="st">"NAFO.FDIR.2018"</span><span class="op">)</span>,</span>
 <span>  UseProcessData <span class="op">=</span> <span class="cn">F</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -106,19 +106,22 @@ the polygons from the RstoxFDA package, rather than requiring them as a resource
 <dd><p>Main areas defined by the Norwegian Directorate of Fisheries, as they have been defined from 2018 inclusive. Derived from <code><a href="mainareaFdir2018.html">mainareaFdir2018</a></code>.</p></dd>
 
 <dt>"ICES.2018"</dt>
-<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from <code><a href="ICESareas.html">ICESareas</a></code>.</p></dd>
+<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (Sub-area, division, sub-division or unit), and the full naming convention is used (e.g. 27.3.d.27 or 27.4.b). Derived from <code><a href="ICESareas.html">ICESareas</a></code>.</p></dd>
 
 <dt>"ICES.SubArea.2018"</dt>
-<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from <code><a href="ICESsubArea.html">ICESsubArea</a></code>.</p></dd>
+<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided as 'sub-areas' where they are defined, and the full naming convention is used (e.g. 27.3). Derived from <code><a href="ICESsubArea.html">ICESsubArea</a></code>.</p></dd>
 
 <dt>"ICES.Division.2018"</dt>
-<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from <code><a href="ICESdivision.html">ICESdivision</a></code>.</p></dd>
+<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided as 'divisions' where they are defined, and the full naming convention is used (e.g. 27.3.d). Derived from <code><a href="ICESdivision.html">ICESdivision</a></code>.</p></dd>
 
 <dt>"ICES.SubDivision.2018"</dt>
-<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from <code><a href="ICESsubDivision.html">ICESsubDivision</a></code>.</p></dd>
+<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided as 'sub-divisions' where they are defined, and the full naming convention is used (e.g. 27.3.d.27). Derived from <code><a href="ICESsubDivision.html">ICESsubDivision</a></code>.</p></dd>
 
 <dt>"ICES.Unit.2018"</dt>
-<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided with finest available spatial resolution (unit), and the full naming convention is used. Derived from <code><a href="ICESunit.html">ICESunit</a></code>.</p></dd>
+<dd><p>ICES areas as they have been defined from 2018 inclusive. Areas are provided as 'unit' where they are defined, and the full naming convention is used (e.g. 27.3.d.28.1). Derived from <code><a href="ICESunit.html">ICESunit</a></code>.</p></dd>
+
+<dt>"ICES.Rectangles.2018"</dt>
+<dd><p>ICES rectangles (e.g. 15C2) as they have been defined from 2018 inclusive. Derived from <code><a href="ICESrectangles.html">ICESrectangles</a></code>.</p></dd>
 
 <dt>"NAFO"</dt>
 <dd><p>NAFO areas. NAFO naming convention is used. Derived from <code><a href="NAFOareas.html">NAFOareas</a></code>.</p></dd>
@@ -133,6 +136,21 @@ the polygons from the RstoxFDA package, rather than requiring them as a resource
 </dl><p>FDIR.2017 corresponds to the area coding referred to as system 2 at IMR.
 FDIR.2018 corresponds to the area coding referred to as system 10 at IMR.</p>
     </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>Other spatial coding functions: 
+<code><a href="AddAreaPositionStoxLanding.html">AddAreaPositionStoxLanding</a>()</code>,
+<code><a href="AddStratumStoxBiotic.html">AddStratumStoxBiotic</a>()</code>,
+<code><a href="AddStratumStoxLanding.html">AddStratumStoxLanding</a>()</code>,
+<code><a href="DefineAreaPosition.html">DefineAreaPosition</a>()</code>,
+<code><a href="DefineCarNeighbours.html">DefineCarNeighbours</a>()</code>,
+<code><a href="SetAreaPositionsBiotic.html">SetAreaPositionsBiotic</a>()</code>,
+<code><a href="appendAreaCode.html">appendAreaCode</a>()</code>,
+<code><a href="appendPosition.html">appendPosition</a>()</code>,
+<code><a href="mergePolygons.html">mergePolygons</a>()</code>,
+<code><a href="plotArea.html">plotArea</a>()</code>,
+<code><a href="writeSpDataFrameAsWKT.html">writeSpDataFrameAsWKT</a>()</code></p></div>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -146,7 +164,7 @@ FDIR.2018 corresponds to the area coding referred to as system 10 at IMR.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
