@@ -19,6 +19,4 @@ RstoxFDA contains functions for adapting data to Reca, running estimates, and pl
 
 Reca is available at: https://github.com/NorskRegnesentral/Reca .
 For Windows and Linux, Reca can be installed via devtools::install_github("https://github.com/NorskRegnesentral/Reca").
-For Mac, one might consider the fork at: https://github.com/StoXProject/reca. 
-
-Precompiled versions at https://stoxproject.github.io/repo/ may also be considered: install.packages("Reca", repos=c("https://stoxproject.github.io/repo/")).
+For Mac, one might consider the fork at: https://github.com/StoXProject/reca, or at https://stoxproject.github.io/repo/: install.packages("Reca", repos=c("https://stoxproject.github.io/repo/")).
