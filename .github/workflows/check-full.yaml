@@ -89,6 +89,12 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "18.04"))')
 
+      - name: Install Reca on (Linux and Wuindows)
+        if: runner.os != 'macOS'
+        run: |
+          remotes::install_github("https://github.com/NorskRegnesentral/Reca")
+        shell: Rscript {0}
+
       - name: Install dependencies on Linux
         if: runner.os == 'Linux'
         run: |
