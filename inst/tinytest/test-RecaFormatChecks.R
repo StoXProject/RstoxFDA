@@ -27,19 +27,19 @@ expect_error(RstoxFDA:::check_cov_vs_info(errorPrep$AgeLength), "Not all values 
 
 errorPrep <- ecaPrep
 errorPrep$AgeLength$DataMatrix$samplingID <- NULL
-expect_error(RstoxFDA:::checkAgeLength(errorPrep$AgeLength), "column samplingID missing.")
+expect_error(RstoxFDA:::sanitizeRecaInput(AgeLength=errorPrep$AgeLength), "column samplingID missing.")
 
 errorPrep <- ecaPrep
 errorPrep$AgeLength$DataMatrix$samplingID[1] <- NA
-expect_error(RstoxFDA:::checkAgeLength(errorPrep$AgeLength), "column samplingID has missing value.")
+expect_error(RstoxFDA:::sanitizeRecaInput(AgeLength=errorPrep$AgeLength), "column samplingID has missing value.")
 
 errorPrep <- ecaPrep
 errorPrep$AgeLength$CovariateMatrix$constant <- NULL
-expect_error(RstoxFDA:::checkAgeLength(errorPrep$AgeLength), "No constant column provided in covariate matrix or info matrix")
+expect_error(RstoxFDA:::sanitizeRecaInput(AgeLength=errorPrep$AgeLength), "No constant column provided in covariate matrix or info matrix")
 
 errorPrep <- ecaPrep
 errorPrep$WeightLength$info["constant","random"] <- 1
-expect_error(RstoxFDA:::checkWeightLength(errorPrep$WeightLength, errorPrep$Landings), "Constant covariate is not configured correctly")
+expect_error(RstoxFDA:::sanitizeRecaInput(WeightLength=errorPrep$WeightLength, Landings=errorPrep$Landings), "Constant covariate is not configured correctly")
 
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
 StoxBioticData <- readRDS(StoxBioticFile)
@@ -72,36 +72,36 @@ expect_error(RstoxFDA:::checkCovariateConsistency(errorPrep$AgeLength, errorPrep
 
 errorPrep <- ecaPrep
 errorPrep$Landings$AgeLengthCov$midseason[1] <- 0
-expect_error(RstoxFDA:::checkLandings(errorPrep$Landings), "midseason must be in")
+expect_error(RstoxFDA:::sanitizeRecaInput(Landings=errorPrep$Landings), "midseason must be in")
 
 errorPrep <- ecaPrep
 errorPrep$Landings$AgeLengthCov$Area[1] <- NA
-expect_error(RstoxFDA:::checkLandings(errorPrep$Landings), "NAs in landings:  Area")
+expect_error(RstoxFDA:::sanitizeRecaInput(Landings=errorPrep$Landings), "NAs in landings:  Area")
 
 errorPrep <- ecaPrep
 errorPrep$Landings$AgeLengthCov <- errorPrep$Landings$AgeLengthCov[1:2,]
-expect_error(RstoxFDA:::checkLandings(errorPrep$Landings), "number of rows in landings covariate matrices does not match")
+expect_error(RstoxFDA:::sanitizeRecaInput(Landings=errorPrep$Landings), "number of rows in landings covariate matrices does not match")
 
 errorPrep <- ecaPrep
 errorPrep$Landings$LiveWeightKG <- errorPrep$Landings$LiveWeightKG[1:2]
-expect_error(RstoxFDA:::checkLandings(errorPrep$Landings), "length of weight vector does not match number of rows in covariate matrices in landings.")
+expect_error(RstoxFDA:::sanitizeRecaInput(Landings=errorPrep$Landings), "length of weight vector does not match number of rows in covariate matrices in landings.")
 
 errorPrep <- ecaPrep
 errorPrep$GlobalParameters$lengthresCM <- NULL
-expect_error(RstoxFDA:::checkGlobalParameters(errorPrep$GlobalParameters, errorPrep$AgeLength, errorPrep$WeightLength), "Length resolution not set")
+expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength), "Length resolution not set")
 
 errorPrep <- ecaPrep
 errorPrep$GlobalParameters$maxage <- 3
-expect_error(RstoxFDA:::checkGlobalParameters(errorPrep$GlobalParameters, errorPrep$AgeLength, errorPrep$WeightLength), "Parameter maxage 3 is smaller than maximal age in samples")
+expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength), "Parameter maxage 3 is smaller than maximal age in samples")
 
 errorPrep <- ecaPrep
 errorPrep$GlobalParameters$minage <- 3
-expect_error(RstoxFDA:::checkGlobalParameters(errorPrep$GlobalParameters, errorPrep$AgeLength, errorPrep$WeightLength), "Parameter minage 3 is larger than minimal age in samples")
+expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength), "Parameter minage 3 is larger than minimal age in samples")
 
 errorPrep <- ecaPrep
 errorPrep$GlobalParameters$maxlength <- 22
-expect_error(RstoxFDA:::checkGlobalParameters(errorPrep$GlobalParameters, errorPrep$AgeLength, errorPrep$WeightLength), "Parameter maxlength")
+expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength), "Parameter maxlength")
 
 errorPrep <- ecaPrep
 errorPrep$GlobalParameters$age.error <- TRUE
-expect_error(RstoxFDA:::checkGlobalParameters(errorPrep$GlobalParameters, errorPrep$AgeLength, errorPrep$WeightLength), "Age error matrix not set, but age.error parameter set to TRUE.")
+expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength), "Age error matrix not set, but age.error parameter set to TRUE.")

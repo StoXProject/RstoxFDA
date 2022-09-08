@@ -308,3 +308,49 @@ checkGlobalParameters <- function(globalparameters, agelength, weightlength){
   }
 
 }
+
+#' Input sanitation for Reca
+#' @description 
+#'  Performs input sanitation for Reca
+#' @details 
+#'  The main interfaces to the Reca-package is \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
+#'  This have strict formatting requirements, well documented in the help pages for these functions,
+#'  but they do not perform much input sanitation. 
+#'  This function checks that data is formatted in accordance with the requirements. 
+#'  
+#'  Errors or warnings are raised on any issue, and this function does not have a meaningful return value.
+#'  
+#'  All or some inputs to the Reca-functions may be provided for sanitation, and available checks will be run accordingly.
+#'  As Reca impose some restriction on consistency in formatting between the different arguments,
+#'  some checks require certain combination of arguments to be provided. For instance, checks on
+#'  consistent encoding of variables in 'AgeLength' and 'Landings' are only performed if both 'AgeLength' and 'Landings' are provided.
+#'  
+#' @param AgeLength list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}
+#' @param WeightLength list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}
+#' @param Landings list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}
+#' @param GlobalParameters list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}
+#' @return NULL
+#' @export  
+sanitizeRecaInput <- function(AgeLength=NULL, WeightLength=NULL, Landings=NULL, GlobalParameters=NULL){
+  if (!is.null(WeightLength) & !is.null(Landings)){
+    checkWeightLength(WeightLength, Landings)    
+  }
+  if (!is.null(AgeLength)){
+    checkAgeLength(AgeLength)    
+  }
+  if (!is.null(AgeLength) & !is.null(Landings)){
+    checkCovariateConsistency(AgeLength, Landings$AgeLengthCov)    
+  }
+  if (!is.null(WeightLength) & !is.null(Landings)){
+    checkCovariateConsistency(WeightLength, Landings$WeightLengthCov)    
+  }
+  if (!is.null(Landings)){
+    checkLandings(Landings)    
+  }
+  
+  if (!is.null(WeightLength) & !is.null(WeightLength) & !is.null(GlobalParameters)){
+    checkGlobalParameters(GlobalParameters, AgeLength, WeightLength)    
+  }
+  
+  return(NULL)
+}
