@@ -30,6 +30,14 @@ expect_equal(sum(erslogb$VARIGHET), sum(logb$VAR)*60)
 expect_true(all(paste(logb$HO, logb$LO, sep="") %in% erslogb$LOKASJON_START))
 expect_equal(nrow(logb), nrow(erslogb))
 
+#test with NAs for HO or LO
+logb$HO[1] <- NA
+logb$LO[2] <- NA
+logb$HO[3] <- NA
+logb$LO[3] <- NA
+logbwNA <- convertToErsData(logb)
+expect_true(all(is.na(logbwNA$LOKASJON_START[1:3])))
+
 #test variant wo header
 lst_logb_woh <- system.file("testresources", "logbookvariants", "logbook_wo_header.lst", package="RstoxFDA")
 expect_warning(logb <- RstoxFDA:::readLstFile(lst_logb_woh))

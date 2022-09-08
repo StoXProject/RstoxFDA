@@ -417,7 +417,7 @@ convertToErsData <- function(LstLogbookData, timestring="12:00:00"){
     INT_OMR_NY_STOPP = nachar,
     HAV_DYBDE_START = nanum,
     HAV_DYBDE_STOPP = nanum,
-    LOKASJON_START = paste(LstLogbookData$HO, LstLogbookData$LO, sep=""),
+    LOKASJON_START = nachar,
     LOKASJON_STOPP = nachar,
     TREKK_AVSTAND_METER = nanum,
     FANGSTART_FAO = nachar,
@@ -425,7 +425,8 @@ convertToErsData <- function(LstLogbookData, timestring="12:00:00"){
     FANGSTART = nachar,
     RUNDVEKT = LstLogbookData$VEKT
   )
-  
+  filter <- !is.na(LstLogbookData$HO) & !is.na(LstLogbookData$LO)
+  ersdata$LOKASJON_START[filter] <- paste(LstLogbookData$HO[filter], LstLogbookData$LO[filter], sep="")
   ersdata$STARTTIDSPUNKT <- as.POSIXct(ersdata$STARTTIDSPUNKT, format="%Y-%m-%d %H:%M:%S", tz="UTC")
   
   return(ersdata)
