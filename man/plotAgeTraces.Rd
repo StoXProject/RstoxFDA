@@ -66,3 +66,14 @@ The number of iterations of \code{\link[Reca]{eca.predict}}
  data(recaPrediction)
  plotAgeTraces(recaPrediction, plusGroup=13, nclust = 6)
 }
+\seealso{
+Other Reca functions: 
+\code{\link{makeAgeTracesRECA}()},
+\code{\link{makeResultTableRECA}()},
+\code{\link{plotCatchAtAge}()},
+\code{\link{prepRECA}()},
+\code{\link{rEcaDataReport}()},
+\code{\link{runRECA}()},
+\code{\link{sanitizeRecaInput}()}
+}
+\concept{Reca functions}

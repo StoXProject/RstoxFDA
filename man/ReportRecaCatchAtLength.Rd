@@ -49,7 +49,7 @@ The units considered valid for catch at length in numbers are those listed for q
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
 
-Other Reca functions: 
+Other StoX-Reca functions: 
 \code{\link{AddStratumStoxLanding}()},
 \code{\link{DefineAgeErrorMatrix}()},
 \code{\link{DefineStockSplittingParameters}()},
@@ -64,4 +64,4 @@ Other Reca functions:
 \code{\link{ReportRecaWeightAtAge}()},
 \code{\link{RunRecaModels}()}
 }
-\concept{Reca functions}
+\concept{StoX-Reca functions}

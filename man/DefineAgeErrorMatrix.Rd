@@ -38,7 +38,7 @@ and columns must sum to 1.
 \seealso{
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of age-error matrices in Reca-estimation
 
-Other Reca functions: 
+Other StoX-Reca functions: 
 \code{\link{AddStratumStoxLanding}()},
 \code{\link{DefineStockSplittingParameters}()},
 \code{\link{ParameterizeRecaModels}()},
@@ -53,4 +53,4 @@ Other Reca functions:
 \code{\link{ReportRecaWeightAtAge}()},
 \code{\link{RunRecaModels}()}
 }
-\concept{Reca functions}
+\concept{StoX-Reca functions}

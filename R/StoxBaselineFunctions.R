@@ -756,7 +756,7 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
 #'  \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
 #' @family spatial coding functions
-#' @family Reca functions
+#' @family StoX-Reca functions
 #' @export
 #' @md
 AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=c("Stratum", "Area")){
@@ -1399,7 +1399,7 @@ DefineCarNeighbours <- function(processData,
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of age-error matrices in Reca-estimation
-#' @family Reca functions
+#' @family StoX-Reca functions
 #' @export
 #' @md
 DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile"), FileName = character(), UseProcessData=F){
@@ -1509,7 +1509,7 @@ checkProbabilities <- function(tab, tolerance=1e-10){
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{StockSplittingParameters}}.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of stock-splitting parameters in Reca-estimation.
-#' @family Reca functions
+#' @family StoX-Reca functions
 #' @export
 #' @md
 DefineStockSplittingParameters <- function(processData, DefinitionMethod=c("ResourceFile", "FunctionParameters"), FileName=character(),

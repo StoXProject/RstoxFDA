@@ -61,7 +61,7 @@ If this is used in combination with several grouping variables, there is some ri
 \code{\link[RstoxFDA]{ReportRecaLengthAtAge}},
 \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} for compiling reports of predictions / estimates.
 
-Other Reca functions: 
+Other StoX-Reca functions: 
 \code{\link{AddStratumStoxLanding}()},
 \code{\link{DefineAgeErrorMatrix}()},
 \code{\link{DefineStockSplittingParameters}()},
@@ -76,4 +76,4 @@ Other Reca functions:
 \code{\link{ReportRecaParameterStatistics}()},
 \code{\link{ReportRecaWeightAtAge}()}
 }
-\concept{Reca functions}
+\concept{StoX-Reca functions}

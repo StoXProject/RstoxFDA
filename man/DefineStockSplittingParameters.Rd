@@ -67,7 +67,7 @@ For DefinitionMethod 'FunctionParameters' defintions are constructed from parame
 \seealso{
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of stock-splitting parameters in Reca-estimation.
 
-Other Reca functions: 
+Other StoX-Reca functions: 
 \code{\link{AddStratumStoxLanding}()},
 \code{\link{DefineAgeErrorMatrix}()},
 \code{\link{ParameterizeRecaModels}()},
@@ -82,4 +82,4 @@ Other Reca functions:
 \code{\link{ReportRecaWeightAtAge}()},
 \code{\link{RunRecaModels}()}
 }
-\concept{Reca functions}
+\concept{StoX-Reca functions}

@@ -50,7 +50,7 @@ Tabulates summary statistics for mean length at age from MCMC simulations using 
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 
-Other Reca functions: 
+Other StoX-Reca functions: 
 \code{\link{AddStratumStoxLanding}()},
 \code{\link{DefineAgeErrorMatrix}()},
 \code{\link{DefineStockSplittingParameters}()},
@@ -65,4 +65,4 @@ Other Reca functions:
 \code{\link{ReportRecaWeightAtAge}()},
 \code{\link{RunRecaModels}()}
 }
-\concept{Reca functions}
+\concept{StoX-Reca functions}

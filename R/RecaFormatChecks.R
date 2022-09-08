@@ -330,6 +330,7 @@ checkGlobalParameters <- function(globalparameters, agelength, weightlength){
 #' @param Landings list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}
 #' @param GlobalParameters list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}
 #' @return NULL
+#' @family Reca functions
 #' @export  
 sanitizeRecaInput <- function(AgeLength=NULL, WeightLength=NULL, Landings=NULL, GlobalParameters=NULL){
   if (!is.null(WeightLength) & !is.null(Landings)){

@@ -42,3 +42,14 @@ parameter 'unit' supports:
  data(recaPrediction)
  plotCatchAtAge(recaPrediction)
 }
+\seealso{
+Other Reca functions: 
+\code{\link{makeAgeTracesRECA}()},
+\code{\link{makeResultTableRECA}()},
+\code{\link{plotAgeTraces}()},
+\code{\link{prepRECA}()},
+\code{\link{rEcaDataReport}()},
+\code{\link{runRECA}()},
+\code{\link{sanitizeRecaInput}()}
+}
+\concept{Reca functions}

@@ -137,7 +137,7 @@ and \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for making 'GearGroup' part 
 \code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters,
 and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
 
-Other Reca functions: 
+Other StoX-Reca functions: 
 \code{\link{AddStratumStoxLanding}()},
 \code{\link{DefineAgeErrorMatrix}()},
 \code{\link{DefineStockSplittingParameters}()},
@@ -152,4 +152,4 @@ Other Reca functions:
 \code{\link{ReportRecaWeightAtAge}()},
 \code{\link{RunRecaModels}()}
 }
-\concept{Reca functions}
+\concept{StoX-Reca functions}

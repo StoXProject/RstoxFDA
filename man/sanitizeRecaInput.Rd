@@ -36,3 +36,14 @@ The main interfaces to the Reca-package is \code{\link[Reca]{eca.estimate}} and 
  some checks require certain combination of arguments to be provided. For instance, checks on
  consistent encoding of variables in 'AgeLength' and 'Landings' are only performed if both 'AgeLength' and 'Landings' are provided.
 }
+\seealso{
+Other Reca functions: 
+\code{\link{makeAgeTracesRECA}()},
+\code{\link{makeResultTableRECA}()},
+\code{\link{plotAgeTraces}()},
+\code{\link{plotCatchAtAge}()},
+\code{\link{prepRECA}()},
+\code{\link{rEcaDataReport}()},
+\code{\link{runRECA}()}
+}
+\concept{Reca functions}

@@ -60,3 +60,14 @@ Generates overview of samples to inform on sample availability in potential cell
 
  rEcaDataReport(catchsamples, landings, c("Metier5", "VDencrCode"))
 }
+\seealso{
+Other Reca functions: 
+\code{\link{makeAgeTracesRECA}()},
+\code{\link{makeResultTableRECA}()},
+\code{\link{plotAgeTraces}()},
+\code{\link{plotCatchAtAge}()},
+\code{\link{prepRECA}()},
+\code{\link{runRECA}()},
+\code{\link{sanitizeRecaInput}()}
+}
+\concept{Reca functions}

@@ -55,7 +55,7 @@ Other spatial coding functions:
 \code{\link{plotArea}()},
 \code{\link{writeSpDataFrameAsWKT}()}
 
-Other Reca functions: 
+Other StoX-Reca functions: 
 \code{\link{DefineAgeErrorMatrix}()},
 \code{\link{DefineStockSplittingParameters}()},
 \code{\link{ParameterizeRecaModels}()},
@@ -70,5 +70,5 @@ Other Reca functions:
 \code{\link{ReportRecaWeightAtAge}()},
 \code{\link{RunRecaModels}()}
 }
-\concept{Reca functions}
+\concept{StoX-Reca functions}
 \concept{spatial coding functions}
