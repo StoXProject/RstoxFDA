@@ -17,8 +17,8 @@ RstoxFDA is an analysis-library that also works independently of StoX and not al
 ## Reca
 RstoxFDA contains functions for adapting data to Reca, running estimates, and plotting or tabulating results. These functions are formulated to be adaptable to other data formats than just the ones supported by Rstox.
 
-Reca is available at: https://github.com/NorskRegnesentral/Reca .
-For Windows and Linux, Reca can be installed via devtools::install_github("https://github.com/NorskRegnesentral/Reca").
-For Mac, one might consider the fork at: https://github.com/StoXProject/reca. 
+Reca is primarily available at: https://github.com/NorskRegnesentral/Reca.
+One may also consider installing from the fork at: https://github.com/StoXProject/reca, or at https://stoxproject.github.io/repo/: install.packages("Reca", repos=c("https://stoxproject.github.io/repo/")), but these resources should be considered experimental, and they are not backed by a maintenance policy.
 
-Precompiled versions at https://stoxproject.github.io/repo/ may also be considered: install.packages("Reca", repos=c("https://stoxproject.github.io/repo/")).
+## Maintainance policy
+We are still in the process of developing a policy for exactly which versions of R and operating systems we will strive to keep RstoxFDA working for, and how often to revise that policy. This page will be updated as those policies av finalized, but users should be prepared that it will be necessary to keep their environment up to date for continued used of RstoxFDA. We will also make public a policy on backwards compatibility, in order for us to manage deprecation of functions.
