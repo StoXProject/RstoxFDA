@@ -8,7 +8,8 @@ sanitizeRecaInput(
   AgeLength = NULL,
   WeightLength = NULL,
   Landings = NULL,
-  GlobalParameters = NULL
+  GlobalParameters = NULL,
+  stage = c("dataprep", "parameterize", "predict")
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ sanitizeRecaInput(
 \item{Landings}{list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}}
 
 \item{GlobalParameters}{list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}}
+
+\item{stage}{character specifying which stage the sanitation should be performed for. See details.}
 }
 \description{
 Performs input sanitation for Reca
@@ -29,6 +32,15 @@ The main interfaces to the Reca-package is \code{\link[Reca]{eca.estimate}} and 
  but they do not perform much input sanitation. 
  This function checks that data is formatted in accordance with the requirements. 
  
+ The input formats are shared between the \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}
+ and the formatting requirements are largely overlapping. Sanitation has therefore been conseptually divided into three stages,
+ and which checks are to be performed is controlled by the argument 'stage'. The three stages are:
+ \describe{
+  \item{dataprep}{check that data is correctly and consistently formatted, and check that all global parameters that have implications for data formatting are provided.}
+  \item{parameterize}{check that arguments are valid input to \code{\link[Reca]{eca.estimate}}}
+  \item{predict}{check that arguments are valid input to \code{\link[Reca]{eca.predict}}}
+ }
+ 
  Errors or warnings are raised on any issue, and this function does not have a meaningful return value.
  
  All or some inputs to the Reca-functions may be provided for sanitation, and available checks will be run accordingly.
@@ -38,6 +50,7 @@ The main interfaces to the Reca-package is \code{\link[Reca]{eca.estimate}} and 
 }
 \seealso{
 Other Reca functions: 
+\code{\link{convertRecaData}()},
 \code{\link{makeAgeTracesRECA}()},
 \code{\link{makeResultTableRECA}()},
 \code{\link{plotAgeTraces}()},

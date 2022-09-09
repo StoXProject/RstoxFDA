@@ -87,8 +87,13 @@ errorPrep$Landings$LiveWeightKG <- errorPrep$Landings$LiveWeightKG[1:2]
 expect_error(RstoxFDA:::sanitizeRecaInput(Landings=errorPrep$Landings), "length of weight vector does not match number of rows in covariate matrices in landings.")
 
 errorPrep <- ecaPrep
+errorPrep$GlobalParameters$lengthresCM <- NA
+expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength), "Some required global parameters are NA: lengthresCM")
+
+errorPrep <- ecaPrep
 errorPrep$GlobalParameters$lengthresCM <- NULL
-expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength), "Length resolution not set")
+expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength), "Some required global parameters are missing: lengthresCM")
+
 
 errorPrep <- ecaPrep
 errorPrep$GlobalParameters$maxage <- 3
@@ -105,3 +110,18 @@ expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParam
 errorPrep <- ecaPrep
 errorPrep$GlobalParameters$age.error <- TRUE
 expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength), "Age error matrix not set, but age.error parameter set to TRUE.")
+
+errorPrep <- ecaPrep
+expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength, stage="parameterize"), "Some required global parameters are missing: nSamples,thin,burnin,resultdir,fitfile,delta.age,lgamodel")
+
+errorPrep <- ecaPrep
+errorPrep$GlobalParameters$nSamples <- 10
+errorPrep$GlobalParameters$burnin <- 10
+errorPrep$GlobalParameters$thin <- NA
+errorPrep$GlobalParameters$resultdir <- "dir"
+errorPrep$GlobalParameters$fitfile <- "fit"
+errorPrep$GlobalParameters$delta.age <- .01
+errorPrep$GlobalParameters$lgamodel <- "non-linear"
+expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength, stage="parameterize"), "Some required global parameters are NA: thin")
+
+

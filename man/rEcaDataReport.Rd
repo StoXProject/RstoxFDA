@@ -62,6 +62,7 @@ Generates overview of samples to inform on sample availability in potential cell
 }
 \seealso{
 Other Reca functions: 
+\code{\link{convertRecaData}()},
 \code{\link{makeAgeTracesRECA}()},
 \code{\link{makeResultTableRECA}()},
 \code{\link{plotAgeTraces}()},

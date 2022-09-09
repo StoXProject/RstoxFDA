@@ -40,6 +40,7 @@ The number of iterations of \code{\link[Reca]{eca.predict}}
 }
 \seealso{
 Other Reca functions: 
+\code{\link{convertRecaData}()},
 \code{\link{makeResultTableRECA}()},
 \code{\link{plotAgeTraces}()},
 \code{\link{plotCatchAtAge}()},

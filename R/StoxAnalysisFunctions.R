@@ -635,7 +635,7 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
   GlobalParameters$seed <- Seed
   
   RecaData$GlobalParameters <- GlobalParameters
-  RecaData <- checkEcaObj(RecaData)
+  RecaData <- checkEcaObj(RecaData, stage="parameterize")
   
   inputcache <- file.path(path.expand(ResultDirectory), "RecaDataCache.rds")
   outputcahce <- file.path(path.expand(ResultDirectory), "RecaFitCache.rds")

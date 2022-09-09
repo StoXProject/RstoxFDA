@@ -44,6 +44,7 @@ parameter 'unit' supports:
 }
 \seealso{
 Other Reca functions: 
+\code{\link{convertRecaData}()},
 \code{\link{makeAgeTracesRECA}()},
 \code{\link{makeResultTableRECA}()},
 \code{\link{plotAgeTraces}()},

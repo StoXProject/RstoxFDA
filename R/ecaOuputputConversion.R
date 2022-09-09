@@ -81,12 +81,10 @@ convertCovariateMap2Stox <- function(prepObj){
   CovariateMap <- packCMlist(prepObj$CovariateMaps, "CovariateMaps")
   for (n in names(CovariateMap)){
     if (class(CovariateMap[[n]]) != "list"){
-      newMap[[n]] <- data.table::data.table(values=CovariateMap[[n]])
+      newMap[[n]] <- data.table::data.table(names=1:length(CovariateMap[[n]]), values=CovariateMap[[n]])
     }
-    else if (is.null(names(CovariateMap[[n]]))){
+    else{
       newMap[[n]] <- data.table::data.table(names=1:length(CovariateMap[[n]]), values=unlist(CovariateMap[[n]]))  
-    }else{
-      newMap[[n]] <- data.table::data.table(names=names(CovariateMap[[n]]), values=unlist(CovariateMap[[n]]))  
     }
     
   }
@@ -646,4 +644,63 @@ convertStockSplittingParameters2stox <- function(CCerrorList, covariateMaps){
                     ProbabilityType5As5 = CCerrorList$ptype5.S)
   stopifnot(is.StockSplittingParameters(tab))
   return(tab)
+}
+
+#' Convert RecaData
+#' @description 
+#'  Converts \code{\link[RstoxFDA]{RecaData}} prepared for StoX-Reca to the input format accepted by \code{\link[Reca]{eca.estimate}}.
+#'  This facilitates preparing input data with a StoX-project for more cusomized programs directly interfacing Reca.
+#' @details 
+#'  The StoX-function interfacing Reca-parameterisation (\code{\link[RstoxFDA]{RunRecaModels}}) accepts a data format
+#'  \code{\link[RstoxFDA]{RecaData}} that is not exactly compatible with the format accepted by \code{\link[Reca]{eca.estimate}}.
+#'  This inconvenience is introduced to make sure that output from \code{\link[RstoxFDA]{PrepareRecaEstimate}} adheres to
+#'  restrictions in the StoX-user interface, so that the results are inspectable there.
+#'  
+#'  Reca-input include model parameters and options, but \code{\link[RstoxFDA]{PrepareRecaEstimate}} only sets parameters that have
+#'  implications for data formatting, other parameters are subsequently set in for instance \code{\link[RstoxFDA]{RunRecaModels}}. 
+#'  The optional arguments to this function can be used to set those parameters that is handled by \code{\link[RstoxFDA]{RunRecaModels}} in the StoX-workflow.
+#'  
+#'  Reca requires categorical variables to be encoded as consecutive integers, starting with 1. In order to keep track of how this correspond to other representations, 
+#'  this function provides the mapping in the list 'CovariateMaps'. CovariateMaps is not an input to Reca, but only provided to assist book-keeping.
+#' @param RecaData \code{\link[RstoxFDA]{RecaData}}, as prepared by \code{\link[RstoxFDA]{PrepareRecaEstimate}}.
+#' @param nSamples nSamples as specified in \code{\link[Reca]{eca.estimate}}
+#' @param burnin burnin as specified in \code{\link[Reca]{eca.estimate}}
+#' @param thin thin as specified in \code{\link[Reca]{eca.estimate}}
+#' @param resultdir resultdir as specified in \code{\link[Reca]{eca.estimate}}
+#' @param lgamodel lgamodel as specified in \code{\link[Reca]{eca.estimate}}
+#' @param delta.age delta.age as specified in \code{\link[Reca]{eca.estimate}}
+#' @param seed seed as specified in \code{\link[Reca]{eca.estimate}}
+#' @param fitfile fitfile as specified in \code{\link[Reca]{eca.estimate}}
+#' @param predictfile predictfile as specified in \code{\link[Reca]{eca.estimate}}
+#' @return list with 5 members:
+#'  \describe{
+#'   \item{AgeLength}{Data prepared for the argument AgeLength to \code{\link[Reca]{eca.estimate}}}
+#'   \item{WeightLength}{Data prepared for the argument WeightLength to \code{\link[Reca]{eca.estimate}}}
+#'   \item{Landings}{Data prepared for the argument Landings to \code{\link[Reca]{eca.estimate}}}
+#'   \item{GlobalParameters}{Data prepared for the argument GlobalParameters to \code{\link[Reca]{eca.estimate}}, Completeness of this data structure depend on whether optional parameters where provided.}
+#'   \item{CovariateMaps}{Not input to Reca. Nested list, providing mapping between integer encoding and character encoding of the levels of categorical variables.}
+#'  }
+#' @family Reca functions
+#' @export
+convertRecaData <- function(RecaData, nSamples=as.integer(NA), 
+                            burnin=as.integer(NA), 
+                            thin=as.integer(NA), 
+                            resultdir=as.character(NA), 
+                            lgamodel=as.character(NA), 
+                            delta.age=as.numeric(NA),
+                            seed=as.numeric(NA), 
+                            fitfile=as.character(NA), 
+                            predictfile=as.character(NA)){
+  RecaData <- convertStox2PrepReca(RecaData)
+  RecaData$GlobalParameters$nSamples <- nSamples
+  RecaData$GlobalParameters$burnin <- burnin
+  RecaData$GlobalParameters$lgamodel <- lgamodel
+  RecaData$GlobalParameters$resultdir <- resultdir
+  RecaData$GlobalParameters$fitfile <- fitfile
+  RecaData$GlobalParameters$predictfile <- predictfile
+  RecaData$GlobalParameters$thin <- thin
+  RecaData$GlobalParameters$delta.age <- delta.age
+  RecaData$GlobalParameters$seed <- seed
+  
+  return(RecaData)
 }

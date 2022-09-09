@@ -860,14 +860,17 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   ret$GlobalParameters <- GlobalParameters
   ret$CovariateMaps <- covariateMaps
 
-  checkEcaObj(ret)
+  checkEcaObj(ret, stage="dataprep")
   
   return(ret)
 }
 
 #' Run data checks and converts data.table to data.frame
 #' @noRd
-checkEcaObj <- function(RECAobj){
+checkEcaObj <- function(RECAobj, stage=c("dataprep", "parameterize", "predict")){
+  
+  stage <- match.arg(stage, stage)
+  
   obj <- RECAobj
   obj$AgeLength$DataMatrix <- as.data.frame(obj$AgeLength$DataMatrix)
   obj$AgeLength$CovariateMatrix <- as.data.frame(obj$AgeLength$CovariateMatrix)
@@ -882,7 +885,7 @@ checkEcaObj <- function(RECAobj){
   checkCovariateConsistency(obj$WeightLength, obj$Landings$WeightLengthCov)
   checkLandings(obj$Landings)
 
-  checkGlobalParameters(obj$GlobalParameters, obj$AgeLength, obj$WeightLength)
+  checkGlobalParameters(obj$GlobalParameters, obj$AgeLength, obj$WeightLength, stage=stage)
 
   return(obj)
 }
@@ -962,7 +965,7 @@ runRECA <- function(RecaObj, nSamples, burnin, lgamodel="log-linear", fitfile="f
       GlobalParameters$caa.burnin <- caa.burnin
 
       RecaObj$GlobalParameters <- GlobalParameters
-      RecaObj <- checkEcaObj(RecaObj)
+      RecaObj <- checkEcaObj(RecaObj, stage="parameterize")
 
       fit <- Reca::eca.estimate(RecaObj$AgeLength, RecaObj$WeightLength, RecaObj$Landings, RecaObj$GlobalParameters)
       pred <- Reca::eca.predict(RecaObj$AgeLength, RecaObj$WeightLength, RecaObj$Landings, RecaObj$GlobalParameters)

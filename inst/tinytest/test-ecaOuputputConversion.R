@@ -40,4 +40,33 @@ recaNeib <- RstoxFDA:::convertCarNeighbours2reca(prepCar$AgeLength$CARNeighbours
 stoxNeib <- RstoxFDA:::convertCarNeighbours2stox(recaNeib, ecaprepDummy$CovariateMaps)
 expect_equal(prepCar$AgeLength$CARNeighbours, stoxNeib)
 
+#Test exported conversion function
+RecaData <- RstoxFDA::convertRecaData(prepCar)
+prepCarBackConvert<-RstoxFDA:::convertPrepReca2stox(RecaData)
+expect_equal(prepCarBackConvert$AgeLength, prepCar$AgeLength)
+expect_equal(prepCarBackConvert$WeightLength, prepCar$WeightLength)
+expect_equal(prepCarBackConvert$Landings, prepCar$Landings)
+expect_equal(prepCarBackConvert$CovariateMaps, prepCar$CovariateMaps)
+# do not test GlobalParameters, differences are expected there
+
+#check that converted object passes sanitation
+sanitizeRecaInput(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters, stage="dataprep")
+
+#
+# check that estimation runs on converted data
+#
+StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
+StoxBioticData <- readRDS(StoxBioticFile)
+
+StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
+StoxLandingData <- readRDS(StoxLandingFile)
+
+StoxBioticDataWDupl <- StoxBioticData
+prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
+
+fpath <- RstoxFDA:::makeTempDirReca()
+RecaData <- RstoxFDA::convertRecaData(prep, nSamples = 10, burnin = 50, thin=1, resultdir = fpath, delta.age = .001, fitfile = "fit", seed = 42, lgamodel = "log-linear")
+sanitizeRecaInput(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters, stage="parameterize")
+est<-Reca::eca.estimate(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters)
+RstoxFDA:::removeTempDirReca(fpath)
 

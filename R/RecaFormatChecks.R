@@ -272,8 +272,48 @@ checkLandings <- function(landings){
   check_landings_cov(landings$WeightLengthCov)
 }
 
+#' @param stage: specify the stage of sanitation for, only parameters that have implications for data-formatting ("datapred"), before Reca::eca.estimate ("parameterize") or before Reca::eca.predict ("predict")
 #' @noRd
-checkGlobalParameters <- function(globalparameters, agelength, weightlength){
+checkGlobalParameters <- function(globalparameters, agelength, weightlength, stage=c("dataprep", "parameterize", "predict")){
+
+  stage <- match.arg(stage, stage)
+  
+  if (stage == "parameterize"){
+    required <- c("nSamples", "thin", "burnin", "lengthresCM", "maxlength", "minage", "maxage", "resultdir", "fitfile", "delta.age", "age.error", "lgamodel", "CC", "CCerror")
+    missingnames <- required[!(required %in% names(globalparameters))]
+    if (length(missingnames) > 0){
+      stop(paste("Some required global parameters are missing:", paste(missingnames, collapse=",")))
+    }
+    nanames <- names(globalparameters)[(names(globalparameters) %in% required) & is.na(globalparameters)]
+    if (length(nanames) > 0){
+      stop(paste("Some required global parameters are NA:", paste(nanames, collapse=",")))
+    }
+  }
+  
+  if (stage == "predict"){
+    required <- c("nSamples", "thin", "burnin", "lengthresCM", "maxlength", "minage", "maxage", "resultdir", "fitfile", "predictfile", "delta.age", "age.error", "lgamodel", "CC", "CCerror", "caa.burnin")
+    missingnames <- required[!(required %in% names(globalparameters))]
+    if (length(missingnames) > 0){
+      stop(paste("Some required global parameters are missing:", paste(missingnames, collapse=",")))
+    }
+    nanames <- names(globalparameters)[(names(globalparameters) %in% required) & is.na(globalparameters)]
+    if (length(nanames) > 0){
+      stop(paste("Some required global parameters are NA:", paste(nanames, collapse=",")))
+    }
+  }
+  
+  if (stage == "dataprep"){
+    required <- c("lengthresCM", "maxlength", "minage", "maxage", "age.error", "CC", "CCerror")
+    missingnames <- required[!(required %in% names(globalparameters))]
+    if (length(missingnames) > 0){
+      stop(paste("Some required global parameters are missing:", paste(missingnames, collapse=",")))
+    }
+    nanames <- names(globalparameters)[(names(globalparameters) %in% required) & is.na(globalparameters)]
+    if (length(nanames) > 0){
+      stop(paste("Some required global parameters are NA:", paste(nanames, collapse=",")))
+    }
+  }
+  
   if (length(globalparameters$lengthresCM)==0 || is.na(globalparameters$lengthresCM)){
     stop("Length resolution not set (lengthresCM)")
   }
@@ -318,6 +358,15 @@ checkGlobalParameters <- function(globalparameters, agelength, weightlength){
 #'  but they do not perform much input sanitation. 
 #'  This function checks that data is formatted in accordance with the requirements. 
 #'  
+#'  The input formats are shared between the \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}
+#'  and the formatting requirements are largely overlapping. Sanitation has therefore been conseptually divided into three stages,
+#'  and which checks are to be performed is controlled by the argument 'stage'. The three stages are:
+#'  \describe{
+#'   \item{dataprep}{check that data is correctly and consistently formatted, and check that all global parameters that have implications for data formatting are provided.}
+#'   \item{parameterize}{check that arguments are valid input to \code{\link[Reca]{eca.estimate}}}
+#'   \item{predict}{check that arguments are valid input to \code{\link[Reca]{eca.predict}}}
+#'  }
+#'  
 #'  Errors or warnings are raised on any issue, and this function does not have a meaningful return value.
 #'  
 #'  All or some inputs to the Reca-functions may be provided for sanitation, and available checks will be run accordingly.
@@ -329,10 +378,14 @@ checkGlobalParameters <- function(globalparameters, agelength, weightlength){
 #' @param WeightLength list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}
 #' @param Landings list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}
 #' @param GlobalParameters list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}
+#' @param stage character specifying which stage the sanitation should be performed for. See details.
 #' @return NULL
 #' @family Reca functions
 #' @export  
-sanitizeRecaInput <- function(AgeLength=NULL, WeightLength=NULL, Landings=NULL, GlobalParameters=NULL){
+sanitizeRecaInput <- function(AgeLength=NULL, WeightLength=NULL, Landings=NULL, GlobalParameters=NULL, stage=c("dataprep", "parameterize", "predict")){
+  
+  stage <- match.arg(stage, stage)
+  
   if (!is.null(WeightLength) & !is.null(Landings)){
     checkWeightLength(WeightLength, Landings)    
   }
@@ -350,7 +403,7 @@ sanitizeRecaInput <- function(AgeLength=NULL, WeightLength=NULL, Landings=NULL, 
   }
   
   if (!is.null(WeightLength) & !is.null(WeightLength) & !is.null(GlobalParameters)){
-    checkGlobalParameters(GlobalParameters, AgeLength, WeightLength)    
+    checkGlobalParameters(GlobalParameters, AgeLength, WeightLength, stage=stage)    
   }
   
   return(NULL)
