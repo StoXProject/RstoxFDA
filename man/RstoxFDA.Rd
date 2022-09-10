@@ -38,12 +38,4 @@ Authors:
   \item Arne Johannes Holmin
 }
 
-
-\strong{Maintainer}: Edvin Fuglebakk \email{edvin.fuglebakk@hi.no}
-
-Authors:
-\itemize{
-  \item Arne Johannes Holmin
-}
-
 }

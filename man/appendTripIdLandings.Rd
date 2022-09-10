@@ -52,6 +52,7 @@ if 'tripIds' is NULL, trip IDs will be constructed from landings using \code{\li
 }
 \seealso{
 Other logbook functions: 
+\code{\link{activityCensus}},
 \code{\link{addLogbookColumns}()},
 \code{\link{appendTripIdLogbooks}()},
 \code{\link{calculateLogbookPartitionByTrip}()},
@@ -68,6 +69,7 @@ Other landings functions:
 \code{\link{ReportFdaSampling}()},
 \code{\link{addLogbookColumns}()},
 \code{\link{imputeCatchesLandings}()},
+\code{\link{landings}},
 \code{\link{logbookAdjustment}()},
 \code{\link{makeTripIds}()},
 \code{\link{plotBubbleMap}()},

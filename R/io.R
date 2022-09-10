@@ -369,6 +369,7 @@ readLstFile <- function(filename, encoding = "Latin-1"){
 #' @param LstLogbookData \code{\link[RstoxFDA]{LstLogbookData}} to be converted
 #' @param timestring string representing the time of day (UTC) to assume for fishing operations. Format: %H:%M:%S.
 #' @family logbook functions
+#' @family IO functions
 #' @return \code{\link[data.table]{data.table}} formatted as return from \code{\link[RstoxData]{readErsFile}}.
 #' @md
 #' @export

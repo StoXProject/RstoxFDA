@@ -65,6 +65,7 @@ Imputes landings for logbook records, redistributes catches, and adds informatio
 }
 \seealso{
 Other logbook functions: 
+\code{\link{activityCensus}},
 \code{\link{addLogbookColumns}()},
 \code{\link{appendTripIdLandings}()},
 \code{\link{appendTripIdLogbooks}()},
@@ -82,6 +83,7 @@ Other landings functions:
 \code{\link{addLogbookColumns}()},
 \code{\link{appendTripIdLandings}()},
 \code{\link{imputeCatchesLandings}()},
+\code{\link{landings}},
 \code{\link{makeTripIds}()},
 \code{\link{plotBubbleMap}()},
 \code{\link{sourceLogbookColumns}()},

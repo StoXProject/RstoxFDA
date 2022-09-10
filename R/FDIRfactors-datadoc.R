@@ -16,5 +16,6 @@
 #' @format \code{\link[RstoxFDA]{WeightConversionTable}}.
 #'
 #' @keywords datasets
+#' @family parameter conversion functions
 #'
 "FDIR.factors.VIII.2022"

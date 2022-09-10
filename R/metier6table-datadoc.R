@@ -1,4 +1,4 @@
-#' MetierTable lvl 6
+#' MetierTable lvl 6 example
 #'
 #' Example of metier table for assigning fishing activity to Metier level 6, based on gear codes and mesh-sizes.
 #' This is not a universal conversion table, but an example of a table made for a particular purpose.
@@ -16,6 +16,7 @@
 #' @format \code{\link[RstoxFDA]{MetierTable}} with column 'gearcode' identifying gear codes used in Norwegian fisheries data (derived from NS 9400)
 #'
 #' @keywords datasets
+#' @family gear coding functions
 #'
 #' @examples
 #' data(metier6table)

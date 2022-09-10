@@ -1,4 +1,4 @@
-#' Main areas
+#' Main areas (FDIR to 2017 incl.)
 #'
 #' Definition for area coding system defined by the Norwegian directorate of Fisheries up until 2017 (inclusive).
 #' Polygons are defined in WGS84 coordinates (unprojected).

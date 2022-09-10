@@ -9,6 +9,7 @@
 #' @param complete logical() whether all combinations of the columns in cellCols should be tabulated, even if they contain no catch.
 #' @return \code{\link[data.table]{data.table}} with the cells specified in cellCols tabulated by decreasing weight and with the columns 'weight', 'frac' and 'cumFrac' containing the weight in each cells and the fraction and cumulative fraction of total weight in that cell.
 #' @family landings functions
+#' @family Reca functions
 #' @examples
 #'  data(landings)
 #'  tabulateFisheries(landings)

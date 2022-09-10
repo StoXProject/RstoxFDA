@@ -106,6 +106,7 @@ categoriseDate <- function(date, temporalType="quarter", seasonal=T, FUN=NULL){
 #'  gearConversion["TBN"] <- "OTB"
 #'  gearConversion["OTB"] <- "OTB"
 #'  convertCodes(c("TBS", "TBN", "OTB"), gearConversion)
+#' @family parameter conversion functions
 #' @export
 convertCodes <- function(code, conversionTable){
 

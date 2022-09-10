@@ -1,4 +1,4 @@
-#' Location codes
+#' Location codes (FDIR to 2017 incl.)
 #'
 #' Definition for location coding system defined by the Norwegian directorate of Fisheries up until 2017 (inclusive).
 #' Polygons are defined in WGS84 coordinates (unprojected).

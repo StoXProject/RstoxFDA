@@ -61,6 +61,7 @@ The result of imputation have added lines for each corresponding catch in logboo
 \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, and \code{\link[RstoxFDA]{appendTripIdLogbooks}} for obtaining 'landings' with trip-ids.
 
 Other logbook functions: 
+\code{\link{activityCensus}},
 \code{\link{addLogbookColumns}()},
 \code{\link{appendTripIdLandings}()},
 \code{\link{appendTripIdLogbooks}()},
@@ -77,6 +78,7 @@ Other landings functions:
 \code{\link{ReportFdaSampling}()},
 \code{\link{addLogbookColumns}()},
 \code{\link{appendTripIdLandings}()},
+\code{\link{landings}},
 \code{\link{logbookAdjustment}()},
 \code{\link{makeTripIds}()},
 \code{\link{plotBubbleMap}()},

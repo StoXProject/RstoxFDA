@@ -3,7 +3,7 @@
 \docType{data}
 \name{metier5table}
 \alias{metier5table}
-\title{MetierTable lvl 5}
+\title{MetierTable lvl 5 example}
 \format{
 \code{\link[RstoxFDA]{MetierTable}} with column 'gearcode' identifying gear codes used in Norwegian fisheries data (derived from NS 9400)
 }
@@ -34,4 +34,16 @@ annotatedShrimp <- annotated[annotated$targetFAO \%in\% c("PAN", "PRA"),]
 table(paste(annotatedShrimp$gearFAO, annotatedShrimp$targetFAO, sep="/"),
       annotatedShrimp$metier5)
 }
+\seealso{
+Other gear coding functions: 
+\code{\link{AddGearGroupStoxBiotic}()},
+\code{\link{AddGearGroupStoxLanding}()},
+\code{\link{GearGroupFdirTable}},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{appendMetier}()},
+\code{\link{metier4table}},
+\code{\link{metier6table}},
+\code{\link{readMetierTable}()}
+}
+\concept{gear coding functions}
 \keyword{datasets}

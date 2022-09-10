@@ -1,4 +1,4 @@
-#' Main areas
+#' Main areas (FDIR from 2018 incl.)
 #'
 #' Definition for area coding system defined by the Norwegian directorate of Fisheries (2018 revision).
 #' This revision has been in use for their fishery statistics as of 2018 (inclusive).

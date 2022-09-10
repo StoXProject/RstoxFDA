@@ -41,9 +41,28 @@ Other landings functions:
 \code{\link{addLogbookColumns}()},
 \code{\link{appendTripIdLandings}()},
 \code{\link{imputeCatchesLandings}()},
+\code{\link{landings}},
 \code{\link{logbookAdjustment}()},
 \code{\link{makeTripIds}()},
 \code{\link{plotBubbleMap}()},
 \code{\link{sourceLogbookColumns}()}
+
+Other Reca functions: 
+\code{\link{catchsamples}},
+\code{\link{convertRecaData}()},
+\code{\link{getCovariateMap}()},
+\code{\link{getLandings}()},
+\code{\link{landings}},
+\code{\link{makeAgeTracesRECA}()},
+\code{\link{makeResultTableRECA}()},
+\code{\link{plotAgeTraces}()},
+\code{\link{plotCatchAtAge}()},
+\code{\link{prepRECA}()},
+\code{\link{rEcaDataReport}()},
+\code{\link{recaDataExample}},
+\code{\link{recaPrediction}},
+\code{\link{runRECA}()},
+\code{\link{sanitizeRecaInput}()}
 }
+\concept{Reca functions}
 \concept{landings functions}

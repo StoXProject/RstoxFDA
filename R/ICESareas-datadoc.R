@@ -1,4 +1,4 @@
-#' ICES areas
+#' ICES areas (mixed area codes from 2018)
 #'
 #' Definition for FAO Northeast Atlantic (Major Fishing Area 27) area coding system used in ICES data calls,
 #' as they have been defined from 2018 inclusive.

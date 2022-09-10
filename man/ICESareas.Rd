@@ -3,7 +3,7 @@
 \docType{data}
 \name{ICESareas}
 \alias{ICESareas}
-\title{ICES areas}
+\title{ICES areas (mixed area codes from 2018)}
 \format{
 \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 }

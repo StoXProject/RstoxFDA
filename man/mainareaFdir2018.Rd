@@ -3,7 +3,7 @@
 \docType{data}
 \name{mainareaFdir2018}
 \alias{mainareaFdir2018}
-\title{Main areas}
+\title{Main areas (FDIR from 2018 incl.)}
 \format{
 \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 }

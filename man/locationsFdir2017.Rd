@@ -3,7 +3,7 @@
 \docType{data}
 \name{locationsFdir2017}
 \alias{locationsFdir2017}
-\title{Location codes}
+\title{Location codes (FDIR to 2017 incl.)}
 \format{
 \code{\link[sp]{SpatialPolygonsDataFrame}} with location names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 }

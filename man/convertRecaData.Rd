@@ -67,13 +67,20 @@ The StoX-function interfacing Reca-parameterisation (\code{\link[RstoxFDA]{RunRe
 }
 \seealso{
 Other Reca functions: 
+\code{\link{catchsamples}},
+\code{\link{getCovariateMap}()},
+\code{\link{getLandings}()},
+\code{\link{landings}},
 \code{\link{makeAgeTracesRECA}()},
 \code{\link{makeResultTableRECA}()},
 \code{\link{plotAgeTraces}()},
 \code{\link{plotCatchAtAge}()},
 \code{\link{prepRECA}()},
 \code{\link{rEcaDataReport}()},
+\code{\link{recaDataExample}},
+\code{\link{recaPrediction}},
 \code{\link{runRECA}()},
-\code{\link{sanitizeRecaInput}()}
+\code{\link{sanitizeRecaInput}()},
+\code{\link{tabulateFisheries}()}
 }
 \concept{Reca functions}

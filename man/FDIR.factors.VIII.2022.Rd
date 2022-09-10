@@ -21,4 +21,13 @@ and from gutted fish with head (GWH) are provided for selected species.
 ProductTypes and species codes are encoded as in NMDBiotic v3. That is code 3 for GWH and 4 for GWOH,
 IMR-species codes (usually identical to ITIS tsn number)
 }
+\seealso{
+Other parameter conversion functions: 
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{DefineLengthConversionParameters}()},
+\code{\link{DefineWeightConversionFactor}()},
+\code{\link{convertCodes}()}
+}
+\concept{parameter conversion functions}
 \keyword{datasets}

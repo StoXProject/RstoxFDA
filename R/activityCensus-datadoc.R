@@ -19,6 +19,7 @@
 #'  }
 #'
 #' @keywords datasets
+#' @family logbook functions
 #'
 #' @examples
 #' data(activityCensus)

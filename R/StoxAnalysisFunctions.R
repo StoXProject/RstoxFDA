@@ -262,6 +262,7 @@ warnMissingLandings <- function(StoxBiotic, StoxLanding, effects){
 #'  \code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters, 
 #'  and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
 #' @family StoX-Reca functions
+#' @family StoX-functions
 #' @export
 #' @md
 PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=FALSE, CarEffect=character(), CarNeighbours, UseAgingError=FALSE, AgeErrorMatrix, UseStockSplitting=FALSE, UseStockSplittingError=FALSE, StockSplittingParameters, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
@@ -489,6 +490,7 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
 #' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
 #' @return \code{\link[RstoxFDA]{RecaResult}} results from Reca run.
+#' @family deprecated
 #' @export
 RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), Lgamodel=c("log-linear", "non-linear"), Resultdir=character(), Delta.age=numeric(), Seed=numeric(), Caa.burnin=numeric()){
 
@@ -567,6 +569,7 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for model configuration, and data preparation for this function, and
 #'  \code{\link[RstoxFDA]{RunRecaModels}} for obtaining predictions / estimates from the Reca-models.
 #' @family StoX-Reca functions
+#' @family StoX-functions
 #' @export
 #' @md
 ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), ResultDirectory=character(), Lgamodel=c("log-linear", "non-linear"), Delta.age=numeric(), Seed=numeric(), UseCachedData=FALSE){
@@ -743,6 +746,7 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #'  \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}, 
 #'  \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} for compiling reports of predictions / estimates.
 #' @family StoX-Reca functions
+#' @family StoX-functions
 #' @export
 #' @md
 RunRecaModels <- function(RecaParameterData, StoxLandingData, GroupingVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric(), CollapseLength=TRUE){

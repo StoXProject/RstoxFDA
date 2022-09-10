@@ -103,6 +103,7 @@ checkAllSampledCar <- function(landings, samples, fixedEffects, carEffect, neigh
 #'  catchsamples$Metier5 <- catchsamples$LEmetier5
 #'  landings$Metier5 <- landings$FishingActivityCategoryEuropeanLvl5
 #'  getCovariateMap("Metier5", catchsamples, landings)
+#' @family Reca functions
 #' @export
 getCovariateMap <- function(covariate, samples, landings){
 
@@ -445,6 +446,7 @@ getNeighbours <- function(neighbours, covariateMap){
 #'  landings$Metier5 <- landings$FishingActivityCategoryEuropeanLvl5
 #'  covMap <- getCovariateMap("Metier5", catchsamples, landings)
 #'  getLandings(landings, c("Metier5"), covMap, month=landings$Month)
+#' @family Reca functions
 #' @export
 getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NULL, quarter=NULL){
   

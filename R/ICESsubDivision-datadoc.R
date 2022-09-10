@@ -1,4 +1,4 @@
-#' ICES areas
+#' ICES sub-divisions (area codes from 2018)
 #'
 #' Definition ICES SubDivisions as they have been defined from 2018 inclusive.
 #' 

@@ -34,6 +34,54 @@ and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'GearGroup' as an aggre
 
 Other gear coding functions: 
 \code{\link{AddGearGroupStoxLanding}()},
-\code{\link{SetShortGearBiotic}()}
+\code{\link{GearGroupFdirTable}},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{appendMetier}()},
+\code{\link{metier4table}},
+\code{\link{metier5table}},
+\code{\link{metier6table}},
+\code{\link{readMetierTable}()}
+
+Other StoX-functions: 
+\code{\link{AddAreaPositionStoxLanding}()},
+\code{\link{AddGearGroupStoxLanding}()},
+\code{\link{AddPeriodStoxBiotic}()},
+\code{\link{AddPeriodStoxLanding}()},
+\code{\link{AddStratumStoxBiotic}()},
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{DefineAgeErrorMatrix}()},
+\code{\link{DefineAreaPosition}()},
+\code{\link{DefineCarNeighbours}()},
+\code{\link{DefineLengthConversionParameters}()},
+\code{\link{DefinePeriod}()},
+\code{\link{DefineStockSplittingParameters}()},
+\code{\link{DefineWeightConversionFactor}()},
+\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
+\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
+\code{\link{ListBioticDifference}()},
+\code{\link{LoadFdaStratumPolygon}()},
+\code{\link{ParameterizeRecaModels}()},
+\code{\link{PrepareRecaEstimate}()},
+\code{\link{ReadLandingFDA}()},
+\code{\link{ReportFdaLandings}()},
+\code{\link{ReportFdaSOP}()},
+\code{\link{ReportFdaSampling}()},
+\code{\link{ReportParameterConvergence}()},
+\code{\link{ReportRecaCatchAtAgeCovariance}()},
+\code{\link{ReportRecaCatchAtAge}()},
+\code{\link{ReportRecaCatchAtLengthAndAge}()},
+\code{\link{ReportRecaCatchAtLength}()},
+\code{\link{ReportRecaCatchStatistics}()},
+\code{\link{ReportRecaLengthAtAge}()},
+\code{\link{ReportRecaParameterStatistics}()},
+\code{\link{ReportRecaWeightAtAge}()},
+\code{\link{RunRecaModels}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()}
 }
+\concept{StoX-functions}
 \concept{gear coding functions}

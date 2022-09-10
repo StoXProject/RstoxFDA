@@ -28,3 +28,12 @@ Will stop with error if any codes can not be converted, or if any entries are NA
  gearConversion["OTB"] <- "OTB"
  convertCodes(c("TBS", "TBN", "OTB"), gearConversion)
 }
+\seealso{
+Other parameter conversion functions: 
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{DefineLengthConversionParameters}()},
+\code{\link{DefineWeightConversionFactor}()},
+\code{\link{FDIR.factors.VIII.2022}}
+}
+\concept{parameter conversion functions}

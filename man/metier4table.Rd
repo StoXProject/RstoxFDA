@@ -3,7 +3,7 @@
 \docType{data}
 \name{metier4table}
 \alias{metier4table}
-\title{MetierTable lvl 4}
+\title{MetierTable lvl 4 example}
 \format{
 \code{\link[RstoxFDA]{MetierTable}} with column 'gearcode' identifying gear codes used in Norwegian fisheries data (derived from NS 9400)
 }
@@ -21,4 +21,16 @@ data(activityCensus)
 annotated <- appendMetier(activityCensus, metier4table, "gearNS", metierColName = "metier4")
 table(annotated$gearFAO, annotated$metier4)
 }
+\seealso{
+Other gear coding functions: 
+\code{\link{AddGearGroupStoxBiotic}()},
+\code{\link{AddGearGroupStoxLanding}()},
+\code{\link{GearGroupFdirTable}},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{appendMetier}()},
+\code{\link{metier5table}},
+\code{\link{metier6table}},
+\code{\link{readMetierTable}()}
+}
+\concept{gear coding functions}
 \keyword{datasets}

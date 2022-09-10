@@ -3,7 +3,7 @@
 \docType{data}
 \name{ICESunit}
 \alias{ICESunit}
-\title{ICES areas}
+\title{ICES units (area codes)}
 \format{
 \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 }
@@ -11,7 +11,7 @@
 data(ICESunit)
 }
 \description{
-Definition ICES Units (area codes) as they have been defined from 2018 inclusive.
+Definition ICES Units (area codes).
 }
 \details{
 Polygons are derived from shapefiles provided by ICES web-portals, and has been edited with some simplifications.

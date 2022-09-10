@@ -1,6 +1,6 @@
-#' ICES areas
+#' ICES units (area codes)
 #'
-#' Definition ICES Units (area codes) as they have been defined from 2018 inclusive.
+#' Definition ICES Units (area codes).
 #' 
 #' Polygons are derived from shapefiles provided by ICES web-portals, and has been edited with some simplifications.
 #' Notably detailed coast-lines have been removed, in favor of drawing area borders on land-mass.

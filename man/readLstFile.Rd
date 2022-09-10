@@ -26,9 +26,11 @@ A variant of .lst does not provide headers. These are read with assumed standard
 \seealso{
 Other IO functions: 
 \code{\link{ReadLandingFDA}()},
+\code{\link{convertToErsData}()},
 \code{\link{readFdirLandingsArchive}()}
 
 Other logbook functions: 
+\code{\link{activityCensus}},
 \code{\link{addLogbookColumns}()},
 \code{\link{appendTripIdLandings}()},
 \code{\link{appendTripIdLogbooks}()},
