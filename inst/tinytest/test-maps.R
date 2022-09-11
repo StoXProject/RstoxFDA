@@ -57,3 +57,7 @@ merged <- RstoxFDA::mergePolygons(ia, "StratumName")
 expect_true("SpatialPolygonsDataFrame" %in% class(merged))
 expect_equal(length(merged), length(unique(ia$StratumName)))
 
+# plot area comparison
+plotAreaComparison(RstoxFDA::mainareaFdir2017, RstoxFDA::mainareaFdir2018, xlim=c(0,12), ylim=c(54,60), areaLabels2 = T, projection = "+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
+         +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
+

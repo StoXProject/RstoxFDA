@@ -676,6 +676,7 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
 #' @family temporal coding functions
 #' @family StoX-functions
+#' @export
 #' @md
 AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition, ColumnName=c("Period", "ReportPeriod")){
   

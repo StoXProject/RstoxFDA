@@ -118,6 +118,97 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
   pl
 }
 
+#' Compare area definitions
+#' @description 
+#'  Plots two area defintions on top of each other for comparison
+#' @details
+#'  Map ranges to plot are specified by 'xlim' and 'ylim'. These should always be given in lon/lat.
+#'  if these are not given they will be derived from the bounding box of 'areaDef'.
+#'  To allow for flexible projection, some space will be added around 'xlim' and 'ylim'.
+#'  
+#'  Colors can be specified as understood by ggplot2. E.g. one of those listed by \code{\link[grDevices]{colors}}.
+#'  Linetypes can be specified as understood by ggplot2. E.g: "solid", "dashed", "dotted", "dotdash", "longdash", or "twodash".
+#'  
+#' @param areaDef1 A \code{\link[sp]{SpatialPolygonsDataFrame}}. The area definition to be plotted first ("behind" the other one)
+#' @param areaDef2 A \code{\link[sp]{SpatialPolygonsDataFrame}}. The area definition to be plotted second ("on top of" the other one)
+#' @param areaNameCol1 The column in areaDef1 that provides the names to be used for any labeling of areas
+#' @param areaNameCol2 The column in areaDef2 that provides the names to be used for any labeling of areas
+#' @param areaLabels1 logical, specifying whether labels should be plotted for areaDef1. These are plotted first ("behind" any labels plotted for areaDef2)
+#' @param areaLabels2 logical, specifying whether labels should be plotted for areaDef2. These are second ("on top of" any labels plotted for areaDef1)
+#' @param xlim x axis limits in degrees longitude
+#' @param ylim y axis limits in degrees latitudeD
+#' @param areaLabelSize size for any area labels
+#' @param title plot title
+#' @param projection proj4string or EPSG code specifying the desired projection, see \code{\link[sf]{st_crs}}. Defaults to mercator projection.
+#' @param polygonColor1 color to be used for plotting the areaDef1 polygons.
+#' @param polygonColor2 color to be used for plotting the areaDef2 polygons.
+#' @param linetype1 the linetype used for plotting the areaDef1 polygons.
+#' @param linetype2 the linetype used for plotting the areaDef2 polygons.
+#' @examples 
+#'  #illustratting the difference between to similar area coding systems:
+#'  plotAreaComparison(RstoxFDA::mainareaFdir2017, 
+#'                     RstoxFDA::mainareaFdir2018, 
+#'                     xlim=c(0,12), 
+#'                     ylim=c(54,60), 
+#'                     areaLabels2 = TRUE, 
+#'                     title="Comparing Fdir main area definitions, before and as of 2018")
+#' @family spatial coding functions
+#' @export
+plotAreaComparison <- function(areaDef1, areaDef2, areaNameCol1="StratumName", areaNameCol2=areaNameCol1, areaLabels1=F, areaLabels2=F, xlim=NULL, ylim=NULL, areaLabelSize=2, title="", projection=NULL, polygonColor1="blue", polygonColor2="red", linetype1="solid", linetype2="dotdash"){
+  if (is.null(projection)) {
+    projection <- "+proj=merc +datum=WGS84"
+  }
+  
+  
+  newcrs <- sf::st_crs(projection)
+  
+  areaDef1 <- sf::st_as_sf(areaDef1)
+  areaDef2 <- sf::st_as_sf(areaDef2)
+  
+  limbox <- sf::st_bbox(sf::st_transform(areaDef1, sf::st_crs(4326))) #get bounding box in lat lon
+  if (is.null(xlim)){
+    xlim <- c(limbox$xmin, limbox$xmax)
+  }
+  if (is.null(ylim)){
+    ylim <- c(limbox$ymin, limbox$ymax)
+  }
+  
+  world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+  
+  pl <- ggplot2::ggplot()
+  pl <- pl + ggplot2::geom_sf(data=world)
+  
+  pl <- pl + ggplot2::geom_sf(data=areaDef1, fill=NA, colour=polygonColor1, linetype=linetype1)
+  pl <- pl + ggplot2::geom_sf(data=areaDef2, fill=NA, colour=polygonColor2, linetype=linetype2)
+    
+  if (areaLabels1){
+      labelPos <- suppressWarnings(cbind(areaDef1, sf::st_coordinates(sf::st_centroid(sf::st_transform(areaDef1, newcrs)))))
+      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label=areaNameCol1), size=areaLabelSize, col=polygonColor1)
+  }
+  if (areaLabels2){
+      labelPos <- suppressWarnings(cbind(areaDef2, sf::st_coordinates(sf::st_centroid(sf::st_transform(areaDef2, newcrs)))))
+      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label=areaNameCol2), size=areaLabelSize, col=polygonColor2)
+    }
+  
+  #transform limits to desired projection
+  limboxP <- sf::st_bbox(sf::st_transform(sf::st_sfc(sf::st_point(x = c(min(xlim), min(ylim))),
+                                                     sf::st_point(x = c(max(xlim), min(ylim))),
+                                                     sf::st_point(x = c(min(xlim), max(ylim))),
+                                                     sf::st_point(x = c(max(xlim), max(ylim))),
+                                                     sf::st_point(x = c(min(xlim), mean(ylim))),
+                                                     sf::st_point(x = c(max(xlim), mean(ylim))),
+                                                     sf::st_point(x = c(mean(xlim), min(ylim))),
+                                                     sf::st_point(x = c(mean(xlim), max(ylim))),crs = sf::st_crs(4326)), newcrs))
+  
+  pl <- pl + ggplot2::coord_sf(crs = newcrs, xlim = c(limboxP$xmin, limboxP$xmax), ylim = c(limboxP$ymin, limboxP$ymax), expand = T)
+  pl <- pl + ggplot2::xlab("Longitude")
+  pl <- pl + ggplot2::ylab("Latitude")
+  pl <- pl + ggplot2::theme_bw()
+  pl <- pl + ggplot2::ggtitle(title)
+  
+  pl
+}
+
 #' Plots bubble plot on map
 #' @description
 #'  Plots scalar nonegative quantities associated with an area code, as bubbles on a map.

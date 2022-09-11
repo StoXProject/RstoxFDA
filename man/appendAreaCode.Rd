@@ -46,6 +46,7 @@ Other spatial coding functions:
 \code{\link{SetAreaPositionsBiotic}()},
 \code{\link{appendPosition}()},
 \code{\link{mergePolygons}()},
+\code{\link{plotAreaComparison}()},
 \code{\link{plotArea}()},
 \code{\link{writeSpDataFrameAsWKT}()}
 }
