@@ -34,7 +34,6 @@ Suggests:
     rnaturalearth,
     Reca,
     tinytest,
-    rgeos,
     rnaturalearthdata,
     knitr,
     rmarkdown

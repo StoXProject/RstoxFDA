@@ -45,11 +45,11 @@ ib <- ia
 ib$StratumName <- paste(ib$Major_FA, ib$SubArea, sep=".")
 expect_error(RstoxFDA::mergePolygons(ib, "StratumName"), "All columns must have the same value for polygons that are to be merged")
 
+iasf <- sf::st_as_sf(ia)
+iasf <- sf::st_simplify(iasf, dTolerance=.4)
+iasf <- sf::st_buffer(iasf, dist = .03)
+ia <- sf::as_Spatial(iasf)
 
-df <- ia@data
-ia <- rgeos::gSimplify(ia, tol=.4)
-suppressWarnings(ia <- rgeos::gBuffer(ia, byid = T, width=.03))
-ia <- sp::SpatialPolygonsDataFrame(ia, df, match.ID = "StratumName")
 ia$StratumName <- paste(ia$Major_FA, ia$SubArea, sep=".")
 ia@data <- ia@data[,c("StratumName","Major_FA")]
 
