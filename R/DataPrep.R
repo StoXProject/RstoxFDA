@@ -196,7 +196,7 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
     stoxWarning("Overlapping polygons: Some points are in several polygons, area code is arbitrarily chosen.")
   }
   
-  indecies <- sapply(intersects, head, n=1)
+  indecies <- sapply(intersects, utils::head, n=1)
   table[[colName]] <- areaPolygons[[StratumName]][indecies]
 
   return(table)

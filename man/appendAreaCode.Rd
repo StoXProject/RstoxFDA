@@ -34,6 +34,9 @@ Append area code
 }
 \details{
 Appends a column with an area code to a table, based on positions.
+ 
+ If polygons are overlapping, so that one point may be in several polygons, 
+ an arbitrary choice is made and a warning is issued.
 }
 \seealso{
 Other spatial coding functions: 

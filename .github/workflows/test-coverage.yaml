@@ -32,7 +32,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           rm '/usr/local/bin/gfortran'
-          brew install gdal udunits proj
+          brew install udunits proj
         shell: bash
 
       - name: Install dependencies
