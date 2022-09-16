@@ -1,3 +1,12 @@
+#' replacement for sp::transform, not using rgdal
+#' 
+#' @noRd
+transformSpatialPolygons <- function(x, CRSobj){
+  obj <- sf::st_as_sf(x)
+  trans <- sf::st_transform(obj, CRSobj)
+  return(sf::as_Spatial(trans))
+}
+
 #' read tab separated file
 #' @noRd
 readTabSepFile <- function(filepath, encoding="UTF-8", col_classes = NULL, col_names = NULL, trim_ws=T){
@@ -141,6 +150,9 @@ convertCodes <- function(code, conversionTable){
 #' Append area code
 #' @details
 #'  Appends a column with an area code to a table, based on positions.
+#'  
+#'  If polygons are overlapping, so that one point may be in several polygons, 
+#'  an arbitrary choice is made and a warning is issued.
 #' @param table data.table to be annotated.
 #' @param areaPolygons \code{\link[sp]{SpatialPolygonsDataFrame}}
 #' @param latName name of WGS84 lat column in 'table'
@@ -170,21 +182,22 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
     stop("Missing values in column: ", lonName)
   }
   
-  pos <- as.data.frame(table[,c(latName, lonName), with=F])
-  names(pos) <- c("LAT", "LON")
-  sp::coordinates(pos) <- ~ LON + LAT
-
-  if (rgdal::PROJis6ormore()){
-    sp::proj4string(pos) <- sp::CRS("EPSG:4326")    
-    areaPolygons <- sp::spTransform(areaPolygons, sp::wkt(pos))
-  }
-  else{
-    suppressWarnings(sp::proj4string(pos) <- sp::CRS(projargs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
-    suppressWarnings(areaPolygons <- sp::spTransform(areaPolygons, sp::CRS(sp::proj4string(pos))))
+  pos <- sf::st_as_sf(table, coords=c(lonName, latName), crs = sp::CRS("EPSG:4326"))
+  poly <- sf::st_transform(sf::st_as_sf(areaPolygons), crs = sp::CRS("EPSG:4326"))
+  
+  intersects <- sf::st_intersects(pos, poly)
+  
+  #
+  # Polygon files are often prepared for visualization purposes,
+  # small overlaps are common.
+  # There we issue a warning, rather than an error.
+  #
+  if (any(sapply(intersects, length) > 1)){
+    stoxWarning("Overlapping polygons: Some points are in several polygons, area code is arbitrarily chosen.")
   }
   
-  location_codes <- sp::over(pos, areaPolygons)
-  table[[colName]] <- location_codes[[StratumName]]
+  indecies <- sapply(intersects, head, n=1)
+  table[[colName]] <- areaPolygons[[StratumName]][indecies]
 
   return(table)
 }
@@ -219,14 +232,8 @@ appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName
     stop(paste("Column name", areaName, "not found in 'table'."))
   }
 
-  if (rgdal::PROJis6ormore() && !startsWith(sp::wkt(areaPolygons), "GEOGCRS")){
+  if (!startsWith(sf::st_crs(sf::st_as_sf(areaPolygons))$wkt, "GEOGCRS")){
     warning("could not verify projection of 'areaPolygons'")
-  } 
-  if (!rgdal::PROJis6ormore()){
-    suppressWarnings(lonlat <- length(grep("proj=longlat", sp::proj4string(areaPolygons)))!=0)
-    if (!lonlat){
-      warning("could not verify projection of 'areaPolygons'")  
-    }
   }
   
   mapping <- cbind(data.table::as.data.table(sp::coordinates(areaPolygons)), areaPolygons[[StratumName]])

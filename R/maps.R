@@ -330,28 +330,21 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="Stra
 #' @family spatial coding functions
 #' @export
 writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
-  requireNamespace("rgeos", quietly = TRUE)
-  requireNamespace("sp", quietly = TRUE)
+  
   if (file.exists(output)){
     stop(paste("File", output, "exists already."))
   }
   
-  if (rgdal::PROJis6ormore()){
-    crs <- sp::CRS("EPSG:4326")
-    shp <- sp::spTransform(shape, crs)
-  }
-  else{
-    projection="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
-    crs <- sp::CRS(projection)
-    suppressWarnings(shp <- sp::spTransform(shape, crs))
-  }
+  obj <- sf::st_as_sf(shape)
+  trans <- sf::st_transform(obj, sp::CRS("EPSG:4326"))
   
   f<-file(output, open="w")
   
-  for (i in 1:nrow(shp)){
-    poly <- shp[i,]
-    write(paste(as.character(poly[[namecol]]), rgeos::writeWKT(poly, byid = F),sep="\t"), f)
+  for (i in 1:nrow(trans)){
+   wkt <-  sf::st_as_text(sf::st_geometry(trans[i,]))
+   write(paste(as.character(trans[[namecol]][[i]]), wkt,sep="\t"), f)
   }
+  
   close(f)
   
 }

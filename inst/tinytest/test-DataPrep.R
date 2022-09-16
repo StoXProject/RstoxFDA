@@ -73,11 +73,7 @@ expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppen
 
 #context("test-StoxBaselineFunctions: appendAreaCode wrong projection")
 
-if (rgdal::PROJis6ormore()){
- strp <- sp::spTransform(strp, sp::CRS("EPSG:4269"))
-} else{
-  suppressWarnings(strp <- sp::spTransform(strp, sp::CRS(projargs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")))
-}
+strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("EPSG:4269"))
 RstoxFDA::appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended")
 
 #context("test-StoxBaselineFunctions: appendAreaCode non-numeric lat")
@@ -95,7 +91,7 @@ areaTabReAppended <- RstoxFDA::appendAreaCode(areaTabAppended, RstoxFDA::mainare
 expect_true(all(areaTabReAppended$Area == areaTabReAppended$Area2))
 
 #context("test-StoxBaselineFunctions: appendPosition wrong projection")
-strp <- sp::spTransform(strp, sp::CRS("+proj=merc"))
+strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("+proj=merc"))
 expect_warning(RstoxFDA::appendPosition(areaTab, strp, "Area", "lat", "lon"))
 
 
