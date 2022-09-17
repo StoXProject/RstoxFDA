@@ -159,7 +159,6 @@ plotAreaComparison <- function(areaDef1, areaDef2, areaNameCol1="StratumName", a
     projection <- "+proj=merc +datum=WGS84"
   }
   
-  
   newcrs <- sf::st_crs(projection)
   
   areaDef1 <- sf::st_as_sf(areaDef1)

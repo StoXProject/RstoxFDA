@@ -5,7 +5,7 @@
 \alias{landings}
 \title{Landings of Haddock}
 \format{
-
+RDB CL-table version 1.3 (RDBES exchange format v 1.13). Some data types may differ from specification. Notably species, which is formatted as character.
 }
 \usage{
 data(landings)
