@@ -147,6 +147,93 @@ convertCodes <- function(code, conversionTable){
   return(as.character(conversionTable[code]))
 }
 
+#' Area code conversion table
+#' @description 
+#'  Make conversion table from area code-definitions.
+#'  
+#'  The conversion table can be constructed with the following methods (argument: 'method'):
+#'  \describe{
+#'  \item{overlap}{Each area in areaDef1 is mapped to the area in areaDef2 with the largest overlap.}
+#'  \item{centroids}{Eac area in areaDef1 is mapped to the area in areaDef2 which contains its centroid.}
+#'  }
+#'  Centroids may be preferred for performance reasons, but depending on the shape of areas, 
+#'  the centroid may not always be a good representation.
+#'  
+#'  Areas in areaDef1 that has no corresponding area in areaDef2 will be omitted from results.
+#' @param areaDef1 \code{\link[sp]{SpatialPolygonsDataFrame}} defining area codes
+#' @param areaDef2 \code{\link[sp]{SpatialPolygonsDataFrame}} defining area codes
+#' @param areaName1 column in areaDef1 identifying the name of areas
+#' @param areaName2 column in areaDef2 identifying the name of areas
+#' @param method method for mapping area codes. See details.
+#' @seealso \code{\link[RstoxFDA]{plotAreaComparison}} for visual inspection of how different area definitions correspond.
+#' @return a list mapping area codes in areaDef1 to those in areaDef2
+#' @examples 
+#'  # map fdir areas to ICES areas by overlap
+#'  fdir.ICES.map <- areaCodeConversionTable(RstoxFDA::mainareaFdir2018, RstoxFDA::ICESareas)
+#'  
+#'  # map fdir locations to ICES statistical rectangles, by centroids
+#'  loc.rectangles.map <- areaCodeConversionTable(RstoxFDA::locationsFdir2018, 
+#'         RstoxFDA::ICESrectangles, method="centroids")
+#'  
+#'  # map selected statistical rectangles to ICES areas by overlap
+#'  data(catchsamples)
+#'  selectedRects <- RstoxFDA::ICESrectangles[
+#'              RstoxFDA::ICESrectangles$StratumName %in% catchsamples$LEstatRect,]
+#'  catchsamples$LEarea <- RstoxFDA::convertCodes(catchsamples$LEstatRect, 
+#'              areaCodeConversionTable(selectedRects, 
+#'              RstoxFDA::ICESareas))
+#' @family spatial coding functions
+#' @export
+areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName", areaName2=areaName1, method=c("overlap", "centroids")){
+  
+  method <- match.arg(method, method)
+  
+  areaDef1$areaDef1Name <- areaDef1[[areaName1]]
+  areaDef2$areaDef2Name <- areaDef2[[areaName2]]
+
+  areaDef1 <- sf::st_as_sf(areaDef1)
+  areaDef2 <- sf::st_as_sf(areaDef2)
+  
+  if (method == "centroids"){
+    sf::st_agr(areaDef1) = "constant"
+    sf::st_agr(areaDef2) = "constant"
+    
+    centroids1 <- sf::st_centroid(areaDef1)
+    intersects <- sf::st_intersects(centroids1, areaDef2)
+    
+    #
+    # Polygon files are often prepared for visualization purposes,
+    # small overlaps are common.
+    # There we issue a warning, rather than an error.
+    #
+    if (any(sapply(intersects, length) > 1)){
+      stoxWarning("Overlapping polygons: Some centroids are in several polygons, area code is arbitrarily chosen.")
+    }
+    
+    areaDef2NameIndecies <- unlist(sapply(intersects, utils::head, n=1))
+    areaDef1NameIndecies <- sapply(intersects, length) != 0
+    map <- as.list(areaDef2$areaDef2Name[areaDef2NameIndecies])
+    names(map) <- areaDef1$areaDef1Name[areaDef1NameIndecies]
+    return(map)
+  }
+  
+    
+  if (method == "overlap"){
+    sf::st_agr(areaDef1) = "constant"
+    sf::st_agr(areaDef2) = "constant"
+    intersections <- sf::st_intersection(areaDef1, areaDef2)
+    intersections$area <- sf::st_area(intersections)
+    intersections <- intersections[intersections$area > intersections$area*0,]
+    intersections <- intersections[order(intersections$area, decreasing = T),]
+    intersections <- intersections[!duplicated(intersections$areaDef1Name),]
+    intersections <- intersections[order(intersections$areaDef1Name),]
+    map <- as.list(intersections$areaDef2Name)
+    names(map) <- intersections$areaDef1Name
+    return(map)
+  }
+
+}
+
 #' Append area code
 #' @details
 #'  Appends a column with an area code to a table, based on positions.

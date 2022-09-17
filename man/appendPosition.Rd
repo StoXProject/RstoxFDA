@@ -48,6 +48,7 @@ Other spatial coding functions:
 \code{\link{LoadFdaStratumPolygon}()},
 \code{\link{SetAreaPositionsBiotic}()},
 \code{\link{appendAreaCode}()},
+\code{\link{areaCodeConversionTable}()},
 \code{\link{mergePolygons}()},
 \code{\link{plotAreaComparison}()},
 \code{\link{plotArea}()},

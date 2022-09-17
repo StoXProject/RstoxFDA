@@ -84,6 +84,7 @@ Other spatial coding functions:
 \code{\link{SetAreaPositionsBiotic}()},
 \code{\link{appendAreaCode}()},
 \code{\link{appendPosition}()},
+\code{\link{areaCodeConversionTable}()},
 \code{\link{mergePolygons}()},
 \code{\link{plotArea}()},
 \code{\link{writeSpDataFrameAsWKT}()}

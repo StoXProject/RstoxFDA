@@ -95,3 +95,21 @@ strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("+proj=merc"))
 expect_warning(RstoxFDA::appendPosition(areaTab, strp, "Area", "lat", "lon"))
 
 
+# map fdir areas to ICES areas by overlap
+fdir.ICES.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::mainareaFdir2018, RstoxFDA::ICESareas)
+expect_equal(fdir.ICES.map$'09', "27.3.a.20")
+expect_equal(fdir.ICES.map$'00', "27.2.a.2")
+expect_equal(fdir.ICES.map$'28', "27.4.a")
+expect_equal(fdir.ICES.map$'08', "27.4.a")
+# map fdir locations to ICES statistical rectangles, by centroids
+loc.rectangles.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::locationsFdir2018, RstoxFDA::ICESrectangles, method="centroids")
+expect_equal(loc.rectangles.map$'00-54', "63G5")
+expect_equal(loc.rectangles.map$'48-08', "34D9")
+expect_equal(loc.rectangles.map$'43-69', "47E0")
+
+data(catchsamples)
+selectedRects <- RstoxFDA::ICESrectangles[
+            RstoxFDA::ICESrectangles$StratumName %in% catchsamples$LEstatRect,]
+expect_equal(catchsamples$LEarea, RstoxFDA::convertCodes(catchsamples$LEstatRect, 
+            areaCodeConversionTable(selectedRects, 
+            RstoxFDA::ICESareas)))
