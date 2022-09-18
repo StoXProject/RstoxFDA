@@ -132,9 +132,9 @@ expect_equal(loc.rectangles.map$'00-54', "63G5")
 expect_equal(loc.rectangles.map$'48-08', "34D9")
 expect_equal(loc.rectangles.map$'43-69', "47E0")
 
-data(catchsamples)
+
 selectedRects <- RstoxFDA::ICESrectangles[
-            RstoxFDA::ICESrectangles$StratumName %in% catchsamples$LEstatRect,]
-expect_equal(catchsamples$LEarea, RstoxFDA::convertCodes(catchsamples$LEstatRect, 
+            RstoxFDA::ICESrectangles$StratumName %in% RstoxFDA::catchsamples$LEstatRect,]
+expect_equal(RstoxFDA::catchsamples$LEarea, RstoxFDA::convertCodes(RstoxFDA::catchsamples$LEstatRect, 
             areaCodeConversionTable(selectedRects, 
             RstoxFDA::ICESareas)))

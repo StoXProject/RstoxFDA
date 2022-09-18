@@ -165,6 +165,7 @@ convertCodes <- function(code, conversionTable){
 #' @param areaName1 column in areaDef1 identifying the name of areas
 #' @param areaName2 column in areaDef2 identifying the name of areas
 #' @param method method for mapping area codes. See details.
+#' @param dTolerance tolerance parameter passed to \code{\link[sf]{st_simplify}} when method is 'overlap'.
 #' @seealso \code{\link[RstoxFDA]{plotAreaComparison}} for visual inspection of how different area definitions correspond.
 #' @return a list mapping area codes in areaDef1 to those in areaDef2
 #' @examples 
@@ -184,7 +185,7 @@ convertCodes <- function(code, conversionTable){
 #'              RstoxFDA::ICESareas))
 #' @family spatial coding functions
 #' @export
-areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName", areaName2=areaName1, method=c("overlap", "centroids")){
+areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName", areaName2=areaName1, method=c("overlap", "centroids"), dTolerance=1){
   
   meth <- match.arg(method, method)
   
@@ -222,6 +223,7 @@ areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName",
     sf::st_agr(areaDef1) = "constant"
     sf::st_agr(areaDef2) = "constant"
     intersections <- sf::st_intersection(areaDef1, areaDef2)
+    intersections <- sf::st_simplify(intersections, dTolerance=dTolerance)
     intersections$area <- sf::st_area(intersections)
     intersections <- intersections[intersections$area > intersections$area*0,]
     intersections <- intersections[order(intersections$area, decreasing = T),]
