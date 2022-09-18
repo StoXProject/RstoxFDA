@@ -9,7 +9,8 @@ areaCodeConversionTable(
   areaDef2,
   areaName1 = "StratumName",
   areaName2 = areaName1,
-  method = c("overlap", "centroids")
+  method = c("overlap", "centroids"),
+  dTolerance = 1
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ areaCodeConversionTable(
 \item{areaName2}{column in areaDef2 identifying the name of areas}
 
 \item{method}{method for mapping area codes. See details.}
+
+\item{dTolerance}{tolerance parameter passed to \code{\link[sf]{simplify}} when method is 'overlap'.}
 }
 \value{
 a list mapping area codes in areaDef1 to those in areaDef2
