@@ -186,7 +186,7 @@ convertCodes <- function(code, conversionTable){
 #' @export
 areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName", areaName2=areaName1, method=c("overlap", "centroids")){
   
-  method <- match.arg(method, method)
+  meth <- match.arg(method, method)
   
   areaDef1$areaDef1Name <- areaDef1[[areaName1]]
   areaDef2$areaDef2Name <- areaDef2[[areaName2]]
@@ -194,7 +194,7 @@ areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName",
   areaDef1 <- sf::st_as_sf(areaDef1)
   areaDef2 <- sf::st_as_sf(areaDef2)
   
-  if (method == "centroids"){
+  if (meth == "centroids"){
     sf::st_agr(areaDef1) = "constant"
     sf::st_agr(areaDef2) = "constant"
     
@@ -218,7 +218,7 @@ areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName",
   }
   
     
-  if (method == "overlap"){
+  if (meth == "overlap"){
     sf::st_agr(areaDef1) = "constant"
     sf::st_agr(areaDef2) = "constant"
     intersections <- sf::st_intersection(areaDef1, areaDef2)
@@ -232,6 +232,7 @@ areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName",
     return(map)
   }
 
+  stop(paste("method:", meth, "is not recognized."))
 }
 
 #' Append area code
@@ -240,16 +241,22 @@ areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName",
 #'  
 #'  If polygons are overlapping, so that one point may be in several polygons, 
 #'  an arbitrary choice is made and a warning is issued.
+#'  
+#'  By default this function is run in 'strict' mode, meaning that it will halt
+#'  with an error if some positions are not in any of the provided polygons,
+#'  or if some positions are missing (NA). Turning of strict-mode accepts
+#'  both these cases and the area code will be NA for these positions.
 #' @param table data.table to be annotated.
 #' @param areaPolygons \code{\link[sp]{SpatialPolygonsDataFrame}}
 #' @param latName name of WGS84 lat column in 'table'
 #' @param lonName name of WGS84 lon column in 'table
 #' @param colName name of column to be appended to 'table'
 #' @param StratumName name of column in 'areaPolygons' that identify the area name
+#' @param strict logical determining whether to run in strict mode. See details.
 #' @return 'table' with the area appended in the column 'colName'
 #' @family spatial coding functions
 #' @export
-appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, StratumName="StratumName"){
+appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, StratumName="StratumName", strict=T){
   if (!data.table::is.data.table(table)){
     stop("Parameter 'table' must be a data.table")
   }
@@ -262,11 +269,20 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
   if (!(lonName %in% names(table)) | !is.numeric(table[[lonName]])){
     stop(paste(lonName, "(parameter 'lonName') must be provided as a numeric column."))
   }
-  if (any(is.na(table[[latName]]))){
-    stop("Missing values in column: ", latName)
+  if (strict){
+    if (any(is.na(table[[latName]]))){
+      stop("Missing values in column: ", latName)
+    }
+    if (any(is.na(table[[lonName]]))){
+      stop("Missing values in column: ", lonName)
+    }
   }
-  if (any(is.na(table[[lonName]]))){
-    stop("Missing values in column: ", lonName)
+  else if (any(is.na(table[[latName]])) | any(is.na(table[[lonName]]))){
+    noNas <- !is.na(table[[lonName]]) & !is.na(table[[latName]])
+    appended <- appendAreaCode(table[noNas,], areaPolygons, latName, lonName, colName, StratumName, strict)
+    table[[colName]] <- as.character(NA)
+    table[noNas,] <- appended
+    return(table)
   }
   
   pos <- sf::st_as_sf(table, coords=c(lonName, latName), crs = sp::CRS("EPSG:4326"))
@@ -280,11 +296,16 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
   # There we issue a warning, rather than an error.
   #
   if (any(sapply(intersects, length) > 1)){
-    stoxWarning("Overlapping polygons: Some points are in several polygons, area code is arbitrarily chosen.")
+    stoxWarning("Overlapping polygons: Some positions are in several polygons, area code is arbitrarily chosen.")
+  }
+  if (any(sapply(intersects, length) == 0) & strict){
+    stop("Some positions are not in any of the provided polygons. Consider turning of the option 'strict' if this is acceptable.")
   }
   
-  indecies <- sapply(intersects, utils::head, n=1)
-  table[[colName]] <- areaPolygons[[StratumName]][indecies]
+  indecies <- sapply(intersects[sapply(intersects, length) == 1], utils::head, n=1)
+  missingIndecies <- sapply(intersects, length) == 0
+  table[[colName]][!missingIndecies] <- areaPolygons[[StratumName]][indecies]
+  table[[colName]][missingIndecies] <- NA
 
   return(table)
 }

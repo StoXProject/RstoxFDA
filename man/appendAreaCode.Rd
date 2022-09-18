@@ -10,7 +10,8 @@ appendAreaCode(
   latName,
   lonName,
   colName,
-  StratumName = "StratumName"
+  StratumName = "StratumName",
+  strict = T
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ appendAreaCode(
 \item{colName}{name of column to be appended to 'table'}
 
 \item{StratumName}{name of column in 'areaPolygons' that identify the area name}
+
+\item{strict}{logical determining whether to run in strict mode. See details.}
 }
 \value{
 'table' with the area appended in the column 'colName'
@@ -37,6 +40,11 @@ Appends a column with an area code to a table, based on positions.
  
  If polygons are overlapping, so that one point may be in several polygons, 
  an arbitrary choice is made and a warning is issued.
+ 
+ By default this function is run in 'strict' mode, meaning that it will halt
+ with an error if some positions are not in any of the provided polygons,
+ or if some positions are missing (NA). Turning of strict-mode accepts
+ both these cases and the area code will be NA for these positions.
 }
 \seealso{
 Other spatial coding functions: 

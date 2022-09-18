@@ -71,6 +71,24 @@ areaPosPost <- RstoxFDA::appendAreaCode(areaPos, RstoxFDA::mainareaFdir2018, "La
 expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppended)))
 
 
+# check positions outside area definition
+areaOutSide <- areaPos
+areaOutSide$Latitude[4] <- 0
+expect_error(RstoxFDA::appendAreaCode(areaOutSide, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended"), "Some positions are not in any of the provided polygons. Consider turning of the option 'strict' if this is acceptable.")
+areaPosPost <- RstoxFDA::appendAreaCode(areaOutSide, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended", strict=F)
+expect_equal(sum(is.na(areaPosPost$AreaAppended)), 1)
+expect_true(is.na(areaPosPost$AreaAppended[4]))
+
+
+# check missing positions
+
+posMissing <- areaPos
+posMissing$Latitude[4] <- NA
+expect_error(RstoxFDA::appendAreaCode(posMissing, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended"), "Missing values in column: Latitude")
+areaPosPost <- RstoxFDA::appendAreaCode(posMissing, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended", strict=F)
+expect_equal(sum(is.na(areaPosPost$AreaAppended)), 1)
+expect_true(is.na(areaPosPost$AreaAppended[4]))
+
 #context("test-StoxBaselineFunctions: appendAreaCode wrong projection")
 
 strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("EPSG:4269"))
@@ -101,6 +119,13 @@ expect_equal(fdir.ICES.map$'09', "27.3.a.20")
 expect_equal(fdir.ICES.map$'00', "27.2.a.2")
 expect_equal(fdir.ICES.map$'28', "27.4.a")
 expect_equal(fdir.ICES.map$'08', "27.4.a")
+expect_equal(fdir.ICES.map$'42', "27.4.a")
+
+# map ICES areas to fdir areas by overlap
+# check that reverse mapping is to largest area
+ICES.fdir.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::ICESareas, RstoxFDA::mainareaFdir2018)
+expect_equal(ICES.fdir.map$'27.4.a', "42")
+
 # map fdir locations to ICES statistical rectangles, by centroids
 loc.rectangles.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::locationsFdir2018, RstoxFDA::ICESrectangles, method="centroids")
 expect_equal(loc.rectangles.map$'00-54', "63G5")
