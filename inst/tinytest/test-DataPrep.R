@@ -71,6 +71,24 @@ areaPosPost <- RstoxFDA::appendAreaCode(areaPos, RstoxFDA::mainareaFdir2018, "La
 expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppended)))
 
 
+# check positions outside area definition
+areaOutSide <- areaPos
+areaOutSide$Latitude[4] <- 0
+expect_error(RstoxFDA::appendAreaCode(areaOutSide, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended"), "Some positions are not in any of the provided polygons. Consider turning of the option 'strict' if this is acceptable.")
+areaPosPost <- RstoxFDA::appendAreaCode(areaOutSide, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended", strict=F)
+expect_equal(sum(is.na(areaPosPost$AreaAppended)), 1)
+expect_true(is.na(areaPosPost$AreaAppended[4]))
+
+
+# check missing positions
+
+posMissing <- areaPos
+posMissing$Latitude[4] <- NA
+expect_error(RstoxFDA::appendAreaCode(posMissing, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended"), "Missing values in column: Latitude")
+areaPosPost <- RstoxFDA::appendAreaCode(posMissing, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended", strict=F)
+expect_equal(sum(is.na(areaPosPost$AreaAppended)), 1)
+expect_true(is.na(areaPosPost$AreaAppended[4]))
+
 #context("test-StoxBaselineFunctions: appendAreaCode wrong projection")
 
 strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("EPSG:4269"))
