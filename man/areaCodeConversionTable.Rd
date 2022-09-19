@@ -31,16 +31,22 @@ a list mapping area codes in areaDef1 to those in areaDef2
 }
 \description{
 Make conversion table from area code-definitions.
- 
- The conversion table can be constructed with the following methods (argument: 'method'):
- \describe{
- \item{overlap}{Each area in areaDef1 is mapped to the area in areaDef2 with the largest overlap.}
- \item{centroids}{Eac area in areaDef1 is mapped to the area in areaDef2 which contains its centroid.}
- }
- Centroids may be preferred for performance reasons, but depending on the shape of areas, 
- the centroid may not always be a good representation.
- 
- Areas in areaDef1 that has no corresponding area in areaDef2 will be omitted from results.
+
+Conversion tables are constructed based on geometric principles (based on centroid positions, or overlap).
+Whether this produces a complete and correct mapping between area codes depends on their shape and size.
+For instance, the centroid may be outside an area for odd shapes, areas in different definitions may be partly overlapping,
+and areas of one definition may subdivide those of another definition.
+This is best evaluated by visual inspection of the area definitions.
+
+The conversion table can be constructed with the following methods (argument: 'method'):
+\describe{
+\item{overlap}{Each area in areaDef1 is mapped to the area in areaDef2 with the largest overlap.}
+\item{centroids}{Eac area in areaDef1 is mapped to the area in areaDef2 which contains its centroid.}
+}
+Centroids may be preferred for performance reasons, but depending on the shape of areas,
+the centroid may not always be a good representation.
+
+Areas in areaDef1 that has no corresponding area in areaDef2 will be omitted from results.
 }
 \examples{
  # map fdir areas to ICES areas by overlap

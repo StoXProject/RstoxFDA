@@ -151,6 +151,12 @@ convertCodes <- function(code, conversionTable){
 #' @description 
 #'  Make conversion table from area code-definitions.
 #'  
+#'  Conversion tables are constructed based on geometric principles (based on centroid positions, or overlap).
+#'  Whether this produces a complete and correct mapping between area codes depends on their shape and size.
+#'  For instance, the centroid may be outside an area for odd shapes, areas in different definitions may be partly overlapping,
+#'  and areas of one definition may subdivide those of another definition.
+#'  This is best evaluated by visual inspection of the area definitions.
+#'  
 #'  The conversion table can be constructed with the following methods (argument: 'method'):
 #'  \describe{
 #'  \item{overlap}{Each area in areaDef1 is mapped to the area in areaDef2 with the largest overlap.}
@@ -184,6 +190,7 @@ convertCodes <- function(code, conversionTable){
 #'              areaCodeConversionTable(selectedRects, 
 #'              RstoxFDA::ICESareas))
 #' @family spatial coding functions
+#' @md
 #' @export
 areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName", areaName2=areaName1, method=c("overlap", "centroids"), dTolerance=1){
   
