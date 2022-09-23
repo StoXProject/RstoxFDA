@@ -22,6 +22,7 @@ sp::plot(locationsFdir2017, add=TRUE)
 }
 \seealso{
 Other area code polygons: 
+\code{\link{GSAsubArea}},
 \code{\link{ICESareas}},
 \code{\link{ICESdivision}},
 \code{\link{ICESrectangles}},

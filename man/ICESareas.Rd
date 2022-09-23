@@ -42,6 +42,7 @@ The data also contains columns for the individual components of the full ICES ar
 for polygon files separating the different levels of ICES areas.
 
 Other area code polygons: 
+\code{\link{GSAsubArea}},
 \code{\link{ICESdivision}},
 \code{\link{ICESrectangles}},
 \code{\link{ICESsubArea}},

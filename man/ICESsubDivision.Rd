@@ -26,6 +26,7 @@ Polygons are defined in WGS84 coordinates (unprojected).
 }
 \seealso{
 Other area code polygons: 
+\code{\link{GSAsubArea}},
 \code{\link{ICESareas}},
 \code{\link{ICESdivision}},
 \code{\link{ICESrectangles}},

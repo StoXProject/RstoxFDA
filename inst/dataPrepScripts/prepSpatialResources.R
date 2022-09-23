@@ -196,4 +196,11 @@ usethis::use_data(ICESrectangles, overwrite = T, compress = "xz")
 
 
 
+#prep GSA subarea
+GSAsubArea <- rgdal::readOGR("~/shapefiles/FAOsubAreas/GSAs_simplified/", stringsAsFactors = F)
+GSAsubArea <- sp::spTransform(GSAsubArea, commonCRS)
+GSAsubArea$StratumName <- GSAsubArea$F_DIVISION
+GSAsubArea <-GSAsubArea[, c("StratumName", "F_AREA", "F_SUBAREA", "F_DIVISION")]
+GSAsubArea <- RstoxFDA::mergePolygons(GSAsubArea, "F_DIVISION")
+usethis::use_data(GSAsubArea, overwrite=T, compress="xz")
 
