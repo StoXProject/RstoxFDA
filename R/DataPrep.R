@@ -311,10 +311,14 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
     stop("Some positions are not in any of the provided polygons. Consider turning of the option 'strict' if this is acceptable.")
   }
   
-  indecies <- sapply(intersects[sapply(intersects, length) == 1], utils::head, n=1)
   missingIndecies <- sapply(intersects, length) == 0
-  table[[colName]][!missingIndecies] <- areaPolygons[[StratumName]][indecies]
-  table[[colName]][missingIndecies] <- NA
+  
+  if (sum(!missingIndecies) > 0){
+    indecies <- sapply(intersects[!missingIndecies], utils::head, n=1)
+    table[[colName]][!missingIndecies] <- areaPolygons[[StratumName]][indecies]
+  }
+  
+  table[[colName]][missingIndecies] <- as.character(NA)
 
   return(table)
 }

@@ -84,6 +84,7 @@ expect_true(is.na(areaPosPost$AreaAppended[4]))
 
 posMissing <- areaPos
 posMissing$Latitude[4] <- NA
+posMissing$Longitude[4] <- NA
 expect_error(RstoxFDA::appendAreaCode(posMissing, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended"), "Missing values in column: Latitude")
 areaPosPost <- RstoxFDA::appendAreaCode(posMissing, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended", strict=F)
 expect_equal(sum(is.na(areaPosPost$AreaAppended)), 1)
