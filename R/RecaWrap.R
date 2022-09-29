@@ -219,11 +219,10 @@ getInfoMatrix <- function(samples, landings, fixedEffects, randomEffects, carEff
 #' Run before renaming columns
 #' @noRd
 addPartCount <- function(DataMatrix, nFish){
-
   # renumber sampleID to delprove convention (needed ?)
   partsamples <- stats::aggregate(list(nSampleId=DataMatrix$sampleId), by=list(catchId=DataMatrix$catchId), FUN=function(x){length(unique(x))})
   partsamples <- merge(partsamples, unique(DataMatrix[,c("sampleId", "catchId")]))
-
+  
   if (nrow(partsamples) == 0){
     DataMatrix$partcount <- NA
     DataMatrix$partnumber <- 1
@@ -239,7 +238,7 @@ addPartCount <- function(DataMatrix, nFish){
       return(DataMatrix)
     }
     if (!all(partsamples[partsamples$nSampleId > 1,]$sampleId %in% nFish$sampleId)){
-      stop(paste("Some catches are sampled several times, but corresponding sampleId not in nFish:", paste(partsamples$sampleId[!(partsamples$sampleId %in% nFish$catchId)], collapse=",")))
+      stop(paste("Some catches are sampled several times, but corresponding sampleId not in nFish:", paste(partsamples$sampleId[partsamples$nSampleId > 1 & !(partsamples$sampleId %in% nFish$sampleId)], collapse=",")))
     }
     nFish <- nFish[nFish$sampleId %in% DataMatrix$sampleId,]
     nFish$partcount <- as.integer(round(nFish$count))
