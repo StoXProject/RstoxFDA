@@ -38,4 +38,10 @@ rucodes <- portcodes[portcodes$Country=="RU" & !is.na(portcodes$longitude) & !is
 RstoxFDA::plotArea(rucodes, "latitude", "longitude", areaDef=RstoxFDA::NAFOareas)
 
 portcodes2020 <- portcodes
+portcodes2020$NameWoDiacritics[portcodes2020$Country=="CZ" & portcodes$Location=="KAD"] <- "Kadan"
+portcodes2020$NameWoDiacritics[portcodes2020$Country=="HR" & portcodes$Location=="MET"] <- "Metkovic"
+portcodes2020$NameWoDiacritics[portcodes2020$Country=="TR" & portcodes$Location=="SRS"] <- "Sar?seki"
+portcodes2020$NameWoDiacritics[portcodes2020$Country=="TR" & portcodes$Location=="IZM"] <- "Izmir"
+portcodes2020$NameWoDiacritics[portcodes2020$Country=="VN" & portcodes$Location=="VAG"] <- "Vung Ang"
+portcodes2020$Remarks[portcodes2020$Country=="ES" & portcodes$Location=="SOL"] <- "Puerto de Soller"
 usethis::use_data(portcodes2020, overwrite = T)
