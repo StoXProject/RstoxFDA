@@ -623,6 +623,7 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #'    FUN=mean)
 #'  nFish <- merge(totalWeights, meanWeights)
 #'  nFish$count <- nFish$totalW / nFish$meanW
+#'  nFish <- nFish[,c("sampleId", "count")]
 #'
 #'  #prepRECA (produce recaData as in data(recaDataExample))
 #'  recaDataExample <- prepRECA(catchsamples,
