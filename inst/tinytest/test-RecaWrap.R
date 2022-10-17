@@ -31,6 +31,11 @@ expect_error(RstoxFDA:::prepRECA(fishdata[1:1000,], landings, c("Metier5", "quar
 stopifnot("Q2" %in% fishdata[1:1000,]$quarter)
 expect_error(RstoxFDA:::prepRECA(fishdata[1:1000,], landings[landings$Quarter < 2,], c("quarter"), c("vessel"), NULL, month=landings[landings$Quarter < 2,][["Month"]]))
 
+#check that nFish is sanitized
+nf <- nFishAll
+nf$extraColumn <- nf$sampleId
+expect_error(RstoxFDA:::prepRECA(fishdata, landings, NULL, NULL, NULL, month=landings$Month, nFish = nf), "The parameter nFish must have exactly two columns: 'sampleId' and 'count'")
+
 minRobj <- RstoxFDA:::prepRECA(fishdata, landings, NULL, NULL, NULL, month=landings$Month, nFish = nFishAll)
 expect_equal(max(minRobj$AgeLength$DataMatrix$samplingID), nrow(minRobj$AgeLength$CovariateMatrix))
 expect_equal(max(minRobj$WeightLength$DataMatrix$samplingID), nrow(minRobj$WeightLength$CovariateMatrix))

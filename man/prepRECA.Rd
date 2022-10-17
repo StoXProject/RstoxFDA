@@ -52,7 +52,7 @@ prepRECA(
 
 \item{neighbours}{list() specifying the neighbourhood-structure for the carEffect. neighbours[a] should provide a vector of neighbours to a. May be NULL of no carEffect is used.}
 
-\item{nFish}{data.table() specifying the number of fish in the part of the catch that each sample was taken from. Not always needed. See details.}
+\item{nFish}{data.table() with the columns 'sampleId' and 'count', specifying the number of fish in the part of the catch that each sample was taken from. Not always needed. See details.}
 
 \item{ageError}{matrix() specifying the probability of read age (rows), given true age (columns). Row and column names specify the ages. If NULL, a unit matrix is assumed (No error in age reading).}
 

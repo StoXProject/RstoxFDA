@@ -636,7 +636,10 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=NULL, neighbours=NULL, nFish=NULL, ageError=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, testMax=1000, date=NULL, month=NULL, quarter=NULL, hatchDay=1, interaction=NULL){
   samples <- data.table::as.data.table(samples)
   landings <- data.table::as.data.table(landings)
-  nFish <- data.table::as.data.table(nFish)
+  
+  if (!is.null(nFish)){
+    nFish <- data.table::as.data.table(nFish)  
+  }
   
   if (!isGiven(neighbours) & isGiven(carEffect)){
     stop("carEffect specified, but argument 'neighbours' is not provided.")
@@ -742,10 +745,10 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
 
   if (!is.null(nFish)){
     if (!(all(c("sampleId", "count") %in% names(nFish)))){
-      stop("Columns 'sampleId' and 'count' are mandatory for parameter nFish.")
+      stop("The parameter nFish must have exactly two columns: 'sampleId' and 'count'")
     }
     if (ncol(nFish) != 2){
-      stop("The parameter nFish must contain only the columns 'sampleId' and 'count'")
+      stop("The parameter nFish must have exactly two columns: 'sampleId' and 'count'")
     }
     if (any(is.na(nFish))){
       stop("nFish contains NAs.") #Note that nFish need only be provided for samples (sampleId) where there is more than one sample for a catch (catchId)
