@@ -31,7 +31,8 @@ Other area code polygons:
 \code{\link{NAFOareas}},
 \code{\link{locationsFdir2017}},
 \code{\link{locationsFdir2018}},
-\code{\link{mainareaFdir2017}}
+\code{\link{mainareaFdir2017}},
+\code{\link{portcodes2020}}
 }
 \concept{area code polygons}
 \keyword{datasets}

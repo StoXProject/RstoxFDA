@@ -29,6 +29,7 @@ Other Data types:
 \code{\link{CarNeighbours}},
 \code{\link{LandingData}},
 \code{\link{LandingsArchiveData}},
+\code{\link{LocodeTable}},
 \code{\link{LstLogbookData}},
 \code{\link{MetierTable}},
 \code{\link{ParameterConvergenceData}},

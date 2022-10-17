@@ -13,6 +13,7 @@ Other Data types:
 \code{\link{CarNeighbours}},
 \code{\link{LandingsArchiveData}},
 \code{\link{LengthConversionTable}},
+\code{\link{LocodeTable}},
 \code{\link{LstLogbookData}},
 \code{\link{MetierTable}},
 \code{\link{ParameterConvergenceData}},

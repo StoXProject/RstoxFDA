@@ -50,6 +50,7 @@ Other Data types:
 \code{\link{LandingData}},
 \code{\link{LandingsArchiveData}},
 \code{\link{LengthConversionTable}},
+\code{\link{LocodeTable}},
 \code{\link{MetierTable}},
 \code{\link{ParameterConvergenceData}},
 \code{\link{ParameterizationSummaryData}},
