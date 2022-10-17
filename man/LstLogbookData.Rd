@@ -2,7 +2,7 @@
 % Please edit documentation in R/StoxDataTypes.R
 \name{LstLogbookData}
 \alias{LstLogbookData}
-\title{Landings archive (LandingsArchiveData)}
+\title{Logbooks (LstLogbookData)}
 \description{
 Logbooks read from the lst format delivered by Directorate of Fisheries (FDIR).
 
