@@ -561,7 +561,7 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #' @param randomEffects character() vector specifying random effects. Corresponding columns must exists samples (may also exist in landings).
 #' @param carEffect character() specifying a random effect with conditional autoregressive coefficient. Corresponding columns must exists samples (may also exist in landings).
 #' @param neighbours list() specifying the neighbourhood-structure for the carEffect. neighbours[a] should provide a vector of neighbours to a. May be NULL of no carEffect is used.
-#' @param nFish data.table() specifying the number of fish in the part of the catch that each sample was taken from. Not always needed. See details.
+#' @param nFish data.table() with the columns 'sampleId' and 'count', specifying the number of fish in the part of the catch that each sample was taken from. Not always needed. See details.
 #' @param ageError matrix() specifying the probability of read age (rows), given true age (columns). Row and column names specify the ages. If NULL, a unit matrix is assumed (No error in age reading).
 #' @param minAge lowest age to include in model. If NULL, minimal age in samples is used. Age range must match any age error matrix provided (ageError)
 #' @param maxAge highest age to include in model. If NULL, maximal age in samples is used. Age range must match any age error matrix provided (ageError)
@@ -636,7 +636,8 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=NULL, neighbours=NULL, nFish=NULL, ageError=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, testMax=1000, date=NULL, month=NULL, quarter=NULL, hatchDay=1, interaction=NULL){
   samples <- data.table::as.data.table(samples)
   landings <- data.table::as.data.table(landings)
-
+  nFish <- data.table::as.data.table(nFish)
+  
   if (!isGiven(neighbours) & isGiven(carEffect)){
     stop("carEffect specified, but argument 'neighbours' is not provided.")
   }
@@ -742,6 +743,9 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   if (!is.null(nFish)){
     if (!(all(c("sampleId", "count") %in% names(nFish)))){
       stop("Columns 'sampleId' and 'count' are mandatory for parameter nFish.")
+    }
+    if (ncol(nFish) != 2){
+      stop("The parameter nFish must contain only the columns 'sampleId' and 'count'")
     }
     if (any(is.na(nFish))){
       stop("nFish contains NAs.") #Note that nFish need only be provided for samples (sampleId) where there is more than one sample for a catch (catchId)
