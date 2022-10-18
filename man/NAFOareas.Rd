@@ -43,6 +43,7 @@ Other area code polygons:
 \code{\link{ICESsubArea}},
 \code{\link{ICESsubDivision}},
 \code{\link{ICESunit}},
+\code{\link{kommuner2022}},
 \code{\link{locationsFdir2017}},
 \code{\link{locationsFdir2018}},
 \code{\link{mainareaFdir2017}},

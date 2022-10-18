@@ -19,6 +19,7 @@ defining probabilities of misreading age.
 Other Data types: 
 \code{\link{AreaPosition}},
 \code{\link{CarNeighbours}},
+\code{\link{KommunePolygons}},
 \code{\link{LandingData}},
 \code{\link{LandingsArchiveData}},
 \code{\link{LengthConversionTable}},

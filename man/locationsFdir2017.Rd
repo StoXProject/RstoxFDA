@@ -30,6 +30,7 @@ Other area code polygons:
 \code{\link{ICESsubDivision}},
 \code{\link{ICESunit}},
 \code{\link{NAFOareas}},
+\code{\link{kommuner2022}},
 \code{\link{locationsFdir2018}},
 \code{\link{mainareaFdir2017}},
 \code{\link{mainareaFdir2018}},

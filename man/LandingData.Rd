@@ -11,6 +11,7 @@ Other Data types:
 \code{\link{AgeErrorMatrix}},
 \code{\link{AreaPosition}},
 \code{\link{CarNeighbours}},
+\code{\link{KommunePolygons}},
 \code{\link{LandingsArchiveData}},
 \code{\link{LengthConversionTable}},
 \code{\link{LocodeTable}},

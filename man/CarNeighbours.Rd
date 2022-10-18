@@ -19,6 +19,7 @@ defining neighbours for a CAR-variable (Conditional autoregressive variable).
 Other Data types: 
 \code{\link{AgeErrorMatrix}},
 \code{\link{AreaPosition}},
+\code{\link{KommunePolygons}},
 \code{\link{LandingData}},
 \code{\link{LandingsArchiveData}},
 \code{\link{LengthConversionTable}},

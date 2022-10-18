@@ -204,3 +204,19 @@ GSAsubArea <-GSAsubArea[, c("StratumName", "F_AREA", "F_SUBAREA", "F_DIVISION")]
 GSAsubArea <- RstoxFDA::mergePolygons(GSAsubArea, "F_DIVISION")
 usethis::use_data(GSAsubArea, overwrite=T, compress="xz")
 
+
+#prep kommune
+ss<-sf::st_read("~/shapefiles/geonorge/kommuner_2022/Basisdata_0000_Norge_25833_Kommuner_GML.gml", "Kommune")
+dd <- sf::st_simplify(ss, preserveTopology = T, dTolerance = 100)
+dp <- sf::as_Spatial(sf::st_transform(dd, sp::CRS(sp::wkt(RstoxFDA::mainareaFdir2018))))
+kommuner2022 <- dp[,c("kommunenummer", "navn")]
+kommuner2022$navn <- unlist(lapply(kommuner2022$navn, FUN=function(x){x[[1]]}))
+kommuner2022$StratumName <- as.character(kommuner2022$kommunenummer)
+names(kommuner2022) <- c("id", "name", "StratumName")
+Encoding(kommuner2022$name) <- "latin1"
+kommuner2022$name <- iconv(
+  kommuner2022$name, 
+  "latin1", 
+  "UTF-8"
+)
+usethis::use_data(kommuner2022, overwrite = T)

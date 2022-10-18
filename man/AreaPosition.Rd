@@ -19,6 +19,7 @@ Table (\code{\link[data.table]{data.table}}) defining a position for area codes.
 Other Data types: 
 \code{\link{AgeErrorMatrix}},
 \code{\link{CarNeighbours}},
+\code{\link{KommunePolygons}},
 \code{\link{LandingData}},
 \code{\link{LandingsArchiveData}},
 \code{\link{LengthConversionTable}},

@@ -315,6 +315,25 @@ is.StoxBioticData <- function(StoxBioticData, raiseErrors=F){
 #' 
 NULL
 
+#' Kommune polygons
+#' 
+#' @description 
+#'  \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+#'  
+#'  Polygons are defined in WGS84 coordinates (unprojected).
+#' 
+#'  The data contains the following columns with rows for each area:
+#'   \describe{
+#'    \item{id}{Offical code for the muncipality (kommunenummer)}
+#'    \item{name}{Official name for the muncipality}
+#'    \item{StratumName}{Equal to id}
+#'   }
+#'  
+#' @name KommunePolygons
+#' @family Data types
+#' 
+NULL
+
 #' Landings archive (LandingsArchiveData)
 #' 
 #' @description 
