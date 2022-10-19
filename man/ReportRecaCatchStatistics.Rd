@@ -26,6 +26,8 @@ ReportRecaCatchStatistics(
 
 \item{IntervalWidth}{The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.}
 
+\item{UseDefaultDecimalOptions}{logical determining whether to use default decimal options.}
+
 \item{DecimalTotalNumber}{integer specifying the number of decimals to report for 'TotalNumber', and the corresponding 'SD', 'Low' and 'High'. to 0}
 
 \item{DecimalTotalWeight}{integer specifying the number of decimals to report for 'TotalWeightDefaults', and the corresponding 'SD', 'Low' and 'High'. to 0}
@@ -45,8 +47,6 @@ ReportRecaCatchStatistics(
 \item{UnitMeanWeight}{unit for mean weight. Defaults to kg}
 
 \item{UnitMeanLength}{unit for mean length. Defaults to cm.}
-
-\item{UseDefualtDecimalOptions}{logical determining whether to use default decimal options.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSummaryData}}
