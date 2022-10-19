@@ -7,13 +7,13 @@
 ReportRecaCatchStatistics(
   RecaCatchAtAge,
   IntervalWidth = numeric(),
-  DecimalOptions = FALSE,
+  UseDefaultDecimalOptions = TRUE,
   DecimalTotalNumber = integer(),
   DecimalTotalWeight = integer(),
   DecimalMeanAge = integer(),
   DecimalMeanWeight = integer(),
   DecimalMeanLength = integer(),
-  UnitOptions = FALSE,
+  UseDefaultUnitOptions = TRUE,
   UnitTotalNumber = RstoxData::getUnitOptions("cardinality", conversionRange = c(1,
     1e+12)),
   UnitTotalWeight = RstoxData::getUnitOptions("mass", conversionRange = c(1, 1e+12)),
@@ -26,8 +26,6 @@ ReportRecaCatchStatistics(
 
 \item{IntervalWidth}{The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.}
 
-\item{DecimalOptions}{logical determining whether the StoX user interface should show decimal options}
-
 \item{DecimalTotalNumber}{integer specifying the number of decimals to report for 'TotalNumber', and the corresponding 'SD', 'Low' and 'High'. to 0}
 
 \item{DecimalTotalWeight}{integer specifying the number of decimals to report for 'TotalWeightDefaults', and the corresponding 'SD', 'Low' and 'High'. to 0}
@@ -38,7 +36,7 @@ ReportRecaCatchStatistics(
 
 \item{DecimalMeanLength}{integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'. Defaults to 2}
 
-\item{UnitOptions}{logical determining whether the StoX user interface should show unit options}
+\item{UseDefaultUnitOptions}{logical determining whether to use default unit options.}
 
 \item{UnitTotalNumber}{unit for total catch in numbers. Defaults to Mi (millions)}
 
@@ -47,6 +45,8 @@ ReportRecaCatchStatistics(
 \item{UnitMeanWeight}{unit for mean weight. Defaults to kg}
 
 \item{UnitMeanLength}{unit for mean length. Defaults to cm.}
+
+\item{UseDefualtDecimalOptions}{logical determining whether to use default decimal options.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSummaryData}}

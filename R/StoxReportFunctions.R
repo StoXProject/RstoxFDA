@@ -1031,13 +1031,13 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param IntervalWidth The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.
-#' @param DecimalOptions logical determining whether the StoX user interface should show decimal options
+#' @param UseDefualtDecimalOptions logical determining whether to use default decimal options.
 #' @param DecimalTotalNumber integer specifying the number of decimals to report for 'TotalNumber', and the corresponding 'SD', 'Low' and 'High'. to 0
 #' @param DecimalTotalWeight integer specifying the number of decimals to report for 'TotalWeightDefaults', and the corresponding 'SD', 'Low' and 'High'. to 0
 #' @param DecimalMeanAge integer specifying the number of decimals to report for 'MeanIndividualAge', and the corresponding 'SD', 'Low' and 'High'. Defaults to 1
 #' @param DecimalMeanWeight integer specifying the number of decimals to report for 'MeanIndividualWeight', and the corresponding 'SD', 'Low' and 'High'. Defaults to 3
 #' @param DecimalMeanLength integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'. Defaults to 2
-#' @param UnitOptions logical determining whether the StoX user interface should show unit options
+#' @param UseDefaultUnitOptions logical determining whether to use default unit options.
 #' @param UnitTotalNumber unit for total catch in numbers. Defaults to Mi (millions)
 #' @param UnitTotalWeight unit for weight of total catch. Defaults to kt
 #' @param UnitMeanWeight unit for mean weight. Defaults to kg
@@ -1053,13 +1053,13 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #' @export
 #' @md
 ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), 
-                                      DecimalOptions=FALSE, 
+                                      UseDefaultDecimalOptions=TRUE, 
                                       DecimalTotalNumber=integer(), 
                                       DecimalTotalWeight=integer(), 
                                       DecimalMeanAge=integer(), 
                                       DecimalMeanWeight=integer(), 
                                       DecimalMeanLength=integer(), 
-                                      UnitOptions=FALSE, 
+                                      UseDefaultUnitOptions=TRUE, 
                                       UnitTotalNumber=RstoxData::getUnitOptions("cardinality", conversionRange=c(1, 1e12)), 
                                       UnitTotalWeight=RstoxData::getUnitOptions("mass", conversionRange=c(1, 1e12)), 
                                       UnitMeanWeight=RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10)), 
@@ -1070,6 +1070,12 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   }
   if (!isGiven(IntervalWidth)){
     IntervalWidth <- 0.9
+  }
+  
+  if (UseDefaultDecimalOptions){
+    if (isGiven(DecimalTotalNumber) | isGiven(DecimalTotalWeight) | isGiven(DecimalMeanAge) | isGiven(DecimalMeanWeight) | isGiven(DecimalMeanLength)){
+      stop("Some decimal options are provided, when UseDefaultDecimalOptions is TRUE.")
+    }
   }
   
   if (!isGiven(DecimalTotalNumber)){
@@ -1087,6 +1093,16 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   if (!isGiven(DecimalMeanLength)){
     DecimalMeanLength=2
   }
+  
+  unitGiven <- function(unit){
+    return(isGiven(unit) & length(unit)==1)
+  }
+  if (UseDefaultUnitOptions){
+    if (unitGiven(UnitMeanLength) | unitGiven(UnitMeanWeight) | unitGiven(UnitTotalWeight) | unitGiven(UnitTotalNumber)){
+      stop("Some unit options are provided, when UseDefaultUnitOptions is TRUE.")
+    }
+  }
+
   
   if (isGiven(UnitMeanLength)){
     UnitMeanLength <- UnitMeanLength[1]

@@ -60,6 +60,7 @@ catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds",
 catchAtAgeDecomp <- readRDS(predictiondatafile)
 
 catchReportDecomp <- RstoxFDA::ReportRecaCatchStatistics(catchAtAgeDecomp)
+
 expect_true(!any(duplicated(catchReportDecomp$MeanAge$MeanIndividualAge)))
 expect_equal(nrow(catchReportDecomp$MeanAge), nrow(catchReportDecomp$MeanWeight))
 expect_equal(nrow(catchReportDecomp$MeanAge), nrow(catchReportDecomp$MeanLength))
@@ -76,7 +77,7 @@ expect_true(nrow(catchReportFlat$TotalNumber) == 1)
 expect_true(nrow(catchReportFlat$GroupingVariables) == 0)
 
 #context("Test StoxReportFunctions: ReportRecaCatchStatistics units")
-catchReportFlat <- RstoxFDA::ReportRecaCatchStatistics(catchAtAgeFlat, DecimalMeanWeight = 3, DecimalMeanLength = 1)
+catchReportFlat <- RstoxFDA::ReportRecaCatchStatistics(catchAtAgeFlat, DecimalMeanWeight = 3, DecimalMeanLength = 1, UseDefaultDecimalOptions = F)
 expect_equal(RstoxData::getUnit(catchReportFlat$MeanAge$MeanIndividualAge), "age-year")
 expect_equal(RstoxData::getUnit(catchReportFlat$MeanWeight$SD), "mass-g")
 expect_equal(RstoxData::getUnit(catchReportFlat$MeanLength$Low), "length-mm")
@@ -84,7 +85,7 @@ expect_equal(RstoxData::getUnit(catchReportFlat$TotalWeight$High), "mass-kg")
 expect_equal(RstoxData::getUnit(catchReportFlat$TotalNumber$TotalNumber), "cardinality-N")
 
 
-catchReportFlatOU <- RstoxFDA::ReportRecaCatchStatistics(catchAtAgeFlat, UnitTotalNumber = "10^3 individuals", DecimalTotalNumber = 6, DecimalTotalWeight = 6, UnitTotalWeight = "kiloton", UnitMeanWeight = "kg", UnitMeanLength = "cm", DecimalMeanLength = 2)
+catchReportFlatOU <- RstoxFDA::ReportRecaCatchStatistics(catchAtAgeFlat, UnitTotalNumber = "10^3 individuals", DecimalTotalNumber = 6, DecimalTotalWeight = 6, UnitTotalWeight = "kiloton", UnitMeanWeight = "kg", UnitMeanLength = "cm", DecimalMeanLength = 2, UseDefaultDecimalOptions = F, UseDefaultUnitOptions = F)
 expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanAge$MeanIndividualAge), "age-year")
 expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanWeight$MeanIndividualWeight), "mass-kg")
 expect_equal(RstoxData::getUnit(catchReportFlatOU$MeanLength$High), "length-cm")
@@ -97,7 +98,7 @@ expect_true(abs(catchReportFlatOU$MeanLength$MeanIndividualLength[1]*10 - catchR
 expect_equal(catchReportFlatOU$TotalWeight$TotalWeight[1]*1e6, catchReportFlat$TotalWeight$TotalWeight[1])
 expect_equal(catchReportFlatOU$TotalNumber$TotalNumber[1]*1e3, catchReportFlat$TotalNumber$TotalNumber[1])
 
-catchReportFlatT <- RstoxFDA::ReportRecaCatchStatistics(catchAtAgeFlat, UnitTotalNumber = "10^3 individuals", DecimalTotalNumber = 6, DecimalTotalWeight = 6, UnitTotalWeight = "ton", UnitMeanWeight = "kg", UnitMeanLength = "cm", DecimalMeanLength = 2)
+catchReportFlatT <- RstoxFDA::ReportRecaCatchStatistics(catchAtAgeFlat, UnitTotalNumber = "10^3 individuals", DecimalTotalNumber = 6, DecimalTotalWeight = 6, UnitTotalWeight = "ton", UnitMeanWeight = "kg", UnitMeanLength = "cm", DecimalMeanLength = 2, UseDefaultDecimalOptions = F, UseDefaultUnitOptions = F)
 expect_equal(catchReportFlatT$TotalWeight$TotalWeight[1]*1e3, catchReportFlat$TotalWeight$TotalWeight[1])
 
 #context("Test StoxReportFunctions: ReportFdaLandings")

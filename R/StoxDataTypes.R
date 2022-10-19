@@ -1962,31 +1962,31 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "ReportFdaCatchSummaryData",
     functionArgumentHierarchy = list(
       DecimalTotalNumber = list(
-        DecimalOptions = TRUE
+        UseDefaultDecimalOptions = FALSE
       ),
       DecimalTotalWeight = list(
-        DecimalOptions = TRUE
+        UseDefaultDecimalOptions = FALSE
       ),
       DecimalMeanAge = list(
-        DecimalOptions = TRUE
+        UseDefaultDecimalOptions = FALSE
       ),
       DecimalMeanWeight = list(
-        DecimalOptions = TRUE
+        UseDefaultDecimalOptions = FALSE
       ),
       DecimalMeanLength = list(
-        DecimalOptions = TRUE
+        UseDefaultDecimalOptions = FALSE
       ),
       UnitTotalNumber = list(
-        UnitOptions = TRUE
+        UseDefaultUnitOptions = FALSE
       ),
       UnitTotalWeight = list(
-        UnitOptions = TRUE
+        UseDefaultUnitOptions = FALSE
       ),
       UnitMeanWeight = list(
-        UnitOptions = TRUE
+        UseDefaultUnitOptions = FALSE
       ),
       UnitMeanLength = list(
-        UnitOptions = TRUE
+        UseDefaultUnitOptions = FALSE
       )
     )
   ),
