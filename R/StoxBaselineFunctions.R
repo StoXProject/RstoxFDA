@@ -819,7 +819,13 @@ AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
   if (columnName %in% names(StoxBioticData$Station)){
     stop(paste("Column name", columnName, "already exists."))
   }
-  StoxBioticData$Station <- appendAreaCode(StoxBioticData$Station, StratumPolygon, "Latitude", "Longitude", columnName)
+  StoxBioticData$Station <- appendAreaCode(StoxBioticData$Station, StratumPolygon, "Latitude", "Longitude", columnName, strict = F)
+  missing <- StoxBioticData$Station[is.na(StoxBioticData$Station[[columnName]])]
+  if (nrow(missing) > 0){
+    for (i in 1:nrow(missing)){
+      stoxWarning(paste("Position not in any stratum. 'Station' in 'StoxBioticData'. CruiseKey:", missing$CruiseKey[i], ", StationKey:", missing$StationKey[i]))      
+    }
+  }
   return(StoxBioticData)
 }
 
