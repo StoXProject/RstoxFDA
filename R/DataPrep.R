@@ -295,7 +295,7 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
   }
   
   pos <- sf::st_as_sf(table, coords=c(lonName, latName), crs = sp::CRS("EPSG:4326"))
-  poly <- sf::st_transform(sf::st_as_sf(areaPolygons), crs = sp::CRS("EPSG:4326"))
+  poly <- sf::st_make_valid(sf::st_transform(sf::st_as_sf(areaPolygons), crs = sp::CRS("EPSG:4326")))
   
   intersects <- sf::st_intersects(pos, poly)
   

@@ -70,6 +70,11 @@ expect_true(all(!is.na((areaPosPost$AreaAppended))))
 areaPosPost <- RstoxFDA::appendAreaCode(areaPos, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended")
 expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppended)))
 
+# check handling of invalid polygon
+inv <- RstoxBase::DefineStratumPolygon(NULL, FileName = system.file("testresources","coastalCodStrata.txt", package="RstoxFDA"), DefinitionMethod = "ResourceFile")
+areaPosPost <- RstoxFDA::appendAreaCode(areaPos, inv, "Latitude", "Longitude", "AreaAppended", strict = F)
+expect_true(all(areaPosPost$Area[!is.na(areaPosPost$AreaAppended)] %in% c("00","03","04","05","06","07")))
+
 
 # check positions outside area definition
 areaOutSide <- areaPos
