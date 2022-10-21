@@ -2092,7 +2092,7 @@ processPropertyFormats <- list(
     title = "One or more variables to use as sampling variables.", 
     possibleValues = function(StoxBioticData) {
       possibleValues <- c()
-      for (n in names(names(StoxBioticData))){
+      for (n in names(StoxBioticData)){
         for (nn in names(StoxBioticData[[n]])){
           if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
             possibleValues <- c(possibleValues, nn)

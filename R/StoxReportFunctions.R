@@ -40,6 +40,8 @@ setUnits <- function(table, columns, unit, quantity){
 #'  
 #'  In addition sampling may be reported partitioned on the provided 'SamplingVariables'. For instance the variable 'IndividualSex' may be provided
 #'  to see how many samples are collected for each sex. NAs will be treated as a separate category.
+#'  When 'SamplingVariables' are provided, each partition specified by 'GroupingVariables' will be reported several times,
+#'  so that the sum of the column 'LandedRoudnWeight' will not be the total landings.
 #'  'SamplingVariables' must be columns that are only present in samples (StoxBioticData), not in landings (StoxLandingData).
 #'  
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
@@ -55,7 +57,7 @@ setUnits <- function(table, columns, unit, quantity){
 #' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. If not provided, a single row for all landings will be produced.
 #' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.
 #' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
-#' @param SamplingVariables Columns of 'StoxBioticData' identifying variables to be use to partition the report.
+#' @param SamplingVariables Columns of 'StoxBioticData' identifying sampling variables to be use to partition the report. See details.
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @family landings functions
 #' @family StoX-functions
