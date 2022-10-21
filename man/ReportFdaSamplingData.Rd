@@ -6,7 +6,8 @@
 \description{
 list with tow members:
  \describe{
-  \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FishereisSampling' stored in the column 'GroupingVariables'}
+  \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FisheriesSampling' stored in the column 'GroupingVariables'}
+  \item{SamplingVariables}{a \code{\link[data.table]{data.table}} with the variables used for partitioning samples in 'FisheriesSampling' stored in the column 'SamplingVariables'}
   \item{FisheriesSampling}{a \code{\link[data.table]{data.table}} described below.}
  }
  
@@ -14,6 +15,7 @@ list with tow members:
  The report is a \code{\link[data.table]{data.table}} with columns:
  \describe{
   \item{...}{A column for each of the provided Aggregation variables}
+  \item{...}{A column for each of the provided Sampling variables}
   \item{LandedRoundWeight}{Total landings in kg}
   \item{Catches}{Number of catches sampled}
   \item{Vessels}{Number of vessels sampled}

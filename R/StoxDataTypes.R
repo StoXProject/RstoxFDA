@@ -920,7 +920,8 @@ is.WeightConversionTable <- function(WeightConversionTable){
 #' @description 
 #'  list with tow members:
 #'  \describe{
-#'   \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FishereisSampling' stored in the column 'GroupingVariables'}
+#'   \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FisheriesSampling' stored in the column 'GroupingVariables'}
+#'   \item{SamplingVariables}{a \code{\link[data.table]{data.table}} with the variables used for partitioning samples in 'FisheriesSampling' stored in the column 'SamplingVariables'}
 #'   \item{FisheriesSampling}{a \code{\link[data.table]{data.table}} described below.}
 #'  }
 #'  
@@ -928,6 +929,7 @@ is.WeightConversionTable <- function(WeightConversionTable){
 #'  The report is a \code{\link[data.table]{data.table}} with columns:
 #'  \describe{
 #'   \item{...}{A column for each of the provided Aggregation variables}
+#'   \item{...}{A column for each of the provided Sampling variables}
 #'   \item{LandedRoundWeight}{Total landings in kg}
 #'   \item{Catches}{Number of catches sampled}
 #'   \item{Vessels}{Number of vessels sampled}
@@ -953,7 +955,7 @@ is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
   if (!is.list(ReportFdaSamplingData)){
     return(FALSE)
   }
-  if (!all(c("GroupingVariables", "FisheriesSampling") %in% names(ReportFdaSamplingData))){
+  if (!all(c("GroupingVariables", "SamplingVariables", "FisheriesSampling") %in% names(ReportFdaSamplingData))){
     return(FALSE)
   }
   if (!data.table::is.data.table(ReportFdaSamplingData$FisheriesSampling)){

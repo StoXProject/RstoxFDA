@@ -31,12 +31,16 @@ setUnits <- function(table, columns, unit, quantity){
 #' @description 
 #'  Report sampling of fisheries against landings in partitions of the fisheries.
 #' @details 
-#'  Sampling is reported partitioned on the provided 'GroupingVariables'.
+#'  Sampling is reported partitioned on the provided 'GroupingVariables', which must be present in both samples (StoxBioticData) and landings (StoxLandingData).
 #'  If samples are encoded in partitions of the fisheries with no landings. 'LandedRoundWeight' will be NA.
 #'  This may be due to recording errors or filtering errors, but it may also be due to comparison of similar
 #'  but unequal category-definitions. For instance area are coded in landings as dominant area for a fishing trip,
 #'  while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
 #'  with another area listed as dominant area.
+#'  
+#'  In addition sampling may be reported partitioned on the provided 'SamplingVariables'. For instance the variable 'IndividualSex' may be provided
+#'  to see how many samples are collected for each sex. NAs will be treated as a separate category.
+#'  'SamplingVariables' must be columns that are only present in samples (StoxBioticData), not in landings (StoxLandingData).
 #'  
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
@@ -51,12 +55,13 @@ setUnits <- function(table, columns, unit, quantity){
 #' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. If not provided, a single row for all landings will be produced.
 #' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.
 #' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
+#' @param SamplingVariables Columns of 'StoxBioticData' identifying variables to be use to partition the report.
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @family landings functions
 #' @family StoX-functions
 #' @export
 #' @md
-ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
+ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12)), SamplingVariables=character()){
   
   if (!isGiven(StoxBioticData)){
     stop("Parameter 'StoxBioticData' must be provided")
@@ -85,6 +90,15 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
     flatbiotic$Segment <- "All landings"
   }
   
+  if (isGiven(SamplingVariables)){
+    if (any(SamplingVariables %in% names(flatlandings))){
+      stop("'SamplingVariables' cannot be variables in 'StoxLandingData', consider using 'GroupingVariables' instead.")
+    }
+    if (!all(SamplingVariables %in% names(flatbiotic))){
+      stop("All 'SamplingVariables' must be variables in 'StoxBioticData'")
+    }
+  }
+  
   if (length(GroupingVariables) == 0){
     stop("No variables to stats::aggregate and compare. Provide parameter 'GroupingVariables'")
   }
@@ -98,17 +112,17 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
     stop(paste("All 'GroupingVariables' must be present in 'StoxBioticData'. Missing:", paste(missing, sep=",")))
   }
 
-  samples <- flatbiotic[,c(GroupingVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "StationKey", "IndividualKey", "Sample"), with=F]
+  samples <- flatbiotic[,c(GroupingVariables, SamplingVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "StationKey", "IndividualKey", "Sample"), with=F]
   
   sampledTab <- samples[,list(Catches=length(unique(get("StationKey"))), 
                               Vessels=length(unique(get("CatchPlatform"))),
                               WeightMeasurments=sum(!is.na(get("IndividualRoundWeight"))),
                               LengthMeasurments=sum(!is.na(get("IndividualTotalLength"))),
                               AgeReadings=sum(!is.na(get("IndividualAge")))
-                              ), by=GroupingVariables]
+                              ), by=c(GroupingVariables, SamplingVariables)]
   
-  sampledWeights <- samples[,list(WeightOfSampledCatches=sum(get("CatchFractionWeight")[!duplicated(get("Sample"))], na.rm=T)), by=GroupingVariables]
-  sampledTab <- merge(sampledTab, sampledWeights, by=GroupingVariables)
+  sampledWeights <- samples[,list(WeightOfSampledCatches=sum(get("CatchFractionWeight")[!duplicated(get("Sample"))], na.rm=T)), by=c(GroupingVariables, SamplingVariables)]
+  sampledTab <- merge(sampledTab, sampledWeights, by=c(GroupingVariables, SamplingVariables))
   
   landings <- flatlandings[,c(GroupingVariables, "RoundWeight"), with=F]
   landingsTab <- landings[,list(LandedRoundWeight=sum(get("RoundWeight"), na.rm=T)), by=GroupingVariables]
@@ -127,6 +141,7 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   output <- list()
   output$FisheriesSampling <- tab
   output$GroupingVariables <- data.table::data.table(GroupingVariables=GroupingVariables)
+  output$SamplingVariables <- data.table::data.table(SamplingVariables=SamplingVariables)
   
   return(output)
 }

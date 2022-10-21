@@ -145,6 +145,25 @@ expect_true(all(SamplingReportRounded$FisheriesSampling$LandedRoundWeight != Sam
 expect_true(all(SamplingReportRounded$FisheriesSampling$WeightOfSampledCatches != SamplingReport$FisheriesSampling$WeightOfSampledCatches))
 
 
+# test SamplingVariables
+
+# test one with NAs
+SamplingReportSV <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"), Unit="kiloton", Decimals = 6, SamplingVariables = c("IndividualSex"))
+expect_true(is.ReportFdaSamplingData(SamplingReportSV))
+expect_true("SamplingVariables" %in% names(SamplingReportSV))
+expect_true("IndividualSex" %in% names(SamplingReportSV$FisheriesSampling))
+expect_equal(sum(is.na(SamplingReportSV$FisheriesSampling$IndividualSex)),2)
+expect_equal(sum(is.na(SamplingReportSV$FisheriesSampling$LandedRoundWeight)),0)
+expect_equal(ncol(SamplingReportSV$FisheriesSampling), nrow(SamplingReportSV$GroupingVariables) + nrow(SamplingReportSV$SamplingVariables) + 7)
+
+# test multiple
+SamplingReportSV <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"), Unit="kiloton", Decimals = 6, SamplingVariables = c("Platform", "IndividualSex"))
+expect_true("Platform" %in% names(SamplingReportSV$FisheriesSampling))
+expect_true("IndividualSex" %in% names(SamplingReportSV$FisheriesSampling))
+expect_true("SamplingVariables" %in% names(SamplingReportSV))
+expect_equal(ncol(SamplingReportSV$FisheriesSampling), nrow(SamplingReportSV$GroupingVariables) + nrow(SamplingReportSV$SamplingVariables) + 7)
+
+
 #Default gear is different coding system for stoxbiotic and landing
 unlanded <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear"))
 expect_true(data.table::is.data.table(unlanded$GroupingVariables))

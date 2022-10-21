@@ -30,3 +30,5 @@ backwardCompatibility <- list(
     )
   ) 
 )
+
+# add something for introduced parameter SamplingVariables in ReportSamplingFDA
