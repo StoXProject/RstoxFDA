@@ -34,7 +34,7 @@ setUnits <- function(table, columns, unit, quantity){
 #'  Sampling is reported partitioned on the provided 'GroupingVariables'.
 #'  If samples are encoded in partitions of the fisheries with no landings. 'LandedRoundWeight' will be NA.
 #'  This may be due to recording errors or filtering errors, but it may also be due to comparison of similar
-#'  but unequal category-definitios. For instance area are coded in landings as dominant area for a fishing trip,
+#'  but unequal category-definitions. For instance area are coded in landings as dominant area for a fishing trip,
 #'  while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
 #'  with another area listed as dominant area.
 #'  
@@ -100,22 +100,16 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
 
   samples <- flatbiotic[,c(GroupingVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "StationKey", "IndividualKey", "Sample"), with=F]
   
-  sampledTab <- samples[,list(Catches=length(unique(get("StationKey")))), by=GroupingVariables]
-  vessels <- samples[,list(Vessels=length(unique(get("CatchPlatform")))), by=GroupingVariables]
-  sampledTab <- merge(sampledTab, vessels, by=GroupingVariables)
-  weights <- samples[,list(WeightMeasurments=sum(!is.na(get("IndividualRoundWeight")))),by=GroupingVariables]
-  sampledTab <- merge(sampledTab, weights, by=GroupingVariables)
-  lengths <- samples[,list(LengthMeasurments=sum(!is.na(get("IndividualTotalLength")))),by=GroupingVariables]
-  sampledTab <- merge(sampledTab, lengths, by=GroupingVariables)
-  ages <- samples[,list(AgeReadings=sum(!is.na(get("IndividualAge")))),by=GroupingVariables]
-  sampledTab <- merge(sampledTab, ages, by=GroupingVariables)
+  sampledTab <- samples[,list(Catches=length(unique(get("StationKey"))), 
+                              Vessels=length(unique(get("CatchPlatform"))),
+                              WeightMeasurments=sum(!is.na(get("IndividualRoundWeight"))),
+                              LengthMeasurments=sum(!is.na(get("IndividualTotalLength"))),
+                              AgeReadings=sum(!is.na(get("IndividualAge")))
+                              ), by=GroupingVariables]
+  
   sampledWeights <- samples[,list(WeightOfSampledCatches=sum(get("CatchFractionWeight")[!duplicated(get("Sample"))], na.rm=T)), by=GroupingVariables]
   sampledTab <- merge(sampledTab, sampledWeights, by=GroupingVariables)
   
-  landingsAggList <- list()
-  for (v in GroupingVariables){
-    landingsAggList[[v]] <- flatlandings[[v]]
-  }
   landings <- flatlandings[,c(GroupingVariables, "RoundWeight"), with=F]
   landingsTab <- landings[,list(LandedRoundWeight=sum(get("RoundWeight"), na.rm=T)), by=GroupingVariables]
   
