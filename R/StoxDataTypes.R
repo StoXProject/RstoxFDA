@@ -1917,7 +1917,8 @@ stoxFunctionAttributes <- list(
     functionCategory = "report",
     functionOutputDataType = "ReportFdaSamplingData",
     functionParameterFormat = list(
-      GroupingVariables = "samplereportvariables"
+      GroupingVariables = "samplereportvariables",
+      SamplingVariables = "onlysamplereportvariables"
     )
   ),
   ReportFdaLandings = list(
@@ -2082,6 +2083,23 @@ processPropertyFormats <- list(
       }
       possibleValues <- unique(possibleValues)
       possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$Landing)]
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  onlysamplereportvariables = list(
+    class = "vector", 
+    title = "One or more variables to use as sampling variables.", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in names(names(StoxBioticData))){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
       return(sort(possibleValues))
     }, 
     variableTypes = "character"
