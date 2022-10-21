@@ -26,7 +26,7 @@ and approriate columns added for identifying corresponding samples}
 
 \item{Unit}{unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'}
 
-\item{SamplingVariables}{Columns of 'StoxBioticData' identifying variables to be use to partition the report.}
+\item{SamplingVariables}{Columns of 'StoxBioticData' identifying sampling variables to be use to partition the report. See details.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSamplingData}}
@@ -44,6 +44,8 @@ with another area listed as dominant area.
 
 In addition sampling may be reported partitioned on the provided 'SamplingVariables'. For instance the variable 'IndividualSex' may be provided
 to see how many samples are collected for each sex. NAs will be treated as a separate category.
+When 'SamplingVariables' are provided, each partition specified by 'GroupingVariables' will be reported several times,
+so that the sum of the column 'LandedRoudnWeight' will not be the total landings.
 'SamplingVariables' must be columns that are only present in samples (StoxBioticData), not in landings (StoxLandingData).
 
 Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
