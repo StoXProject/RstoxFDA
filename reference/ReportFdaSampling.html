@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RstoxFDA</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
       </span>
     </div>
 
@@ -71,7 +71,8 @@
 <span>  <span class="va">StoxLandingData</span>,</span>
 <span>  GroupingVariables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  Decimals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  Unit <span class="op">=</span> <span class="fu">RstoxData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RstoxData/man/getUnitOptions.html" class="external-link">getUnitOptions</a></span><span class="op">(</span><span class="st">"mass"</span>, conversionRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1e+12</span><span class="op">)</span><span class="op">)</span></span>
+<span>  Unit <span class="op">=</span> <span class="fu">RstoxData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RstoxData/man/getUnitOptions.html" class="external-link">getUnitOptions</a></span><span class="op">(</span><span class="st">"mass"</span>, conversionRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1e+12</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  SamplingVariables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -98,6 +99,10 @@ and approriate columns added for identifying corresponding samples</p></dd>
 <dt>Unit</dt>
 <dd><p>unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'</p></dd>
 
+
+<dt>SamplingVariables</dt>
+<dd><p>Columns of 'StoxBioticData' identifying sampling variables to be use to partition the report. See details.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -109,12 +114,17 @@ and approriate columns added for identifying corresponding samples</p></dd>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>Sampling is reported partitioned on the provided 'GroupingVariables'.
+    <p>Sampling is reported partitioned on the provided 'GroupingVariables', which must be present in both samples (StoxBioticData) and landings (StoxLandingData).
 If samples are encoded in partitions of the fisheries with no landings. 'LandedRoundWeight' will be NA.
 This may be due to recording errors or filtering errors, but it may also be due to comparison of similar
-but unequal category-definitios. For instance area are coded in landings as dominant area for a fishing trip,
+but unequal category-definitions. For instance area are coded in landings as dominant area for a fishing trip,
 while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
 with another area listed as dominant area.</p>
+<p>In addition sampling may be reported partitioned on the provided 'SamplingVariables'. For instance the variable 'IndividualSex' may be provided
+to see how many samples are collected for each sex. NAs will be treated as a separate category.
+When 'SamplingVariables' are provided, each partition specified by 'GroupingVariables' will be reported several times,
+so that the sum of the column 'LandedRoudnWeight' will not be the total landings.
+'SamplingVariables' must be columns that are only present in samples (StoxBioticData), not in landings (StoxLandingData).</p>
 <p>Rounding of numbers according to the argument 'Decimals' is done with <code><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></code>,
 so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.</p>
 <p>The units considered valid for weights are those listed for quantity 'mass' in <code><a href="https://rdrr.io/pkg/RstoxData/man/StoxUnits.html" class="external-link">StoxUnits</a></code></p>
@@ -127,11 +137,52 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 <code><a href="addLogbookColumns.html">addLogbookColumns</a>()</code>,
 <code><a href="appendTripIdLandings.html">appendTripIdLandings</a>()</code>,
 <code><a href="imputeCatchesLandings.html">imputeCatchesLandings</a>()</code>,
+<code><a href="landings.html">landings</a></code>,
 <code><a href="logbookAdjustment.html">logbookAdjustment</a>()</code>,
 <code><a href="makeTripIds.html">makeTripIds</a>()</code>,
 <code><a href="plotBubbleMap.html">plotBubbleMap</a>()</code>,
 <code><a href="sourceLogbookColumns.html">sourceLogbookColumns</a>()</code>,
-<code><a href="tabulateFisheries.html">tabulateFisheries</a>()</code></p></div>
+<code><a href="tabulateFisheries.html">tabulateFisheries</a>()</code></p>
+<p>Other StoX-functions: 
+<code><a href="AddAreaPositionStoxLanding.html">AddAreaPositionStoxLanding</a>()</code>,
+<code><a href="AddGearGroupStoxBiotic.html">AddGearGroupStoxBiotic</a>()</code>,
+<code><a href="AddGearGroupStoxLanding.html">AddGearGroupStoxLanding</a>()</code>,
+<code><a href="AddPeriodStoxBiotic.html">AddPeriodStoxBiotic</a>()</code>,
+<code><a href="AddPeriodStoxLanding.html">AddPeriodStoxLanding</a>()</code>,
+<code><a href="AddStratumStoxBiotic.html">AddStratumStoxBiotic</a>()</code>,
+<code><a href="AddStratumStoxLanding.html">AddStratumStoxLanding</a>()</code>,
+<code><a href="ConvertLengthBiotic.html">ConvertLengthBiotic</a>()</code>,
+<code><a href="ConvertWeightBiotic.html">ConvertWeightBiotic</a>()</code>,
+<code><a href="DefineAgeErrorMatrix.html">DefineAgeErrorMatrix</a>()</code>,
+<code><a href="DefineAreaPosition.html">DefineAreaPosition</a>()</code>,
+<code><a href="DefineCarNeighbours.html">DefineCarNeighbours</a>()</code>,
+<code><a href="DefineLengthConversionParameters.html">DefineLengthConversionParameters</a>()</code>,
+<code><a href="DefinePeriod.html">DefinePeriod</a>()</code>,
+<code><a href="DefineStockSplittingParameters.html">DefineStockSplittingParameters</a>()</code>,
+<code><a href="DefineWeightConversionFactor.html">DefineWeightConversionFactor</a>()</code>,
+<code><a href="FilterAgeLengthOutliersStoxBiotic.html">FilterAgeLengthOutliersStoxBiotic</a>()</code>,
+<code><a href="FilterWeightLengthOutliersStoxBiotic.html">FilterWeightLengthOutliersStoxBiotic</a>()</code>,
+<code><a href="ListBioticDifference.html">ListBioticDifference</a>()</code>,
+<code><a href="LoadFdaStratumPolygon.html">LoadFdaStratumPolygon</a>()</code>,
+<code><a href="ParameterizeRecaModels.html">ParameterizeRecaModels</a>()</code>,
+<code><a href="PrepareRecaEstimate.html">PrepareRecaEstimate</a>()</code>,
+<code><a href="ReadLandingFDA.html">ReadLandingFDA</a>()</code>,
+<code><a href="ReportFdaLandings.html">ReportFdaLandings</a>()</code>,
+<code><a href="ReportFdaSOP.html">ReportFdaSOP</a>()</code>,
+<code><a href="ReportParameterConvergence.html">ReportParameterConvergence</a>()</code>,
+<code><a href="ReportRecaCatchAtAgeCovariance.html">ReportRecaCatchAtAgeCovariance</a>()</code>,
+<code><a href="ReportRecaCatchAtAge.html">ReportRecaCatchAtAge</a>()</code>,
+<code><a href="ReportRecaCatchAtLengthAndAge.html">ReportRecaCatchAtLengthAndAge</a>()</code>,
+<code><a href="ReportRecaCatchAtLength.html">ReportRecaCatchAtLength</a>()</code>,
+<code><a href="ReportRecaCatchStatistics.html">ReportRecaCatchStatistics</a>()</code>,
+<code><a href="ReportRecaLengthAtAge.html">ReportRecaLengthAtAge</a>()</code>,
+<code><a href="ReportRecaParameterStatistics.html">ReportRecaParameterStatistics</a>()</code>,
+<code><a href="ReportRecaWeightAtAge.html">ReportRecaWeightAtAge</a>()</code>,
+<code><a href="RunRecaModels.html">RunRecaModels</a>()</code>,
+<code><a href="SetAreaPositionsBiotic.html">SetAreaPositionsBiotic</a>()</code>,
+<code><a href="SetShortGearBiotic.html">SetShortGearBiotic</a>()</code>,
+<code><a href="SetStartDateBiotic.html">SetStartDateBiotic</a>()</code>,
+<code><a href="SetTimeBiotic.html">SetTimeBiotic</a>()</code></p></div>
     </div>
 
   </div>

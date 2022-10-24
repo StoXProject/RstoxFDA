@@ -27,7 +27,7 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RstoxFDA</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
       </span>
     </div>
 
@@ -89,13 +89,13 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ReportRecaCatchStatistics</span><span class="op">(</span></span>
 <span>  <span class="va">RecaCatchAtAge</span>,</span>
 <span>  IntervalWidth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  DecimalOptions <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  UseDefaultDecimalOptions <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  DecimalTotalNumber <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  DecimalTotalWeight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  DecimalMeanAge <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  DecimalMeanWeight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  DecimalMeanLength <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  UnitOptions <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  UseDefaultUnitOptions <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  UnitTotalNumber <span class="op">=</span> <span class="fu">RstoxData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RstoxData/man/getUnitOptions.html" class="external-link">getUnitOptions</a></span><span class="op">(</span><span class="st">"cardinality"</span>, conversionRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,</span>
 <span>    <span class="fl">1e+12</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  UnitTotalWeight <span class="op">=</span> <span class="fu">RstoxData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RstoxData/man/getUnitOptions.html" class="external-link">getUnitOptions</a></span><span class="op">(</span><span class="st">"mass"</span>, conversionRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1e+12</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -114,8 +114,8 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 <dd><p>The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.</p></dd>
 
 
-<dt>DecimalOptions</dt>
-<dd><p>logical determining whether the StoX user interface should show decimal options</p></dd>
+<dt>UseDefaultDecimalOptions</dt>
+<dd><p>logical determining whether to use default decimal options.</p></dd>
 
 
 <dt>DecimalTotalNumber</dt>
@@ -138,8 +138,8 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 <dd><p>integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'. Defaults to 2</p></dd>
 
 
-<dt>UnitOptions</dt>
-<dd><p>logical determining whether the StoX user interface should show unit options</p></dd>
+<dt>UseDefaultUnitOptions</dt>
+<dd><p>logical determining whether to use default unit options.</p></dd>
 
 
 <dt>UnitTotalNumber</dt>
@@ -172,7 +172,7 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 <code><a href="ReportRecaCatchAtAge.html">ReportRecaCatchAtAge</a></code> for reporting catch, mean length and mean weight by age groups
 <code><a href="ReportRecaCatchAtLength.html">ReportRecaCatchAtLength</a></code> for reporting length distributions
 <code><a href="ReportRecaCatchAtLengthAndAge.html">ReportRecaCatchAtLengthAndAge</a></code> for reporting catch by age-group and length-group combinations.</p>
-<p>Other Reca functions: 
+<p>Other StoX-Reca functions: 
 <code><a href="AddStratumStoxLanding.html">AddStratumStoxLanding</a>()</code>,
 <code><a href="DefineAgeErrorMatrix.html">DefineAgeErrorMatrix</a>()</code>,
 <code><a href="DefineStockSplittingParameters.html">DefineStockSplittingParameters</a>()</code>,
@@ -185,7 +185,47 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 <code><a href="ReportRecaLengthAtAge.html">ReportRecaLengthAtAge</a>()</code>,
 <code><a href="ReportRecaParameterStatistics.html">ReportRecaParameterStatistics</a>()</code>,
 <code><a href="ReportRecaWeightAtAge.html">ReportRecaWeightAtAge</a>()</code>,
-<code><a href="RunRecaModels.html">RunRecaModels</a>()</code></p></div>
+<code><a href="RunRecaModels.html">RunRecaModels</a>()</code></p>
+<p>Other StoX-functions: 
+<code><a href="AddAreaPositionStoxLanding.html">AddAreaPositionStoxLanding</a>()</code>,
+<code><a href="AddGearGroupStoxBiotic.html">AddGearGroupStoxBiotic</a>()</code>,
+<code><a href="AddGearGroupStoxLanding.html">AddGearGroupStoxLanding</a>()</code>,
+<code><a href="AddPeriodStoxBiotic.html">AddPeriodStoxBiotic</a>()</code>,
+<code><a href="AddPeriodStoxLanding.html">AddPeriodStoxLanding</a>()</code>,
+<code><a href="AddStratumStoxBiotic.html">AddStratumStoxBiotic</a>()</code>,
+<code><a href="AddStratumStoxLanding.html">AddStratumStoxLanding</a>()</code>,
+<code><a href="ConvertLengthBiotic.html">ConvertLengthBiotic</a>()</code>,
+<code><a href="ConvertWeightBiotic.html">ConvertWeightBiotic</a>()</code>,
+<code><a href="DefineAgeErrorMatrix.html">DefineAgeErrorMatrix</a>()</code>,
+<code><a href="DefineAreaPosition.html">DefineAreaPosition</a>()</code>,
+<code><a href="DefineCarNeighbours.html">DefineCarNeighbours</a>()</code>,
+<code><a href="DefineLengthConversionParameters.html">DefineLengthConversionParameters</a>()</code>,
+<code><a href="DefinePeriod.html">DefinePeriod</a>()</code>,
+<code><a href="DefineStockSplittingParameters.html">DefineStockSplittingParameters</a>()</code>,
+<code><a href="DefineWeightConversionFactor.html">DefineWeightConversionFactor</a>()</code>,
+<code><a href="FilterAgeLengthOutliersStoxBiotic.html">FilterAgeLengthOutliersStoxBiotic</a>()</code>,
+<code><a href="FilterWeightLengthOutliersStoxBiotic.html">FilterWeightLengthOutliersStoxBiotic</a>()</code>,
+<code><a href="ListBioticDifference.html">ListBioticDifference</a>()</code>,
+<code><a href="LoadFdaStratumPolygon.html">LoadFdaStratumPolygon</a>()</code>,
+<code><a href="ParameterizeRecaModels.html">ParameterizeRecaModels</a>()</code>,
+<code><a href="PrepareRecaEstimate.html">PrepareRecaEstimate</a>()</code>,
+<code><a href="ReadLandingFDA.html">ReadLandingFDA</a>()</code>,
+<code><a href="ReportFdaLandings.html">ReportFdaLandings</a>()</code>,
+<code><a href="ReportFdaSOP.html">ReportFdaSOP</a>()</code>,
+<code><a href="ReportFdaSampling.html">ReportFdaSampling</a>()</code>,
+<code><a href="ReportParameterConvergence.html">ReportParameterConvergence</a>()</code>,
+<code><a href="ReportRecaCatchAtAgeCovariance.html">ReportRecaCatchAtAgeCovariance</a>()</code>,
+<code><a href="ReportRecaCatchAtAge.html">ReportRecaCatchAtAge</a>()</code>,
+<code><a href="ReportRecaCatchAtLengthAndAge.html">ReportRecaCatchAtLengthAndAge</a>()</code>,
+<code><a href="ReportRecaCatchAtLength.html">ReportRecaCatchAtLength</a>()</code>,
+<code><a href="ReportRecaLengthAtAge.html">ReportRecaLengthAtAge</a>()</code>,
+<code><a href="ReportRecaParameterStatistics.html">ReportRecaParameterStatistics</a>()</code>,
+<code><a href="ReportRecaWeightAtAge.html">ReportRecaWeightAtAge</a>()</code>,
+<code><a href="RunRecaModels.html">RunRecaModels</a>()</code>,
+<code><a href="SetAreaPositionsBiotic.html">SetAreaPositionsBiotic</a>()</code>,
+<code><a href="SetShortGearBiotic.html">SetShortGearBiotic</a>()</code>,
+<code><a href="SetStartDateBiotic.html">SetStartDateBiotic</a>()</code>,
+<code><a href="SetTimeBiotic.html">SetTimeBiotic</a>()</code></p></div>
     </div>
 
   </div>

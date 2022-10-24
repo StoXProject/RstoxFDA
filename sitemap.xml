@@ -91,6 +91,9 @@
     <loc>/reference/FilterWeightLengthOutliersStoxBiotic.html</loc>
   </url>
   <url>
+    <loc>/reference/GSAsubArea.html</loc>
+  </url>
+  <url>
     <loc>/reference/GearGroupFdirTable.html</loc>
   </url>
   <url>
@@ -112,6 +115,9 @@
     <loc>/reference/ICESunit.html</loc>
   </url>
   <url>
+    <loc>/reference/KommunePolygons.html</loc>
+  </url>
+  <url>
     <loc>/reference/LandingData.html</loc>
   </url>
   <url>
@@ -125,6 +131,9 @@
   </url>
   <url>
     <loc>/reference/LoadFdaStratumPolygon.html</loc>
+  </url>
+  <url>
+    <loc>/reference/LocodeTable.html</loc>
   </url>
   <url>
     <loc>/reference/LstLogbookData.html</loc>
@@ -152,6 +161,9 @@
   </url>
   <url>
     <loc>/reference/RecaCatchAtAge.html</loc>
+  </url>
+  <url>
+    <loc>/reference/RecaData.html</loc>
   </url>
   <url>
     <loc>/reference/RecaParameterData.html</loc>
@@ -283,6 +295,9 @@
     <loc>/reference/appendTripIdLogbooks.html</loc>
   </url>
   <url>
+    <loc>/reference/areaCodeConversionTable.html</loc>
+  </url>
+  <url>
     <loc>/reference/calculateLogbookPartitionByTrip.html</loc>
   </url>
   <url>
@@ -293,6 +308,9 @@
   </url>
   <url>
     <loc>/reference/convertCodes.html</loc>
+  </url>
+  <url>
+    <loc>/reference/convertRecaData.html</loc>
   </url>
   <url>
     <loc>/reference/convertToErsData.html</loc>
@@ -367,6 +385,9 @@
     <loc>/reference/is.WeightConversionTable.html</loc>
   </url>
   <url>
+    <loc>/reference/kommuner2022.html</loc>
+  </url>
+  <url>
     <loc>/reference/landings.html</loc>
   </url>
   <url>
@@ -412,10 +433,16 @@
     <loc>/reference/plotArea.html</loc>
   </url>
   <url>
+    <loc>/reference/plotAreaComparison.html</loc>
+  </url>
+  <url>
     <loc>/reference/plotBubbleMap.html</loc>
   </url>
   <url>
     <loc>/reference/plotCatchAtAge.html</loc>
+  </url>
+  <url>
+    <loc>/reference/portcodes2020.html</loc>
   </url>
   <url>
     <loc>/reference/prepRECA.html</loc>
@@ -436,9 +463,6 @@
     <loc>/reference/readMetierTable.html</loc>
   </url>
   <url>
-    <loc>/reference/recaData.html</loc>
-  </url>
-  <url>
     <loc>/reference/recaDataExample.html</loc>
   </url>
   <url>
@@ -446,6 +470,9 @@
   </url>
   <url>
     <loc>/reference/runRECA.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sanitizeRecaInput.html</loc>
   </url>
   <url>
     <loc>/reference/sourceLogbookColumns.html</loc>

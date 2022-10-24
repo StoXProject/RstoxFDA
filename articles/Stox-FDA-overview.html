@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RstoxFDA</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
       </span>
     </div>
 
@@ -237,7 +237,108 @@
 </tr>
 </tbody>
 </table>
-<p>In this case the GearGroup, Stratum and Period has been obtained by adding and re-coding variables in the StoX-baseline for both <strong>RstoxData::StoxLandingData</strong> and <strong>RstoxData::StoxBioticData</strong>. We may note that Demershal Seine (D. Seine) in Stratum s500 was not sampled at all in quarter 2 (Q2). We may also note the somewhat peculiar fact that Trawl in Stratum s300-400 was sampled in quarter 1 (Q1), even if there are no recorded landings then. This occurs from time to time and need to be handled for many kinds of analysis, by changing gear-groups, periodicity or other kinds of data re-configuration. The main reason this occurs is that samples are often provided with higher temporal and spatial resolution than the landings. Samples of catches from a known fishing operation will typically be assigned the temporal and spatial variables that describe that fishing operation, while a landing consist of many fishing operations and only the dominant spatio-temporal variables are reported for landings. The issue may also occasionally arise due to error in sample-records or imperfections of the census (sales-notes).</p>
+<p>In this case the GearGroup, Stratum and Period has been obtained by adding and re-coding variables in the StoX-baseline for both <strong>RstoxData::StoxLandingData</strong> and <strong>RstoxData::StoxBioticData</strong>. We may note that Demershal Seine (D. Seine) in Stratum s500 was not sampled at all in quarter 2 (Q2). We may also note the somewhat peculiar fact that Trawl in Stratum s300-400 was sampled in quarter 1 (Q1), even if there are no recorded landings then. This occurs from time to time and need to be handled for many kinds of analysis, by changing gear-groups, periodicity or other kinds of data re-configuration. The main reason why this occurs is that samples are often provided with higher temporal and spatial resolution than the landings. Samples of catches from a known fishing operation will typically be assigned the temporal and spatial variables that describe that fishing operation, while a landing consist of many fishing operations and only the dominant spatio-temporal variables are reported for landings. The issue may also occasionally arise due to error in sample-records or sales-notes.</p>
+<div class="section level4">
+<h4 id="tabulating-multiple-sampling-programs">Tabulating multiple sampling programs<a class="anchor" aria-label="anchor" href="#tabulating-multiple-sampling-programs"></a>
+</h4>
+<p>When evaluating sampling coverage from several sampling programs, it may be of interest to inspect which sampling programs cover which parts of the fisheries. If the sampling program is identified by some variable in <strong>RstoxData::StoxBioticData</strong>, this variable can be provided as a ‘SamplingVariable’ to <em>RstoxFDA::ReportFdaSampling</em> in order to specify further partitioning of data. The example below illustrates this with the variable ‘missiontypename’ that identifies the sampling programs. Note that the leftmost columns that represent the partitioning of the fishery are repeated. In particular the ‘LandedRoundWeight’ is repeated, so that the sum of this column does no longer represent the total landings. Immediately to the right of ‘LandedRoundWeight’, the sampling variable ‘missiontypename’ is listed. This represent the different sampling programs that samples are collected from, and the sample summaries in the columns to the right of this is partitioned on each sampling program.</p>
+<table class="table">
+<colgroup>
+<col width="10%">
+<col width="8%">
+<col width="10%">
+<col width="8%">
+<col width="10%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="center">GearGroup</th>
+<th align="center">Stratum</th>
+<th align="center">Period</th>
+<th align="right">LandedRoundWeight</th>
+<th align="center">missiontypename</th>
+<th align="right">Catches</th>
+<th align="right">Vessels</th>
+<th align="right">WeightMeasurments</th>
+<th align="right">LengthMeasurments</th>
+<th align="right">AgeReadings</th>
+<th align="right">WeightOfSampledCatches</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="center">D.Seine</td>
+<td align="center">s000-501</td>
+<td align="center">Q1</td>
+<td align="right">19870</td>
+<td align="center">Prøvebåt</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">160</td>
+<td align="right">160</td>
+<td align="right">160</td>
+<td align="right">158</td>
+</tr>
+<tr class="even">
+<td align="center">D.Seine</td>
+<td align="center">s000-501</td>
+<td align="center">Q1</td>
+<td align="right">19870</td>
+<td align="center">Referanseflåten-Kyst</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="center">Gillnet</td>
+<td align="center">s000-501</td>
+<td align="center">Q1</td>
+<td align="right">13314</td>
+<td align="center">Prøvebåt</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">302</td>
+<td align="right">402</td>
+<td align="right">402</td>
+<td align="right">66</td>
+</tr>
+<tr class="even">
+<td align="center">Gillnet</td>
+<td align="center">s000-501</td>
+<td align="center">Q1</td>
+<td align="right">13314</td>
+<td align="center">Referanseflåten-Hav</td>
+<td align="right">9</td>
+<td align="right">2</td>
+<td align="right">197</td>
+<td align="right">197</td>
+<td align="right">197</td>
+<td align="right">24</td>
+</tr>
+<tr class="odd">
+<td align="center">Gillnet</td>
+<td align="center">s000-501</td>
+<td align="center">Q1</td>
+<td align="right">13314</td>
+<td align="center">Referanseflåten-Kyst</td>
+<td align="right">27</td>
+<td align="right">8</td>
+<td align="right">1</td>
+<td align="right">1084</td>
+<td align="right">1084</td>
+<td align="right">88</td>
+</tr>
+</tbody>
+</table>
+<p>‘missiontypename’ is not a regular column in <strong>RstoxData::StoxBioticData</strong>, but and was added with the function <em>RstoxData::AddToStoxBiotic</em>, as this data was sourced from NMDbiotic.</p>
+</div>
 </div>
 </div>
 <div class="section level2">

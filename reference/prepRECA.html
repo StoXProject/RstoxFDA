@@ -18,7 +18,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RstoxFDA</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
       </span>
     </div>
 
@@ -149,7 +149,7 @@
 
 
 <dt>nFish</dt>
-<dd><p>data.table() specifying the number of fish in the part of the catch that each sample was taken from. Not always needed. See details.</p></dd>
+<dd><p>data.table() with the columns 'sampleId' and 'count', specifying the number of fish in the part of the catch that each sample was taken from. Not always needed. See details.</p></dd>
 
 
 <dt>ageError</dt>
@@ -207,7 +207,7 @@
     <h2>Value</h2>
     
 
-<p><code><a href="recaData.html">RecaData</a></code> Data and some data related parameters prepared for running Reca.</p>
+<p><code><a href="RecaData.html">RecaData</a></code> Data and some data related parameters prepared for running Reca.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -231,6 +231,25 @@
  for information about how to configure running of this stock splitting, and how to interpret results.</p>
 <p>output GlobalParameters: While outputs AgeLength, WeightLength and Landings are complete and ready for R-ECA runs.
  This function populates the list of GlobalParameters only partially. Run parameters have to be added afterwards.</p>
+    </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>Other Reca functions: 
+<code><a href="catchsamples.html">catchsamples</a></code>,
+<code><a href="convertRecaData.html">convertRecaData</a>()</code>,
+<code><a href="getCovariateMap.html">getCovariateMap</a>()</code>,
+<code><a href="getLandings.html">getLandings</a>()</code>,
+<code><a href="landings.html">landings</a></code>,
+<code><a href="makeAgeTracesRECA.html">makeAgeTracesRECA</a>()</code>,
+<code><a href="makeResultTableRECA.html">makeResultTableRECA</a>()</code>,
+<code><a href="plotAgeTraces.html">plotAgeTraces</a>()</code>,
+<code><a href="plotCatchAtAge.html">plotCatchAtAge</a>()</code>,
+<code><a href="rEcaDataReport.html">rEcaDataReport</a>()</code>,
+<code><a href="recaDataExample.html">recaDataExample</a></code>,
+<code><a href="recaPrediction.html">recaPrediction</a></code>,
+<code><a href="runRECA.html">runRECA</a>()</code>,
+<code><a href="sanitizeRecaInput.html">sanitizeRecaInput</a>()</code>,
+<code><a href="tabulateFisheries.html">tabulateFisheries</a>()</code></p></div>
     </div>
 
     <div id="ref-examples">
@@ -317,6 +336,7 @@
 <span class="r-in"><span>   FUN<span class="op">=</span><span class="va">mean</span><span class="op">)</span></span></span>
 <span class="r-in"><span> <span class="va">nFish</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">totalWeights</span>, <span class="va">meanWeights</span><span class="op">)</span></span></span>
 <span class="r-in"><span> <span class="va">nFish</span><span class="op">$</span><span class="va">count</span> <span class="op">&lt;-</span> <span class="va">nFish</span><span class="op">$</span><span class="va">totalW</span> <span class="op">/</span> <span class="va">nFish</span><span class="op">$</span><span class="va">meanW</span></span></span>
+<span class="r-in"><span> <span class="va">nFish</span> <span class="op">&lt;-</span> <span class="va">nFish</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sampleId"</span>, <span class="st">"count"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span> <span class="co">#prepRECA (produce recaData as in data(recaDataExample))</span></span></span>
 <span class="r-in"><span> <span class="va">recaDataExample</span> <span class="op">&lt;-</span> <span class="fu">prepRECA</span><span class="op">(</span><span class="va">catchsamples</span>,</span></span>
