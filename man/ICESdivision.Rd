@@ -3,7 +3,7 @@
 \docType{data}
 \name{ICESdivision}
 \alias{ICESdivision}
-\title{ICES areas}
+\title{ICES Divisions (area codes from 2018)}
 \format{
 \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 }
@@ -26,16 +26,19 @@ Polygons are defined in WGS84 coordinates (unprojected).
 }
 \seealso{
 Other area code polygons: 
+\code{\link{GSAsubArea}},
 \code{\link{ICESareas}},
 \code{\link{ICESrectangles}},
 \code{\link{ICESsubArea}},
 \code{\link{ICESsubDivision}},
 \code{\link{ICESunit}},
 \code{\link{NAFOareas}},
+\code{\link{kommuner2022}},
 \code{\link{locationsFdir2017}},
 \code{\link{locationsFdir2018}},
 \code{\link{mainareaFdir2017}},
-\code{\link{mainareaFdir2018}}
+\code{\link{mainareaFdir2018}},
+\code{\link{portcodes2020}}
 }
 \concept{area code polygons}
 \keyword{datasets}

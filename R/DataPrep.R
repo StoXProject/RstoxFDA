@@ -1,3 +1,12 @@
+#' replacement for sp::transform, not using rgdal
+#' 
+#' @noRd
+transformSpatialPolygons <- function(x, CRSobj){
+  obj <- sf::st_as_sf(x)
+  trans <- sf::st_transform(obj, CRSobj)
+  return(sf::as_Spatial(trans))
+}
+
 #' read tab separated file
 #' @noRd
 readTabSepFile <- function(filepath, encoding="UTF-8", col_classes = NULL, col_names = NULL, trim_ws=T){
@@ -106,6 +115,7 @@ categoriseDate <- function(date, temporalType="quarter", seasonal=T, FUN=NULL){
 #'  gearConversion["TBN"] <- "OTB"
 #'  gearConversion["OTB"] <- "OTB"
 #'  convertCodes(c("TBS", "TBN", "OTB"), gearConversion)
+#' @family parameter conversion functions
 #' @export
 convertCodes <- function(code, conversionTable){
 
@@ -137,19 +147,125 @@ convertCodes <- function(code, conversionTable){
   return(as.character(conversionTable[code]))
 }
 
+#' Area code conversion table
+#' @description 
+#'  Make conversion table from area code-definitions.
+#'  
+#'  Conversion tables are constructed based on geometric principles (based on centroid positions, or overlap).
+#'  Whether this produces a complete and correct mapping between area codes depends on their shape and size.
+#'  For instance, the centroid may be outside an area for odd shapes, areas in different definitions may be partly overlapping,
+#'  and areas of one definition may subdivide those of another definition.
+#'  This is best evaluated by visual inspection of the area definitions.
+#'  
+#'  The conversion table can be constructed with the following methods (argument: 'method'):
+#'  \describe{
+#'  \item{overlap}{Each area in areaDef1 is mapped to the area in areaDef2 with the largest overlap.}
+#'  \item{centroids}{Eac area in areaDef1 is mapped to the area in areaDef2 which contains its centroid.}
+#'  }
+#'  Centroids may be preferred for performance reasons, but depending on the shape of areas, 
+#'  the centroid may not always be a good representation.
+#'  
+#'  Areas in areaDef1 that has no corresponding area in areaDef2 will be omitted from results.
+#' @param areaDef1 \code{\link[sp]{SpatialPolygonsDataFrame}} defining area codes
+#' @param areaDef2 \code{\link[sp]{SpatialPolygonsDataFrame}} defining area codes
+#' @param areaName1 column in areaDef1 identifying the name of areas
+#' @param areaName2 column in areaDef2 identifying the name of areas
+#' @param method method for mapping area codes. See details.
+#' @param dTolerance tolerance parameter passed to \code{\link[sf]{st_simplify}} when method is 'overlap'.
+#' @seealso \code{\link[RstoxFDA]{plotAreaComparison}} for visual inspection of how different area definitions correspond.
+#' @return a list mapping area codes in areaDef1 to those in areaDef2
+#' @examples 
+#'  # map fdir areas to ICES areas by overlap
+#'  fdir.ICES.map <- areaCodeConversionTable(RstoxFDA::mainareaFdir2018, RstoxFDA::ICESareas)
+#'  
+#'  # map fdir locations to ICES statistical rectangles, by centroids
+#'  loc.rectangles.map <- areaCodeConversionTable(RstoxFDA::locationsFdir2018, 
+#'         RstoxFDA::ICESrectangles, method="centroids")
+#'  
+#'  # map selected statistical rectangles to ICES areas by overlap
+#'  data(catchsamples)
+#'  selectedRects <- RstoxFDA::ICESrectangles[
+#'              RstoxFDA::ICESrectangles$StratumName %in% catchsamples$LEstatRect,]
+#'  catchsamples$LEarea <- RstoxFDA::convertCodes(catchsamples$LEstatRect, 
+#'              areaCodeConversionTable(selectedRects, 
+#'              RstoxFDA::ICESareas))
+#' @family spatial coding functions
+#' @md
+#' @export
+areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName", areaName2=areaName1, method=c("overlap", "centroids"), dTolerance=1){
+  
+  meth <- match.arg(method, method)
+  
+  areaDef1$areaDef1Name <- areaDef1[[areaName1]]
+  areaDef2$areaDef2Name <- areaDef2[[areaName2]]
+
+  areaDef1 <- sf::st_as_sf(areaDef1)
+  areaDef2 <- sf::st_as_sf(areaDef2)
+  
+  if (meth == "centroids"){
+    sf::st_agr(areaDef1) = "constant"
+    sf::st_agr(areaDef2) = "constant"
+    
+    centroids1 <- sf::st_centroid(areaDef1)
+    intersects <- sf::st_intersects(centroids1, areaDef2)
+    
+    #
+    # Polygon files are often prepared for visualization purposes,
+    # small overlaps are common.
+    # There we issue a warning, rather than an error.
+    #
+    if (any(sapply(intersects, length) > 1)){
+      stoxWarning("Overlapping polygons: Some centroids are in several polygons, area code is arbitrarily chosen.")
+    }
+    
+    areaDef2NameIndecies <- unlist(sapply(intersects, utils::head, n=1))
+    areaDef1NameIndecies <- sapply(intersects, length) != 0
+    map <- as.list(areaDef2$areaDef2Name[areaDef2NameIndecies])
+    names(map) <- areaDef1$areaDef1Name[areaDef1NameIndecies]
+    return(map)
+  }
+  
+    
+  if (meth == "overlap"){
+    sf::st_agr(areaDef1) = "constant"
+    sf::st_agr(areaDef2) = "constant"
+    intersections <- sf::st_intersection(areaDef1, areaDef2)
+    intersections <- sf::st_simplify(intersections, dTolerance=dTolerance)
+    intersections$area <- sf::st_area(intersections)
+    intersections <- intersections[intersections$area > intersections$area*0,]
+    intersections <- intersections[order(intersections$area, decreasing = T),]
+    intersections <- intersections[!duplicated(intersections$areaDef1Name),]
+    intersections <- intersections[order(intersections$areaDef1Name),]
+    map <- as.list(intersections$areaDef2Name)
+    names(map) <- intersections$areaDef1Name
+    return(map)
+  }
+
+  stop(paste("method:", meth, "is not recognized."))
+}
+
 #' Append area code
 #' @details
 #'  Appends a column with an area code to a table, based on positions.
+#'  
+#'  If polygons are overlapping, so that one point may be in several polygons, 
+#'  an arbitrary choice is made and a warning is issued.
+#'  
+#'  By default this function is run in 'strict' mode, meaning that it will halt
+#'  with an error if some positions are not in any of the provided polygons,
+#'  or if some positions are missing (NA). Turning of strict-mode accepts
+#'  both these cases and the area code will be NA for these positions.
 #' @param table data.table to be annotated.
 #' @param areaPolygons \code{\link[sp]{SpatialPolygonsDataFrame}}
 #' @param latName name of WGS84 lat column in 'table'
 #' @param lonName name of WGS84 lon column in 'table
 #' @param colName name of column to be appended to 'table'
 #' @param StratumName name of column in 'areaPolygons' that identify the area name
+#' @param strict logical determining whether to run in strict mode. See details.
 #' @return 'table' with the area appended in the column 'colName'
 #' @family spatial coding functions
 #' @export
-appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, StratumName="StratumName"){
+appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, StratumName="StratumName", strict=T){
   if (!data.table::is.data.table(table)){
     stop("Parameter 'table' must be a data.table")
   }
@@ -162,28 +278,47 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
   if (!(lonName %in% names(table)) | !is.numeric(table[[lonName]])){
     stop(paste(lonName, "(parameter 'lonName') must be provided as a numeric column."))
   }
-  if (any(is.na(table[[latName]]))){
-    stop("Missing values in column: ", latName)
+  if (strict){
+    if (any(is.na(table[[latName]]))){
+      stop("Missing values in column: ", latName)
+    }
+    if (any(is.na(table[[lonName]]))){
+      stop("Missing values in column: ", lonName)
+    }
   }
-  if (any(is.na(table[[lonName]]))){
-    stop("Missing values in column: ", lonName)
-  }
-  
-  pos <- as.data.frame(table[,c(latName, lonName), with=F])
-  names(pos) <- c("LAT", "LON")
-  sp::coordinates(pos) <- ~ LON + LAT
-
-  if (rgdal::PROJis6ormore()){
-    sp::proj4string(pos) <- sp::CRS("EPSG:4326")    
-    areaPolygons <- sp::spTransform(areaPolygons, sp::wkt(pos))
-  }
-  else{
-    suppressWarnings(sp::proj4string(pos) <- sp::CRS(projargs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
-    suppressWarnings(areaPolygons <- sp::spTransform(areaPolygons, sp::CRS(sp::proj4string(pos))))
+  else if (any(is.na(table[[latName]])) | any(is.na(table[[lonName]]))){
+    noNas <- !is.na(table[[lonName]]) & !is.na(table[[latName]])
+    appended <- appendAreaCode(table[noNas,], areaPolygons, latName, lonName, colName, StratumName, strict)
+    table[[colName]] <- as.character(NA)
+    table[noNas,] <- appended
+    return(table)
   }
   
-  location_codes <- sp::over(pos, areaPolygons)
-  table[[colName]] <- location_codes[[StratumName]]
+  pos <- sf::st_as_sf(table, coords=c(lonName, latName), crs = sp::CRS("EPSG:4326"))
+  poly <- sf::st_make_valid(sf::st_transform(sf::st_as_sf(areaPolygons), crs = sp::CRS("EPSG:4326")))
+  
+  intersects <- sf::st_intersects(pos, poly)
+  
+  #
+  # Polygon files are often prepared for visualization purposes,
+  # small overlaps are common.
+  # There we issue a warning, rather than an error.
+  #
+  if (any(sapply(intersects, length) > 1)){
+    stoxWarning("Overlapping polygons: Some positions are in several polygons, area code is arbitrarily chosen.")
+  }
+  if (any(sapply(intersects, length) == 0) & strict){
+    stop("Some positions are not in any of the provided polygons. Consider turning of the option 'strict' if this is acceptable.")
+  }
+  
+  missingIndecies <- sapply(intersects, length) == 0
+  
+  if (sum(!missingIndecies) > 0){
+    indecies <- sapply(intersects[!missingIndecies], utils::head, n=1)
+    table[[colName]][!missingIndecies] <- areaPolygons[[StratumName]][indecies]
+  }
+  
+  table[[colName]][missingIndecies] <- as.character(NA)
 
   return(table)
 }
@@ -218,14 +353,8 @@ appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName
     stop(paste("Column name", areaName, "not found in 'table'."))
   }
 
-  if (rgdal::PROJis6ormore() && !startsWith(sp::wkt(areaPolygons), "GEOGCRS")){
+  if (!startsWith(sf::st_crs(sf::st_as_sf(areaPolygons))$wkt, "GEOGCRS")){
     warning("could not verify projection of 'areaPolygons'")
-  } 
-  if (!rgdal::PROJis6ormore()){
-    suppressWarnings(lonlat <- length(grep("proj=longlat", sp::proj4string(areaPolygons)))!=0)
-    if (!lonlat){
-      warning("could not verify projection of 'areaPolygons'")  
-    }
   }
   
   mapping <- cbind(data.table::as.data.table(sp::coordinates(areaPolygons)), areaPolygons[[StratumName]])

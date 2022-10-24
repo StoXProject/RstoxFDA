@@ -104,6 +104,7 @@ getPlusGr <- function(prediction, unit, plusGroup){
 #' @examples
 #'  data(recaPrediction)
 #'  makeResultTableRECA(recaPrediction, plusGroup=13)
+#' @family Reca functions
 #' @export
 makeResultTableRECA <- function(prediction, unit="millions", plusGroup=NULL, alpha=.05){
 
@@ -168,6 +169,7 @@ makeResultTableRECA <- function(prediction, unit="millions", plusGroup=NULL, alp
 #' @examples
 #'  data(recaPrediction)
 #'  makeAgeTracesRECA(recaPrediction, plusGroup=13)
+#' @family Reca functions
 #' @export
 makeAgeTracesRECA <- function(prediction, unit="millions", plusGroup=NULL){
   pl <- getPlusGr(prediction, unit, plusGroup)
@@ -202,6 +204,7 @@ makeAgeTracesRECA <- function(prediction, unit="millions", plusGroup=NULL){
 #' @examples
 #'  data(recaPrediction)
 #'  plotCatchAtAge(recaPrediction)
+#' @family Reca functions
 #' @export
 plotCatchAtAge <- function(prediction, unit="millions", plusGroup=NULL, credibility=.95, title=NULL){
 
@@ -255,6 +258,7 @@ plotCatchAtAge <- function(prediction, unit="millions", plusGroup=NULL, credibil
 #' @examples
 #'  data(recaPrediction)
 #'  plotAgeTraces(recaPrediction, plusGroup=13, nclust = 6)
+#' @family Reca functions
 #' @export
 plotAgeTraces <- function(prediction, unit="millions", plusGroup=NULL, nclust=4, iter.max=20, nstart=10, agecolors=NULL, lowerquant=.05, upperquant=.95, catlimit=8, title=""){
 

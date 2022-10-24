@@ -70,14 +70,34 @@ expect_true(all(!is.na((areaPosPost$AreaAppended))))
 areaPosPost <- RstoxFDA::appendAreaCode(areaPos, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended")
 expect_true(all(as.integer(areaPosPost$Area) == as.integer(areaPosPost$AreaAppended)))
 
+# check handling of invalid polygon
+inv <- RstoxBase::DefineStratumPolygon(NULL, FileName = system.file("testresources","coastalCodStrata.txt", package="RstoxFDA"), DefinitionMethod = "ResourceFile")
+areaPosPost <- RstoxFDA::appendAreaCode(areaPos, inv, "Latitude", "Longitude", "AreaAppended", strict = F)
+expect_true(all(areaPosPost$Area[!is.na(areaPosPost$AreaAppended)] %in% c("00","03","04","05","06","07")))
+
+
+# check positions outside area definition
+areaOutSide <- areaPos
+areaOutSide$Latitude[4] <- 0
+expect_error(RstoxFDA::appendAreaCode(areaOutSide, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended"), "Some positions are not in any of the provided polygons. Consider turning of the option 'strict' if this is acceptable.")
+areaPosPost <- RstoxFDA::appendAreaCode(areaOutSide, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended", strict=F)
+expect_equal(sum(is.na(areaPosPost$AreaAppended)), 1)
+expect_true(is.na(areaPosPost$AreaAppended[4]))
+
+
+# check missing positions
+
+posMissing <- areaPos
+posMissing$Latitude[4] <- NA
+posMissing$Longitude[4] <- NA
+expect_error(RstoxFDA::appendAreaCode(posMissing, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended"), "Missing values in column: Latitude")
+areaPosPost <- RstoxFDA::appendAreaCode(posMissing, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended", strict=F)
+expect_equal(sum(is.na(areaPosPost$AreaAppended)), 1)
+expect_true(is.na(areaPosPost$AreaAppended[4]))
 
 #context("test-StoxBaselineFunctions: appendAreaCode wrong projection")
 
-if (rgdal::PROJis6ormore()){
- strp <- sp::spTransform(strp, sp::CRS("EPSG:4269"))
-} else{
-  suppressWarnings(strp <- sp::spTransform(strp, sp::CRS(projargs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")))
-}
+strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("EPSG:4269"))
 RstoxFDA::appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended")
 
 #context("test-StoxBaselineFunctions: appendAreaCode non-numeric lat")
@@ -95,7 +115,32 @@ areaTabReAppended <- RstoxFDA::appendAreaCode(areaTabAppended, RstoxFDA::mainare
 expect_true(all(areaTabReAppended$Area == areaTabReAppended$Area2))
 
 #context("test-StoxBaselineFunctions: appendPosition wrong projection")
-strp <- sp::spTransform(strp, sp::CRS("+proj=merc"))
+strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("+proj=merc"))
 expect_warning(RstoxFDA::appendPosition(areaTab, strp, "Area", "lat", "lon"))
 
 
+# map fdir areas to ICES areas by overlap
+fdir.ICES.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::mainareaFdir2018, RstoxFDA::ICESareas)
+expect_equal(fdir.ICES.map$'09', "27.3.a.20")
+expect_equal(fdir.ICES.map$'00', "27.2.a.2")
+expect_equal(fdir.ICES.map$'28', "27.4.a")
+expect_equal(fdir.ICES.map$'08', "27.4.a")
+expect_equal(fdir.ICES.map$'42', "27.4.a")
+
+# map ICES areas to fdir areas by overlap
+# check that reverse mapping is to largest area
+ICES.fdir.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::ICESareas, RstoxFDA::mainareaFdir2018)
+expect_equal(ICES.fdir.map$'27.4.a', "42")
+
+# map fdir locations to ICES statistical rectangles, by centroids
+loc.rectangles.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::locationsFdir2018, RstoxFDA::ICESrectangles, method="centroids")
+expect_equal(loc.rectangles.map$'00-54', "63G5")
+expect_equal(loc.rectangles.map$'48-08', "34D9")
+expect_equal(loc.rectangles.map$'43-69', "47E0")
+
+
+selectedRects <- RstoxFDA::ICESrectangles[
+            RstoxFDA::ICESrectangles$StratumName %in% RstoxFDA::catchsamples$LEstatRect,]
+expect_equal(RstoxFDA::catchsamples$LEarea, RstoxFDA::convertCodes(RstoxFDA::catchsamples$LEstatRect, 
+            areaCodeConversionTable(selectedRects, 
+            RstoxFDA::ICESareas)))

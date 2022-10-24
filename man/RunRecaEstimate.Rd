@@ -53,3 +53,4 @@ StoX-function.
  This will be attempted removed after execution.
  If removal is not successful a warning will be issued which includes the path to the temporary directory.
 }
+\concept{deprecated}

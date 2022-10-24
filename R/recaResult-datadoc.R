@@ -9,6 +9,7 @@
 #' @format see element prediction in return from \code{\link[RstoxFDA]{runRECA}}.
 #'
 #' @keywords datasets
+#' @family Reca functions
 #'
 #' @examples
 #' data(recaPrediction)

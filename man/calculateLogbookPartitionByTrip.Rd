@@ -51,6 +51,7 @@ Default parameters are compatible \code{\link[RstoxData]{readErsFile}} with trip
 }
 \seealso{
 Other logbook functions: 
+\code{\link{activityCensus}},
 \code{\link{addLogbookColumns}()},
 \code{\link{appendTripIdLandings}()},
 \code{\link{appendTripIdLogbooks}()},

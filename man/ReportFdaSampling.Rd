@@ -9,7 +9,8 @@ ReportFdaSampling(
   StoxLandingData,
   GroupingVariables = character(),
   Decimals = integer(),
-  Unit = RstoxData::getUnitOptions("mass", conversionRange = c(1, 1e+12))
+  Unit = RstoxData::getUnitOptions("mass", conversionRange = c(1, 1e+12)),
+  SamplingVariables = character()
 )
 }
 \arguments{
@@ -24,6 +25,8 @@ and approriate columns added for identifying corresponding samples}
 \item{Decimals}{integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.}
 
 \item{Unit}{unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'}
+
+\item{SamplingVariables}{Columns of 'StoxBioticData' identifying sampling variables to be use to partition the report. See details.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSamplingData}}
@@ -32,12 +35,18 @@ and approriate columns added for identifying corresponding samples}
 Report sampling of fisheries against landings in partitions of the fisheries.
 }
 \details{
-Sampling is reported partitioned on the provided 'GroupingVariables'.
+Sampling is reported partitioned on the provided 'GroupingVariables', which must be present in both samples (StoxBioticData) and landings (StoxLandingData).
 If samples are encoded in partitions of the fisheries with no landings. 'LandedRoundWeight' will be NA.
 This may be due to recording errors or filtering errors, but it may also be due to comparison of similar
-but unequal category-definitios. For instance area are coded in landings as dominant area for a fishing trip,
+but unequal category-definitions. For instance area are coded in landings as dominant area for a fishing trip,
 while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
 with another area listed as dominant area.
+
+In addition sampling may be reported partitioned on the provided 'SamplingVariables'. For instance the variable 'IndividualSex' may be provided
+to see how many samples are collected for each sex. NAs will be treated as a separate category.
+When 'SamplingVariables' are provided, each partition specified by 'GroupingVariables' will be reported several times,
+so that the sum of the column 'LandedRoudnWeight' will not be the total landings.
+'SamplingVariables' must be columns that are only present in samples (StoxBioticData), not in landings (StoxLandingData).
 
 Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
@@ -51,10 +60,53 @@ Other landings functions:
 \code{\link{addLogbookColumns}()},
 \code{\link{appendTripIdLandings}()},
 \code{\link{imputeCatchesLandings}()},
+\code{\link{landings}},
 \code{\link{logbookAdjustment}()},
 \code{\link{makeTripIds}()},
 \code{\link{plotBubbleMap}()},
 \code{\link{sourceLogbookColumns}()},
 \code{\link{tabulateFisheries}()}
+
+Other StoX-functions: 
+\code{\link{AddAreaPositionStoxLanding}()},
+\code{\link{AddGearGroupStoxBiotic}()},
+\code{\link{AddGearGroupStoxLanding}()},
+\code{\link{AddPeriodStoxBiotic}()},
+\code{\link{AddPeriodStoxLanding}()},
+\code{\link{AddStratumStoxBiotic}()},
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{DefineAgeErrorMatrix}()},
+\code{\link{DefineAreaPosition}()},
+\code{\link{DefineCarNeighbours}()},
+\code{\link{DefineLengthConversionParameters}()},
+\code{\link{DefinePeriod}()},
+\code{\link{DefineStockSplittingParameters}()},
+\code{\link{DefineWeightConversionFactor}()},
+\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
+\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
+\code{\link{ListBioticDifference}()},
+\code{\link{LoadFdaStratumPolygon}()},
+\code{\link{ParameterizeRecaModels}()},
+\code{\link{PrepareRecaEstimate}()},
+\code{\link{ReadLandingFDA}()},
+\code{\link{ReportFdaLandings}()},
+\code{\link{ReportFdaSOP}()},
+\code{\link{ReportParameterConvergence}()},
+\code{\link{ReportRecaCatchAtAgeCovariance}()},
+\code{\link{ReportRecaCatchAtAge}()},
+\code{\link{ReportRecaCatchAtLengthAndAge}()},
+\code{\link{ReportRecaCatchAtLength}()},
+\code{\link{ReportRecaCatchStatistics}()},
+\code{\link{ReportRecaLengthAtAge}()},
+\code{\link{ReportRecaParameterStatistics}()},
+\code{\link{ReportRecaWeightAtAge}()},
+\code{\link{RunRecaModels}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()}
 }
+\concept{StoX-functions}
 \concept{landings functions}

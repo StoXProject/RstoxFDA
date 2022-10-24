@@ -30,3 +30,22 @@ RECA require all covariate to be formatted as integers.
  landings$Metier5 <- landings$FishingActivityCategoryEuropeanLvl5
  getCovariateMap("Metier5", catchsamples, landings)
 }
+\seealso{
+Other Reca functions: 
+\code{\link{catchsamples}},
+\code{\link{convertRecaData}()},
+\code{\link{getLandings}()},
+\code{\link{landings}},
+\code{\link{makeAgeTracesRECA}()},
+\code{\link{makeResultTableRECA}()},
+\code{\link{plotAgeTraces}()},
+\code{\link{plotCatchAtAge}()},
+\code{\link{prepRECA}()},
+\code{\link{rEcaDataReport}()},
+\code{\link{recaDataExample}},
+\code{\link{recaPrediction}},
+\code{\link{runRECA}()},
+\code{\link{sanitizeRecaInput}()},
+\code{\link{tabulateFisheries}()}
+}
+\concept{Reca functions}

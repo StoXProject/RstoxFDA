@@ -51,11 +51,13 @@ Other spatial coding functions:
 \code{\link{SetAreaPositionsBiotic}()},
 \code{\link{appendAreaCode}()},
 \code{\link{appendPosition}()},
+\code{\link{areaCodeConversionTable}()},
 \code{\link{mergePolygons}()},
+\code{\link{plotAreaComparison}()},
 \code{\link{plotArea}()},
 \code{\link{writeSpDataFrameAsWKT}()}
 
-Other Reca functions: 
+Other StoX-Reca functions: 
 \code{\link{DefineAgeErrorMatrix}()},
 \code{\link{DefineStockSplittingParameters}()},
 \code{\link{ParameterizeRecaModels}()},
@@ -69,6 +71,48 @@ Other Reca functions:
 \code{\link{ReportRecaParameterStatistics}()},
 \code{\link{ReportRecaWeightAtAge}()},
 \code{\link{RunRecaModels}()}
+
+Other StoX-functions: 
+\code{\link{AddAreaPositionStoxLanding}()},
+\code{\link{AddGearGroupStoxBiotic}()},
+\code{\link{AddGearGroupStoxLanding}()},
+\code{\link{AddPeriodStoxBiotic}()},
+\code{\link{AddPeriodStoxLanding}()},
+\code{\link{AddStratumStoxBiotic}()},
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{DefineAgeErrorMatrix}()},
+\code{\link{DefineAreaPosition}()},
+\code{\link{DefineCarNeighbours}()},
+\code{\link{DefineLengthConversionParameters}()},
+\code{\link{DefinePeriod}()},
+\code{\link{DefineStockSplittingParameters}()},
+\code{\link{DefineWeightConversionFactor}()},
+\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
+\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
+\code{\link{ListBioticDifference}()},
+\code{\link{LoadFdaStratumPolygon}()},
+\code{\link{ParameterizeRecaModels}()},
+\code{\link{PrepareRecaEstimate}()},
+\code{\link{ReadLandingFDA}()},
+\code{\link{ReportFdaLandings}()},
+\code{\link{ReportFdaSOP}()},
+\code{\link{ReportFdaSampling}()},
+\code{\link{ReportParameterConvergence}()},
+\code{\link{ReportRecaCatchAtAgeCovariance}()},
+\code{\link{ReportRecaCatchAtAge}()},
+\code{\link{ReportRecaCatchAtLengthAndAge}()},
+\code{\link{ReportRecaCatchAtLength}()},
+\code{\link{ReportRecaCatchStatistics}()},
+\code{\link{ReportRecaLengthAtAge}()},
+\code{\link{ReportRecaParameterStatistics}()},
+\code{\link{ReportRecaWeightAtAge}()},
+\code{\link{RunRecaModels}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()}
 }
-\concept{Reca functions}
+\concept{StoX-Reca functions}
+\concept{StoX-functions}
 \concept{spatial coding functions}

@@ -1,0 +1,96 @@
+reference:
+
+- title: StoX-functions
+  desc: Functions that are available in the StoX user interface. These are otherwise identified by their names starting with a capital letter
+- contents:
+  - has_concept("StoX-functions")
+
+- title: Spatial coding functions
+  desc: Functions for encoding and re-coding spatial information
+- contents:
+  - has_concept("spatial coding functions")
+
+- title: Spatial coding systems
+  desc: Polygons defining area coding systems
+- contents:
+  - has_concept("area code polygons")
+
+- title: Temporal coding functions
+  desc: Functions for encoding and re-coding temporal information
+- contents:
+  - has_concept("temporal coding functions")
+
+- title: Gear coding functions
+  desc: Functions and example data for encoding and re-coding gear information
+- contents:
+  - has_concept("gear coding functions")
+
+- title: Parameter conversion functions
+  desc: Functions and data for converting parameters
+- contents:
+  - has_concept("parameter conversion functions")
+
+- title: Landing functions
+  desc: Functions and example data for handling landings data (sales-notes etc.)
+- contents:
+  - has_concept("landings functions")
+  
+- title: Logbook functions
+  desc: Functions and example data for handling logbook data from fisheries
+- contents:
+  - has_concept("logbook functions")
+
+- title: IO functions
+  desc: Functions for reading or writing data files, or converting data formats
+- contents:
+  - has_concept("IO functions")
+  
+- title: NMDbiotic functions
+  desc: Functions for Biotic-data in StoX that assumes NMDbiotic as data source
+- contents:
+  - has_concept("nmdbiotic functions")
+
+- title: Data QA functions
+  desc: Functions for quality checking data
+- contents:
+  - has_concept("data QA functions")
+
+- title: StoX-Reca functions
+  desc: StoX-functions preparing data for and running Reca
+- contents:
+  - has_concept("StoX-Reca functions")
+
+- title: Reca support functions
+  desc: Support functions and example data for adapting Reca to other workflows than StoX
+- contents:
+  - has_concept("Reca functions")
+
+  
+- title: Other functions and data
+  desc: RstoxFDA functions and data not mentioned elsewhere
+- contents:
+  - lacks_concepts(c("landings functions", 
+                     "IO functions", 
+                     "spatial coding functions",
+                     "temporal coding functions",
+                     "StoX-Reca functions",
+                     "Reca functions",
+                     "area code polygons",
+                     "parameter conversion functions",
+                     "nmdbiotic functions",
+                     "gear coding functions",
+                     "data QA functions",
+                     "StoX-functions",
+                     "Data types",
+                     "deprecated",
+                     "logbook functions"))
+                     
+- title: Data types
+  desc: Data types and functions for asserting the validity of data types
+- contents:
+  - has_concept("Data types")
+  
+- title: Deprecated functions
+  desc: Functions that are candidates for removal from RstoxData in future releases. Their help pages suggest alterntive functions to use in stead.
+- contents:
+  - has_concept("deprecated")

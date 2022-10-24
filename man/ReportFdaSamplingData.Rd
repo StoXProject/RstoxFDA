@@ -6,7 +6,8 @@
 \description{
 list with tow members:
  \describe{
-  \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FishereisSampling' stored in the column 'GroupingVariables'}
+  \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FisheriesSampling' stored in the column 'GroupingVariables'}
+  \item{SamplingVariables}{a \code{\link[data.table]{data.table}} with the variables used for partitioning samples in 'FisheriesSampling' stored in the column 'SamplingVariables'}
   \item{FisheriesSampling}{a \code{\link[data.table]{data.table}} described below.}
  }
  
@@ -14,12 +15,64 @@ list with tow members:
  The report is a \code{\link[data.table]{data.table}} with columns:
  \describe{
   \item{...}{A column for each of the provided Aggregation variables}
+  \item{...}{A column for each of the provided Sampling variables}
   \item{LandedRoundWeight}{Total landings in kg}
   \item{Catches}{Number of catches sampled}
   \item{Vessels}{Number of vessels sampled}
-  \item{WeightMeasurments}{Number of fished measured for weight}
-  \item{LengthMeasurments}{Number of fished measured for length}
+  \item{WeightMeasurements}{Number of fished measured for weight}
+  \item{LengthMeasurements}{Number of fished measured for length}
   \item{AgeReadings}{Number of fished with age determined}
   \item{WeightOfSampledCatches}{Total weight of the sampled catches}
  }
 }
+\seealso{
+Other Data types: 
+\code{\link{AgeErrorMatrix}},
+\code{\link{AreaPosition}},
+\code{\link{CarNeighbours}},
+\code{\link{KommunePolygons}},
+\code{\link{LandingData}},
+\code{\link{LandingsArchiveData}},
+\code{\link{LengthConversionTable}},
+\code{\link{LocodeTable}},
+\code{\link{LstLogbookData}},
+\code{\link{MetierTable}},
+\code{\link{ParameterConvergenceData}},
+\code{\link{ParameterizationSummaryData}},
+\code{\link{RecaCatchAtAge}},
+\code{\link{RecaData}},
+\code{\link{RecaParameterData}},
+\code{\link{RecaResult}},
+\code{\link{ReportFdaByAgeData}},
+\code{\link{ReportFdaCatchAtAgeCovarianceData}},
+\code{\link{ReportFdaCatchAtAgeData}},
+\code{\link{ReportFdaCatchAtLengthAndAgeData}},
+\code{\link{ReportFdaCatchAtLengthData}},
+\code{\link{ReportFdaLandingData}},
+\code{\link{ReportFdaLengthAtAgeData}},
+\code{\link{ReportFdaSopData}},
+\code{\link{ReportFdaSummaryData}},
+\code{\link{ReportFdaWeightAtAgeData}},
+\code{\link{StockSplittingParameters}},
+\code{\link{TemporalDefinition}},
+\code{\link{TripPartition}},
+\code{\link{WeightConversionTable}},
+\code{\link{is.AgeErrorMatrix}()},
+\code{\link{is.AreaPosition}()},
+\code{\link{is.CarNeighbours}()},
+\code{\link{is.LengthConversionTable}()},
+\code{\link{is.ParameterConvergenceData}()},
+\code{\link{is.ParameterizationSummaryData}()},
+\code{\link{is.RecaCatchAtAge}()},
+\code{\link{is.RecaData}()},
+\code{\link{is.RecaParameterData}()},
+\code{\link{is.RecaResult}()},
+\code{\link{is.ReportFdaByAgeData}()},
+\code{\link{is.ReportFdaSOP}()},
+\code{\link{is.ReportFdaSamplingData}()},
+\code{\link{is.StockSplittingParameters}()},
+\code{\link{is.TemporalDefinition}()},
+\code{\link{is.Translation}()},
+\code{\link{is.WeightConversionTable}()}
+}
+\concept{Data types}

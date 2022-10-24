@@ -7,13 +7,13 @@
 ReportRecaCatchStatistics(
   RecaCatchAtAge,
   IntervalWidth = numeric(),
-  DecimalOptions = FALSE,
+  UseDefaultDecimalOptions = TRUE,
   DecimalTotalNumber = integer(),
   DecimalTotalWeight = integer(),
   DecimalMeanAge = integer(),
   DecimalMeanWeight = integer(),
   DecimalMeanLength = integer(),
-  UnitOptions = FALSE,
+  UseDefaultUnitOptions = TRUE,
   UnitTotalNumber = RstoxData::getUnitOptions("cardinality", conversionRange = c(1,
     1e+12)),
   UnitTotalWeight = RstoxData::getUnitOptions("mass", conversionRange = c(1, 1e+12)),
@@ -26,7 +26,7 @@ ReportRecaCatchStatistics(
 
 \item{IntervalWidth}{The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.}
 
-\item{DecimalOptions}{logical determining whether the StoX user interface should show decimal options}
+\item{UseDefaultDecimalOptions}{logical determining whether to use default decimal options.}
 
 \item{DecimalTotalNumber}{integer specifying the number of decimals to report for 'TotalNumber', and the corresponding 'SD', 'Low' and 'High'. to 0}
 
@@ -38,7 +38,7 @@ ReportRecaCatchStatistics(
 
 \item{DecimalMeanLength}{integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'. Defaults to 2}
 
-\item{UnitOptions}{logical determining whether the StoX user interface should show unit options}
+\item{UseDefaultUnitOptions}{logical determining whether to use default unit options.}
 
 \item{UnitTotalNumber}{unit for total catch in numbers. Defaults to Mi (millions)}
 
@@ -74,7 +74,7 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length distributions
 \code{\link[RstoxFDA]{ReportRecaCatchAtLengthAndAge}} for reporting catch by age-group and length-group combinations.
 
-Other Reca functions: 
+Other StoX-Reca functions: 
 \code{\link{AddStratumStoxLanding}()},
 \code{\link{DefineAgeErrorMatrix}()},
 \code{\link{DefineStockSplittingParameters}()},
@@ -88,5 +88,47 @@ Other Reca functions:
 \code{\link{ReportRecaParameterStatistics}()},
 \code{\link{ReportRecaWeightAtAge}()},
 \code{\link{RunRecaModels}()}
+
+Other StoX-functions: 
+\code{\link{AddAreaPositionStoxLanding}()},
+\code{\link{AddGearGroupStoxBiotic}()},
+\code{\link{AddGearGroupStoxLanding}()},
+\code{\link{AddPeriodStoxBiotic}()},
+\code{\link{AddPeriodStoxLanding}()},
+\code{\link{AddStratumStoxBiotic}()},
+\code{\link{AddStratumStoxLanding}()},
+\code{\link{ConvertLengthBiotic}()},
+\code{\link{ConvertWeightBiotic}()},
+\code{\link{DefineAgeErrorMatrix}()},
+\code{\link{DefineAreaPosition}()},
+\code{\link{DefineCarNeighbours}()},
+\code{\link{DefineLengthConversionParameters}()},
+\code{\link{DefinePeriod}()},
+\code{\link{DefineStockSplittingParameters}()},
+\code{\link{DefineWeightConversionFactor}()},
+\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
+\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
+\code{\link{ListBioticDifference}()},
+\code{\link{LoadFdaStratumPolygon}()},
+\code{\link{ParameterizeRecaModels}()},
+\code{\link{PrepareRecaEstimate}()},
+\code{\link{ReadLandingFDA}()},
+\code{\link{ReportFdaLandings}()},
+\code{\link{ReportFdaSOP}()},
+\code{\link{ReportFdaSampling}()},
+\code{\link{ReportParameterConvergence}()},
+\code{\link{ReportRecaCatchAtAgeCovariance}()},
+\code{\link{ReportRecaCatchAtAge}()},
+\code{\link{ReportRecaCatchAtLengthAndAge}()},
+\code{\link{ReportRecaCatchAtLength}()},
+\code{\link{ReportRecaLengthAtAge}()},
+\code{\link{ReportRecaParameterStatistics}()},
+\code{\link{ReportRecaWeightAtAge}()},
+\code{\link{RunRecaModels}()},
+\code{\link{SetAreaPositionsBiotic}()},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{SetStartDateBiotic}()},
+\code{\link{SetTimeBiotic}()}
 }
-\concept{Reca functions}
+\concept{StoX-Reca functions}
+\concept{StoX-functions}

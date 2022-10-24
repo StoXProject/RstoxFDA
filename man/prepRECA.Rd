@@ -52,7 +52,7 @@ prepRECA(
 
 \item{neighbours}{list() specifying the neighbourhood-structure for the carEffect. neighbours[a] should provide a vector of neighbours to a. May be NULL of no carEffect is used.}
 
-\item{nFish}{data.table() specifying the number of fish in the part of the catch that each sample was taken from. Not always needed. See details.}
+\item{nFish}{data.table() with the columns 'sampleId' and 'count', specifying the number of fish in the part of the catch that each sample was taken from. Not always needed. See details.}
 
 \item{ageError}{matrix() specifying the probability of read age (rows), given true age (columns). Row and column names specify the ages. If NULL, a unit matrix is assumed (No error in age reading).}
 
@@ -159,6 +159,7 @@ The cell definition is specified by 'landings'.
    FUN=mean)
  nFish <- merge(totalWeights, meanWeights)
  nFish$count <- nFish$totalW / nFish$meanW
+ nFish <- nFish[,c("sampleId", "count")]
 
  #prepRECA (produce recaData as in data(recaDataExample))
  recaDataExample <- prepRECA(catchsamples,
@@ -168,3 +169,22 @@ The cell definition is specified by 'landings'.
    nFish = nFish,
    quarter = landings$Quarter)
 }
+\seealso{
+Other Reca functions: 
+\code{\link{catchsamples}},
+\code{\link{convertRecaData}()},
+\code{\link{getCovariateMap}()},
+\code{\link{getLandings}()},
+\code{\link{landings}},
+\code{\link{makeAgeTracesRECA}()},
+\code{\link{makeResultTableRECA}()},
+\code{\link{plotAgeTraces}()},
+\code{\link{plotCatchAtAge}()},
+\code{\link{rEcaDataReport}()},
+\code{\link{recaDataExample}},
+\code{\link{recaPrediction}},
+\code{\link{runRECA}()},
+\code{\link{sanitizeRecaInput}()},
+\code{\link{tabulateFisheries}()}
+}
+\concept{Reca functions}

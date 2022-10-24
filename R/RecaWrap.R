@@ -103,6 +103,7 @@ checkAllSampledCar <- function(landings, samples, fixedEffects, carEffect, neigh
 #'  catchsamples$Metier5 <- catchsamples$LEmetier5
 #'  landings$Metier5 <- landings$FishingActivityCategoryEuropeanLvl5
 #'  getCovariateMap("Metier5", catchsamples, landings)
+#' @family Reca functions
 #' @export
 getCovariateMap <- function(covariate, samples, landings){
 
@@ -218,11 +219,10 @@ getInfoMatrix <- function(samples, landings, fixedEffects, randomEffects, carEff
 #' Run before renaming columns
 #' @noRd
 addPartCount <- function(DataMatrix, nFish){
-
   # renumber sampleID to delprove convention (needed ?)
   partsamples <- stats::aggregate(list(nSampleId=DataMatrix$sampleId), by=list(catchId=DataMatrix$catchId), FUN=function(x){length(unique(x))})
   partsamples <- merge(partsamples, unique(DataMatrix[,c("sampleId", "catchId")]))
-
+  
   if (nrow(partsamples) == 0){
     DataMatrix$partcount <- NA
     DataMatrix$partnumber <- 1
@@ -238,7 +238,7 @@ addPartCount <- function(DataMatrix, nFish){
       return(DataMatrix)
     }
     if (!all(partsamples[partsamples$nSampleId > 1,]$sampleId %in% nFish$sampleId)){
-      stop(paste("Some catches are sampled several times, but corresponding sampleId not in nFish:", paste(partsamples$sampleId[!(partsamples$sampleId %in% nFish$catchId)], collapse=",")))
+      stop(paste("Some catches are sampled several times, but corresponding sampleId not in nFish:", paste(partsamples$sampleId[partsamples$nSampleId > 1 & !(partsamples$sampleId %in% nFish$sampleId)], collapse=",")))
     }
     nFish <- nFish[nFish$sampleId %in% DataMatrix$sampleId,]
     nFish$partcount <- as.integer(round(nFish$count))
@@ -445,6 +445,7 @@ getNeighbours <- function(neighbours, covariateMap){
 #'  landings$Metier5 <- landings$FishingActivityCategoryEuropeanLvl5
 #'  covMap <- getCovariateMap("Metier5", catchsamples, landings)
 #'  getLandings(landings, c("Metier5"), covMap, month=landings$Month)
+#' @family Reca functions
 #' @export
 getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NULL, quarter=NULL){
   
@@ -560,7 +561,7 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #' @param randomEffects character() vector specifying random effects. Corresponding columns must exists samples (may also exist in landings).
 #' @param carEffect character() specifying a random effect with conditional autoregressive coefficient. Corresponding columns must exists samples (may also exist in landings).
 #' @param neighbours list() specifying the neighbourhood-structure for the carEffect. neighbours[a] should provide a vector of neighbours to a. May be NULL of no carEffect is used.
-#' @param nFish data.table() specifying the number of fish in the part of the catch that each sample was taken from. Not always needed. See details.
+#' @param nFish data.table() with the columns 'sampleId' and 'count', specifying the number of fish in the part of the catch that each sample was taken from. Not always needed. See details.
 #' @param ageError matrix() specifying the probability of read age (rows), given true age (columns). Row and column names specify the ages. If NULL, a unit matrix is assumed (No error in age reading).
 #' @param minAge lowest age to include in model. If NULL, minimal age in samples is used. Age range must match any age error matrix provided (ageError)
 #' @param maxAge highest age to include in model. If NULL, maximal age in samples is used. Age range must match any age error matrix provided (ageError)
@@ -622,6 +623,7 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #'    FUN=mean)
 #'  nFish <- merge(totalWeights, meanWeights)
 #'  nFish$count <- nFish$totalW / nFish$meanW
+#'  nFish <- nFish[,c("sampleId", "count")]
 #'
 #'  #prepRECA (produce recaData as in data(recaDataExample))
 #'  recaDataExample <- prepRECA(catchsamples,
@@ -630,11 +632,16 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #'    NULL,
 #'    nFish = nFish,
 #'    quarter = landings$Quarter)
+#' @family Reca functions
 #' @export
 prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=NULL, neighbours=NULL, nFish=NULL, ageError=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, testMax=1000, date=NULL, month=NULL, quarter=NULL, hatchDay=1, interaction=NULL){
   samples <- data.table::as.data.table(samples)
   landings <- data.table::as.data.table(landings)
-
+  
+  if (!is.null(nFish)){
+    nFish <- data.table::as.data.table(nFish)  
+  }
+  
   if (!isGiven(neighbours) & isGiven(carEffect)){
     stop("carEffect specified, but argument 'neighbours' is not provided.")
   }
@@ -739,7 +746,10 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
 
   if (!is.null(nFish)){
     if (!(all(c("sampleId", "count") %in% names(nFish)))){
-      stop("Columns 'sampleId' and 'count' are mandatory for parameter nFish.")
+      stop("The parameter nFish must have exactly two columns: 'sampleId' and 'count'")
+    }
+    if (ncol(nFish) != 2){
+      stop("The parameter nFish must have exactly two columns: 'sampleId' and 'count'")
     }
     if (any(is.na(nFish))){
       stop("nFish contains NAs.") #Note that nFish need only be provided for samples (sampleId) where there is more than one sample for a catch (catchId)
@@ -859,14 +869,17 @@ prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=N
   ret$GlobalParameters <- GlobalParameters
   ret$CovariateMaps <- covariateMaps
 
-  checkEcaObj(ret)
+  checkEcaObj(ret, stage="dataprep")
   
   return(ret)
 }
 
 #' Run data checks and converts data.table to data.frame
 #' @noRd
-checkEcaObj <- function(RECAobj){
+checkEcaObj <- function(RECAobj, stage=c("dataprep", "parameterize", "predict")){
+  
+  stage <- match.arg(stage, stage)
+  
   obj <- RECAobj
   obj$AgeLength$DataMatrix <- as.data.frame(obj$AgeLength$DataMatrix)
   obj$AgeLength$CovariateMatrix <- as.data.frame(obj$AgeLength$CovariateMatrix)
@@ -881,7 +894,7 @@ checkEcaObj <- function(RECAobj){
   checkCovariateConsistency(obj$WeightLength, obj$Landings$WeightLengthCov)
   checkLandings(obj$Landings)
 
-  checkGlobalParameters(obj$GlobalParameters, obj$AgeLength, obj$WeightLength)
+  checkGlobalParameters(obj$GlobalParameters, obj$AgeLength, obj$WeightLength, stage=stage)
 
   return(obj)
 }
@@ -919,6 +932,7 @@ checkEcaObj <- function(RECAobj){
 #'
 #'  # run (produce recaPrediction as in data(recaPrediction))
 #'  \dontrun{recaPrediction <- runRECA(recaDataExample, 500, 5000)$prediction}
+#' @family Reca functions
 #' @export
 runRECA <- function(RecaObj, nSamples, burnin, lgamodel="log-linear", fitfile="fit", predictfile="pred", resultdir=NULL, thin=10, delta.age=0.001, seed=NULL, caa.burnin=0){
 
@@ -960,7 +974,7 @@ runRECA <- function(RecaObj, nSamples, burnin, lgamodel="log-linear", fitfile="f
       GlobalParameters$caa.burnin <- caa.burnin
 
       RecaObj$GlobalParameters <- GlobalParameters
-      RecaObj <- checkEcaObj(RecaObj)
+      RecaObj <- checkEcaObj(RecaObj, stage="parameterize")
 
       fit <- Reca::eca.estimate(RecaObj$AgeLength, RecaObj$WeightLength, RecaObj$Landings, RecaObj$GlobalParameters)
       pred <- Reca::eca.predict(RecaObj$AgeLength, RecaObj$WeightLength, RecaObj$Landings, RecaObj$GlobalParameters)
@@ -1038,6 +1052,7 @@ runRECA <- function(RecaObj, nSamples, burnin, lgamodel="log-linear", fitfile="f
 #'  landings$Metier5 <- landings$FishingActivityCategoryEuropeanLvl5
 #'
 #'  rEcaDataReport(catchsamples, landings, c("Metier5", "VDencrCode"))
+#' @family Reca functions
 #' @export
 rEcaDataReport <- function(samples, landings, covariates){
   # check mandatory columns

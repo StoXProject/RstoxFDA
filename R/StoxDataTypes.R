@@ -16,6 +16,228 @@ is.Date <- function(date){
   return(FALSE)
 }
 
+
+#' Trip Partition
+#'
+#' Partitioning of catch from a trip.
+#'
+#' @details
+#' list with two members 'fractions' and 'groupDefinition'
+#'
+#' 'fractions' is a \code{\link[data.table]{data.table}} with columns:
+#' \describe{
+#'  \item{tripid}{trip identifier}
+#'  \item{species}{species identifier}
+#'  \item{groupid}{identifies the group the fraction is provided for. Groups are further specified in 'groupDefinition'}
+#'  \item{fraction}{fraction of the total catch of species in the given group}
+#' }
+#'
+#' 'groupDefinition' is a \code{\link[data.table]{data.table}} with columns:
+#' \describe{
+#'  \item{groupid}{identifies the group the defintion is provided for.}
+#'  \item{...}{one or more custom columns definint the group}
+#' }
+#'
+#' @name TripPartition
+#' @family Data types
+#'
+NULL
+
+#' Metier table
+#'
+#' Table (\code{\link[data.table]{data.table}}) defining metiers.
+#'
+#' Fishing activity metiers are approximate decompositions of fleets commonly used in Europe.
+#' This table defines an approximate definition of metiers by a custom gear code.
+#'
+#' Metiers are used in EU-regulations for EU-member states, and are therefore often required by ICES data formats
+#' Metiers are formal strings encoding decomposition an idealized fleet or set of trips, where target species and gear are clearly and unambigiously identified.
+#' The metier system recognize that these parameters are not always clearly and unamibigiously identified to the desired resolution, and allows for grouping and omission of some parameters, and for coding that information is missing.
+#' This makes the metier system very flexible, but also provides poor standardization and ICES databases and data-calls may provide code-lists of allowed metiers, sometimes with different metiers being requested for different areas.
+#' In effect metier annotations cannot be completely standardized, but must to be configurable through conversion tables like this. Often the annotation has to be approximate.
+#'
+#' The metier system is spesified by the EU - Data Collection Framework: \url{https://datacollection.jrc.ec.europa.eu/wordef/fishing-activity-metier},
+#' briefly a metier is fully specified by a string: <gear>_<target species>_<gear mesh size>_<selectivity device>_<selectivity device mesh size>_<vessel length class>,
+#' with coding systems and grouping conventions defined for each of the variables.
+#' Common trunctations of these strings are also used. E.g.:
+#' Metier level 6 (no truncation): <gear>_<target species>_<gear mesh size>_<selectivity device>_<selectivity device mesh size>
+#' Metier level 5 : <gear>_<target species>
+#' Metier level 4 : <gear>
+#' The term "metier" is also used for some derived systems, for instance some data-calls requests that a code for intended usage of catch (industrial vs human consumption) be appended to the metiers where gear and target species is missing.
+#'
+#' For example, in intercatch, the code OTB_DEF_>=120_0_0_all identifies bottom trawl with otter boards (OTB) targeting demershal fish (DEF), with mesh size larger than or equal to 120 mm, no selectivity device (0_0) and all vessel size (all)
+#'
+#' @details
+#'  \describe{
+#'   \item{metier}{character() metier-string, e.g.: OTB_DEF_>=120_0_0_all}
+#'   \item{gearcode}{character() encoding gear}
+#'   \item{target}{character(), optional, target species}
+#'   \item{meshedGear}{logical(), optional, whether the gear is a meshed gear. Should be provided for all or none gears.}
+#'   \item{lowerMeshSize}{integer(), optional, the lower mesh size to include in this metier. Should be provided for all rows where meshedGear is True, and not for other rows.}
+#'   \item{upperMeshSize}{integer(), optional, the upper mesh size to include in this metier. Should be provided for all rows where meshedGear is True, and not for other rows.}
+#'   \item{selectivityDevice}{character(), optional, encoding selectivity device.}
+#'   \item{meshedSelectivityDevice}{logical(), optional, encoding selectivity device. Should be provided for all or none selectivity devices.}
+#'   \item{selDevLowerMeshSize}{integer(), optional, the lower mesh size of selectivity device to include in this metier. Should be provided for all rows where meshedSelectivityDevice is True, and not for other rows.}
+#'   \item{selDevUpperMeshSize}{integer(), optional, the upper mesh size of selectivity device to include in this metier. Should be provided for all rows where meshedSelectivityDevice is True, and not for other rows.}
+#'  }
+#'
+#'  The metier-defining parameters are written in camelCase, parameters that may be used to distinguish applicability of different metierdefinitions are writter in UPPER case.
+#'
+#' @name MetierTable
+#' @family Data types
+#'
+NULL
+
+#' Check if table is correctly formatted metier table
+#' @param table \code{\link[RstoxFDA]{MetierTable}}
+#' @param throwError if set errors are raised, if not, validity will be returned as T/F
+#' @return validity
+#' @family Data types
+#' @noRd
+is.MetierTable <- function(table, throwError=F){
+  
+  if (!data.table::is.data.table(table)){
+    if (throwError){
+      stop("A metiertable must be a data.table")
+    }
+    return(FALSE)
+  }
+  if (!all(c("metier", "gearcode", "target", "meshedGear", "lowerMeshSize", "upperMeshSize", "selectivityDevice", "meshedSelectivityDevice", "selDevLowerMeshSize", "selDevUpperMeshSize") %in% names(table))){
+    if (throwError){
+      stop("Metiertable does not have the required columns")
+    }
+    return(FALSE)
+  }
+  if (!is.character(table$metier)){
+    if (throwError){
+      stop("The column 'metier' must be a character")
+    }
+    return(FALSE)
+  }
+  if (!is.character(table$gearcode)){
+    if (throwError){
+      stop("The column 'gearcode' must be a character")
+    }
+    return(FALSE)
+  }
+  if (!is.logical(table$meshedGear)){
+    if (throwError){
+      stop("The column 'meshedGear' must be a logical")
+    }
+    return(FALSE)
+  }
+  if (!is.numeric(table$lowerMeshSize)){
+    if (throwError){
+      stop("The column 'lowerMeshSize' must be an integer")
+    }
+  }
+  if (!is.numeric(table$upperMeshSize)){
+    if (throwError){
+      stop("The column 'upperMeshSize' must be an integer")
+    }
+    return(FALSE)
+  }
+  if (!is.character(table$selectivityDevice)){
+    if (throwError){
+      stop("The column 'selectivityDevice' must be a character")
+    }
+    return(FALSE)
+  }
+  if (!is.logical(table$meshedSelectivityDevice)){
+    if (throwError){
+      stop("The column 'meshedSelectivityDevice' must be a logical")
+    }
+    return(FALSE)
+  }
+  if (!is.numeric(table$selDevLowerMeshSize)){
+    if (throwError){
+      stop("The column 'selDevLowerMeshSize' must be an integer")
+    }
+  }
+  if (!is.numeric(table$selDevUpperMeshSize)){
+    if (throwError){
+      stop("The column 'selDevUpperMeshSize' must be an integer")
+    }
+    return(FALSE)
+  }
+  
+  meshed <- table$meshedGear[!is.na(table$gearcode)]
+  if (any(is.na(meshed)) & !all(is.na(meshed))){
+    if (throwError){
+      stop("The column 'meshedGear' has a value for some gears, but not all")
+    }
+    return(FALSE)
+  }
+  
+  upperMesh <- table$upperMeshSize[!is.na(table$meshedGear) & table$meshedGear]
+  if (any(is.na(upperMesh))){
+    if (throwError){
+      stop("The column 'upperMeshSize' is not provided for all meshed gears (where meshedGear is True)")
+    }
+    return(FALSE)
+  }
+  lowerMesh <- table$lowerMeshSize[!is.na(table$meshedGear) & table$meshedGear]
+  if (any(is.na(lowerMesh))){
+    if (throwError){
+      stop("The column 'lowerMeshSize' is not provided for all meshed gears (where meshedGear is True)")
+    }
+    return(FALSE)
+  }
+  
+  if (any((!is.na(table$lowerMeshSize) | !is.na(table$upperMeshSize)) & (is.na(table$meshedGear) | !table$meshedGear))){
+    if (throwError){
+      stop("Mesh sizes provided for gears that are not meshed (where meshedGear is missing or False)")
+    }
+    return(FALSE)
+  }
+  
+  meshedSel <- table$meshedSelectivityDevice[!is.na(table$gearcode) & !is.na(table$selectivityDevice)]
+  if (any(is.na(meshedSel)) & !all(is.na(meshedSel))){
+    if (throwError){
+      stop("The column 'meshedSelectivityDevice' has a value for some gears, but not all")
+    }
+    return(FALSE)
+  }
+  
+  if (any((!is.na(table$lowerMeshSize) | !is.na(table$upperMeshSize)) & is.na(table$gear))){
+    if (throwError){
+      stop("Mesh sizes provided for gear where 'gear' is not given")
+    }
+    return(FALSE)
+  }
+  
+  upperMeshSD <- table$selDevUpperMeshSize[!is.na(table$meshedSelectivityDevice) & table$meshedSelectivityDevice]
+  if (any(is.na(upperMeshSD))){
+    if (throwError){
+      stop("The column 'selDevUpperMeshSize' is not provided for all meshed selectivty devices gears (where meshedSelectivityDevice is True)")
+    }
+    return(FALSE)
+  }
+  lowerMeshSD <- table$selDevLowerMeshSize[!is.na(table$meshedSelectivityDevice) & table$meshedSelectivityDevice]
+  if (any(is.na(lowerMeshSD))){
+    if (throwError){
+      stop("The column 'selDevUpperMeshSize' is not provided for all meshed selectivty devices gears (where meshedSelectivityDevice is True)")
+    }
+    return(FALSE)
+  }
+  
+  if (any((!is.na(table$selDevLowerMeshSize) | !is.na(table$selDevUpperMeshSize)) & (is.na(table$meshedSelectivityDevice) | !table$meshedSelectivityDevice))){
+    if (throwError){
+      stop("Mesh sizes provided for selectivity devices that are not meshed (where meshedSelectivityDevice is missing or False)")
+    }
+    return(FALSE)
+  }
+  
+  if (any((!is.na(table$selDevLowerMeshSize) | !is.na(table$selDevUpperMeshSize)) & is.na(table$selectivityDevice))){
+    if (throwError){
+      stop("Mesh sizes provided for selectivity devices where 'selectivityDevice' is not given")
+    }
+    return(FALSE)
+  }
+  
+  return(TRUE)
+}
+
 #' Check if input conforms to StoxBioticData.
 #' Should perhaps be moved to RstoxData together with is.StoxLandingData
 #' @noRd
@@ -69,6 +291,49 @@ is.StoxBioticData <- function(StoxBioticData, raiseErrors=F){
   return(TRUE)
 }
 
+#' LOCODE table (LocodeTable)
+#' 
+#' @description 
+#'  Table of United Nations Codes for Trade and Transport Locations  (UN/LOCODE)
+#'  
+#'  \describe{
+#'   \item{Country}{ISO 3166 alpha-2 Country Code for the country in which the location is placed.}
+#'   \item{Location}{3-character code identifying the location within country}
+#'   \item{NameWoDiacritics}{Name of location without diacritic signs.}
+#'   \item{Subdivision}{ISO 1-3 character alphabetic and/or numeric code for the administrative division of the country concerned (the latter part of the complete ISO 3166-2 code element (after the hyphen).)}
+#'   \item{Status}{code for status of the code. E.g. Codes starting with A are various official approvals.}
+#'   \item{Function}{string with codes classifying the function of the location. If this contains 1, the location has a seaport.}
+#'   \item{Coordinates}{latitude and longitude in degrees and minutes.}
+#'   \item{Remarks}{general remark about location or change in coding}
+#'   \item{latitude}{latitude in decimal degrees}
+#'   \item{longitude}{longitude in decimal degrees}
+#'  }
+#' 
+#' 
+#' @name LocodeTable
+#' @family Data types
+#' 
+NULL
+
+#' Kommune polygons
+#' 
+#' @description 
+#'  \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+#'  
+#'  Polygons are defined in WGS84 coordinates (unprojected).
+#' 
+#'  The data contains the following columns with rows for each area:
+#'   \describe{
+#'    \item{id}{Offical code for the muncipality (kommunenummer)}
+#'    \item{name}{Official name for the muncipality}
+#'    \item{StratumName}{Equal to id}
+#'   }
+#'  
+#' @name KommunePolygons
+#' @family Data types
+#' 
+NULL
+
 #' Landings archive (LandingsArchiveData)
 #' 
 #' @description 
@@ -77,19 +342,21 @@ is.StoxBioticData <- function(StoxBioticData, raiseErrors=F){
 #'  docs/documentation_landingsdata_archive_norwegian.csv
 #'  docs/selected_code_lists_landingsdata_archive_norwegian.xlsx
 #'  docs/supplementary_documentation_landingsdata_archive_norwegian.csv
+#'  
+#'  Note that 'AAR' and 'AAR2' denotes the year of catch, which may differ from the year of landing. The convention has been adopted to use 13 for 'LEVMND' (month of landing), when catch has been landed in January the year after catch.
 #'  \describe{
 #'   \item{AAR}{integer. Two last digits of year of catch}
 #'   \item{AAR2}{integer. Year of catch (4 digits)}
 #'   \item{FARTLAND}{character. Code for vessel flag (NOR for Norwegian, UTL for non-Norwegian)}
 #'   \item{LEVAAR}{integer. Two last digits of year of landing)}
-#'   \item{LEVMND}{integer. Month of landing (1=January, 12=December))}
+#'   \item{LEVMND}{integer. Month of landing (1=January, 12=December, 13=January following year)). Values larger than 13 are likely errors.}
 #'   \item{KYST}{integer. Code for whether the catch was caught within the coastal region (12 nautical miles from the coast). Code 0 denotes oceanic catch, code 8 and 9 denotes coastal catch.)}
 #'   \item{HOMR}{character. Main area of catch. As identified by the column 'StratumName' in \code{\link[RstoxFDA]{mainareaFdir2017}}), except that leading zeroes are not used for the areas 0-9.}
 #'   \item{LOK}{character. Location of catch. As identified by the column 'Lokasjon' in \code{\link[RstoxFDA]{locationsFdir2017}}), together with Main area (the column HAVOMR), except neither use leading zeroes.}
 #'   \item{REDS}{character. Gear code as defined by the standard NS9400. See code lists.}
-#'   \item{LEVHERRD}{character. Code for the muncipality (kommune) the catch was landed. Not using leading zeroes}
-#'   \item{LEVHERRD2}{character. Code for the muncipality (kommune) the catch was landed. Using leading zeroes}
-#'   \item{LEVFYLKE}{character. Code for the muncipality (fylke) the catch was landed. Using leading zeroes}
+#'   \item{LEVHERRD}{character. Common official code for the muncipality (kommune) the catch was landed. Not using leading zeroes}
+#'   \item{LEVHERRD2}{character. Common official code for the muncipality (kommune) the catch was landed. Using leading zeroes}
+#'   \item{LEVFYLKE}{character. Common official code for the muncipality (fylke) the catch was landed. Same as the two leading digits in LEVHERRD2. Using leading zeroes}
 #'   \item{FISK}{character. Code for the species landed}
 #'   \item{FISK_NAVN}{character. Norwegian name of the species landed.}
 #'   \item{BIPROD}{character. Code for the product landed (0 codes for main-product, 1-8 codes for bi-products.)}
@@ -100,10 +367,11 @@ is.StoxBioticData <- function(StoxBioticData, raiseErrors=F){
 #' 
 #' 
 #' @name LandingsArchiveData
+#' @family Data types
 #' 
 NULL
 
-#' Landings archive (LandingsArchiveData)
+#' Logbooks (LstLogbookData)
 #' 
 #' @description 
 #'  Logbooks read from the lst format delivered by Directorate of Fisheries (FDIR).
@@ -146,6 +414,7 @@ NULL
 #' 
 #' 
 #' @name LstLogbookData
+#' @family Data types
 #' 
 NULL
 
@@ -171,6 +440,7 @@ NULL
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaByAgeData
+#' @family Data types
 #' 
 NULL
 
@@ -198,6 +468,7 @@ NULL
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaSummaryData
+#' @family Data types
 NULL
 
 #' Fisheries dependent Catch At Age Report (ReportFdaCatchAtAgeData)
@@ -215,6 +486,7 @@ NULL
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaCatchAtAgeData
+#' @family Data types
 #' 
 NULL
 
@@ -243,6 +515,7 @@ NULL
 #' 
 #' 
 #' @name ReportFdaCatchAtAgeCovarianceData
+#' @family Data types
 #' 
 NULL
 
@@ -262,6 +535,7 @@ NULL
 #' 
 #' 
 #' @name ReportFdaCatchAtLengthData
+#' @family Data types
 #' 
 NULL
 
@@ -280,6 +554,7 @@ NULL
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaCatchAtLengthAndAgeData
+#' @family Data types
 #' 
 NULL
 
@@ -302,6 +577,7 @@ NULL
 #'  and does not characterize the length distribution of fish.
 #' 
 #' @name ReportFdaLengthAtAgeData
+#' @family Data types
 #' 
 NULL
 
@@ -324,6 +600,7 @@ NULL
 #'  and does not characterize the weight distribution of fish.
 #' 
 #' @name ReportFdaWeightAtAgeData
+#' @family Data types
 #' 
 NULL
 
@@ -332,6 +609,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
 #' @param ReportFdaByAgeData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
+#' @family Data types
 #' @export
 is.ReportFdaByAgeData <- function(ReportFdaByAgeData){
   if (!is.list(ReportFdaByAgeData)){
@@ -379,6 +657,7 @@ is.ReportFdaByAgeData <- function(ReportFdaByAgeData){
 #'  The unit for RelativeDifference is configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaSopData
+#' @family Data types
 #' 
 NULL
 
@@ -387,6 +666,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSOP}}
 #' @param ReportFdaSOP argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSOP}}
+#' @family Data types
 #' @export
 is.ReportFdaSOP <- function(ReportFdaSOP){
   
@@ -441,7 +721,7 @@ is.ReportFdaSOP <- function(ReportFdaSOP){
 #'  for creating ParameterizationSummaryData from Reca-simulations.
 #' 
 #' @name ParameterizationSummaryData
-#' 
+#' @family Data types
 NULL
 
 #' Checks if argument is \code{\link[RstoxFDA]{ParameterizationSummaryData}}
@@ -449,6 +729,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ParameterizationSummaryData}}
 #' @param ParameterizationSummaryData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ParameterizationSummaryData}}
+#' @family Data types
 #' @export
 is.ParameterizationSummaryData <- function(ParameterizationSummaryData){
   
@@ -504,6 +785,7 @@ is.ParameterizationSummaryData <- function(ParameterizationSummaryData){
 #'  for creating ParameterConvergenceData.
 #' 
 #' @name ParameterConvergenceData
+#' @family Data types
 #' 
 NULL
 
@@ -512,6 +794,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ParameterConvergenceData}}
 #' @param ParameterConvergenceData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ParameterConvergenceData}}
+#' @family Data types
 #' @export
 is.ParameterConvergenceData <- function(ParameterConvergenceData){
   
@@ -537,6 +820,7 @@ is.ParameterConvergenceData <- function(ParameterConvergenceData){
 #'  Checks if argument conforms to specification for \code{\link[RstoxData]{Translation}}
 #' @param Translation argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxData]{Translation}}
+#' @family Data types
 #' @export
 is.Translation <- function(Translation){
   if (!data.table::is.data.table(Translation)){
@@ -572,6 +856,7 @@ is.Translation <- function(Translation){
 #'  }
 #'  
 #' @name LengthConversionTable
+#' @family Data types
 #' 
 NULL
 
@@ -580,6 +865,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{LengthConversionTable}}
 #' @param LengthConversionTable argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{LengthConversionTable}}
+#' @family Data types
 #' @export
 is.LengthConversionTable <- function(LengthConversionTable){
   if (!data.table::is.data.table(LengthConversionTable)){
@@ -607,6 +893,7 @@ is.LengthConversionTable <- function(LengthConversionTable){
 #'  NA is allowed for 'WeightFactor', which will result in NA for weights after conversion
 #'  
 #' @name WeightConversionTable
+#' @family Data types
 #' 
 NULL
 
@@ -615,6 +902,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{WeightConversionTable}}
 #' @param WeightConversionTable argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{WeightConversionTable}}
+#' @family Data types
 #' @export
 is.WeightConversionTable <- function(WeightConversionTable){
   if (!data.table::is.data.table(WeightConversionTable)){
@@ -632,7 +920,8 @@ is.WeightConversionTable <- function(WeightConversionTable){
 #' @description 
 #'  list with tow members:
 #'  \describe{
-#'   \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FishereisSampling' stored in the column 'GroupingVariables'}
+#'   \item{GroupingVariables}{a \code{\link[data.table]{data.table}} with the variables used for aggregation in 'FisheriesSampling' stored in the column 'GroupingVariables'}
+#'   \item{SamplingVariables}{a \code{\link[data.table]{data.table}} with the variables used for partitioning samples in 'FisheriesSampling' stored in the column 'SamplingVariables'}
 #'   \item{FisheriesSampling}{a \code{\link[data.table]{data.table}} described below.}
 #'  }
 #'  
@@ -640,16 +929,18 @@ is.WeightConversionTable <- function(WeightConversionTable){
 #'  The report is a \code{\link[data.table]{data.table}} with columns:
 #'  \describe{
 #'   \item{...}{A column for each of the provided Aggregation variables}
+#'   \item{...}{A column for each of the provided Sampling variables}
 #'   \item{LandedRoundWeight}{Total landings in kg}
 #'   \item{Catches}{Number of catches sampled}
 #'   \item{Vessels}{Number of vessels sampled}
-#'   \item{WeightMeasurments}{Number of fished measured for weight}
-#'   \item{LengthMeasurments}{Number of fished measured for length}
+#'   \item{WeightMeasurements}{Number of fished measured for weight}
+#'   \item{LengthMeasurements}{Number of fished measured for length}
 #'   \item{AgeReadings}{Number of fished with age determined}
 #'   \item{WeightOfSampledCatches}{Total weight of the sampled catches}
 #'  }
 #' 
 #' @name ReportFdaSamplingData
+#' @family Data types
 #' 
 NULL
 
@@ -658,19 +949,20 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @param ReportFdaSamplingData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
+#' @family Data types
 #' @export
 is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
   if (!is.list(ReportFdaSamplingData)){
     return(FALSE)
   }
-  if (!all(c("GroupingVariables", "FisheriesSampling") %in% names(ReportFdaSamplingData))){
+  if (!all(c("GroupingVariables", "SamplingVariables", "FisheriesSampling") %in% names(ReportFdaSamplingData))){
     return(FALSE)
   }
   if (!data.table::is.data.table(ReportFdaSamplingData$FisheriesSampling)){
     return(FALSE)
   }
   
-  if (!all(c("LandedRoundWeight", "Catches", "Vessels", "WeightMeasurments", "LengthMeasurments", "AgeReadings", "WeightOfSampledCatches") %in% names(ReportFdaSamplingData$FisheriesSampling))){
+  if (!all(c("LandedRoundWeight", "Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches") %in% names(ReportFdaSamplingData$FisheriesSampling))){
     return(FALSE)
   }
   
@@ -695,6 +987,7 @@ is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
 #'  }
 #' 
 #' @name ReportFdaLandingData
+#' @family Data types
 #' 
 NULL
 
@@ -703,17 +996,20 @@ NULL
 #' Data and some data parameters prepared for running
 #' \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}
 #' via \code{\link[RstoxFDA]{RunRecaEstimate}}.
+#' 
+#' A list with five members:
 #'
 #' @details
 #' \describe{
-#'  \item{AgeLength}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}}
-#'  \item{WeightLength}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}}
-#'  \item{Landings}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}}
-#'  \item{GlobalParameters}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. see details}
-#'  \item{CovariateMaps}{Mapping of values for each covariate in landings and samples (including non-configurable catchId) to integer value used in R-ECA.}
+#'  \item{AgeLength}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. List of \code{\link[data.table]{data.table}}}
+#'  \item{WeightLength}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. List of \code{\link[data.table]{data.table}}}
+#'  \item{Landings}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. List of \code{\link[data.table]{data.table}}}
+#'  \item{GlobalParameters}{input needed for \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. see details. List of \code{\link[data.table]{data.table}}}
+#'  \item{CovariateMaps}{Mapping of values for each covariate in landings and samples (including non-configurable catchId) to integer value used in R-ECA. List of \code{\link[data.table]{data.table}}}
 #' }
 #'
 #' @name RecaData
+#' @family Data types
 #'
 NULL
 
@@ -722,6 +1018,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaData}}
 #' @param RecaData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaData}}
+#' @family Data types
 #' @export
 is.RecaData <- function(RecaData){
   if (!is.list(RecaData)){
@@ -808,6 +1105,7 @@ is.RecaData <- function(RecaData){
 #' }
 #'
 #' @name RecaParameterData
+#' @family Data types
 #'
 NULL
 
@@ -816,6 +1114,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
 #' @param RecaParameterData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
+#' @family Data types
 #' @export
 is.RecaParameterData <- function(RecaParameterData){
   
@@ -916,6 +1215,7 @@ is.RecaParameterData <- function(RecaParameterData){
 #' }
 #'
 #' @name RecaCatchAtAge
+#' @family Data types
 #'
 NULL
 
@@ -924,6 +1224,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
 #' @param RecaCatchAtAge argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
+#' @family Data types
 #' @export
 is.RecaCatchAtAge <- function(RecaCatchAtAge){
   if (!is.list(RecaCatchAtAge)){
@@ -970,6 +1271,7 @@ is.RecaCatchAtAge <- function(RecaCatchAtAge){
 #' }
 #'
 #' @name RecaResult
+#' @family Data types
 #'
 NULL
 
@@ -998,6 +1300,7 @@ is.RecaPrediction <- function(prediction){
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}
 #' @param RecaResult argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}
+#' @family Data types
 #' @export
 is.RecaResult <- function(RecaResult){
   if (!is.list(RecaResult)){
@@ -1034,6 +1337,7 @@ is.RecaResult <- function(RecaResult){
 #'  it is taken to be included in the last category of the preceding year.
 #'
 #' @name TemporalDefinition
+#' @family Data types
 #'
 NULL
 
@@ -1042,6 +1346,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
 #' @param TemporalDefinition argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
+#' @family Data types
 #' @export
 is.TemporalDefinition <- function(TemporalDefinition){
   if (!data.table::is.data.table(TemporalDefinition)){
@@ -1072,6 +1377,7 @@ is.TemporalDefinition <- function(TemporalDefinition){
 #'  If location is provided, the case for missing location is also encoded.
 #'
 #' @name AreaPosition
+#' @family Data types
 #'
 NULL
 
@@ -1080,6 +1386,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AreaPosition}}
 #' @param AreaPosition argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{AreaPosition}}
+#' @family Data types
 #' @export
 is.AreaPosition <- function(AreaPosition){
   if (!data.table::is.data.table(AreaPosition)){
@@ -1106,6 +1413,7 @@ is.AreaPosition <- function(AreaPosition){
 #'  The table is symmetric, so that if b is a neighbour of a. a is also a neighbour of b.
 #'
 #' @name CarNeighbours
+#' @family Data types
 #'
 NULL
 
@@ -1116,6 +1424,7 @@ NULL
 #'  See \code{\link[RstoxData]{LandingData}}
 #'
 #' @name LandingData
+#' @family Data types
 #'
 NULL
 
@@ -1124,6 +1433,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
 #' @param CarNeighbours argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
+#' @family Data types
 #' @export
 is.CarNeighbours <- function(CarNeighbours){
   if (!data.table::is.data.table(CarNeighbours)){
@@ -1150,6 +1460,7 @@ is.CarNeighbours <- function(CarNeighbours){
 #'  Columns sum to 1.
 #'
 #' @name AgeErrorMatrix
+#' @family Data types
 #'
 NULL
 
@@ -1158,6 +1469,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
 #' @param AgeErrorMatrix argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
+#' @family Data types
 #' @export
 is.AgeErrorMatrix <- function(AgeErrorMatrix){
   if (!data.table::is.data.table(AgeErrorMatrix)){
@@ -1206,6 +1518,7 @@ is.AgeErrorMatrix <- function(AgeErrorMatrix){
 #'  The data table contains only one row.
 #'
 #' @name StockSplittingParameters
+#' @family Data types
 #'
 NULL
 
@@ -1214,6 +1527,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParameters}}
 #' @param StockSplittingParameters argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParameters}}
+#' @family Data types
 #' @export
 is.StockSplittingParameters <- function(StockSplittingParameters){
   if (!data.table::is.data.table(StockSplittingParameters)){
@@ -1603,7 +1917,8 @@ stoxFunctionAttributes <- list(
     functionCategory = "report",
     functionOutputDataType = "ReportFdaSamplingData",
     functionParameterFormat = list(
-      GroupingVariables = "samplereportvariables"
+      GroupingVariables = "samplereportvariables",
+      SamplingVariables = "onlysamplereportvariables"
     )
   ),
   ReportFdaLandings = list(
@@ -1650,31 +1965,31 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "ReportFdaCatchSummaryData",
     functionArgumentHierarchy = list(
       DecimalTotalNumber = list(
-        DecimalOptions = TRUE
+        UseDefaultDecimalOptions = FALSE
       ),
       DecimalTotalWeight = list(
-        DecimalOptions = TRUE
+        UseDefaultDecimalOptions = FALSE
       ),
       DecimalMeanAge = list(
-        DecimalOptions = TRUE
+        UseDefaultDecimalOptions = FALSE
       ),
       DecimalMeanWeight = list(
-        DecimalOptions = TRUE
+        UseDefaultDecimalOptions = FALSE
       ),
       DecimalMeanLength = list(
-        DecimalOptions = TRUE
+        UseDefaultDecimalOptions = FALSE
       ),
       UnitTotalNumber = list(
-        UnitOptions = TRUE
+        UseDefaultUnitOptions = FALSE
       ),
       UnitTotalWeight = list(
-        UnitOptions = TRUE
+        UseDefaultUnitOptions = FALSE
       ),
       UnitMeanWeight = list(
-        UnitOptions = TRUE
+        UseDefaultUnitOptions = FALSE
       ),
       UnitMeanLength = list(
-        UnitOptions = TRUE
+        UseDefaultUnitOptions = FALSE
       )
     )
   ),
@@ -1768,6 +2083,23 @@ processPropertyFormats <- list(
       }
       possibleValues <- unique(possibleValues)
       possibleValues <- possibleValues[possibleValues %in% names(StoxLandingData$Landing)]
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  onlysamplereportvariables = list(
+    class = "vector", 
+    title = "One or more variables to use as sampling variables.", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in names(StoxBioticData)){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
       return(sort(possibleValues))
     }, 
     variableTypes = "character"

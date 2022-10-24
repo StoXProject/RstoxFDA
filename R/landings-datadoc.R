@@ -7,9 +7,11 @@
 #'
 #' @usage data(landings)
 #'
-#' @format RDB CL-table version 1.3 (\href{https://www.ices.dk/marine-data/Documents/RDB/RDB Exchange Format.pdf}{RDBES exchange format v 1.13}). Some data types may differ from specification. Notably species, which is formatted as character().
+#' @format RDB CL-table version 1.3 (RDBES exchange format v 1.13). Some data types may differ from specification. Notably species, which is formatted as character.
 #'
 #' @keywords datasets
+#' @family Reca functions
+#' @family landings functions
 #'
 #' @examples
 #' data(landings)

@@ -3,7 +3,7 @@
 \docType{data}
 \name{locationsFdir2018}
 \alias{locationsFdir2018}
-\title{Location codes}
+\title{Location codes (FDIR from 2018 incl.)}
 \format{
 \code{\link[sp]{SpatialPolygonsDataFrame}} with location names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 }
@@ -23,6 +23,7 @@ sp::plot(locationsFdir2017, add=TRUE)
 }
 \seealso{
 Other area code polygons: 
+\code{\link{GSAsubArea}},
 \code{\link{ICESareas}},
 \code{\link{ICESdivision}},
 \code{\link{ICESrectangles}},
@@ -30,9 +31,11 @@ Other area code polygons:
 \code{\link{ICESsubDivision}},
 \code{\link{ICESunit}},
 \code{\link{NAFOareas}},
+\code{\link{kommuner2022}},
 \code{\link{locationsFdir2017}},
 \code{\link{mainareaFdir2017}},
-\code{\link{mainareaFdir2018}}
+\code{\link{mainareaFdir2018}},
+\code{\link{portcodes2020}}
 }
 \concept{area code polygons}
 \keyword{datasets}

@@ -14,8 +14,13 @@ RstoxFDA contains functions that adheres to StoX 3 function-contracts so that th
 ## Not StoX
 RstoxFDA is an analysis-library that also works independently of StoX and not all functions are available in the StoX user interface. The functions that are available in the StoX user interface are starts with a capital letter, as does data formats and data objects.
 
+## Reporting problems
+The preferred way to communicate problems is by raising an issue on the RstoxFDA github page. Users are encouraged to also report when documentation is lacking, erroneous or ambiguous.
+
+When reporting bugs, please report the versions your were using of R, RstoxFDA, and operating system. Please also include instructions for how to reproduce the problem.
+
 ## Reca
-RstoxFDA contains functions for adapting data to Reca, running estimates, and plotting or tabulating results. These functions are formulated to be adaptable to other data formats than just the ones supported by Rstox.
+Reca is a library for estimating total catch at age from commerical catches. RstoxFDA contains functions for adapting data to Reca, running estimates, and plotting or tabulating results. These functions are availble in the StoX user interface. In addition some functions are provided for adapting Reca to other data formats than just the ones supported by Stox.
 
 Reca is primarily available at: https://github.com/NorskRegnesentral/Reca.
 One may also consider installing from the fork at: https://github.com/StoXProject/reca, or at https://stoxproject.github.io/repo/: install.packages("Reca", repos=c("https://stoxproject.github.io/repo/")), but these resources should be considered experimental, and they are not backed by a maintenance policy.

@@ -13,6 +13,22 @@ backwardCompatibility <- list(
       modelName = "report", 
       parameterName = "AggregationVariables",
       newParameterName = "GroupingVariables"
+    ),
+    list(
+      changeVersion = "1.0.3", 
+      functionName = "ReportRecaCatchStatistics", 
+      modelName = "report", 
+      parameterName = "DecimalOptions",
+      newParameterName = "UseDefualtDecimalOptions"
+    ),
+    list(
+      changeVersion = "1.0.3", 
+      functionName = "ReportRecaCatchStatistics", 
+      modelName = "report", 
+      parameterName = "UnitOptions",
+      newParameterName = "UseDefualtUnitOptions"
     )
   ) 
 )
+
+# add something for introduced parameter SamplingVariables in ReportSamplingFDA

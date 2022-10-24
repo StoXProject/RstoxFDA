@@ -52,6 +52,7 @@ Assings a trip ID to logbooks based on vessel identifier and a known last time o
 }
 \seealso{
 Other logbook functions: 
+\code{\link{activityCensus}},
 \code{\link{addLogbookColumns}()},
 \code{\link{appendTripIdLandings}()},
 \code{\link{calculateLogbookPartitionByTrip}()},

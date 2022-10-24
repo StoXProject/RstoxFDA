@@ -1,4 +1,4 @@
-#' MetierTable lvl 4
+#' MetierTable lvl 4 example
 #'
 #' Example of metier table for assigning fishing activity to Metier level 4.
 #' This is not a universal conversion table, but an example of a table made for a particular purpose.
@@ -11,6 +11,7 @@
 #' @format \code{\link[RstoxFDA]{MetierTable}} with column 'gearcode' identifying gear codes used in Norwegian fisheries data (derived from NS 9400)
 #'
 #' @keywords datasets
+#' @family gear coding functions
 #'
 #' @examples
 #' data(metier4table)

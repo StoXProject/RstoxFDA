@@ -1,195 +1,4 @@
-#' Metier table
-#'
-#' Table (\code{\link[data.table]{data.table}}) defining metiers.
-#'
-#' Fishing activity metiers are approximate decompositions of fleets commonly used in Europe.
-#' This table defines an approximate definition of metiers by a custom gear code.
-#'
-#' Metiers are used in EU-regulations for EU-member states, and are therefore often required by ICES data formats
-#' Metiers are formal strings encoding decomposition an idealized fleet or set of trips, where target species and gear are clearly and unambigiously identified.
-#' The metier system recognize that these parameters are not always clearly and unamibigiously identified to the desired resolution, and allows for grouping and omission of some parameters, and for coding that information is missing.
-#' This makes the metier system very flexible, but also provides poor standardization and ICES databases and data-calls may provide code-lists of allowed metiers, sometimes with different metiers being requested for different areas.
-#' In effect metier annotations cannot be completely standardized, but must to be configurable through conversion tables like this. Often the annotation has to be approximate.
-#'
-#' The metier system is spesified by the EU - Data Collection Framework: \url{https://datacollection.jrc.ec.europa.eu/wordef/fishing-activity-metier},
-#' briefly a metier is fully specified by a string: <gear>_<target species>_<gear mesh size>_<selectivity device>_<selectivity device mesh size>_<vessel length class>,
-#' with coding systems and grouping conventions defined for each of the variables.
-#' Common trunctations of these strings are also used. E.g.:
-#' Metier level 6 (no truncation): <gear>_<target species>_<gear mesh size>_<selectivity device>_<selectivity device mesh size>
-#' Metier level 5 : <gear>_<target species>
-#' Metier level 4 : <gear>
-#' The term "metier" is also used for some derived systems, for instance some data-calls requests that a code for intended usage of catch (industrial vs human consumption) be appended to the metiers where gear and target species is missing.
-#'
-#' For example, in intercatch, the code OTB_DEF_>=120_0_0_all identifies bottom trawl with otter boards (OTB) targeting demershal fish (DEF), with mesh size larger than or equal to 120 mm, no selectivity device (0_0) and all vessel size (all)
-#'
-#' @details
-#'  \describe{
-#'   \item{metier}{character() metier-string, e.g.: OTB_DEF_>=120_0_0_all}
-#'   \item{gearcode}{character() encoding gear}
-#'   \item{target}{character(), optional, target species}
-#'   \item{meshedGear}{logical(), optional, whether the gear is a meshed gear. Should be provided for all or none gears.}
-#'   \item{lowerMeshSize}{integer(), optional, the lower mesh size to include in this metier. Should be provided for all rows where meshedGear is True, and not for other rows.}
-#'   \item{upperMeshSize}{integer(), optional, the upper mesh size to include in this metier. Should be provided for all rows where meshedGear is True, and not for other rows.}
-#'   \item{selectivityDevice}{character(), optional, encoding selectivity device.}
-#'   \item{meshedSelectivityDevice}{logical(), optional, encoding selectivity device. Should be provided for all or none selectivity devices.}
-#'   \item{selDevLowerMeshSize}{integer(), optional, the lower mesh size of selectivity device to include in this metier. Should be provided for all rows where meshedSelectivityDevice is True, and not for other rows.}
-#'   \item{selDevUpperMeshSize}{integer(), optional, the upper mesh size of selectivity device to include in this metier. Should be provided for all rows where meshedSelectivityDevice is True, and not for other rows.}
-#'  }
-#'
-#'  The metier-defining parameters are written in camelCase, parameters that may be used to distinguish applicability of different metierdefinitions are writter in UPPER case.
-#'
-#' @name MetierTable
-#'
-NULL
 
-#' Check if table is correctly formatted metier table
-#' @param table \code{\link[RstoxFDA]{MetierTable}}
-#' @param throwError if set errors are raised, if not, validity will be returned as T/F
-#' @return validity
-#' @noRd
-is.MetierTable <- function(table, throwError=F){
-
-  if (!data.table::is.data.table(table)){
-    if (throwError){
-      stop("A metiertable must be a data.table")
-    }
-    return(FALSE)
-  }
-  if (!all(c("metier", "gearcode", "target", "meshedGear", "lowerMeshSize", "upperMeshSize", "selectivityDevice", "meshedSelectivityDevice", "selDevLowerMeshSize", "selDevUpperMeshSize") %in% names(table))){
-    if (throwError){
-      stop("Metiertable does not have the required columns")
-    }
-    return(FALSE)
-  }
-  if (!is.character(table$metier)){
-    if (throwError){
-      stop("The column 'metier' must be a character")
-    }
-    return(FALSE)
-  }
-  if (!is.character(table$gearcode)){
-    if (throwError){
-      stop("The column 'gearcode' must be a character")
-    }
-    return(FALSE)
-  }
-  if (!is.logical(table$meshedGear)){
-    if (throwError){
-      stop("The column 'meshedGear' must be a logical")
-    }
-    return(FALSE)
-  }
-  if (!is.numeric(table$lowerMeshSize)){
-    if (throwError){
-      stop("The column 'lowerMeshSize' must be an integer")
-    }
-  }
-  if (!is.numeric(table$upperMeshSize)){
-    if (throwError){
-      stop("The column 'upperMeshSize' must be an integer")
-    }
-    return(FALSE)
-  }
-  if (!is.character(table$selectivityDevice)){
-    if (throwError){
-      stop("The column 'selectivityDevice' must be a character")
-    }
-    return(FALSE)
-  }
-  if (!is.logical(table$meshedSelectivityDevice)){
-    if (throwError){
-      stop("The column 'meshedSelectivityDevice' must be a logical")
-    }
-    return(FALSE)
-  }
-  if (!is.numeric(table$selDevLowerMeshSize)){
-    if (throwError){
-      stop("The column 'selDevLowerMeshSize' must be an integer")
-    }
-  }
-  if (!is.numeric(table$selDevUpperMeshSize)){
-    if (throwError){
-      stop("The column 'selDevUpperMeshSize' must be an integer")
-    }
-    return(FALSE)
-  }
-
-  meshed <- table$meshedGear[!is.na(table$gearcode)]
-  if (any(is.na(meshed)) & !all(is.na(meshed))){
-    if (throwError){
-      stop("The column 'meshedGear' has a value for some gears, but not all")
-    }
-    return(FALSE)
-  }
-
-  upperMesh <- table$upperMeshSize[!is.na(table$meshedGear) & table$meshedGear]
-  if (any(is.na(upperMesh))){
-    if (throwError){
-      stop("The column 'upperMeshSize' is not provided for all meshed gears (where meshedGear is True)")
-    }
-    return(FALSE)
-  }
-  lowerMesh <- table$lowerMeshSize[!is.na(table$meshedGear) & table$meshedGear]
-  if (any(is.na(lowerMesh))){
-    if (throwError){
-      stop("The column 'lowerMeshSize' is not provided for all meshed gears (where meshedGear is True)")
-    }
-    return(FALSE)
-  }
-
-  if (any((!is.na(table$lowerMeshSize) | !is.na(table$upperMeshSize)) & (is.na(table$meshedGear) | !table$meshedGear))){
-    if (throwError){
-      stop("Mesh sizes provided for gears that are not meshed (where meshedGear is missing or False)")
-    }
-    return(FALSE)
-  }
-
-  meshedSel <- table$meshedSelectivityDevice[!is.na(table$gearcode) & !is.na(table$selectivityDevice)]
-  if (any(is.na(meshedSel)) & !all(is.na(meshedSel))){
-    if (throwError){
-      stop("The column 'meshedSelectivityDevice' has a value for some gears, but not all")
-    }
-    return(FALSE)
-  }
-
-  if (any((!is.na(table$lowerMeshSize) | !is.na(table$upperMeshSize)) & is.na(table$gear))){
-    if (throwError){
-      stop("Mesh sizes provided for gear where 'gear' is not given")
-    }
-    return(FALSE)
-  }
-
-  upperMeshSD <- table$selDevUpperMeshSize[!is.na(table$meshedSelectivityDevice) & table$meshedSelectivityDevice]
-  if (any(is.na(upperMeshSD))){
-    if (throwError){
-      stop("The column 'selDevUpperMeshSize' is not provided for all meshed selectivty devices gears (where meshedSelectivityDevice is True)")
-    }
-    return(FALSE)
-  }
-  lowerMeshSD <- table$selDevLowerMeshSize[!is.na(table$meshedSelectivityDevice) & table$meshedSelectivityDevice]
-  if (any(is.na(lowerMeshSD))){
-    if (throwError){
-      stop("The column 'selDevUpperMeshSize' is not provided for all meshed selectivty devices gears (where meshedSelectivityDevice is True)")
-    }
-    return(FALSE)
-  }
-
-  if (any((!is.na(table$selDevLowerMeshSize) | !is.na(table$selDevUpperMeshSize)) & (is.na(table$meshedSelectivityDevice) | !table$meshedSelectivityDevice))){
-    if (throwError){
-      stop("Mesh sizes provided for selectivity devices that are not meshed (where meshedSelectivityDevice is missing or False)")
-    }
-    return(FALSE)
-  }
-
-  if (any((!is.na(table$selDevLowerMeshSize) | !is.na(table$selDevUpperMeshSize)) & is.na(table$selectivityDevice))){
-    if (throwError){
-      stop("Mesh sizes provided for selectivity devices where 'selectivityDevice' is not given")
-    }
-    return(FALSE)
-  }
-
-  return(TRUE)
-}
 
 #' Read metier table
 #' @description Reads a table of metier definitions.
@@ -206,6 +15,7 @@ is.MetierTable <- function(table, throwError=F){
 #' @param filename character() path to file that contains metier definitions. See details for format.
 #' @param encoding The character encoding of the file identified by 'filename'
 #' @return \code{\link[RstoxFDA]{MetierTable}} containing metier definitions.
+#' @family gear coding functions
 #' @export
 readMetierTable <- function(filename, encoding="UTF8"){
   
@@ -475,7 +285,8 @@ checkSelectivityDevice <- function(selectivityDeviceVector, metiertable){
 #'            metierColName = "metier5")
 #'  annotatedShrimp <- annotated[annotated$targetFAO %in% c("PAN", "PRA"),]
 #'  table(annotatedShrimp$metier5, annotatedShrimp$metier6)
-#'
+#'  
+#' @family gear coding functions
 #' @export
 appendMetier <- function(data, metiertable, gearColumn, targetColumn=NULL, meshSizeColumn=NULL, selectivityDeviceColumn=NULL, selectivityDeviceMeshSizeColumn=NULL, metierColName="metier"){
 

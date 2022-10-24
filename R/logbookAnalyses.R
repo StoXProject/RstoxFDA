@@ -84,32 +84,6 @@ appendTripIdLogbooks <- function(logbooks, tripIds, timeCol="STARTTIDSPUNKT", ve
 
 }
 
-
-#' Trip Partition
-#'
-#' Partitioning of catch from a trip.
-#'
-#' @details
-#' list with two members 'fractions' and 'groupDefinition'
-#'
-#' 'fractions' is a \code{\link[data.table]{data.table}} with columns:
-#' \describe{
-#'  \item{tripid}{trip identifier}
-#'  \item{species}{species identifier}
-#'  \item{groupid}{identifies the group the fraction is provided for. Groups are further specified in 'groupDefinition'}
-#'  \item{fraction}{fraction of the total catch of species in the given group}
-#' }
-#'
-#' 'groupDefinition' is a \code{\link[data.table]{data.table}} with columns:
-#' \describe{
-#'  \item{groupid}{identifies the group the defintion is provided for.}
-#'  \item{...}{one or more custom columns definint the group}
-#' }
-#'
-#' @name TripPartition
-#'
-NULL
-
 #' Calcualte catch partition
 #' @description
 #'  Partitions total catch of each species for each trip on provided grouping variables.

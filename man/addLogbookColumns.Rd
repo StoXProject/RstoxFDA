@@ -43,6 +43,7 @@ Add columns to landings from corresponding logbook entries.
 \code{\link[RstoxFDA]{makeTripIds}}, \code{\link[RstoxFDA]{appendTripIdLandings}}, \code{\link[RstoxFDA]{appendTripIdLogbooks}}, and \code{\link[RstoxFDA]{imputeCatchesLandings}} for obtaining 'landings' and 'logbooks' with trip-ids and catch-ids.
 
 Other logbook functions: 
+\code{\link{activityCensus}},
 \code{\link{appendTripIdLandings}()},
 \code{\link{appendTripIdLogbooks}()},
 \code{\link{calculateLogbookPartitionByTrip}()},
@@ -59,6 +60,7 @@ Other landings functions:
 \code{\link{ReportFdaSampling}()},
 \code{\link{appendTripIdLandings}()},
 \code{\link{imputeCatchesLandings}()},
+\code{\link{landings}},
 \code{\link{logbookAdjustment}()},
 \code{\link{makeTripIds}()},
 \code{\link{plotBubbleMap}()},

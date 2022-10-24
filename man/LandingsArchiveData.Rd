@@ -9,19 +9,21 @@ Landings (aggregated sales notes). Format used for landings archive delivered to
  docs/documentation_landingsdata_archive_norwegian.csv
  docs/selected_code_lists_landingsdata_archive_norwegian.xlsx
  docs/supplementary_documentation_landingsdata_archive_norwegian.csv
+ 
+ Note that 'AAR' and 'AAR2' denotes the year of catch, which may differ from the year of landing. The convention has been adopted to use 13 for 'LEVMND' (month of landing), when catch has been landed in January the year after catch.
  \describe{
   \item{AAR}{integer. Two last digits of year of catch}
   \item{AAR2}{integer. Year of catch (4 digits)}
   \item{FARTLAND}{character. Code for vessel flag (NOR for Norwegian, UTL for non-Norwegian)}
   \item{LEVAAR}{integer. Two last digits of year of landing)}
-  \item{LEVMND}{integer. Month of landing (1=January, 12=December))}
+  \item{LEVMND}{integer. Month of landing (1=January, 12=December, 13=January following year)). Values larger than 13 are likely errors.}
   \item{KYST}{integer. Code for whether the catch was caught within the coastal region (12 nautical miles from the coast). Code 0 denotes oceanic catch, code 8 and 9 denotes coastal catch.)}
   \item{HOMR}{character. Main area of catch. As identified by the column 'StratumName' in \code{\link[RstoxFDA]{mainareaFdir2017}}), except that leading zeroes are not used for the areas 0-9.}
   \item{LOK}{character. Location of catch. As identified by the column 'Lokasjon' in \code{\link[RstoxFDA]{locationsFdir2017}}), together with Main area (the column HAVOMR), except neither use leading zeroes.}
   \item{REDS}{character. Gear code as defined by the standard NS9400. See code lists.}
-  \item{LEVHERRD}{character. Code for the muncipality (kommune) the catch was landed. Not using leading zeroes}
-  \item{LEVHERRD2}{character. Code for the muncipality (kommune) the catch was landed. Using leading zeroes}
-  \item{LEVFYLKE}{character. Code for the muncipality (fylke) the catch was landed. Using leading zeroes}
+  \item{LEVHERRD}{character. Common official code for the muncipality (kommune) the catch was landed. Not using leading zeroes}
+  \item{LEVHERRD2}{character. Common official code for the muncipality (kommune) the catch was landed. Using leading zeroes}
+  \item{LEVFYLKE}{character. Common official code for the muncipality (fylke) the catch was landed. Same as the two leading digits in LEVHERRD2. Using leading zeroes}
   \item{FISK}{character. Code for the species landed}
   \item{FISK_NAVN}{character. Norwegian name of the species landed.}
   \item{BIPROD}{character. Code for the product landed (0 codes for main-product, 1-8 codes for bi-products.)}
@@ -30,3 +32,54 @@ Landings (aggregated sales notes). Format used for landings archive delivered to
   \item{VEKT}{numeric. Live weight (Round weight) of landed catch in kg. Listed as zero for bi-products.}
  }
 }
+\seealso{
+Other Data types: 
+\code{\link{AgeErrorMatrix}},
+\code{\link{AreaPosition}},
+\code{\link{CarNeighbours}},
+\code{\link{KommunePolygons}},
+\code{\link{LandingData}},
+\code{\link{LengthConversionTable}},
+\code{\link{LocodeTable}},
+\code{\link{LstLogbookData}},
+\code{\link{MetierTable}},
+\code{\link{ParameterConvergenceData}},
+\code{\link{ParameterizationSummaryData}},
+\code{\link{RecaCatchAtAge}},
+\code{\link{RecaData}},
+\code{\link{RecaParameterData}},
+\code{\link{RecaResult}},
+\code{\link{ReportFdaByAgeData}},
+\code{\link{ReportFdaCatchAtAgeCovarianceData}},
+\code{\link{ReportFdaCatchAtAgeData}},
+\code{\link{ReportFdaCatchAtLengthAndAgeData}},
+\code{\link{ReportFdaCatchAtLengthData}},
+\code{\link{ReportFdaLandingData}},
+\code{\link{ReportFdaLengthAtAgeData}},
+\code{\link{ReportFdaSamplingData}},
+\code{\link{ReportFdaSopData}},
+\code{\link{ReportFdaSummaryData}},
+\code{\link{ReportFdaWeightAtAgeData}},
+\code{\link{StockSplittingParameters}},
+\code{\link{TemporalDefinition}},
+\code{\link{TripPartition}},
+\code{\link{WeightConversionTable}},
+\code{\link{is.AgeErrorMatrix}()},
+\code{\link{is.AreaPosition}()},
+\code{\link{is.CarNeighbours}()},
+\code{\link{is.LengthConversionTable}()},
+\code{\link{is.ParameterConvergenceData}()},
+\code{\link{is.ParameterizationSummaryData}()},
+\code{\link{is.RecaCatchAtAge}()},
+\code{\link{is.RecaData}()},
+\code{\link{is.RecaParameterData}()},
+\code{\link{is.RecaResult}()},
+\code{\link{is.ReportFdaByAgeData}()},
+\code{\link{is.ReportFdaSOP}()},
+\code{\link{is.ReportFdaSamplingData}()},
+\code{\link{is.StockSplittingParameters}()},
+\code{\link{is.TemporalDefinition}()},
+\code{\link{is.Translation}()},
+\code{\link{is.WeightConversionTable}()}
+}
+\concept{Data types}

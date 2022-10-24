@@ -6,7 +6,7 @@
 #' Vessels are intercepted during landing, and samples of up to 30 fish are taken stratified by gear and species.
 #' Length, weight and age measured for all fish. Sex and maturity when presentation allows for it.
 #' Weight of individual fish is reported as measured (presentation encoded in SApres), while total weight of landing and sample is converted to Whole-weight
-#' using constant factors standardized by the Norwegian Directorate of Fisheries (See table 2.1 in \href{https://www.fiskeridir.no/Yrkesfiske/Tall-og-analyse/Omregningsfaktorer}{Conversion factors}. Document is mostly in Norwegian, but the relevant table is in English as well).
+#' using constant factors standardized by the Norwegian Directorate of Fisheries. Document is mostly in Norwegian, but the relevant table is in English as well).
 #'
 #'
 #' @docType data
@@ -16,6 +16,7 @@
 #' @format Column names defined as in RDBES data model version 1.17 (\href{https://github.com/ices-tools-dev/RDBES/tree/1a17e09d34d3e9b6bb6173f2b33e10f0830d4cf3}{RDBES data model v 1.17})
 #'
 #' @keywords datasets
+#' @family Reca functions
 #'
 #' @examples
 #' data(catchsamples)

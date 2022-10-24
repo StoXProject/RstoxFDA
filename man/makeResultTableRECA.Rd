@@ -51,3 +51,22 @@ parameter 'unit' supports:
  data(recaPrediction)
  makeResultTableRECA(recaPrediction, plusGroup=13)
 }
+\seealso{
+Other Reca functions: 
+\code{\link{catchsamples}},
+\code{\link{convertRecaData}()},
+\code{\link{getCovariateMap}()},
+\code{\link{getLandings}()},
+\code{\link{landings}},
+\code{\link{makeAgeTracesRECA}()},
+\code{\link{plotAgeTraces}()},
+\code{\link{plotCatchAtAge}()},
+\code{\link{prepRECA}()},
+\code{\link{rEcaDataReport}()},
+\code{\link{recaDataExample}},
+\code{\link{recaPrediction}},
+\code{\link{runRECA}()},
+\code{\link{sanitizeRecaInput}()},
+\code{\link{tabulateFisheries}()}
+}
+\concept{Reca functions}

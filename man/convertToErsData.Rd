@@ -24,6 +24,7 @@ UTC times are assumed.
 }
 \seealso{
 Other logbook functions: 
+\code{\link{activityCensus}},
 \code{\link{addLogbookColumns}()},
 \code{\link{appendTripIdLandings}()},
 \code{\link{appendTripIdLogbooks}()},
@@ -33,5 +34,11 @@ Other logbook functions:
 \code{\link{makeTripIds}()},
 \code{\link{readLstFile}()},
 \code{\link{sourceLogbookColumns}()}
+
+Other IO functions: 
+\code{\link{ReadLandingFDA}()},
+\code{\link{readFdirLandingsArchive}()},
+\code{\link{readLstFile}()}
 }
+\concept{IO functions}
 \concept{logbook functions}

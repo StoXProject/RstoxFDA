@@ -17,4 +17,23 @@ Example is produced by \code{\link[RstoxFDA]{runRECA}}
 data(recaPrediction)
 plotCatchAtAge(recaPrediction)
 }
+\seealso{
+Other Reca functions: 
+\code{\link{catchsamples}},
+\code{\link{convertRecaData}()},
+\code{\link{getCovariateMap}()},
+\code{\link{getLandings}()},
+\code{\link{landings}},
+\code{\link{makeAgeTracesRECA}()},
+\code{\link{makeResultTableRECA}()},
+\code{\link{plotAgeTraces}()},
+\code{\link{plotCatchAtAge}()},
+\code{\link{prepRECA}()},
+\code{\link{rEcaDataReport}()},
+\code{\link{recaDataExample}},
+\code{\link{runRECA}()},
+\code{\link{sanitizeRecaInput}()},
+\code{\link{tabulateFisheries}()}
+}
+\concept{Reca functions}
 \keyword{datasets}

@@ -83,5 +83,17 @@ Annotates data with metier, given a metier definition (\code{\link[RstoxFDA]{Met
            metierColName = "metier5")
  annotatedShrimp <- annotated[annotated$targetFAO \%in\% c("PAN", "PRA"),]
  table(annotatedShrimp$metier5, annotatedShrimp$metier6)
-
+ 
 }
+\seealso{
+Other gear coding functions: 
+\code{\link{AddGearGroupStoxBiotic}()},
+\code{\link{AddGearGroupStoxLanding}()},
+\code{\link{GearGroupFdirTable}},
+\code{\link{SetShortGearBiotic}()},
+\code{\link{metier4table}},
+\code{\link{metier5table}},
+\code{\link{metier6table}},
+\code{\link{readMetierTable}()}
+}
+\concept{gear coding functions}

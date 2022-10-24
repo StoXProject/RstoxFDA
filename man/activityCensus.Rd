@@ -26,4 +26,18 @@ Example of activity census.
 data(activityCensus)
 sum(activityCensus$OfficialLandingsWeight)
 }
+\seealso{
+Other logbook functions: 
+\code{\link{addLogbookColumns}()},
+\code{\link{appendTripIdLandings}()},
+\code{\link{appendTripIdLogbooks}()},
+\code{\link{calculateLogbookPartitionByTrip}()},
+\code{\link{convertToErsData}()},
+\code{\link{imputeCatchesLandings}()},
+\code{\link{logbookAdjustment}()},
+\code{\link{makeTripIds}()},
+\code{\link{readLstFile}()},
+\code{\link{sourceLogbookColumns}()}
+}
+\concept{logbook functions}
 \keyword{datasets}
