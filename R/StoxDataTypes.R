@@ -933,8 +933,8 @@ is.WeightConversionTable <- function(WeightConversionTable){
 #'   \item{LandedRoundWeight}{Total landings in kg}
 #'   \item{Catches}{Number of catches sampled}
 #'   \item{Vessels}{Number of vessels sampled}
-#'   \item{WeightMeasurments}{Number of fished measured for weight}
-#'   \item{LengthMeasurments}{Number of fished measured for length}
+#'   \item{WeightMeasurements}{Number of fished measured for weight}
+#'   \item{LengthMeasurements}{Number of fished measured for length}
 #'   \item{AgeReadings}{Number of fished with age determined}
 #'   \item{WeightOfSampledCatches}{Total weight of the sampled catches}
 #'  }
@@ -962,7 +962,7 @@ is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
     return(FALSE)
   }
   
-  if (!all(c("LandedRoundWeight", "Catches", "Vessels", "WeightMeasurments", "LengthMeasurments", "AgeReadings", "WeightOfSampledCatches") %in% names(ReportFdaSamplingData$FisheriesSampling))){
+  if (!all(c("LandedRoundWeight", "Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches") %in% names(ReportFdaSamplingData$FisheriesSampling))){
     return(FALSE)
   }
   

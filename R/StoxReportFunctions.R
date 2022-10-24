@@ -118,8 +118,8 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   
   sampledTab <- samples[,list(Catches=length(unique(get("StationKey"))), 
                               Vessels=length(unique(get("CatchPlatform"))),
-                              WeightMeasurments=sum(!is.na(get("IndividualRoundWeight"))),
-                              LengthMeasurments=sum(!is.na(get("IndividualTotalLength"))),
+                              WeightMeasurements=sum(!is.na(get("IndividualRoundWeight"))),
+                              LengthMeasurements=sum(!is.na(get("IndividualTotalLength"))),
                               AgeReadings=sum(!is.na(get("IndividualAge")))
                               ), by=c(GroupingVariables, SamplingVariables)]
   
