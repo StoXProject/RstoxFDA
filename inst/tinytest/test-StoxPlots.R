@@ -52,6 +52,12 @@ RstoxFDA:::PlotSamplingOverviewCell(tab, "Area")
 # test with three grouping variable, 
 RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8)
 
+# test with non-default Measurement 
+RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8, Measurement = "WeightMeasurements")
+
+# test with wrong Measurement 
+expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8, Measurement = "wrong"), "Does not recognize option for measurement: wrong")
+
 # test with sampling variable
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "Platform")
 expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8), "Cell plot cannot be constructed when sampling report has sampling variables")

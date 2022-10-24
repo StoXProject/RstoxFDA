@@ -147,7 +147,9 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #'  sampled vessels, catches and individuals. The cells are also color coded to reflect how well they are sampled.
 #'  
 #'  The visualisation gives an overview of which part of the fishery has few samples, and may suggest ways to group or post-stratify
-#'  variables for estimation. It does not provide a direct visualisation of the efficiency of the sampling. 
+#'  variables for estimation. By extension it also suggests how supplemental sampling can be improved, for instance by revealing where 
+#'  a small extra sampling effort prevents the need for grouping or post-stratifying.
+#'  The plot does not provide a direct visualisation of the efficiency of the sampling. 
 #'  Efficient sampling may well leave many cells unsampled, as the activity (e.g. volume landed) may be very different between cells.
 #'  
 #'  The color coding indicates five categories of sampling depending on how many vessels, catches, and individuals are sampled in the cell.
@@ -168,7 +170,7 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @param Measurement The kind of fish measurement that should be used to determine the color of a cell
 #' @param MinVessels The minimum number of vessels sampled for quality 3 coloring of a cell. Defaults to 2.
 #' @param MinCatches The minimum number of catches sampled for quality 3 or 2 coloring of a cell. Defaults to 2.
-#' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality 1,2 or 3 coloring of a cell. Defaults to 2.
+#' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality 1,2 or 3 coloring of a cell. Defaults to 100.
 #' @param TextSize size of text in cellplot. Defaults to 2.
 #' @noRd
 PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), TextSize=numeric()){
@@ -202,7 +204,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
     MinCatches <- 2
   }
   if (!isGiven(MinMeasurements)){
-    MinMeasurements <- 2
+    MinMeasurements <- 100
   }
   if (!isGiven(TextSize)){
     TextSize <- 2

@@ -1,6 +1,6 @@
 Package: RstoxFDA
-Version: 1.0.3
-Date: 2022-09-08
+Version: 1.0.4
+Date: 2022-10-24
 Title: Fisheries Dependent Analysis with RstoX
 Authors@R: c(
   person(given = "Arne Johannes", 
