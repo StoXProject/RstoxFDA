@@ -309,3 +309,212 @@ PlotCatcAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
   
   return(pl)
 }
+
+#' Reca Traceplots
+#' @description 
+#'  Plots the posterior distribution of parameters estimated with Reca.
+#'  Useful to corroborate convergence of simulations.
+#'  
+#'  The distribution is plotted in order of iterations, so that issues with autocorrelation in the simulation can be detected.
+#'  Autocorrelation issues may be addressed by adjusting the argument 'Thin' to \code{\link[RstoxFDA]{ParameterizeRecaModels}}
+#'  The upper and lower quantiles of the distributions are highlighted, so that rare spikes or multi-modalities can be detected.
+#'  Rare spikes and multi-modalities can bed addressed by adjusting the argument 'Burnin' to \code{\link[RstoxFDA]{ParameterizeRecaModels}}
+#'  
+#'  In order to provide an overview of many age-groups at once. Several panels are created and age-groups that
+#'  have closer mean values are plotted together. This is achieved with a k-means clustering (\code{\link[stats]{kmeans}}),
+#'  and some key parameters for the clustering algorithm is provided as options Nclust, Iter.max, Nstart, 
+#'  
+#'  Any grouping variables or length groups in 'RecaCatchAtAge' are incorporated into the age group definition.
+#'  This tends to crowd the plots, and may make them unreadable. While it is desirable to ensure that the parameter has convergened
+#'  for all ages, grouping variables and length groups, it is often necessary to compromise. One may
+#'  \describe{
+#'   \item{increase 'LengthInterval'}{Default is to collapse length groups entirely}
+#'   \item{adjust 'PlusGroup'}{Reduces the total number of age groups}
+#'   \item{adjust 'CatLimit'}{which removes legends from the most crowded plots}
+#'   \item{remove grouping variables}{make additional estimates for the same parameterisation, with few gruping variables. See: \code{\link[RstoxFDA]{RunRecaModels}}}
+#'  }
+#'  If 'LengthInterval' specifies only one length-group. Length groups will be removed from plot legends.
+#'  
+#'  Additional convergence checks can be set up using several parameterisation runs and 
+#'  the functions \code{\link[RstoxFDA]{ReportRecaParameterStatistics}} and \code{\link[RstoxFDA]{ReportParameterConvergence}}.
+#'  That analysis checks the convergence of model parameters, rather than the estimated parameters,
+#'  and supports handling a large number of model parameters, and filter out indications of non-convergence.
+#' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
+#' @param Parameter which parameter plot traceplots for "TotalCatch", "MeanLength", or "MeanWeight", Defaults to TotalCatch
+#' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
+#' @param LengthInterval width of length bins in cm, for TotalCatch traceplots. If not provided, length inteval will be set to the maximum length group..
+#' @param Nclust the number of plots to distribute the ages and plus group on. Defaults to 4
+#' @param Iter.max maximal number of iterations for k-means clustering deciding which ages are plotted in same plot. Defaults to 20.
+#' @param Nstart the number of random sets chosen for the k-means clustering. Defaults to 10.
+#' @param LowerLuant lower quantile in each age group to plot as points. Defaults to 0.05.
+#' @param UpperQuant upper quantile in each age group to plot as points. Defaults to 0.95
+#' @param CatLimit the upper limit for number of ages in a plot using categorical coloring. Plots with more than this number of age greoups will use a gradient coloring scheme. Defaults to 8.
+#' @param LegendLimit the upper limit for number of ages in a plot showing legends. Plots with more than this number of age groups will not show plot legend. Defaults to 8.
+#' @family StoX-functions
+#' @family convergence-checks
+#' @noRd
+#' @md
+PlotPosteriorTraces <- function(RecaCatchAtAge, 
+                                Parameter=c("TotalCatch", "MeanLength", "MeanWeight"), 
+                                PlusGroup=integer(), 
+                                LengthInterval=numeric(),
+                                Nclust=integer(), 
+                                Iter.max=integer(), 
+                                Nstart=integer(), 
+                                LowerQuant=numeric(), 
+                                UpperQuant=numeric(), 
+                                CatLimit=integer(),
+                                LegendLimit=integer()){
+  
+  if (!is.RecaCatchAtAge(RecaCatchAtAge)){
+    stop("'RecaCatchAtAge' is not correctly formatted.")
+  }
+  
+  Parameter <- match.arg(Parameter, Parameter)
+  
+  if (isGiven(PlusGroup)){
+    if (PlusGroup > max(RecaCatchAtAge$CatchAtAge$Age)){
+      stop("'PlusGroup' is larger than the oldest age in the model.")
+    }
+    if (PlusGroup < min(RecaCatchAtAge$CatchAtAge$Age)){
+      stop("'PlusGroup' is smaller than the smallest age in the model.")
+    }
+  }
+  
+  if (!isGiven(LengthInterval)){
+    LengthInterval <- max(RecaCatchAtAge$CatchAtAge$Length)
+  }
+  if (!isGiven(Nclust)){
+    Nclust <- 4
+  }
+  if (!isGiven(Iter.max)){
+    Iter.max <- 20
+  }
+  if (!isGiven(Nstart)){
+    Nstart <- 10
+  }
+  if (!isGiven(LowerQuant)){
+    LowerQuant <- .05
+  }
+  if (!isGiven(UpperQuant)){
+    UpperQuant <- .95
+  }
+  if (!isGiven(CatLimit)){
+    CatLimit <- 8
+  }
+  if (!isGiven(LegendLimit)){
+    LegendLimit <- 8
+  }
+  
+  if (Parameter == "TotalCatch"){
+    
+    tab <- RecaCatchAtAge$CatchAtAge
+    var <- "CatchAtAge"
+    
+    tab <- setLengthGroup(tab, LengthInterval)
+    tab <- setAgeGroup(tab)
+    
+    aggNames <- c("Iteration", "AgeGroup", "LengthGroup", RecaCatchAtAge$GroupingVariables$GroupingVariables)
+    if (isGiven(PlusGroup)){
+      tab$AgeGroup[tab$Age>=PlusGroup] <- paste("Age ", PlusGroup, "+", sep="")
+    }
+    tab <- tab[, list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
+    if (length(unique(tab$LengthGroup))==1){
+      tab$LengthGroup <- NULL
+    }
+    
+  }
+  else if (Parameter == "MeanLength"){
+    
+    if (isGiven(PlusGroup)){
+      tab <- getPlusGroupMeans(RecaCatchAtAge, "MeanLength", "MeanIndividualLength", PlusGroup)      
+    }
+    else{
+      tab <- RecaCatchAtAge$MeanLength      
+    }
+    var <- "MeanIndividualLength"
+    
+  }
+  else if (Parameter == "MeanWeight"){
+    
+    if (isGiven(PlusGroup)){
+      tab <- getPlusGroupMeans(RecaCatchAtAge, "MeanWeight", "MeanIndividualWeight", PlusGroup)      
+    }
+    else{
+      tab <- RecaCatchAtAge$MeanWeight      
+    }
+    var <- "MeanIndividualWeight"
+    
+  }
+  else{
+    stop(paste("Does not recogize option for 'Paramater':", Parameter))
+  }
+  
+  groupIdVars <- names(tab)[!(names(tab) %in% c("Iteration", var))]
+  tab$AgeGroup <- apply(tab[,.SD, .SDcols=groupIdVars], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
+  tab <- tab[,.SD, .SDcols=c("Iteration", "AgeGroup", var)]
+  
+  #
+  # K means clustering
+  #
+  
+  if (Nclust > length(unique(tab$AgeGroup))){
+    stop("Choose nclust to be lower than the number of age group traces to plot.")
+  }
+  tabWide <- data.table::dcast(tab, Iteration~AgeGroup, value.var=var, fun=sum)
+  tabWide$Iteration <- NULL
+  mat <- as.matrix(tabWide)
+  
+  means <- apply(mat, FUN=mean, MARGIN=2)
+  
+  #clustering ages in plots. kemans on log(means) seems to work well, but sometimes failes due to 0 means, which is avoided by adding lowest non-zero mean
+  llo <- min(means[means>0])
+  clust <- stats::kmeans(log(means+llo), Nclust, iter.max = Iter.max, nstart = Nstart)
+  
+  
+  ageGroupLabel <- paste(groupIdVars, collapse="-")
+  Agecolors <- c(RColorBrewer::brewer.pal(8, "Accent"), RColorBrewer::brewer.pal(9, "Set1"), RColorBrewer::brewer.pal(8, "Dark2"), RColorBrewer::brewer.pal(8, "Set3"))
+  
+  lq <- tab[,list(lq=stats::quantile(get(var), LowerQuant)), list(AgeGroup=get("AgeGroup"))]
+  uq <- tab[,list(uq=stats::quantile(get(var), UpperQuant)), list(AgeGroup=get("AgeGroup"))]
+  tab <- merge(tab, lq)
+  tab <- merge(tab, uq)
+  
+  #
+  # Plots
+  #
+  
+  plots <- list()
+  plotnr <- 1
+  for (i in seq(1,Nclust)[order(clust$centers, decreasing = T)]){
+    mcp <- tab[tab$AgeGroup %in% names(clust$cluster[clust$cluster==i]),]
+    maxy <- max(mcp[[var]]) + max(mcp[[var]])*.1
+    
+    if (sum(clust$cluster==i)<=CatLimit){
+      mcp$AgeGroup <- as.factor(mcp$AgeGroup)
+      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes_string(x="Iteration", y=var, group="AgeGroup"))+
+        ggplot2::geom_line(ggplot2::aes_string(color="AgeGroup")) + 
+        ggplot2::geom_point(data=mcp[mcp[[var]] > mcp$uq | mcp[[var]] < mcp$lq,], ggplot2::aes_string(color="AgeGroup")) + 
+        ggplot2::scale_color_manual(values = Agecolors) + ggplot2::ylim(0,maxy)
+    }
+    else{
+      mcp$AgeGroup <- as.numeric(as.factor(mcp$AgeGroup))
+      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes_string(x="Iteration", y=var, group="AgeGroup"))+
+        ggplot2::geom_line(data=mcp, ggplot2::aes_string(color="AgeGroup")) + 
+        ggplot2::geom_point(data=mcp[mcp[[var]] > mcp$uq | mcp[[var]] < mcp$lq,], ggplot2::aes_string(color="AgeGroup")) + 
+        ggplot2::ylim(0,maxy) +
+        ggplot2::scale_color_gradient()
+    }
+    plots[[plotnr]] <- plots[[plotnr]] + ggplot2::theme_minimal() +
+        ggplot2::ylab(NULL) +
+        ggplot2::theme(axis.ticks.x=ggplot2::element_blank(), axis.text.x=ggplot2::element_blank())
+    
+    if (sum(clust$cluster==i)>LegendLimit){
+      plots[[plotnr]] <- plots[[plotnr]] + ggplot2::guides(color = "none")
+    }
+    
+    plotnr <- plotnr+1
+  }
+  gridExtra::grid.arrange(grobs=plots, top=grid::textGrob(paste("Traceplot", Parameter),gp=grid::gpar(fontsize=20,font=1)), ncol=2)
+  
+}

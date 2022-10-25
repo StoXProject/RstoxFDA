@@ -27,7 +27,7 @@ plotAgeTraces(
 
 \item{nclust}{the number of plots to distribute the ages and plus group on}
 
-\item{iter.max}{maximal number of iterations for k-means clustering deciding which ages are ploted in same plot.}
+\item{iter.max}{maximal number of iterations for k-means clustering deciding which ages are plotted in same plot.}
 
 \item{nstart}{the number of random sets chosen for the k-means clustering}
 

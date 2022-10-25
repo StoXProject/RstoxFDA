@@ -1513,6 +1513,7 @@ summaryPaaPar <- function(modelFit){
 #'   \code{\link[RstoxFDA]{ReportParameterConvergence}} for convergence checks.
 #' @family StoX-Reca functions
 #' @family StoX-functions
+#' @family convergence-checks
 #' @export
 #' @md
 ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSummaryData, AppendReport=FALSE){
@@ -1628,6 +1629,7 @@ crossChainConvergence <- function(modelSummary, iterations, tolerance){
 #' @return \code{\link[RstoxFDA]{ParameterConvergenceData}}
 #' @export
 #' @family StoX-functions
+#' @family convergence-checks
 #' @md
 ReportParameterConvergence <- function(ParameterizationSummaryData, Tolerance=numeric(), Decimals=integer()){
   

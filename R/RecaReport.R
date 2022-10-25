@@ -248,7 +248,7 @@ plotCatchAtAge <- function(prediction, unit="millions", plusGroup=NULL, credibil
 #' @param unit unit of traced estimates. See details.
 #' @param plusGroup Fish this age or older will be grouped in one trace.
 #' @param nclust the number of plots to distribute the ages and plus group on
-#' @param iter.max maximal number of iterations for k-means clustering deciding which ages are ploted in same plot.
+#' @param iter.max maximal number of iterations for k-means clustering deciding which ages are plotted in same plot.
 #' @param nstart the number of random sets chosen for the k-means clustering
 #' @param agecolors named vector matching ages to colors, if null a default color scheme is used
 #' @param lowerquant lower quantile in each age group to plot as points

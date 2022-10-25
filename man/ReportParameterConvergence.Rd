@@ -83,5 +83,9 @@ Other StoX-functions:
 \code{\link{SetShortGearBiotic}()},
 \code{\link{SetStartDateBiotic}()},
 \code{\link{SetTimeBiotic}()}
+
+Other convergence-checks: 
+\code{\link{ReportRecaParameterStatistics}()}
 }
 \concept{StoX-functions}
+\concept{convergence-checks}

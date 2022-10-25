@@ -1,3 +1,31 @@
+#
+# test traceplot
+#
+
+catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
+catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.rds", package="RstoxFDA"))
+
+RstoxFDA:::PlotPosteriorTraces(catchAtAgeFlat)
+
+# test w and wo collapselength
+RstoxFDA:::PlotPosteriorTraces(catchAtAgeFlat, LengthInterval = 20, LegendLimit = 1)
+
+# test different options for parameter
+RstoxFDA:::PlotPosteriorTraces(catchAtAgeFlat, Parameter = "MeanWeight")
+RstoxFDA:::PlotPosteriorTraces(catchAtAgeDecomp, Parameter = "MeanLength")
+
+# test with decomp
+RstoxFDA:::PlotPosteriorTraces(catchAtAgeDecomp)
+# test with stock splitting
+predictiondatafile <- readRDS(system.file("testresources","stocksplitpred.rds", package="RstoxFDA"))
+expect_error(RstoxFDA:::PlotPosteriorTraces(system.file("testresources","stocksplitpred.rds", package="RstoxFDA"), Nclust = 10), "'RecaCatchAtAge' is not correctly formatted.")
+RstoxFDA:::PlotPosteriorTraces(predictiondatafile, Nclust = 10)
+
+
+#
+# test ReportFdaLandings
+#
+
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
 
