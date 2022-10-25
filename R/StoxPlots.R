@@ -153,6 +153,7 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #'  Efficient sampling may well leave many cells unsampled, as the activity (e.g. volume landed) may be very different between cells.
 #'  
 #'  The color coding indicates five categories of sampling depending on how many vessels, catches, and individuals are sampled in the cell.
+#'  #'  The coloring is controlled by the arguments 'MinVessels', 'MinCatches', and 'MinMeasurements':
 #'  \describe{
 #'   \item{Good}{Cell has sufficient number of individuals, catches and vessels sampled.}
 #'   \item{Few vessels}{Cell has sufficient number of individuals and catches sampled, but not sufficient number of vessels}
@@ -168,9 +169,9 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
 #' @param ColumnVariable The grouping variable in 'ReportFdaSamplingData' that should be used for columns in the cell plot
 #' @param Measurement The kind of fish measurement that should be used to determine the color of a cell
-#' @param MinVessels The minimum number of vessels sampled for quality 3 coloring of a cell. Defaults to 2.
-#' @param MinCatches The minimum number of catches sampled for quality 3 or 2 coloring of a cell. Defaults to 2.
-#' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality 1,2 or 3 coloring of a cell. Defaults to 100.
+#' @param MinVessels The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to 2.
+#' @param MinCatches The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.
+#' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.
 #' @param TextSize size of text in cellplot. Defaults to 2.
 #' @noRd
 PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), TextSize=numeric()){
@@ -246,6 +247,160 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
     )
   
   return(pl)
+}
+
+#' Coverage plot
+#' @description 
+#'  Plots a barplot of landings with color codes for how much each part of the fishery is sampled.
+#' @details 
+#'  Plots an ordered barplot of landings for each part of the fishery identified by the grouping variables of 'ReportFdaSamplingData'.
+#'  This visualizes the efficiency of the sampling, in the sense that sampling intensity is compared with total landings.
+#'  
+#'  The bars, each representing a part of the fishery are colored to representing the sampling of each part, according to one of the following color schemes:
+#'  
+#'  ### color scheme 'Gradient'
+#'  The color scheme 'Gradient' colors the bars according to how many sampling units are sampled.
+#'  The sampling unit counted is controlled by the argument 'SamplingUnit':
+#'  \describe{
+#'   \item{"Vessels"}{The gradient reflect the number of vessels sampled}
+#'   \item{"Cacthes"}{The gradient reflect the number of cacthes sampled}
+#'   \item{"Measurements"}{The gradient reflect the number of measurements taken (see argment 'Measurement')}
+#'  }
+#'  
+#'  ### color scheme 'Cellplot'
+#'  The color scheme "CellPlot" colors the bars similar to the color scheme used in \code{\link[RstoxFDA]{PlotSamplingOverviewCell}}.
+#'  It uses a color coding that indicates five categories of sampling 
+#'  depending on how many vessels, catches, and individuals are sampled in the cell.
+#'  The coloring is controlled by the arguments 'MinVessels', 'MinCatches', and 'MinMeasurements':
+#'  \describe{
+#'   \item{Good}{Cell has sufficient number of individuals, catches and vessels sampled.}
+#'   \item{Few vessels}{Cell has sufficient number of individuals and catches sampled, but not sufficient number of vessels}
+#'   \item{Few catches}{Cell has sufficient number of individuals sampled, but not sufficient number of catches}
+#'   \item{No samples}{Cell is not sampled}
+#'  }
+#' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
+#' @param Cumulative logical indicating if the cumulative fraction of the landed weight should be plotted on a secondary axis.
+#' @param ColorScheme 'CellPlot' or 'Gradient'. See details.
+#' @param Measurement The kind of fish measurement that should be used to determine the color of a cell
+#' @param MinVessels For color scheme "CellPlot". The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to 2.
+#' @param MinCatches color scheme "CellPlot". The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.
+#' @param MinMeasurements color scheme "CellPlot". The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.
+#' @param SamplingUnit color scheme "Gradient". The sampling unit used: "Vessels","Catches", or "Measurement"
+#' @md
+#' @noRd
+PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorScheme=c("CellPlot"), Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), SamplingUnit=c("Vessels","Catches","Measurements")){
+  
+  if (!is.ReportFdaSamplingData(ReportFdaSamplingData)){
+    stop("Input must be 'RstoxFDA:::ReportFdaSamplingData'")
+  }
+  if (nrow(ReportFdaSamplingData$GroupingVariables) == 0){
+    stop("Coverage plot can only be constructed when sampling report has grouping variables")
+  }
+  if (nrow(ReportFdaSamplingData$SamplingVariables) != 0){
+    stop("Coverage plot cannot be constructed when sampling report has sampling variables")
+  }
+  
+  ColorScheme <- match.arg(ColorScheme, ColorScheme)
+  if (!isGiven(ColorScheme)){
+    stop("Argument 'ColorScheme' must be provided")
+  }
+  
+  Measurement <- match.arg(Measurement, Measurement)
+  if (isGiven(Measurement)){
+    if (!Measurement %in% c("AgeReadings","LengthMeasurements","WeightMeasurements")){
+      stop(paste("Does not recognize option", Measurement, "for 'Measurement'"))
+    }
+  }
+  else{
+    Measurement <- "AgeReadings"
+  }
+  
+  SamplingUnit <- match.arg(SamplingUnit, SamplingUnit)
+  if (!isGiven(SamplingUnit) & ColorScheme == "Gradient"){
+    stop("Argument 'Measurement' must be provided for color scheme 'Gradient'.")
+  }
+  if (!(SamplingUnit %in% c("Vessels","Catches","Measurements"))){
+    stop(paste("Does not recognize option", SamplingUnit, "for 'SamplingUnit'"))
+  }
+  if (SamplingUnit == "Measurements"){
+    SamplingUnit <- Measurement
+  }
+  
+  if (!isGiven(MinVessels)){
+    MinVessels <- 2
+  }
+  if (!isGiven(MinCatches)){
+    MinCatches <- 2
+  }
+  if (!isGiven(MinMeasurements)){
+    MinMeasurements <- 100
+  }
+  
+  axisLabel <- paste(ReportFdaSamplingData$GroupingVariables$GroupingVariables, collapse = "-")
+  ReportFdaSamplingData$FisheriesSampling$axisLabel <- apply(ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcols=ReportFdaSamplingData$GroupingVariables$GroupingVariables], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
+  ReportFdaSamplingData$FisheriesSampling$Samples <- "No samples"
+  ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling[[Measurement]] >= MinMeasurements] <- "Few catches"
+  ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling$Catches >= MinCatches & ReportFdaSamplingData$FisheriesSampling$Samples=="Few catches"] <- "Few vessels"
+  ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling$Vessels >= MinVessels & ReportFdaSamplingData$FisheriesSampling$Samples=="Few vessels"] <- "Good"
+  
+  ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight[is.na(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight)]<-0
+  
+  ReportFdaSamplingData$FisheriesSampling <- ReportFdaSamplingData$FisheriesSampling[order(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, decreasing = T),]
+  ReportFdaSamplingData$FisheriesSampling$cumSumPercent <- 100*cumsum(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight)/(sum(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight))
+  ReportFdaSamplingData$FisheriesSampling$cumSumPercent <- ReportFdaSamplingData$FisheriesSampling$cumSumPercent*(max(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, na.rm = T)/100)
+  ReportFdaSamplingData$FisheriesSampling$axisLabel <- factor(ReportFdaSamplingData$FisheriesSampling$axisLabel, levels=ReportFdaSamplingData$FisheriesSampling$axisLabel, ordered = T)
+  
+  if (ColorScheme == "CellPlot"){
+    pl <- ggplot2::ggplot(ReportFdaSamplingData$FisheriesSampling, ggplot2::aes_string("axisLabel", "LandedRoundWeight")) +
+      ggplot2::geom_col(ggplot2::aes_string(fill="Samples")) +
+      ggplot2::xlab(axisLabel) +
+      ggplot2::ylab(paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep="")) +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
+      ggplot2::scale_fill_manual(
+        values = c(
+          "No samples" = "#ffffcc",
+          "Few catches" = "#c2e699",
+          "Few vessels" = "#78c679",
+          "Good" = "#238443"
+        )
+      )
+  }
+  else if (ColorScheme == "Gradient"){
+    if (any(is.na(ReportFdaSamplingData$FisheriesSampling[[SamplingUnit]]))){
+      ReportFdaSamplingData$FisheriesSampling[[SamplingUnit]][is.na(ReportFdaSamplingData$FisheriesSampling[[SamplingUnit]])] <- 0      
+    }
+    pl <- ggplot2::ggplot(ReportFdaSamplingData$FisheriesSampling, ggplot2::aes_string("axisLabel", "LandedRoundWeight")) +
+      ggplot2::geom_col(ggplot2::aes_string(fill=SamplingUnit)) +
+      ggplot2::xlab(axisLabel) +
+      ggplot2::ylab(paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep="")) +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
+      ggplot2::scale_fill_gradient2(low="white", mid="#F6FAAF", high="#238443")
+  }
+  else{
+    stop(paste("Color scheme", ColorScheme, "is not recognized."))
+  }
+
+  
+  # add secondary scale with cumulative catches in %
+  if (Cumulative){
+    coeff <- max(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight)/100
+    pl <- pl + ggplot2::geom_line(ggplot2::aes_string(y="cumSumPercent"), group=1) + 
+      ggplot2::scale_y_continuous(
+        
+        # Features of the first axis
+        name = paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep=""),
+        
+        # Add a second axis and specify its features
+        sec.axis = ggplot2::sec_axis(~.x/coeff, name="Landed weight (cumulative %)")
+      )  
+  }
+  
+  
+  
+  return(pl)
+  
 }
 
 #' @noRd
@@ -331,7 +486,7 @@ PlotCatcAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
 #'   \item{increase 'LengthInterval'}{Default is to collapse length groups entirely}
 #'   \item{adjust 'PlusGroup'}{Reduces the total number of age groups}
 #'   \item{adjust 'CatLimit'}{which removes legends from the most crowded plots}
-#'   \item{remove grouping variables}{make additional estimates for the same parameterisation, with few gruping variables. See: \code{\link[RstoxFDA]{RunRecaModels}}}
+#'   \item{remove grouping variables}{make additional estimates for the same parameterisation, with fewer grouping variables. See: \code{\link[RstoxFDA]{RunRecaModels}}}
 #'  }
 #'  If 'LengthInterval' specifies only one length-group. Length groups will be removed from plot legends.
 #'  

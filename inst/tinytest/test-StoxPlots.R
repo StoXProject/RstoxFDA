@@ -89,3 +89,29 @@ expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, Mi
 # test with sampling variable
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "Platform")
 expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8), "Cell plot cannot be constructed when sampling report has sampling variables")
+
+
+#
+# test sampling coverage plot
+#
+# test with one grouping variable
+tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear"), Unit = "ton")
+RstoxFDA:::PlotSamplingCoverage(tab)
+
+# test with three grouping variable, 
+tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear", "Area", "Quarter"), Unit = "ton")
+RstoxFDA:::PlotSamplingCoverage(tab, Cumulative = T)
+
+# test with different color scheme
+RstoxFDA:::PlotSamplingCoverage(tab, ColorScheme = "Gradient", SamplingUnit = "Catches")
+
+#test with wrong sampling unit
+expect_error(RstoxFDA:::PlotSamplingCoverage(tab, SamplingUnit = "wrong"), "Does not recognize option wrong for 'SamplingUnit'")
+
+#test with wrong measurement
+expect_error(RstoxFDA:::PlotSamplingCoverage(tab, Measurement = "wrong"), "Does not recognize option wrong for 'Measurement'")
+
+# test with sampling variable
+tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "Platform")
+expect_error(RstoxFDA:::PlotSamplingCoverage(tab), "Coverage plot cannot be constructed when sampling report has sampling variables")
+
