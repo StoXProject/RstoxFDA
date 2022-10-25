@@ -32,7 +32,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Do autorelease increment, tagging, and environment setup
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -54,7 +54,7 @@ jobs:
           rtools-version: ${{ matrix.config.rtools }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
 
-      - uses: r-lib/actions/setup-pandoc@v1
+      - uses: r-lib/actions/setup-pandoc@v2
 
       - name: Query dependencies
         run: |
@@ -65,7 +65,7 @@ jobs:
 
       - name: Cache R packages
         if: runner.os != 'Windows'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
@@ -154,20 +154,6 @@ jobs:
           pkgbuild::build(".", dest_path = ".", binary = TRUE)
           file.copy(Sys.getenv("PKG_FILE"), Sys.getenv("PKG_FREL"))
         shell: Rscript {0}
-
-      # - name: Upload package source as artifact
-      #   if: runner.os == 'Linux' && matrix.config.r == 'release'
-      #   uses: actions/upload-artifact@master
-      #   with:
-      #     name: ${{ env.PKG_FILE }}
-      #     path: '${{ github.workspace }}/${{ env.PKG_FILE }}'
-
-      # - name: Upload package binary as artifact
-      #   if: runner.os == 'Windows' || runner.os == 'macOS'
-      #   uses: actions/upload-artifact@master
-      #   with:
-      #     name: ${{ runner.os }}-${{ matrix.config.r }}-pkg
-      #     path: '${{ github.workspace }}/*${{ matrix.config.pkgext }}'
 
       - name: Upload to DRAT repo
         if: (runner.os == 'Windows' || runner.os == 'macOS' || (runner.os == 'Linux' && matrix.config.r == 'release')) && github.event_name == 'push' && github.ref == 'refs/heads/master'
