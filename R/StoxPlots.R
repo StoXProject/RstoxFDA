@@ -7,6 +7,7 @@
 #'  Plots landings by date of catch and by group
 #' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaLandingData}}
 #' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
+#' @family StoX-functions
 #' @noRd
 PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
   
@@ -51,6 +52,7 @@ PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
 #' @param StratumPolygon \code{\link[RstoxBase]{StratumPolygon}}
 #' @param AreaLabels if TRUE, labels with area codes are plotted on map.
 #' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
+#' @family StoX-functions
 #' @noRd
 PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, AreaLabels=F){
   
@@ -100,6 +102,7 @@ PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, A
 #'  Plots catch by group.
 #' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaLandingData}}
 #' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
+#' @family StoX-functions
 #' @noRd
 PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
   
@@ -173,6 +176,7 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @param MinCatches The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.
 #' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.
 #' @param TextSize size of text in cellplot. Defaults to 2.
+#' @family StoX-functions
 #' @noRd
 PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), TextSize=numeric()){
   if (!is.ReportFdaSamplingData(ReportFdaSamplingData)){
@@ -286,6 +290,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
 #' @param MinCatches color scheme "CellPlot". The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.
 #' @param MinMeasurements color scheme "CellPlot". The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.
 #' @param SamplingUnit color scheme "Gradient". The sampling unit used: "Vessels","Catches", or "Measurement"
+#' @family StoX-functions
 #' @md
 #' @noRd
 PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorScheme=c("CellPlot"), Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), SamplingUnit=c("Vessels","Catches","Measurements")){
@@ -403,6 +408,72 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorS
   
 }
 
+#' Plot sampling variables
+#' @description 
+#'  Plot a stacked barplot of sampling variables for each part of the fishery, with total landings on a secondary axis
+#' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
+#' @param Quantity the quantity to plot for each sampling variable: "Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", or "WeightOfSampledCatches"
+#' @family StoX-functions
+#' @noRd
+PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches")){
+  
+  Quantity <- match.arg(Quantity, Quantity)
+  
+  if (!isGiven(Quantity)){
+    stop("Argument 'Quantity' must be provided")
+  }
+  if (!(Quantity %in% c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches"))){
+    stop(paste("Does not recognize option", Quantity, "for 'Quantity'"))
+  }
+  
+  ReportFdaSamplingData$FisheriesSampling$cell <- apply(ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcols=ReportFdaSamplingData$GroupingVariables$GroupingVariables], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
+  ReportFdaSamplingData$FisheriesSampling$SamplingVariable <- apply(ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcols=ReportFdaSamplingData$SamplingVariables$SamplingVariables], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
+  ReportFdaSamplingData$FisheriesSampling$SamplingVariable[is.na(ReportFdaSamplingData$FisheriesSampling$SamplingVariable)] <- 0
+  ReportFdaSamplingData$FisheriesSampling[[Quantity]][is.na(ReportFdaSamplingData$FisheriesSampling[[Quantity]])] <- 0
+  
+  ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight[is.na(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight)] <- 0
+  ReportFdaSamplingData$FisheriesSampling <- ReportFdaSamplingData$FisheriesSampling[order(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, decreasing=T),]
+  ReportFdaSamplingData$FisheriesSampling$cell <- factor(ReportFdaSamplingData$FisheriesSampling$cell, levels=ReportFdaSamplingData$FisheriesSampling$cell[!duplicated(ReportFdaSamplingData$FisheriesSampling$cell)], ordered = T)
+  
+  samplingVariableLabel <- paste(ReportFdaSamplingData$SamplingVariables$SamplingVariables, collapse = "-")
+  cellLabel <- paste(ReportFdaSamplingData$GroupingVariables$GroupingVariables, collapse = "-")
+  tab <- ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcol=c("cell", "SamplingVariable", Quantity)]
+  
+  pl <- ggplot2::ggplot(tab, ggplot2::aes_string("cell", Quantity)) +
+    ggplot2::geom_col(ggplot2::aes_string(fill="SamplingVariable")) +
+    ggplot2::xlab(cellLabel) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    ggplot2::guides(fill=ggplot2::guide_legend(title=samplingVariableLabel))
+  
+  
+  #
+  # add secondary axis w landings
+  #
+  landings <- ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcol=c("cell", "LandedRoundWeight")]
+  landings <- landings[!duplicated(landings$cell),]
+  
+  barsizes <- ReportFdaSamplingData$FisheriesSampling[,list(barsize=sum(get(Quantity))), list(cell=get("cell"))]
+  maxbarsize <- max(barsizes$barsize)
+  
+  coeff <- max(landings$LandedRoundWeight, na.rm=T) / maxbarsize
+  landings$scaledLandings <- landings$LandedRoundWeight / coeff
+  
+  
+  pl <- pl + ggplot2::geom_line(ggplot2::aes_string(y="scaledLandings"), landings, group=1) + 
+    ggplot2::scale_y_continuous(
+      
+      # Features of the first axis
+      name = Quantity,
+      
+      # Add a second axis and specify its features
+      sec.axis = ggplot2::sec_axis(~.x*coeff, name=paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep=""))
+    )  
+  
+  return(pl)
+}
+
+#' @family StoX-functions
 #' @noRd
 PlotCatcAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   
@@ -445,6 +516,7 @@ PlotCatcAtAgeTotals <- function(ReportFdaCatchAtAgeData){
 #'  Plots covariances between age groups and other grouping variables catch at age.
 #' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaCatchAtAgeCovarianceData}}
 #' @seealso \code{\link[RstoxData]{ReportRecaCatchAtAgeCovariance}}
+#' @family StoX-functions
 #' @noRd
 PlotCatcAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
   

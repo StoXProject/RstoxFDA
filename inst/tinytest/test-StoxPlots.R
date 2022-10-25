@@ -112,6 +112,15 @@ expect_error(RstoxFDA:::PlotSamplingCoverage(tab, SamplingUnit = "wrong"), "Does
 expect_error(RstoxFDA:::PlotSamplingCoverage(tab, Measurement = "wrong"), "Does not recognize option wrong for 'Measurement'")
 
 # test with sampling variable
-tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "Platform")
+tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "IndividualSex")
 expect_error(RstoxFDA:::PlotSamplingCoverage(tab), "Coverage plot cannot be constructed when sampling report has sampling variables")
 
+
+#test sampling variable plot
+tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "IndividualSex")
+RstoxFDA:::PlotSamplingVariables(tab)
+RstoxFDA:::PlotSamplingVariables(tab, Quantity = "AgeReadings")
+expect_error(RstoxFDA:::PlotSamplingVariables(tab, Quantity = "wrong"), "Does not recognize option wrong for 'Quantity'")
+
+tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = c("IndividualSex", "Platform"))
+RstoxFDA:::PlotSamplingVariables(tab)
