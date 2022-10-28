@@ -410,7 +410,7 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorS
 
 #' Plot sampling variables
 #' @description 
-#'  Plot a stacked barplot of sampling variables for each part of the fishery, with total landings on a secondary axis
+#'  Plot a stacked barplot of sampling variables for each part of the fishery, with total landings on a secondary axis.
 #' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
 #' @param Quantity the quantity to plot for each sampling variable: "Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", or "WeightOfSampledCatches"
 #' @family StoX-functions
@@ -438,6 +438,16 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
   samplingVariableLabel <- paste(ReportFdaSamplingData$SamplingVariables$SamplingVariables, collapse = "-")
   cellLabel <- paste(ReportFdaSamplingData$GroupingVariables$GroupingVariables, collapse = "-")
   tab <- ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcol=c("cell", "SamplingVariable", Quantity)]
+  
+  if (length(unique(tab$cell))==1){
+    pl <- ggplot2::ggplot(tab, ggplot2::aes_string("SamplingVariable", Quantity)) +
+      ggplot2::geom_col(ggplot2::aes_string(fill="SamplingVariable"), group=1) +
+      ggplot2::xlab(samplingVariableLabel) +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
+      ggplot2::ggtitle(tab$cell[[1]])
+    return(pl)
+  }
   
   pl <- ggplot2::ggplot(tab, ggplot2::aes_string("cell", Quantity)) +
     ggplot2::geom_col(ggplot2::aes_string(fill="SamplingVariable")) +

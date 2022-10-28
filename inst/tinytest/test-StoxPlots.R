@@ -124,3 +124,8 @@ expect_error(RstoxFDA:::PlotSamplingVariables(tab, Quantity = "wrong"), "Does no
 
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = c("IndividualSex", "Platform"))
 RstoxFDA:::PlotSamplingVariables(tab)
+
+#test sampling variable plot wo grouping variables
+tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c(), Unit = "ton", SamplingVariables = c("IndividualSex", "Platform"))
+RstoxFDA:::PlotSamplingVariables(tab)
+
