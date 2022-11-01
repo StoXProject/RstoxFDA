@@ -46,20 +46,4 @@ Appends a column with an area code to a table, based on positions.
  or if some positions are missing (NA). Turning of strict-mode accepts
  both these cases and the area code will be NA for these positions.
 }
-\seealso{
-Other spatial coding functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{appendPosition}()},
-\code{\link{areaCodeConversionTable}()},
-\code{\link{mergePolygons}()},
-\code{\link{plotAreaComparison}()},
-\code{\link{plotArea}()},
-\code{\link{writeSpDataFrameAsWKT}()}
-}
 \concept{spatial coding functions}

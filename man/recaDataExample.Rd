@@ -17,23 +17,5 @@ Example is produced by \code{\link[RstoxFDA]{prepRECA}} and is suited for input 
 data(recaDataExample)
 \dontrun{recaResult <- RunRecaEstimate(recaDataExample, 500, 5000)}
 }
-\seealso{
-Other Reca functions: 
-\code{\link{catchsamples}},
-\code{\link{convertRecaData}()},
-\code{\link{getCovariateMap}()},
-\code{\link{getLandings}()},
-\code{\link{landings}},
-\code{\link{makeAgeTracesRECA}()},
-\code{\link{makeResultTableRECA}()},
-\code{\link{plotAgeTraces}()},
-\code{\link{plotCatchAtAge}()},
-\code{\link{prepRECA}()},
-\code{\link{rEcaDataReport}()},
-\code{\link{recaPrediction}},
-\code{\link{runRECA}()},
-\code{\link{sanitizeRecaInput}()},
-\code{\link{tabulateFisheries}()}
-}
 \concept{Reca functions}
 \keyword{datasets}

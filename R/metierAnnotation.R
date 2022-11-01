@@ -15,7 +15,7 @@
 #' @param filename character() path to file that contains metier definitions. See details for format.
 #' @param encoding The character encoding of the file identified by 'filename'
 #' @return \code{\link[RstoxFDA]{MetierTable}} containing metier definitions.
-#' @family gear coding functions
+#' @concept gear coding functions
 #' @export
 readMetierTable <- function(filename, encoding="UTF8"){
   
@@ -286,7 +286,7 @@ checkSelectivityDevice <- function(selectivityDeviceVector, metiertable){
 #'  annotatedShrimp <- annotated[annotated$targetFAO %in% c("PAN", "PRA"),]
 #'  table(annotatedShrimp$metier5, annotatedShrimp$metier6)
 #'  
-#' @family gear coding functions
+#' @concept gear coding functions
 #' @export
 appendMetier <- function(data, metiertable, gearColumn, targetColumn=NULL, meshSizeColumn=NULL, selectivityDeviceColumn=NULL, selectivityDeviceMeshSizeColumn=NULL, metierColName="metier"){
 

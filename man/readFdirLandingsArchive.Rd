@@ -17,10 +17,4 @@ readFdirLandingsArchive(filename, encoding = "Latin-1")
 \description{
 Reads aggregated sales notes from archive format deliver by FDIR to IMR. E.g. sluttseddel_1978_2004_medVerdi.csv
 }
-\seealso{
-Other IO functions: 
-\code{\link{ReadLandingFDA}()},
-\code{\link{convertToErsData}()},
-\code{\link{readLstFile}()}
-}
 \concept{IO functions}

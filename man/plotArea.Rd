@@ -81,20 +81,4 @@ Map ranges to plot are specified by 'xlim' and 'ylim'. These should always be gi
           projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
           +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 }
-\seealso{
-Other spatial coding functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{appendAreaCode}()},
-\code{\link{appendPosition}()},
-\code{\link{areaCodeConversionTable}()},
-\code{\link{mergePolygons}()},
-\code{\link{plotAreaComparison}()},
-\code{\link{writeSpDataFrameAsWKT}()}
-}
 \concept{spatial coding functions}

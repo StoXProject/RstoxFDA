@@ -58,12 +58,4 @@ This function is intended to provide the same filtering that is offered in ECA 3
  Note that kAl and kAu are given on a log scale, so that the acceptable region
  is not symmetric around the growth curve when kAl=kAu.
 }
-\seealso{
-Other data QA functions: 
-\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
-\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
-\code{\link{ListBioticDifference}()},
-\code{\link{ReportFdaSOP}()},
-\code{\link{filterVonBsigma}()}
-}
 \concept{data QA functions}

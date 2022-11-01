@@ -16,7 +16,7 @@
 #'
 #' @format \code{\link[RstoxFDA]{KommunePolygons}}, which is a \code{\link[sp]{SpatialPolygonsDataFrame}}.
 #'
-#' @family area code polygons
+#' @concept area code polygons
 #' @keywords datasets
 #'
 #' @examples

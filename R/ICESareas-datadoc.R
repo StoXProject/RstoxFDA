@@ -26,7 +26,7 @@
 #'
 #' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 #' 
-#' @family area code polygons
+#' @concept area code polygons
 #' @keywords datasets
 #' 
 #' @seealso \code{\link[RstoxFDA]{ICESsubArea}}, \code{\link[RstoxFDA]{ICESdivision}}, \code{\link[RstoxFDA]{ICESsubDivision}}, and \code{\link[RstoxFDA]{ICESunit}}

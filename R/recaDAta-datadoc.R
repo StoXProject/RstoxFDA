@@ -9,7 +9,7 @@
 #' @format see \code{\link[RstoxFDA]{prepRECA}}.
 #'
 #' @keywords datasets
-#' @family Reca functions
+#' @concept Reca functions
 #'
 #' @examples
 #' data(recaDataExample)

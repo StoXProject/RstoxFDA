@@ -23,21 +23,5 @@ data(portcodes2020)
 nocodes <- portcodes2020[portcodes2020$Country=="NO" & !is.na(portcodes2020$latitude),]
 RstoxFDA::plotArea(nocodes, "latitude", "longitude", areaDef=RstoxFDA::mainareaFdir2017)
 }
-\seealso{
-Other area code polygons: 
-\code{\link{GSAsubArea}},
-\code{\link{ICESareas}},
-\code{\link{ICESdivision}},
-\code{\link{ICESrectangles}},
-\code{\link{ICESsubArea}},
-\code{\link{ICESsubDivision}},
-\code{\link{ICESunit}},
-\code{\link{NAFOareas}},
-\code{\link{kommuner2022}},
-\code{\link{locationsFdir2017}},
-\code{\link{locationsFdir2018}},
-\code{\link{mainareaFdir2017}},
-\code{\link{mainareaFdir2018}}
-}
 \concept{area code polygons}
 \keyword{datasets}

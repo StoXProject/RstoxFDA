@@ -20,21 +20,5 @@ data(locationsFdir2018)
 sp::plot(locationsFdir2018, ylim=c(57,60), xlim=c(0,25), border="blue")
 sp::plot(locationsFdir2017, add=TRUE)
 }
-\seealso{
-Other area code polygons: 
-\code{\link{GSAsubArea}},
-\code{\link{ICESareas}},
-\code{\link{ICESdivision}},
-\code{\link{ICESrectangles}},
-\code{\link{ICESsubArea}},
-\code{\link{ICESsubDivision}},
-\code{\link{ICESunit}},
-\code{\link{NAFOareas}},
-\code{\link{kommuner2022}},
-\code{\link{locationsFdir2018}},
-\code{\link{mainareaFdir2017}},
-\code{\link{mainareaFdir2018}},
-\code{\link{portcodes2020}}
-}
 \concept{area code polygons}
 \keyword{datasets}

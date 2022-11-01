@@ -39,7 +39,7 @@ is.Date <- function(date){
 #' }
 #'
 #' @name TripPartition
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -84,7 +84,7 @@ NULL
 #'  The metier-defining parameters are written in camelCase, parameters that may be used to distinguish applicability of different metierdefinitions are writter in UPPER case.
 #'
 #' @name MetierTable
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -92,7 +92,7 @@ NULL
 #' @param table \code{\link[RstoxFDA]{MetierTable}}
 #' @param throwError if set errors are raised, if not, validity will be returned as T/F
 #' @return validity
-#' @family Data types
+#' @concept Data types
 #' @noRd
 is.MetierTable <- function(table, throwError=F){
   
@@ -311,7 +311,7 @@ is.StoxBioticData <- function(StoxBioticData, raiseErrors=F){
 #' 
 #' 
 #' @name LocodeTable
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -330,7 +330,7 @@ NULL
 #'   }
 #'  
 #' @name KommunePolygons
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -367,7 +367,7 @@ NULL
 #' 
 #' 
 #' @name LandingsArchiveData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -414,7 +414,7 @@ NULL
 #' 
 #' 
 #' @name LstLogbookData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -440,7 +440,7 @@ NULL
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaByAgeData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -468,7 +468,7 @@ NULL
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaSummaryData
-#' @family Data types
+#' @concept Data types
 NULL
 
 #' Fisheries dependent Catch At Age Report (ReportFdaCatchAtAgeData)
@@ -486,7 +486,7 @@ NULL
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaCatchAtAgeData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -515,7 +515,7 @@ NULL
 #' 
 #' 
 #' @name ReportFdaCatchAtAgeCovarianceData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -535,7 +535,7 @@ NULL
 #' 
 #' 
 #' @name ReportFdaCatchAtLengthData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -554,7 +554,7 @@ NULL
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaCatchAtLengthAndAgeData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -577,7 +577,7 @@ NULL
 #'  and does not characterize the length distribution of fish.
 #' 
 #' @name ReportFdaLengthAtAgeData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -600,7 +600,7 @@ NULL
 #'  and does not characterize the weight distribution of fish.
 #' 
 #' @name ReportFdaWeightAtAgeData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -609,7 +609,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
 #' @param ReportFdaByAgeData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.ReportFdaByAgeData <- function(ReportFdaByAgeData){
   if (!is.list(ReportFdaByAgeData)){
@@ -657,7 +657,7 @@ is.ReportFdaByAgeData <- function(ReportFdaByAgeData){
 #'  The unit for RelativeDifference is configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaSopData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -666,7 +666,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSOP}}
 #' @param ReportFdaSOP argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSOP}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.ReportFdaSOP <- function(ReportFdaSOP){
   
@@ -721,7 +721,7 @@ is.ReportFdaSOP <- function(ReportFdaSOP){
 #'  for creating ParameterizationSummaryData from Reca-simulations.
 #' 
 #' @name ParameterizationSummaryData
-#' @family Data types
+#' @concept Data types
 NULL
 
 #' Checks if argument is \code{\link[RstoxFDA]{ParameterizationSummaryData}}
@@ -729,7 +729,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ParameterizationSummaryData}}
 #' @param ParameterizationSummaryData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ParameterizationSummaryData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.ParameterizationSummaryData <- function(ParameterizationSummaryData){
   
@@ -785,7 +785,7 @@ is.ParameterizationSummaryData <- function(ParameterizationSummaryData){
 #'  for creating ParameterConvergenceData.
 #' 
 #' @name ParameterConvergenceData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -794,7 +794,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ParameterConvergenceData}}
 #' @param ParameterConvergenceData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ParameterConvergenceData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.ParameterConvergenceData <- function(ParameterConvergenceData){
   
@@ -820,7 +820,7 @@ is.ParameterConvergenceData <- function(ParameterConvergenceData){
 #'  Checks if argument conforms to specification for \code{\link[RstoxData]{Translation}}
 #' @param Translation argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxData]{Translation}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.Translation <- function(Translation){
   if (!data.table::is.data.table(Translation)){
@@ -856,7 +856,7 @@ is.Translation <- function(Translation){
 #'  }
 #'  
 #' @name LengthConversionTable
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -865,7 +865,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{LengthConversionTable}}
 #' @param LengthConversionTable argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{LengthConversionTable}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.LengthConversionTable <- function(LengthConversionTable){
   if (!data.table::is.data.table(LengthConversionTable)){
@@ -893,7 +893,7 @@ is.LengthConversionTable <- function(LengthConversionTable){
 #'  NA is allowed for 'WeightFactor', which will result in NA for weights after conversion
 #'  
 #' @name WeightConversionTable
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -902,7 +902,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{WeightConversionTable}}
 #' @param WeightConversionTable argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{WeightConversionTable}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.WeightConversionTable <- function(WeightConversionTable){
   if (!data.table::is.data.table(WeightConversionTable)){
@@ -940,7 +940,7 @@ is.WeightConversionTable <- function(WeightConversionTable){
 #'  }
 #' 
 #' @name ReportFdaSamplingData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -949,7 +949,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @param ReportFdaSamplingData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
   if (!is.list(ReportFdaSamplingData)){
@@ -987,7 +987,7 @@ is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
 #'  }
 #' 
 #' @name ReportFdaLandingData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -1009,7 +1009,7 @@ NULL
 #' }
 #'
 #' @name RecaData
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1018,7 +1018,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaData}}
 #' @param RecaData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.RecaData <- function(RecaData){
   if (!is.list(RecaData)){
@@ -1105,7 +1105,7 @@ is.RecaData <- function(RecaData){
 #' }
 #'
 #' @name RecaParameterData
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1114,7 +1114,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
 #' @param RecaParameterData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.RecaParameterData <- function(RecaParameterData){
   
@@ -1215,7 +1215,7 @@ is.RecaParameterData <- function(RecaParameterData){
 #' }
 #'
 #' @name RecaCatchAtAge
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1224,7 +1224,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
 #' @param RecaCatchAtAge argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.RecaCatchAtAge <- function(RecaCatchAtAge){
   if (!is.list(RecaCatchAtAge)){
@@ -1271,7 +1271,7 @@ is.RecaCatchAtAge <- function(RecaCatchAtAge){
 #' }
 #'
 #' @name RecaResult
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1300,7 +1300,7 @@ is.RecaPrediction <- function(prediction){
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}
 #' @param RecaResult argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.RecaResult <- function(RecaResult){
   if (!is.list(RecaResult)){
@@ -1337,7 +1337,7 @@ is.RecaResult <- function(RecaResult){
 #'  it is taken to be included in the last category of the preceding year.
 #'
 #' @name TemporalDefinition
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1346,7 +1346,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
 #' @param TemporalDefinition argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.TemporalDefinition <- function(TemporalDefinition){
   if (!data.table::is.data.table(TemporalDefinition)){
@@ -1377,7 +1377,7 @@ is.TemporalDefinition <- function(TemporalDefinition){
 #'  If location is provided, the case for missing location is also encoded.
 #'
 #' @name AreaPosition
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1386,7 +1386,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AreaPosition}}
 #' @param AreaPosition argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{AreaPosition}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.AreaPosition <- function(AreaPosition){
   if (!data.table::is.data.table(AreaPosition)){
@@ -1413,7 +1413,7 @@ is.AreaPosition <- function(AreaPosition){
 #'  The table is symmetric, so that if b is a neighbour of a. a is also a neighbour of b.
 #'
 #' @name CarNeighbours
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1424,7 +1424,7 @@ NULL
 #'  See \code{\link[RstoxData]{LandingData}}
 #'
 #' @name LandingData
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1433,7 +1433,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
 #' @param CarNeighbours argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.CarNeighbours <- function(CarNeighbours){
   if (!data.table::is.data.table(CarNeighbours)){
@@ -1460,7 +1460,7 @@ is.CarNeighbours <- function(CarNeighbours){
 #'  Columns sum to 1.
 #'
 #' @name AgeErrorMatrix
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1469,7 +1469,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
 #' @param AgeErrorMatrix argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.AgeErrorMatrix <- function(AgeErrorMatrix){
   if (!data.table::is.data.table(AgeErrorMatrix)){
@@ -1518,7 +1518,7 @@ is.AgeErrorMatrix <- function(AgeErrorMatrix){
 #'  The data table contains only one row.
 #'
 #' @name StockSplittingParameters
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1527,7 +1527,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParameters}}
 #' @param StockSplittingParameters argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParameters}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.StockSplittingParameters <- function(StockSplittingParameters){
   if (!data.table::is.data.table(StockSplittingParameters)){

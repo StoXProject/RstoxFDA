@@ -263,7 +263,7 @@ readFdirOpenLandings <- function(filename, encoding="UTF-8"){
 #' @param filename file to read the archive from
 #' @param encoding encoding of the file identified by filename, must be accepted by \code{\link[data.table]{fread}}.
 #' @return \code{\link[RstoxFDA]{LandingsArchiveData}}
-#' @family IO functions
+#' @concept IO functions
 #' @export
 readFdirLandingsArchive <- function(filename, encoding = "Latin-1"){
   
@@ -304,8 +304,8 @@ readFdirLandingsArchive <- function(filename, encoding = "Latin-1"){
 #' @param filename file to read the logbook records from
 #' @param encoding encoding of the file identified by filename, must be accepted by \code{\link[data.table]{fread}}.
 #' @return LstLogbookData
-#' @family IO functions
-#' @family logbook functions
+#' @concept IO functions
+#' @concept logbook functions
 #' @export
 readLstFile <- function(filename, encoding = "Latin-1"){
   
@@ -368,8 +368,8 @@ readLstFile <- function(filename, encoding = "Latin-1"){
 #'
 #' @param LstLogbookData \code{\link[RstoxFDA]{LstLogbookData}} to be converted
 #' @param timestring string representing the time of day (UTC) to assume for fishing operations. Format: %H:%M:%S.
-#' @family logbook functions
-#' @family IO functions
+#' @concept logbook functions
+#' @concept IO functions
 #' @return \code{\link[data.table]{data.table}} formatted as return from \code{\link[RstoxData]{readErsFile}}.
 #' @md
 #' @export

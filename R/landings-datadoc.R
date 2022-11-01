@@ -10,8 +10,8 @@
 #' @format RDB CL-table version 1.3 (RDBES exchange format v 1.13). Some data types may differ from specification. Notably species, which is formatted as character.
 #'
 #' @keywords datasets
-#' @family Reca functions
-#' @family landings functions
+#' @concept Reca functions
+#' @concept landings functions
 #'
 #' @examples
 #' data(landings)

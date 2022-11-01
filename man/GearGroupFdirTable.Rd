@@ -22,16 +22,5 @@ annotated <- appendMetier(activityCensus,
                           metierColName = "Hovedgruppe Redskap")
 table(annotated$gearFAO, annotated$"Hovedgruppe Redskap")
 }
-\seealso{
-Other gear coding functions: 
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{appendMetier}()},
-\code{\link{metier4table}},
-\code{\link{metier5table}},
-\code{\link{metier6table}},
-\code{\link{readMetierTable}()}
-}
 \concept{gear coding functions}
 \keyword{datasets}

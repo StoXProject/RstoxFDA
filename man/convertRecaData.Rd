@@ -65,22 +65,4 @@ The StoX-function interfacing Reca-parameterisation (\code{\link[RstoxFDA]{RunRe
  Reca requires categorical variables to be encoded as consecutive integers, starting with 1. In order to keep track of how this correspond to other representations, 
  this function provides the mapping in the list 'CovariateMaps'. CovariateMaps is not an input to Reca, but only provided to assist book-keeping.
 }
-\seealso{
-Other Reca functions: 
-\code{\link{catchsamples}},
-\code{\link{getCovariateMap}()},
-\code{\link{getLandings}()},
-\code{\link{landings}},
-\code{\link{makeAgeTracesRECA}()},
-\code{\link{makeResultTableRECA}()},
-\code{\link{plotAgeTraces}()},
-\code{\link{plotCatchAtAge}()},
-\code{\link{prepRECA}()},
-\code{\link{rEcaDataReport}()},
-\code{\link{recaDataExample}},
-\code{\link{recaPrediction}},
-\code{\link{runRECA}()},
-\code{\link{sanitizeRecaInput}()},
-\code{\link{tabulateFisheries}()}
-}
 \concept{Reca functions}

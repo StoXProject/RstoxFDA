@@ -9,7 +9,7 @@
 #' @format \code{\link[RstoxFDA]{MetierTable}} with column 'gearcode' identifying gear codes used in Norwegian fisheries data (derived from NS 9400)
 #'
 #' @keywords datasets
-#' @family gear coding functions
+#' @concept gear coding functions
 #'
 #' @examples
 #' data(GearGroupFdirTable)

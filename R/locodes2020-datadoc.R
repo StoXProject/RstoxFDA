@@ -12,7 +12,7 @@
 #'
 #' @format \code{\link[RstoxFDA]{LocodeTable}}.
 #'
-#' @family area code polygons
+#' @concept area code polygons
 #' @keywords datasets
 #'
 #' @examples

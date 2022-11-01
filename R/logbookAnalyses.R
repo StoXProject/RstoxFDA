@@ -25,7 +25,7 @@
 #'    tripIds <- makeTripIds(landings)
 #'    logbooksWtripIds <- appendTripIdLogbooks(logbooks, tripIds)
 #'  }
-#' @family logbook functions
+#' @concept logbook functions
 #' @export
 appendTripIdLogbooks <- function(logbooks, tripIds, timeCol="STARTTIDSPUNKT", vesselIdCol="RC", tripIdCol="tripid", verbose=T){
 
@@ -111,7 +111,7 @@ appendTripIdLogbooks <- function(logbooks, tripIds, timeCol="STARTTIDSPUNKT", ve
 #'   logbooksWtripIds$mainArea <- substring(logbooksWtripIds$LOKASJON_START,1,2)
 #'   fractions <- calculateLogbookPartitionByTrip(logbooksWtripIds, "mainArea")
 #'  }
-#' @family logbook functions
+#' @concept logbook functions
 #' @importFrom data.table .SD
 #' @export
 calculateLogbookPartitionByTrip <- function(logbooks, groupCols, tripCol="tripid", speciesCol="FANGSTART_FAO", weightCol="RUNDVEKT"){

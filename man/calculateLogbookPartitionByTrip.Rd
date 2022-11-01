@@ -49,17 +49,4 @@ Default parameters are compatible \code{\link[RstoxData]{readErsFile}} with trip
   fractions <- calculateLogbookPartitionByTrip(logbooksWtripIds, "mainArea")
  }
 }
-\seealso{
-Other logbook functions: 
-\code{\link{activityCensus}},
-\code{\link{addLogbookColumns}()},
-\code{\link{appendTripIdLandings}()},
-\code{\link{appendTripIdLogbooks}()},
-\code{\link{convertToErsData}()},
-\code{\link{imputeCatchesLandings}()},
-\code{\link{logbookAdjustment}()},
-\code{\link{makeTripIds}()},
-\code{\link{readLstFile}()},
-\code{\link{sourceLogbookColumns}()}
-}
 \concept{logbook functions}

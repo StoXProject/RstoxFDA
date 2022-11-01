@@ -58,54 +58,6 @@ That is a category starting with 1. Jan is added if not present, and likewise a 
 }
 \seealso{
 \code{\link[RstoxFDA]{AddPeriodStoxBiotic}} and \code{\link[RstoxFDA]{AddPeriodStoxLanding}} for adding Periods to data.
-
-Other temporal coding functions: 
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{AddPeriodStoxLanding}()},
-\code{\link{SetStartDateBiotic}()},
-\code{\link{SetTimeBiotic}()},
-\code{\link{categoriseDate}()}
-
-Other StoX-functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{AddPeriodStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{ConvertLengthBiotic}()},
-\code{\link{ConvertWeightBiotic}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{DefineLengthConversionParameters}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{DefineWeightConversionFactor}()},
-\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
-\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
-\code{\link{ListBioticDifference}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{ReportFdaSOP}()},
-\code{\link{ReportFdaSampling}()},
-\code{\link{ReportParameterConvergence}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{SetStartDateBiotic}()},
-\code{\link{SetTimeBiotic}()}
 }
 \concept{StoX-functions}
 \concept{temporal coding functions}

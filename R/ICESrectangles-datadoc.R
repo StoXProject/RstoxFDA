@@ -28,7 +28,7 @@
 #'
 #' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with rectange names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 #'
-#' @family area code polygons
+#' @concept area code polygons
 #' @keywords datasets
 #'
 #' @examples

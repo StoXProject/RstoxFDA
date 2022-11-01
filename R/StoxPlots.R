@@ -7,7 +7,7 @@
 #'  Plots landings by date of catch and by group
 #' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaLandingData}}
 #' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
-#' @family StoX-functions
+#' @concept StoX-functions
 #' @noRd
 PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
   
@@ -52,7 +52,7 @@ PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
 #' @param StratumPolygon \code{\link[RstoxBase]{StratumPolygon}}
 #' @param AreaLabels if TRUE, labels with area codes are plotted on map.
 #' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
-#' @family StoX-functions
+#' @concept StoX-functions
 #' @noRd
 PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, AreaLabels=F){
   
@@ -102,7 +102,7 @@ PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, A
 #'  Plots catch by group.
 #' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaLandingData}}
 #' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
-#' @family StoX-functions
+#' @concept StoX-functions
 #' @noRd
 PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
   
@@ -176,7 +176,7 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @param MinCatches The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.
 #' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.
 #' @param TextSize size of text in cellplot. Defaults to 2.
-#' @family StoX-functions
+#' @concept StoX-functions
 #' @noRd
 PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), TextSize=numeric()){
   if (!is.ReportFdaSamplingData(ReportFdaSamplingData)){
@@ -290,7 +290,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
 #' @param MinCatches color scheme "CellPlot". The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.
 #' @param MinMeasurements color scheme "CellPlot". The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.
 #' @param SamplingUnit color scheme "Gradient". The sampling unit used: "Vessels","Catches", or "Measurement"
-#' @family StoX-functions
+#' @concept StoX-functions
 #' @md
 #' @noRd
 PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorScheme=c("CellPlot"), Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), SamplingUnit=c("Vessels","Catches","Measurements")){
@@ -413,7 +413,7 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorS
 #'  Plot a stacked barplot of sampling variables for each part of the fishery, with total landings on a secondary axis.
 #' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
 #' @param Quantity the quantity to plot for each sampling variable: "Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", or "WeightOfSampledCatches"
-#' @family StoX-functions
+#' @concept StoX-functions
 #' @noRd
 PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches")){
   
@@ -483,7 +483,7 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
   return(pl)
 }
 
-#' @family StoX-functions
+#' @concept StoX-functions
 #' @noRd
 PlotCatcAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   
@@ -557,13 +557,12 @@ PlotMeanVariableAtAge <- function(ReportFdaVariableAtAgeData, tableName="MeanWei
 #'  Plot mean individual weight for each age group, along with an interval rerpesentation for the error of the mean.
 #'  The interval plotted is as configured in 'ReportFdaWeightAtAgeData' (the interval Low / High) and is represented by dashed lines.
 #'  
-#'  The interval does not represent the range of length occuring in each age group, but the error of the estiamte of mean weigt
-#'  Large errors may be indicative of convergence issues.
+#'  The interval does not represent the range of length occuring in each age group, but the error of the estiamte of mean weight
 #'  
 #'  If any grouping variables are configued for argument 'ReportFdaWeightAtAgeData', groups will be plotted in different colors.
 #' @param ReportFdaWeightAtAgeData \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}} with mean weight statistics from Reca simulations
-#' @family StoX-functions
-#' @family convergence-checks
+#' @concept StoX-functions
+#' @concept convergence-checks
 #' @noRd
 PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
  if (!is.ReportFdaByAgeData(ReportFdaWeightAtAgeData)){
@@ -577,13 +576,12 @@ PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
 #'  Plot mean individual length for each age group, along with an interval rerpesentation for the error of the mean.
 #'  The interval plotted is as configured in 'ReportFdaLengthAtAgeData' (the interval Low / High) and is represented by dashed lines.
 #'  
-#'  The interval does not represent the range of weights occuring in each age group, but the error of the estiamte of mean length
-#'  Large errors may be indicative of convergence issues.
+#'  The interval does not represent the range of weights occuring in each age group, but the error of the estimate of mean length
 #'  
 #'  If any grouping variables are configued for argument 'ReportFdaLengthAtAgeData', groups will be plotted in different colors.
 #' @param ReportFdaLengthAtAgeData \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}} with mean weight statistics from Reca simulations
-#' @family StoX-functions
-#' @family convergence-checks
+#' @concept StoX-functions
+#' @concept convergence-checks
 #' @noRd
 PlotMeanLengthAtAge <- function(ReportFdaLengthAtAgeData){
   if (!is.ReportFdaByAgeData(ReportFdaLengthAtAgeData)){
@@ -597,7 +595,7 @@ PlotMeanLengthAtAge <- function(ReportFdaLengthAtAgeData){
 #'  Plots covariances between age groups and other grouping variables catch at age.
 #' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaCatchAtAgeCovarianceData}}
 #' @seealso \code{\link[RstoxData]{ReportRecaCatchAtAgeCovariance}}
-#' @family StoX-functions
+#' @concept StoX-functions
 #' @noRd
 PlotCatcAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
   
@@ -658,8 +656,8 @@ PlotCatcAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
 #' @param UpperQuant upper quantile in each age group to plot as points. Defaults to 0.95
 #' @param CatLimit the upper limit for number of ages in a plot using categorical coloring. Plots with more than this number of age greoups will use a gradient coloring scheme. Defaults to 8.
 #' @param LegendLimit the upper limit for number of ages in a plot showing legends. Plots with more than this number of age groups will not show plot legend. Defaults to 8.
-#' @family StoX-functions
-#' @family convergence-checks
+#' @concept StoX-functions
+#' @concept convergence-checks
 #' @noRd
 #' @md
 PlotPosteriorTraces <- function(RecaCatchAtAge, 

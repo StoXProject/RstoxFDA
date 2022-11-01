@@ -103,7 +103,7 @@ checkAllSampledCar <- function(landings, samples, fixedEffects, carEffect, neigh
 #'  catchsamples$Metier5 <- catchsamples$LEmetier5
 #'  landings$Metier5 <- landings$FishingActivityCategoryEuropeanLvl5
 #'  getCovariateMap("Metier5", catchsamples, landings)
-#' @family Reca functions
+#' @concept Reca functions
 #' @export
 getCovariateMap <- function(covariate, samples, landings){
 
@@ -445,7 +445,7 @@ getNeighbours <- function(neighbours, covariateMap){
 #'  landings$Metier5 <- landings$FishingActivityCategoryEuropeanLvl5
 #'  covMap <- getCovariateMap("Metier5", catchsamples, landings)
 #'  getLandings(landings, c("Metier5"), covMap, month=landings$Month)
-#' @family Reca functions
+#' @concept Reca functions
 #' @export
 getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NULL, quarter=NULL){
   
@@ -632,7 +632,7 @@ getLandings <- function(landings, covariates, covariateMaps, date=NULL, month=NU
 #'    NULL,
 #'    nFish = nFish,
 #'    quarter = landings$Quarter)
-#' @family Reca functions
+#' @concept Reca functions
 #' @export
 prepRECA <- function(samples, landings, fixedEffects, randomEffects, carEffect=NULL, neighbours=NULL, nFish=NULL, ageError=NULL, minAge=NULL, maxAge=NULL, maxLength=NULL, lengthResolution=NULL, testMax=1000, date=NULL, month=NULL, quarter=NULL, hatchDay=1, interaction=NULL){
   samples <- data.table::as.data.table(samples)
@@ -932,7 +932,7 @@ checkEcaObj <- function(RECAobj, stage=c("dataprep", "parameterize", "predict"))
 #'
 #'  # run (produce recaPrediction as in data(recaPrediction))
 #'  \dontrun{recaPrediction <- runRECA(recaDataExample, 500, 5000)$prediction}
-#' @family Reca functions
+#' @concept Reca functions
 #' @export
 runRECA <- function(RecaObj, nSamples, burnin, lgamodel="log-linear", fitfile="fit", predictfile="pred", resultdir=NULL, thin=10, delta.age=0.001, seed=NULL, caa.burnin=0){
 
@@ -1052,7 +1052,7 @@ runRECA <- function(RecaObj, nSamples, burnin, lgamodel="log-linear", fitfile="f
 #'  landings$Metier5 <- landings$FishingActivityCategoryEuropeanLvl5
 #'
 #'  rEcaDataReport(catchsamples, landings, c("Metier5", "VDencrCode"))
-#' @family Reca functions
+#' @concept Reca functions
 #' @export
 rEcaDataReport <- function(samples, landings, covariates){
   # check mandatory columns

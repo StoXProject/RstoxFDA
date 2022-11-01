@@ -59,8 +59,8 @@ setUnits <- function(table, columns, unit, quantity){
 #' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
 #' @param SamplingVariables Columns of 'StoxBioticData' identifying sampling variables to be use to partition the report. See details.
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
-#' @family landings functions
-#' @family StoX-functions
+#' @concept landings functions
+#' @concept StoX-functions
 #' @export
 #' @md
 ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12)), SamplingVariables=character()){
@@ -168,8 +168,8 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
 #' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.
 #' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'
 #' @return \code{\link[RstoxFDA]{ReportFdaLandingData}}
-#' @family landings functions
-#' @family StoX-functions
+#' @concept landings functions
+#' @concept StoX-functions
 #' @export
 #' @md
 ReportFdaLandings <- function(StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
@@ -429,8 +429,8 @@ setLengthGroup <- function(LengthReport, interval){
 #' @param Unit unit for 'CatchAtAge', 'SD', 'Low' and 'High'
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length composition.
-#' @family StoX-Reca functions
-#' @family StoX-functions
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
 #' @export
 #' @md
 ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
@@ -516,8 +516,8 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
 #' @param Unit unit for 'CatchAtAge'. Covariance will be provided as the square of this unit.
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeCovarianceData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length composition.
-#' @family StoX-Reca functions
-#' @family StoX-functions
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
 #' @export
 #' @md
 ReportRecaCatchAtAgeCovariance <- function(RecaCatchAtAge, PlusGroup=integer(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
@@ -608,8 +608,8 @@ ReportRecaCatchAtAgeCovariance <- function(RecaCatchAtAge, PlusGroup=integer(), 
 #' @param LengthInterval width of length bins in cm. If not provided, the interval in 'RecaCatchAtAge' will be used.
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
-#' @family StoX-Reca functions
-#' @family StoX-functions
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
 #' @export
 #' @md
 ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12)), LengthInterval=numeric()){
@@ -700,8 +700,8 @@ ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Dec
 #' @param Unit unit for 'CatchAtAge', 'SD', 'Low' and 'High'
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtLengthAndAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
-#' @family StoX-Reca functions
-#' @family StoX-functions
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
 #' @export
 #' @md
 ReportRecaCatchAtLengthAndAge <- function(RecaCatchAtAge, 
@@ -851,8 +851,8 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
 #' @param Unit unit for 'MeanIndividualWeight', 'SD', 'Low' and 'High'
 #' @return \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
-#' @family StoX-Reca functions
-#' @family StoX-functions
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
 #' @export
 #' @md
 ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10))){
@@ -952,8 +952,8 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #' @param Unit unit for 'MeanIndividualLength', 'SD', 'Low' and 'High'
 #' @return \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
-#' @family StoX-Reca functions
-#' @family StoX-functions
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
 #' @export
 ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=RstoxData::getUnitOptions("length", conversionRange=c(1e-7, 10))){
   if (!isGiven(RecaCatchAtAge)){
@@ -1059,8 +1059,8 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #'  \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting catch, mean length and mean weight by age groups
 #'  \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length distributions
 #'  \code{\link[RstoxFDA]{ReportRecaCatchAtLengthAndAge}} for reporting catch by age-group and length-group combinations.
-#' @family StoX-Reca functions
-#' @family StoX-functions
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
 #' @export
 #' @md
 ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), 
@@ -1286,8 +1286,8 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
 #' @seealso 
 #'  \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for some ways of preparing 'ReportFdaWeightAtAgeData' and 'ReportFdaCatchAtAgeData'.
 #'  \code{\link[RstoxData]{StoxLanding}} and \code{\link[RstoxData]{FilterStoxLanding}} for ways of preparing 'StoxLandingData'.
-#' @family data QA functions
-#' @family StoX-functions
+#' @concept data QA functions
+#' @concept StoX-functions
 #' @export
 ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, StoxLandingData, 
                          GroupingVariables=character(), 
@@ -1511,9 +1511,9 @@ summaryPaaPar <- function(modelFit){
 #' @return \code{\link[RstoxFDA]{ParameterizationSummaryData}}
 #' @seealso \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation
 #'   \code{\link[RstoxFDA]{ReportParameterConvergence}} for convergence checks.
-#' @family StoX-Reca functions
-#' @family StoX-functions
-#' @family convergence-checks
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
+#' @concept convergence-checks
 #' @export
 #' @md
 ReportRecaParameterStatistics <- function(RecaParameterData, ParameterizationSummaryData, AppendReport=FALSE){
@@ -1628,8 +1628,8 @@ crossChainConvergence <- function(modelSummary, iterations, tolerance){
 #' @param Decimals integer specifying the number of decimals to report for 'GelmanRubinR'. Defaults to 2
 #' @return \code{\link[RstoxFDA]{ParameterConvergenceData}}
 #' @export
-#' @family StoX-functions
-#' @family convergence-checks
+#' @concept StoX-functions
+#' @concept convergence-checks
 #' @md
 ReportParameterConvergence <- function(ParameterizationSummaryData, Tolerance=numeric(), Decimals=integer()){
   

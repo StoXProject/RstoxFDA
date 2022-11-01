@@ -31,31 +31,5 @@ Extracts trip IDs from landings.
    tripIds <- makeTripIds(landings)
  }
 }
-\seealso{
-Other logbook functions: 
-\code{\link{activityCensus}},
-\code{\link{addLogbookColumns}()},
-\code{\link{appendTripIdLandings}()},
-\code{\link{appendTripIdLogbooks}()},
-\code{\link{calculateLogbookPartitionByTrip}()},
-\code{\link{convertToErsData}()},
-\code{\link{imputeCatchesLandings}()},
-\code{\link{logbookAdjustment}()},
-\code{\link{readLstFile}()},
-\code{\link{sourceLogbookColumns}()}
-
-Other landings functions: 
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{ReportFdaSampling}()},
-\code{\link{addLogbookColumns}()},
-\code{\link{appendTripIdLandings}()},
-\code{\link{imputeCatchesLandings}()},
-\code{\link{landings}},
-\code{\link{logbookAdjustment}()},
-\code{\link{plotBubbleMap}()},
-\code{\link{sourceLogbookColumns}()},
-\code{\link{tabulateFisheries}()}
-}
 \concept{landings functions}
 \concept{logbook functions}

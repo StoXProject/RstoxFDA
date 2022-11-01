@@ -1,3 +1,6 @@
+template:
+  bootstrap: 5
+
 reference:
 
 - title: StoX-functions
@@ -59,6 +62,11 @@ reference:
   desc: StoX-functions preparing data for and running Reca
 - contents:
   - has_concept("StoX-Reca functions")
+  
+- title: Convergence check functions
+  desc: Functions for checking convergence of Reca models.
+- contents:
+  - has_concept("convergence-checks")
 
 - title: Reca support functions
   desc: Support functions and example data for adapting Reca to other workflows than StoX

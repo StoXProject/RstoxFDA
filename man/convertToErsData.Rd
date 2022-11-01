@@ -22,23 +22,5 @@ Not all records can be filled, and some are left blank.
 In order to set start time of fishing operations, the a time of day need to be provided via the parameter 'timestring'
 UTC times are assumed.
 }
-\seealso{
-Other logbook functions: 
-\code{\link{activityCensus}},
-\code{\link{addLogbookColumns}()},
-\code{\link{appendTripIdLandings}()},
-\code{\link{appendTripIdLogbooks}()},
-\code{\link{calculateLogbookPartitionByTrip}()},
-\code{\link{imputeCatchesLandings}()},
-\code{\link{logbookAdjustment}()},
-\code{\link{makeTripIds}()},
-\code{\link{readLstFile}()},
-\code{\link{sourceLogbookColumns}()}
-
-Other IO functions: 
-\code{\link{ReadLandingFDA}()},
-\code{\link{readFdirLandingsArchive}()},
-\code{\link{readLstFile}()}
-}
 \concept{IO functions}
 \concept{logbook functions}
