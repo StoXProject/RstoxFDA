@@ -1,4 +1,23 @@
 #
+# test plotMeanWeightAtAge
+#
+catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
+catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.rds", package="RstoxFDA"))
+
+MeanWeightReportDecomp <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimals = 4, Unit = "kg")
+RstoxFDA:::PlotMeanWeightAtAge(MeanWeightReportDecomp)
+MeanWeightReport <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeFlat, Decimals = 4, Unit = "g")
+RstoxFDA:::PlotMeanWeightAtAge(MeanWeightReport)
+expect_error(RstoxFDA:::PlotMeanWeightAtAge(catchAtAgeFlat), "Malformed argument: 'ReportFdaWeightAtAgeData'")
+
+MeanLengthReportDecomp <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Decimals = 4, Unit = "cm")
+RstoxFDA:::PlotMeanLengthAtAge(MeanLengthReportDecomp)
+MeanLengthReport <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeFlat, Decimals = 4, Unit = "m")
+RstoxFDA:::PlotMeanLengthAtAge(MeanLengthReport)
+expect_error(RstoxFDA:::PlotMeanLengthAtAge(catchAtAgeFlat), "Malformed argument: 'ReportFdaLengthAtAgeData'")
+
+
+#
 # test traceplot
 #
 

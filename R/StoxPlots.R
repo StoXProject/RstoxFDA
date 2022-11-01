@@ -521,6 +521,77 @@ PlotCatcAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   return(pl)
 }
 
+#' Plot mean of a variable for each age group, along with dashed line for the interval (Low / High)
+#' 
+#' @noRd
+PlotMeanVariableAtAge <- function(ReportFdaVariableAtAgeData, tableName="MeanWeightByAge", variable="MeanIndividualWeight", ylabel=variable){
+  
+  if (nrow(ReportFdaVariableAtAgeData$GroupingVariables) == 0){
+
+    pl <- ggplot2::ggplot(ReportFdaVariableAtAgeData[[tableName]], ggplot2::aes(group=1)) + 
+      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y=variable), linetype="solid") +
+      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y="High"), linetype="dashed") +
+      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y="Low"), linetype="dashed")
+  }
+  else{
+  
+    groupLabel <- paste(ReportFdaVariableAtAgeData$GroupingVariables$GroupingVariables, collapse = "-")
+    ReportFdaVariableAtAgeData[[tableName]]$group <- apply(ReportFdaVariableAtAgeData[[tableName]][,.SD, .SDcols=ReportFdaVariableAtAgeData$GroupingVariables$GroupingVariables], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
+    pl <- ggplot2::ggplot(ReportFdaVariableAtAgeData[[tableName]]) + 
+      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y=variable, group="group", color="group"), linetype="solid") +
+      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y="High", group="group", color="group"), linetype="dashed") +
+      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y="Low", group="group", color="group"), linetype="dashed") +
+      ggplot2::guides(color=ggplot2::guide_legend(title=groupLabel))
+  
+  }
+  
+  pl <- pl + ggplot2::theme_minimal() +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    ggplot2::ylab(ylabel)
+  
+  return(pl)
+}
+
+#' Plot weight at age
+#' @description
+#'  Plot mean individual weight for each age group, along with an interval rerpesentation for the error of the mean.
+#'  The interval plotted is as configured in 'ReportFdaWeightAtAgeData' (the interval Low / High) and is represented by dashed lines.
+#'  
+#'  The interval does not represent the range of length occuring in each age group, but the error of the estiamte of mean weigt
+#'  Large errors may be indicative of convergence issues.
+#'  
+#'  If any grouping variables are configued for argument 'ReportFdaWeightAtAgeData', groups will be plotted in different colors.
+#' @param ReportFdaWeightAtAgeData \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}} with mean weight statistics from Reca simulations
+#' @family StoX-functions
+#' @family convergence-checks
+#' @noRd
+PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
+ if (!is.ReportFdaByAgeData(ReportFdaWeightAtAgeData)){
+   stop("Malformed argument: 'ReportFdaWeightAtAgeData'")
+ }
+ return(PlotMeanVariableAtAge(ReportFdaWeightAtAgeData, "MeanWeightByAge", "MeanIndividualWeight", ylabel = paste("mean individual weight (",RstoxData::getUnit(ReportFdaWeightAtAgeData$MeanWeightByAge$MeanIndividualWeight, property = "symbol"),")",sep="")))
+}
+
+#' Plot length at age
+#' @description
+#'  Plot mean individual length for each age group, along with an interval rerpesentation for the error of the mean.
+#'  The interval plotted is as configured in 'ReportFdaLengthAtAgeData' (the interval Low / High) and is represented by dashed lines.
+#'  
+#'  The interval does not represent the range of weights occuring in each age group, but the error of the estiamte of mean length
+#'  Large errors may be indicative of convergence issues.
+#'  
+#'  If any grouping variables are configued for argument 'ReportFdaLengthAtAgeData', groups will be plotted in different colors.
+#' @param ReportFdaLengthAtAgeData \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}} with mean weight statistics from Reca simulations
+#' @family StoX-functions
+#' @family convergence-checks
+#' @noRd
+PlotMeanLengthAtAge <- function(ReportFdaLengthAtAgeData){
+  if (!is.ReportFdaByAgeData(ReportFdaLengthAtAgeData)){
+    stop("Malformed argument: 'ReportFdaLengthAtAgeData'")
+  }
+  return(PlotMeanVariableAtAge(ReportFdaLengthAtAgeData, "MeanLengthByAge", "MeanIndividualLength", ylabel = paste("mean length (",RstoxData::getUnit(ReportFdaLengthAtAgeData$MeanLengthByAge$MeanIndividualLength, property = "symbol"),")",sep="")))
+}
+
 #' Plot covariances (catch at age)
 #' @description
 #'  Plots covariances between age groups and other grouping variables catch at age.
