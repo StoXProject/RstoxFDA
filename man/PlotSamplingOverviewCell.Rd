@@ -37,28 +37,28 @@ Makes 'cell plot' overview of samples and landings.
 }
 \details{
 Each part or 'cell' of the fishery identified by the groupingvariables of a \code{\link[RstoxFDA]{ReportFdaSamplingData}} report
- is visualised as a cell on a two dimensional grid, and annotated with information about how much was landed in each 'cell'.
- Cells that has been sampled are also annotated with a triplet (#vessels, #catches, #individuals) indicating the number of
- sampled vessels, catches and individuals. The cells are also color coded to reflect how well they are sampled.
- 
- The visualisation gives an overview of which part of the fishery has few samples, and may suggest ways to group or post-stratify
- variables for estimation. By extension it also suggests how supplemental sampling can be improved, for instance by revealing where 
- a small extra sampling effort prevents the need for grouping or post-stratifying.
- The plot does not provide a direct visualisation of the efficiency of the sampling. 
- Efficient sampling may well leave many cells unsampled, as the activity (e.g. volume landed) may be very different between cells.
- 
- The color coding indicates five categories of sampling depending on how many vessels, catches, and individuals are sampled in the cell.
- #'  The coloring is controlled by the arguments 'MinVessels', 'MinCatches', and 'MinMeasurements':
- \describe{
-  \item{Good}{Cell has sufficient number of individuals, catches and vessels sampled.}
-  \item{Few vessels}{Cell has sufficient number of individuals and catches sampled, but not sufficient number of vessels}
-  \item{Few catches}{Cell has sufficient number of individuals sampled, but not sufficient number of catches}
-  \item{No samples}{Cell is not sampled}
-  \item{No Landings}{Cell is sampled, but there are no official landings recorded for the cell.}
- }
- 
- See the documentation for \code{\link[RstoxFDA]{ReportFdaSampling}} for an explanation for why the category 'No landings' may occur.
- The thresholds for what is considered sufficient sampling of vessels, catches and individuals, respectively, 
- is configured with the arguments 'MinVessels', 'MinCatches', 'MinMeasurements'
+is visualised as a cell on a two dimensional grid, and annotated with information about how much was landed in each 'cell'.
+Cells that has been sampled are also annotated with a triplet (#vessels, #catches, #individuals) indicating the number of
+sampled vessels, catches and individuals. The cells are also color coded to reflect how well they are sampled.
+
+The visualisation gives an overview of which part of the fishery has few samples, and may suggest ways to group or post-stratify
+variables for estimation. By extension it also suggests how supplemental sampling can be improved, for instance by revealing where
+a small extra sampling effort prevents the need for grouping or post-stratifying.
+The plot does not provide a direct visualisation of the efficiency of the sampling.
+Efficient sampling may well leave many cells unsampled, as the activity (e.g. volume landed) may be very different between cells.
+
+The color coding indicates five categories of sampling depending on how many vessels, catches, and individuals are sampled in the cell.
+#'  The coloring is controlled by the arguments 'MinVessels', 'MinCatches', and 'MinMeasurements':
+\describe{
+\item{Good}{Cell has sufficient number of individuals, catches and vessels sampled.}
+\item{Few vessels}{Cell has sufficient number of individuals and catches sampled, but not sufficient number of vessels}
+\item{Few catches}{Cell has sufficient number of individuals sampled, but not sufficient number of catches}
+\item{No samples}{Cell is not sampled}
+\item{No Landings}{Cell is sampled, but there are no official landings recorded for the cell.}
+}
+
+See the documentation for \code{\link[RstoxFDA]{ReportFdaSampling}} for an explanation for why the category 'No landings' may occur.
+The thresholds for what is considered sufficient sampling of vessels, catches and individuals, respectively,
+is configured with the arguments 'MinVessels', 'MinCatches', 'MinMeasurements'
 }
 \concept{StoX-functions}

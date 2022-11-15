@@ -2032,7 +2032,13 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "PlotSamplingOverviewCellData",
     functionParameterFormat = list(
       ColumnVariable = "columnvariablecellplot"
-    )
+    ),
+    functionParameterDefaults = c(list(
+      MinVessels=2,
+      MinCatches=2, 
+      MinMeasurements=100, 
+      TextSize=2
+    ))
   )
 )
 

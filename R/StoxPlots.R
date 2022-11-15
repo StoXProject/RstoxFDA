@@ -2,6 +2,22 @@
 # Plots that can be made from StoX-functions. Not necesarrily included in StoX
 #
 
+#' Sets attributes for saving plots to file.
+#' The attributes are specified by RstoxFramework and passed onto ggsave or similar function
+#' @param Format file format, e.g. "pdf" or "png"
+#' @param Width width of canvas in cm
+#' @param Height height of canvas in cm
+#' @param DotsPerInch resolution in DPI
+#' @noRd 
+setPlotSaveAttributes <- function(plotObject, Format="pdf", Width=17, Height=17, DotsPerInch=500){
+  attr(plotObject, "Format") <- Format
+  attr(plotObject, "Width") <- Width
+  attr(plotObject, "Height") <- Height
+  attr(plotObject, "DotsPerInch") <- DotsPerInch
+  
+  return(plotObject)
+}
+
 #' Plot landings
 #' @description
 #'  Plots landings by date of catch and by group
@@ -172,12 +188,13 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
 #' @param ColumnVariable The grouping variable in 'ReportFdaSamplingData' that should be used for columns in the cell plot
 #' @param Measurement The kind of fish measurement that should be used to determine the color of a cell
-#' @param MinVessels The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to 2.
-#' @param MinCatches The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.
-#' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.
-#' @param TextSize size of text in cellplot. Defaults to 2.
+#' @param MinVessels The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels`.
+#' @param MinCatches The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches`.
+#' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements`.
+#' @param TextSize size of text in cellplot. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$TextSize`.
 #' @return \code{\link[RstoxFDA]{PlotSamplingOverviewCellData}}
 #' @concept StoX-functions
+#' @md
 #' @export
 PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), TextSize=numeric()){
   if (!is.ReportFdaSamplingData(ReportFdaSamplingData)){
@@ -185,6 +202,9 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
   }
   if (nrow(ReportFdaSamplingData$GroupingVariables) == 0){
     stop("Cell plot can only be constructed when sampling report has grouping variables.")
+  }
+  if (!isGiven(ColumnVariable)){
+    stop("Argument 'ColumnVariable' must be provided.")
   }
   if (length(ColumnVariable) > 1){
     stop("Choose at most one column variable. 'ColumnVariable' must be one of the variables in 'GroupingVariables'")
@@ -207,16 +227,16 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
   }
 
   if (!isGiven(MinVessels)){
-    MinVessels <- 2
+    MinVessels <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels
   }
   if (!isGiven(MinCatches)){
-    MinCatches <- 2
+    MinCatches <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches
   }
   if (!isGiven(MinMeasurements)){
-    MinMeasurements <- 100
+    MinMeasurements <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements
   }
   if (!isGiven(TextSize)){
-    TextSize <- 2
+    TextSize <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$TextSize
   }
   
   RowVariables <- ReportFdaSamplingData$GroupingVariables$GroupingVariables[ReportFdaSamplingData$GroupingVariables$GroupingVariables != ColumnVariable]
@@ -254,11 +274,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
       )
     )
   
-  warning("testing. Parameterize plot arguments")
-  attr(pl, "Format") <- "pdf"
-  attr(pl, "Width") <- 17
-  attr(pl, "Height") <- 17
-  attr(pl, "DotsPerInch") <- 72
+  pl <- setPlotSaveAttributes(pl)
   
   return(pl)
 }
