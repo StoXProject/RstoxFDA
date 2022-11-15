@@ -915,6 +915,16 @@ is.WeightConversionTable <- function(WeightConversionTable){
   return(TRUE)
 }
 
+#' Sampling Overview cell-plot data (PlotSamplingOverviewCellData)
+#' 
+#' @description 
+#'  a ggplot object that renders the a colored 'cell plot' overview of samples and landings.
+#'  
+#' @name PlotSamplingOverviewCellData
+#' @concept Data types
+#' 
+NULL
+
 #' Sampling Report data (ReportFdaSamplingData)
 #' 
 #' @description 
@@ -1875,7 +1885,7 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "RecaData",
     functionParameterFormat = list(
       RandomEffects = "randomcovariates",
-      CarEffect = "randomcovariates",
+      CarEffect = "carcovariate",
       FixedEffects = "fixedcovariates"),
     functionArgumentHierarchy = list(
       AgeErrorMatrix = list(
@@ -2015,6 +2025,14 @@ stoxFunctionAttributes <- list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "ParameterConvergenceData"
+  ),
+  PlotSamplingOverviewCell = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotSamplingOverviewCellData",
+    functionParameterFormat = list(
+      ColumnVariable = "columnvariablecellplot"
+    )
   )
 )
 
@@ -2132,7 +2150,8 @@ processPropertyFormats <- list(
     variableTypes = "character"
   ),
   carcovariate = list(
-    class = "single",
+    class = "vector", #convert to class single, if that becomes available.
+    title = "A variable (choose only one) to use for the CAR variable in Reca.",
     possibleValues = function(StoxBioticData) {
       possibleValues <- c()
       for (n in c("Station", "Haul", "SpeciesCategory", "Sample")){
@@ -2145,7 +2164,17 @@ processPropertyFormats <- list(
       possibleValues <- unique(possibleValues)
       possibleValues <- possibleValues[!(possibleValues %in% c("CruiseKey", "StationKey", "HaulKey", "SpeciesCategoryKey", "SampleKey"))]
       return(sort(possibleValues))
-    }
+    }, 
+    variableTypes = "character"
+  ),
+  columnvariablecellplot = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "A variable (choose only one) to use for columns in cell plot.", 
+    possibleValues = function(ReportFdaSamplingData) {
+      possibleValues <- ReportFdaSamplingData$GroupingVariables$GroupingVariables
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
   )
 )
 

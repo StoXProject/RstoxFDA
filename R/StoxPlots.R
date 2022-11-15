@@ -176,20 +176,24 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @param MinCatches The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.
 #' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.
 #' @param TextSize size of text in cellplot. Defaults to 2.
+#' @return \code{\link[RstoxFDA]{PlotSamplingOverviewCellData}}
 #' @concept StoX-functions
-#' @noRd
+#' @export
 PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), TextSize=numeric()){
   if (!is.ReportFdaSamplingData(ReportFdaSamplingData)){
     stop("Input must be 'RstoxFDA:::ReportFdaSamplingData'")
   }
   if (nrow(ReportFdaSamplingData$GroupingVariables) == 0){
-    stop("Cell plot can only be constructed when sampling report has grouping variables")
+    stop("Cell plot can only be constructed when sampling report has grouping variables.")
+  }
+  if (length(ColumnVariable) > 1){
+    stop("Choose at most one column variable. 'ColumnVariable' must be one of the variables in 'GroupingVariables'")
   }
   if (!(ColumnVariable %in% ReportFdaSamplingData$GroupingVariables$GroupingVariables)){
     stop("'ColumnVariable' must be one of the variables in 'GroupingVariables'")
   }
   if (nrow(ReportFdaSamplingData$SamplingVariables) != 0){
-    stop("Cell plot cannot be constructed when sampling report has sampling variables")
+    stop("Cell plot cannot be constructed when sampling report ('ReportFdaSamplingData') has sampling variables ('SamplingVariables'). Consider the function 'PlotSamplingVariables' instead.")
   }
 
   Measurement <- match.arg(Measurement, Measurement)
@@ -249,6 +253,12 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
         "No Landings" = "white"
       )
     )
+  
+  warning("testing. Parameterize plot arguments")
+  attr(pl, "Format") <- "pdf"
+  attr(pl, "Width") <- 17
+  attr(pl, "Height") <- 17
+  attr(pl, "DotsPerInch") <- 72
   
   return(pl)
 }

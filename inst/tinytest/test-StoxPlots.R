@@ -99,6 +99,8 @@ RstoxFDA:::PlotSamplingOverviewCell(tab, "Area")
 # test with three grouping variable, 
 RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8)
 
+expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, c("Area", "Gear"), MinVessels = 7, MinCatches = 8), "Choose at most one column variable. 'ColumnVariable' must be one of the variables in 'GroupingVariables'")
+
 # test with non-default Measurement 
 RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8, Measurement = "WeightMeasurements")
 
