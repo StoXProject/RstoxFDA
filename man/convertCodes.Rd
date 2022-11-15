@@ -4,12 +4,14 @@
 \alias{convertCodes}
 \title{Convert codes.}
 \usage{
-convertCodes(code, conversionTable)
+convertCodes(code, conversionTable, strict = T)
 }
 \arguments{
 \item{code}{character() with original codes}
 
 \item{conversionTable}{list() mapping code to converted code.}
+
+\item{strict}{logical() If true, execution halts at incomplete conversion tables. If false unmapped codes are set to NA.}
 }
 \value{
 character() with converted codes
@@ -18,7 +20,7 @@ character() with converted codes
 Apply conversion table, perform approriate checks and return result.
 }
 \details{
-Will stop with error if any codes can not be converted, or if any entries are NA.
+By default. This will stop with error if any codes can not be converted, or if any entries are NA.
  Require all codes (original and converted) to be character().
 }
 \examples{

@@ -104,10 +104,11 @@ categoriseDate <- function(date, temporalType="quarter", seasonal=T, FUN=NULL){
 #' @description
 #'  Apply conversion table, perform approriate checks and return result.
 #' @details
-#'  Will stop with error if any codes can not be converted, or if any entries are NA.
+#'  By default. This will stop with error if any codes can not be converted, or if any entries are NA.
 #'  Require all codes (original and converted) to be character().
 #' @param code character() with original codes
 #' @param conversionTable list() mapping code to converted code.
+#' @param strict logical() If true, execution halts at incomplete conversion tables. If false unmapped codes are set to NA.
 #' @return character() with converted codes
 #' @examples
 #'  gearConversion <- list()
@@ -117,7 +118,7 @@ categoriseDate <- function(date, temporalType="quarter", seasonal=T, FUN=NULL){
 #'  convertCodes(c("TBS", "TBN", "OTB"), gearConversion)
 #' @concept parameter conversion functions
 #' @export
-convertCodes <- function(code, conversionTable){
+convertCodes <- function(code, conversionTable, strict=T){
 
   if (length(code) == 0){
     return(character())
@@ -135,16 +136,24 @@ convertCodes <- function(code, conversionTable){
     stop("Conversion table must be indexed by character(). names(conversionTable) is NULL.")
   }
 
-  if (any(is.na(code))){
-    stop("NAs in codes")
+  if (any(is.na(code)) & strict){
+    stop("NAs in codes. Consider turning off the option 'strict'")
   }
 
-  if (!all(code %in% names(conversionTable))){
+  if ((!all(code %in% names(conversionTable))) & strict){
     missing <- unique(code[!(code %in% names(conversionTable))])
     stop(paste("Conversion not defined for all codes. Missing for:", paste(missing, collapse=", ")))
   }
 
-  return(as.character(conversionTable[code]))
+  filter <- !is.na(code) & code %in% names(conversionTable)
+  converted <- rep(as.character(NA), length(code))
+  
+  if (sum(filter)==0){
+    return(converted)
+  }
+  
+  converted[filter] <- as.character(conversionTable[code[filter]])
+  return(converted)
 }
 
 #' Area code conversion table
