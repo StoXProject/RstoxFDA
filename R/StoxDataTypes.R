@@ -1589,6 +1589,16 @@ is.StockSplittingParameters <- function(StockSplittingParameters){
   return(TRUE)
 }
 
+plotDefaultsCellPlotColors <- list(
+  MinVessels=2,
+  MinCatches=2, 
+  MinMeasurements=100,
+  ColorNoSamples = "#ffffcc", 
+  ColorFewCacthes = "#c2e699", 
+  ColorFewVessels = "#78c679", 
+  ColorGoodSampling = "#238443"
+)
+
 #' Function specification for inclusion in StoX UI
 #' @export
 stoxFunctionAttributes <- list(
@@ -2033,11 +2043,32 @@ stoxFunctionAttributes <- list(
     functionParameterFormat = list(
       ColumnVariable = "columnvariablecellplot"
     ),
-    functionParameterDefaults = c(list(
-      MinVessels=2,
-      MinCatches=2, 
-      MinMeasurements=100
-    ))
+    functionArgumentHierarchy = list(
+      MinVessels = list(
+        UseDefaultColorScheme = FALSE
+      ),
+      MinCatches = list(
+        UseDefaultColorScheme = FALSE
+      ),
+      MinMeasurements = list(
+        UseDefaultColorScheme = FALSE
+      ),
+      ColorNoSamples = list(
+        UseDefaultColorScheme = FALSE
+      ),
+      ColorFewCacthes = list(
+        UseDefaultColorScheme = FALSE
+      ),
+      ColorFewVessels = list(
+        UseDefaultColorScheme = FALSE
+      ),
+      ColorGoodSampling = list(
+        UseDefaultColorScheme = FALSE
+      )
+    ),
+    functionParameterDefaults = c(
+      plotDefaultsCellPlotColors
+    )
   )
 )
 

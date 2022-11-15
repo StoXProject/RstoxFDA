@@ -1,3 +1,4 @@
+library(RstoxData) #necessary, probably because of how xsdObjects is referred internally in RstoxData
 fdiropen <- system.file("testresources", "landingsvariants", "openfdir.2021.csv", package="RstoxFDA")
 xmllandings <- system.file("testresources", "landingsvariants", "landing.xml", package="RstoxFDA")
 lss1 <- system.file("testresources", "landingsvariants", "lss_2005.psv", package="RstoxFDA")

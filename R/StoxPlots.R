@@ -185,18 +185,25 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #'  The thresholds for what is considered sufficient sampling of vessels, catches and individuals, respectively, 
 #'  is configured with the arguments 'MinVessels', 'MinCatches', 'MinMeasurements'
 #'  
+#'  Colors are specified by ggplot convention and may be specified as a name (e.g. 'red'), a number (e.g. '2') or a hex-code (e.g. '#78c679').
+#'  
 #' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
 #' @param ColumnVariable The grouping variable in 'ReportFdaSamplingData' that should be used for columns in the cell plot
 #' @param Measurement The kind of fish measurement that should be used to determine the color of a cell
+#' @param UseDefaultColorScheme Logical, whether to use default color scheme or the value specified for the function parameters MinVessels, MinCatches, MinMeasurements
 #' @param MinVessels The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels`.
 #' @param MinCatches The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches`.
 #' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements`.
+#' @param ColorNoSamples Color to use for cells not sampled. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorNoSamples`.
+#' @param ColorFewCacthes Color to use for cells with Few Catches. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewCacthes`.
+#' @param ColorFewVessels Color to use for cells with Few Vessels See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewVessels`.
+#' @param ColorGoodSampling Color to use for cells with Good sampling. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorGoodSampling`.
 #' @param TextSize size of text in cellplot. If not provided, a suitable size will be calculated.
 #' @return \code{\link[RstoxFDA]{PlotSamplingOverviewCellData}}
 #' @concept StoX-functions
 #' @md
 #' @export
-PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), TextSize=numeric()){
+PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), UseDefaultColorScheme=T, MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), ColorNoSamples = character(), ColorFewCacthes = character(), ColorFewVessels = character(), ColorGoodSampling =character(), TextSize=numeric()){
   if (!is.ReportFdaSamplingData(ReportFdaSamplingData)){
     stop("Input must be 'RstoxFDA:::ReportFdaSamplingData'")
   }
@@ -226,13 +233,13 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
     Measurement <- "AgeReadings"
   }
 
-  if (!isGiven(MinVessels)){
+  if (!isGiven(MinVessels) | UseDefaultColorScheme){
     MinVessels <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels
   }
-  if (!isGiven(MinCatches)){
+  if (!isGiven(MinCatches) | UseDefaultColorScheme){
     MinCatches <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches
   }
-  if (!isGiven(MinMeasurements)){
+  if (!isGiven(MinMeasurements) | UseDefaultColorScheme){
     MinMeasurements <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements
   }
   if (!isGiven(TextSize)){
@@ -275,10 +282,10 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
     ggplot2::scale_fill_manual(
       values = c(
-        "No samples" = "#ffffcc",
-        "Few catches" = "#c2e699",
-        "Few vessels" = "#78c679",
-        "Good" = "#238443",
+        "No samples" = ColorNoSamples,
+        "Few catches" = ColorFewCacthes,
+        "Few vessels" = ColorFewVessels,
+        "Good" = ColorGoodSampling,
         "No Landings" = "white"
       )
     )

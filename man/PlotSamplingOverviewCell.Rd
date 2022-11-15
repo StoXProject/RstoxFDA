@@ -8,9 +8,14 @@ PlotSamplingOverviewCell(
   ReportFdaSamplingData,
   ColumnVariable,
   Measurement = c("AgeReadings", "LengthMeasurements", "WeightMeasurements"),
+  UseDefaultColorScheme = T,
   MinVessels = integer(),
   MinCatches = integer(),
   MinMeasurements = integer(),
+  ColorNoSamples = character(),
+  ColorFewCacthes = character(),
+  ColorFewVessels = character(),
+  ColorGoodSampling = character(),
   TextSize = numeric()
 )
 }
@@ -21,11 +26,21 @@ PlotSamplingOverviewCell(
 
 \item{Measurement}{The kind of fish measurement that should be used to determine the color of a cell}
 
+\item{UseDefaultColorScheme}{Logical, whether to use default color scheme or the value specified for the function parameters MinVessels, MinCatches, MinMeasurements}
+
 \item{MinVessels}{The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to 2.}
 
 \item{MinCatches}{The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.}
 
 \item{MinMeasurements}{The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.}
+
+\item{ColorNoSamples}{Color to use for cells not sampled. Defaults to #ffffcc.}
+
+\item{ColorFewCacthes}{Color to use for cells with Few Catches. See details. Defaults to #c2e699.}
+
+\item{ColorFewVessels}{Color to use for cells with Few Vessels See details. Defaults to #78c679.}
+
+\item{ColorGoodSampling}{Color to use for cells with Good sampling. See details. Defaults to #238443.}
 
 \item{TextSize}{size of text in cellplot. If not provided, a suitable size will be calculated.}
 }
@@ -60,5 +75,7 @@ The color coding indicates five categories of sampling depending on how many ves
 See the documentation for \code{\link[RstoxFDA]{ReportFdaSampling}} for an explanation for why the category 'No landings' may occur.
 The thresholds for what is considered sufficient sampling of vessels, catches and individuals, respectively,
 is configured with the arguments 'MinVessels', 'MinCatches', 'MinMeasurements'
+
+Colors are specified by ggplot convention and may be specified as a name (e.g. 'red'), a number (e.g. '2') or a hex-code (e.g. '#78c679').
 }
 \concept{StoX-functions}

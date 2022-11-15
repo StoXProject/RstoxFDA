@@ -81,8 +81,8 @@ StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="Rst
 StoxBioticData <- readRDS(StoxBioticFile)
 StoxBioticData$Station <- RstoxFDA:::appendAreaCode(StoxBioticData$Station, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "Area")
 StoxBioticData$Haul$Gear <- "53"
-StoxBioticData$Station$Quarter <- stats::quarters(StoxBioticData$Station$DateTime)
-StoxLandingData$Landing$Quarter <- stats::quarters(StoxLandingData$Landing$CatchDate)
+StoxBioticData$Station$Quarter <- quarters(StoxBioticData$Station$DateTime)
+StoxLandingData$Landing$Quarter <- quarters(StoxLandingData$Landing$CatchDate)
 
 # test with one grouping variable
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear"), Unit = "ton")
