@@ -234,14 +234,27 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
   }
 
   if (!isGiven(MinVessels) | UseDefaultColorScheme){
-    MinVessels <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels
+    MinVessels <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels
   }
   if (!isGiven(MinCatches) | UseDefaultColorScheme){
-    MinCatches <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches
+    MinCatches <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches
   }
   if (!isGiven(MinMeasurements) | UseDefaultColorScheme){
-    MinMeasurements <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements
+    MinMeasurements <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements
   }
+  if (!isGiven(ColorNoSamples) | UseDefaultColorScheme){
+    ColorNoSamples <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorNoSamples
+  }
+  if (!isGiven(ColorFewCacthes) | UseDefaultColorScheme){
+    ColorFewCacthes <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewCacthes
+  }
+  if (!isGiven(ColorFewVessels) | UseDefaultColorScheme){
+    ColorFewVessels <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewVessels
+  }
+  if (!isGiven(ColorGoodSampling) | UseDefaultColorScheme){
+    ColorGoodSampling <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorGoodSampling
+  }
+  
   if (!isGiven(TextSize)){
     Height <- 17
     Width <- 17
