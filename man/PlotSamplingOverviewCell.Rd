@@ -27,7 +27,7 @@ PlotSamplingOverviewCell(
 
 \item{MinMeasurements}{The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.}
 
-\item{TextSize}{size of text in cellplot. Defaults to 2.}
+\item{TextSize}{size of text in cellplot. If not provided, a suitable size will be calculated.}
 }
 \value{
 \code{\link[RstoxFDA]{PlotSamplingOverviewCellData}}

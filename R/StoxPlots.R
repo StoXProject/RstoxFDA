@@ -191,7 +191,7 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @param MinVessels The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels`.
 #' @param MinCatches The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches`.
 #' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements`.
-#' @param TextSize size of text in cellplot. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$TextSize`.
+#' @param TextSize size of text in cellplot. If not provided, a suitable size will be calculated.
 #' @return \code{\link[RstoxFDA]{PlotSamplingOverviewCellData}}
 #' @concept StoX-functions
 #' @md
@@ -236,7 +236,14 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
     MinMeasurements <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements
   }
   if (!isGiven(TextSize)){
-    TextSize <- RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$TextSize
+    Height <- 17
+    Width <- 17
+    cells <- nrow(ReportFdaSamplingData$FisheriesSampling)
+    columns <- length(unique(ReportFdaSamplingData$FisheriesSampling[[ColumnVariable]]))
+    rows <- cells/columns
+    cellsize <- 1/max(rows, columns) #cellsize as fraction of available space. Plot forces equal aspect.
+    
+    TextSize <- Width*.9*10*cellsize/10 #take 10% for margins, and convert to millimeter. Reserve 10 character width for plots
   }
   
   RowVariables <- ReportFdaSamplingData$GroupingVariables$GroupingVariables[ReportFdaSamplingData$GroupingVariables$GroupingVariables != ColumnVariable]
@@ -256,6 +263,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
   ReportFdaSamplingData$FisheriesSampling$Text <- ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight
   filterSampled <- ReportFdaSamplingData$FisheriesSampling$Samples != "No samples"
   ReportFdaSamplingData$FisheriesSampling$Text[filterSampled] <- paste(ReportFdaSamplingData$FisheriesSampling$Text[filterSampled], apply(ReportFdaSamplingData$FisheriesSampling[filterSampled,.SD, .SDcols=c("Vessels", "Catches", Measurement)], FUN=function(x){paste(x, collapse=",")}, MARGIN = 1), sep="\n")
+  ReportFdaSamplingData$FisheriesSampling[[ColumnVariable]] <- as.factor(ReportFdaSamplingData$FisheriesSampling[[ColumnVariable]])
                                                     
   pl <- ggplot2::ggplot(ReportFdaSamplingData$FisheriesSampling, ggplot2::aes_string(ColumnVariable, "RowLabels")) +
     ggplot2::geom_tile(ggplot2::aes_string(fill="Samples"), color="grey") +
@@ -264,6 +272,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
     ggplot2::ylab(RowAxisLabel) +
     ggplot2::ggtitle(paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep=""), paste(Measurement, ": #Vessels, #Catches, #Individuals", sep="")) +
     ggplot2::theme_minimal() +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
     ggplot2::scale_fill_manual(
       values = c(
         "No samples" = "#ffffcc",

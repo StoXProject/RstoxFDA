@@ -2036,8 +2036,7 @@ stoxFunctionAttributes <- list(
     functionParameterDefaults = c(list(
       MinVessels=2,
       MinCatches=2, 
-      MinMeasurements=100, 
-      TextSize=2
+      MinMeasurements=100
     ))
   )
 )
