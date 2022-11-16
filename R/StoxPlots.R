@@ -465,12 +465,17 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorS
 
 #' Plot sampling variables
 #' @description 
-#'  Plot a stacked barplot of sampling variables for each part of the fishery, with total landings on a secondary axis.
+#'  Plots a barplot for a sample quantity, 
+#'  illustrating the number of samples that has the sample variables in 'ReportFdaSamplingData'.
+#'  If the fishery is partitioned by grouping variables a stacked barplot is produced.
+#'  Total landings may be plotted on a secondary axis.
 #' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
-#' @param Quantity the quantity to plot for each sampling variable: "Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", or "WeightOfSampledCatches"
+#' @param Quantity the sample quantity to plot for each sampling variable: "Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", or "WeightOfSampledCatches"
+#' @param Landings if TRUE total landings in each part of the fishery ('GroupingVariables' in ReportFdaSamplingData) is plotted on a secondary axis.
 #' @concept StoX-functions
-#' @noRd
-PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches")){
+#' @return \code{\link[RstoxFDA]{PlotSamplingVariablesData}}
+#' @export
+PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches"), Landings=FALSE){
   
   Quantity <- match.arg(Quantity, Quantity)
   
@@ -495,6 +500,11 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
   tab <- ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcol=c("cell", "SamplingVariable", Quantity)]
   
   if (length(unique(tab$cell))==1){
+    
+    if (Landings){
+      stop("ReportFdaSamplingData does not partition the fishery. Cannot plot total landings on secondary axis. Consider setting argument 'Landings' to False.")
+    }
+    
     pl <- ggplot2::ggplot(tab, ggplot2::aes_string("SamplingVariable", Quantity)) +
       ggplot2::geom_col(ggplot2::aes_string(fill="SamplingVariable"), group=1) +
       ggplot2::xlab(samplingVariableLabel) +
@@ -512,28 +522,33 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
     ggplot2::guides(fill=ggplot2::guide_legend(title=samplingVariableLabel))
   
   
-  #
-  # add secondary axis w landings
-  #
-  landings <- ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcol=c("cell", "LandedRoundWeight")]
-  landings <- landings[!duplicated(landings$cell),]
+  if (Landings){
+    #
+    # add secondary axis w landings
+    #
+    landings <- ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcol=c("cell", "LandedRoundWeight")]
+    landings <- landings[!duplicated(landings$cell),]
+    
+    barsizes <- ReportFdaSamplingData$FisheriesSampling[,list(barsize=sum(get(Quantity))), list(cell=get("cell"))]
+    maxbarsize <- max(barsizes$barsize)
+    
+    coeff <- max(landings$LandedRoundWeight, na.rm=T) / maxbarsize
+    landings$scaledLandings <- landings$LandedRoundWeight / coeff
+    
+    
+    pl <- pl + ggplot2::geom_line(ggplot2::aes_string(y="scaledLandings"), landings, group=1) + 
+      ggplot2::scale_y_continuous(
+        
+        # Features of the first axis
+        name = Quantity,
+        
+        # Add a second axis and specify its features
+        sec.axis = ggplot2::sec_axis(~.x*coeff, name=paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep=""))
+      )      
+  }
   
-  barsizes <- ReportFdaSamplingData$FisheriesSampling[,list(barsize=sum(get(Quantity))), list(cell=get("cell"))]
-  maxbarsize <- max(barsizes$barsize)
-  
-  coeff <- max(landings$LandedRoundWeight, na.rm=T) / maxbarsize
-  landings$scaledLandings <- landings$LandedRoundWeight / coeff
-  
-  
-  pl <- pl + ggplot2::geom_line(ggplot2::aes_string(y="scaledLandings"), landings, group=1) + 
-    ggplot2::scale_y_continuous(
-      
-      # Features of the first axis
-      name = Quantity,
-      
-      # Add a second axis and specify its features
-      sec.axis = ggplot2::sec_axis(~.x*coeff, name=paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep=""))
-    )  
+  pl <- setPlotSaveAttributes(pl)
+
   
   return(pl)
 }

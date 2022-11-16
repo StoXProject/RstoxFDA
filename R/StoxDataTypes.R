@@ -925,6 +925,16 @@ is.WeightConversionTable <- function(WeightConversionTable){
 #' 
 NULL
 
+#' Sampling variables plot data (PlotSamplingVariablesData)
+#' 
+#' @description 
+#'  a ggplot object that renders a stacked barplot of sampling variables for each part of the fishery, with total landings on a secondary axis.
+#'  
+#' @name PlotSamplingVariablesData
+#' @concept Data types
+#' 
+NULL
+
 #' Sampling Report data (ReportFdaSamplingData)
 #' 
 #' @description 
@@ -2069,6 +2079,11 @@ stoxFunctionAttributes <- list(
     functionParameterDefaults = c(
       plotDefaultsCellPlotColors
     )
+  ),
+  PlotSamplingVariables = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotSamplingVariablesData"
   )
 )
 

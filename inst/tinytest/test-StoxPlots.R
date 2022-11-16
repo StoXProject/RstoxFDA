@@ -143,6 +143,7 @@ expect_error(RstoxFDA:::PlotSamplingCoverage(tab), "Coverage plot cannot be cons
 #test sampling variable plot
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "IndividualSex")
 RstoxFDA:::PlotSamplingVariables(tab)
+RstoxFDA:::PlotSamplingVariables(tab, Landings = T)
 RstoxFDA:::PlotSamplingVariables(tab, Quantity = "AgeReadings")
 expect_error(RstoxFDA:::PlotSamplingVariables(tab, Quantity = "wrong"), "Does not recognize option wrong for 'Quantity'")
 
@@ -152,4 +153,4 @@ RstoxFDA:::PlotSamplingVariables(tab)
 #test sampling variable plot wo grouping variables
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c(), Unit = "ton", SamplingVariables = c("IndividualSex", "Platform"))
 RstoxFDA:::PlotSamplingVariables(tab)
-
+expect_error(RstoxFDA:::PlotSamplingVariables(tab, Landings = T), "ReportFdaSamplingData does not partition the fishery. Cannot plot total landings on secondary axis. Consider setting argument 'Landings' to False.")
