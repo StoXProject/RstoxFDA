@@ -5,8 +5,16 @@
 Fisheries Dependent Analysis with Rstox. Documentation can be found at: https://stoxproject.github.io/RstoxFDA/index.html . Functions, data formats, and data objects are documented under 'Reference' while tutorials to get started are provided under 'Articles'. 
 
 ## Installation
-Install from the StoX project repository with:
-install.packages("RstoxFDA", repos = "https://stoxproject.github.io/repo/").
+
+1. Install the latest release:
+    ```r
+    install.packages("RstoxFDA", repos = c("https://stoxproject.github.io/repo", "https://cloud.r-project.org"))
+    ```
+
+2. Install the latest version from GitHub:
+    ```r
+    remotes::install_github("https://github.com/StoXProject/RstoxFDA")
+    ```
 
 ## StoX
 RstoxFDA contains functions that adheres to StoX 3 function-contracts so that they can be included in StoX-processes via the StoX user interfaces. This includes functions for a StoX-Reca template. RstoxFDA does not come bundled with StoX, and needs to be installed in addition to the StoX packages, by following the instructions above.
