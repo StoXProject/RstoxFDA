@@ -29,7 +29,7 @@ reference:
   - has_concept("gear coding functions")
 
 - title: Parameter conversion functions
-  desc: Functions and data for converting parameters
+  desc: Functions and data for converting bilogical parameters
 - contents:
   - has_concept("parameter conversion functions")
 

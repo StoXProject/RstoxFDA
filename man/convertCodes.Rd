@@ -30,4 +30,6 @@ By default. This will stop with error if any codes can not be converted, or if a
  gearConversion["OTB"] <- "OTB"
  convertCodes(c("TBS", "TBN", "OTB"), gearConversion)
 }
-\concept{parameter conversion functions}
+\concept{gear coding functions}
+\concept{spatial coding functions}
+\concept{temporal coding functions}

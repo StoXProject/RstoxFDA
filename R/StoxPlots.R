@@ -201,6 +201,8 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @param TextSize size of text in cellplot. If not provided, a suitable size will be calculated.
 #' @return \code{\link[RstoxFDA]{PlotSamplingOverviewCellData}}
 #' @concept StoX-functions
+#' @concept landings functions
+#' @concept StoX-Reca functions
 #' @md
 #' @export
 PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), UseDefaultColorSettings=T, MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), ColorNoSamples = character(), ColorFewCacthes = character(), ColorFewVessels = character(), ColorGoodSampling =character(), TextSize=numeric()){
@@ -356,6 +358,8 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
 #' @param GradientHighColor Color to use for high end of color gradient. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientHighColor`.
 #' @return \code{\link[RstoxFDA]{PlotSamplingCoverageData}}
 #' @concept StoX-functions
+#' @concept landings functions
+#' @concept StoX-Reca functions
 #' @md
 #' @export
 PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorScheme=c("CellPlot", "Gradient"), Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), UseDefaultColorSettings=TRUE, MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), ColorNoSamples = character(), ColorFewCacthes = character(), ColorFewVessels = character(), ColorGoodSampling =character(), SamplingUnit=c("Vessels","Catches","Measurements"), GradientLowColor=character(), GradientMidColor=character(), GradientHighColor=character()){
@@ -504,6 +508,8 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorS
 #' @param Quantity the sample quantity to plot for each sampling variable: "Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", or "WeightOfSampledCatches"
 #' @param Landings if TRUE total landings in each part of the fishery ('GroupingVariables' in ReportFdaSamplingData) is plotted on a secondary axis.
 #' @concept StoX-functions
+#' @concept landings functions
+#' @concept StoX-Reca functions
 #' @return \code{\link[RstoxFDA]{PlotSamplingVariablesData}}
 #' @export
 PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches"), Landings=FALSE){

@@ -27,4 +27,6 @@ Plots a barplot for a sample quantity,
  If the fishery is partitioned by grouping variables a stacked barplot is produced.
  Total landings may be plotted on a secondary axis.
 }
+\concept{StoX-Reca functions}
 \concept{StoX-functions}
+\concept{landings functions}

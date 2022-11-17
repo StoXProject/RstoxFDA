@@ -116,7 +116,9 @@ categoriseDate <- function(date, temporalType="quarter", seasonal=T, FUN=NULL){
 #'  gearConversion["TBN"] <- "OTB"
 #'  gearConversion["OTB"] <- "OTB"
 #'  convertCodes(c("TBS", "TBN", "OTB"), gearConversion)
-#' @concept parameter conversion functions
+#' @concept spatial coding functions
+#' @concept gear coding functions
+#' @concept temporal coding functions
 #' @export
 convertCodes <- function(code, conversionTable, strict=T){
 
@@ -156,7 +158,7 @@ convertCodes <- function(code, conversionTable, strict=T){
   return(converted)
 }
 
-#' Area code conversion table
+#' Make area code conversion table
 #' @description 
 #'  Make conversion table from area code-definitions.
 #'  

@@ -93,4 +93,6 @@ The coloring is controlled by the arguments 'MinVessels', 'MinCatches', and 'Min
 }
 }
 }
+\concept{StoX-Reca functions}
 \concept{StoX-functions}
+\concept{landings functions}

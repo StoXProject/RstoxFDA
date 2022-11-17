@@ -2,7 +2,7 @@
 % Please edit documentation in R/DataPrep.R
 \name{areaCodeConversionTable}
 \alias{areaCodeConversionTable}
-\title{Area code conversion table}
+\title{Make area code conversion table}
 \usage{
 areaCodeConversionTable(
   areaDef1,
