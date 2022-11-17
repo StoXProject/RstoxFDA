@@ -5,7 +5,7 @@
 \alias{stoxFunctionAttributes}
 \title{Function specification for inclusion in StoX UI}
 \format{
-An object of class \code{list} of length 42.
+An object of class \code{list} of length 43.
 }
 \usage{
 stoxFunctionAttributes

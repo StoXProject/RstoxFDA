@@ -925,6 +925,17 @@ is.WeightConversionTable <- function(WeightConversionTable){
 #' 
 NULL
 
+#' Sampling variables plot data (PlotSamplingCoverageData)
+#' 
+#' @description 
+#'  a ggplot object that renders a a barplot of landings with color codes for how much each part of the fishery is sampled.
+#'  
+#' @name PlotSamplingCoverageData
+#' @concept Data types
+#' 
+NULL
+
+
 #' Sampling variables plot data (PlotSamplingVariablesData)
 #' 
 #' @description 
@@ -2055,29 +2066,90 @@ stoxFunctionAttributes <- list(
     ),
     functionArgumentHierarchy = list(
       MinVessels = list(
-        UseDefaultColorScheme = FALSE
+        UseDefaultColorSettings = FALSE
       ),
       MinCatches = list(
-        UseDefaultColorScheme = FALSE
+        UseDefaultColorSettings = FALSE
       ),
       MinMeasurements = list(
-        UseDefaultColorScheme = FALSE
+        UseDefaultColorSettings = FALSE
       ),
       ColorNoSamples = list(
-        UseDefaultColorScheme = FALSE
+        UseDefaultColorSettings = FALSE
       ),
       ColorFewCacthes = list(
-        UseDefaultColorScheme = FALSE
+        UseDefaultColorSettings = FALSE
       ),
       ColorFewVessels = list(
-        UseDefaultColorScheme = FALSE
+        UseDefaultColorSettings = FALSE
       ),
       ColorGoodSampling = list(
-        UseDefaultColorScheme = FALSE
+        UseDefaultColorSettings = FALSE
       )
     ),
     functionParameterDefaults = c(
       plotDefaultsCellPlotColors
+    )
+  ),
+  PlotSamplingCoverage = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotSamplingCoverageData",
+    functionArgumentHierarchy = list(
+      Measurement = list(
+        ColorScheme = "CellPlot"
+      ),
+      MinVessels = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      MinCatches = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      MinMeasurements = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      ColorNoSamples = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      ColorFewCacthes = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      ColorFewVessels = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      ColorGoodSampling = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      SamplingUnit = list(
+        ColorScheme = "Gradient"
+      ),
+      GradientLowColor = list(
+        ColorScheme = "Gradient",
+        UseDefaultColorSettings = FALSE
+      ),
+      GradientMidColor = list(
+        ColorScheme = "Gradient",
+        UseDefaultColorSettings = FALSE
+      ),
+      GradientHighColor = list(
+        ColorScheme = "Gradient",
+        UseDefaultColorSettings = FALSE
+      )
+    ),
+    functionParameterDefaults = c(
+      plotDefaultsCellPlotColors,
+      list(
+        GradientLowColor="white",
+        GradientMidColor="#F6FAAF",
+        GradientHighColor="#238443"
+      )
     )
   ),
   PlotSamplingVariables = list(

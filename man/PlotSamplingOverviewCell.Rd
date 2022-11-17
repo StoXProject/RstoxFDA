@@ -8,7 +8,7 @@ PlotSamplingOverviewCell(
   ReportFdaSamplingData,
   ColumnVariable,
   Measurement = c("AgeReadings", "LengthMeasurements", "WeightMeasurements"),
-  UseDefaultColorScheme = T,
+  UseDefaultColorSettings = T,
   MinVessels = integer(),
   MinCatches = integer(),
   MinMeasurements = integer(),
@@ -26,7 +26,7 @@ PlotSamplingOverviewCell(
 
 \item{Measurement}{The kind of fish measurement that should be used to determine the color of a cell}
 
-\item{UseDefaultColorScheme}{Logical, whether to use default color scheme or the value specified for the function parameters MinVessels, MinCatches, MinMeasurements}
+\item{UseDefaultColorSettings}{Logical, whether to use default color settings or the value specified for the function parameters MinVessels, MinCatches, MinMeasurements, ColorNoSamples, ColorFewCacthes, ColorFewVessels, ColorGoodSampling}
 
 \item{MinVessels}{The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to 2.}
 

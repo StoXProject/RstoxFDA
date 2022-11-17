@@ -88,7 +88,7 @@ StoxLandingData$Landing$Quarter <- quarters(StoxLandingData$Landing$CatchDate)
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear"), Unit = "ton")
 RstoxFDA:::PlotSamplingOverviewCell(tab, "Gear")
 
-RstoxFDA:::PlotSamplingOverviewCell(tab, "Gear", UseDefaultColorScheme = T)
+RstoxFDA:::PlotSamplingOverviewCell(tab, "Gear", UseDefaultColorSettings = T)
 
 # test with two grouping variable
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area"), Unit = "ton")
@@ -114,7 +114,7 @@ expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, Mi
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "Platform")
 expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8), "Cell plot cannot be constructed when sampling report")
 
-
+browser()
 #
 # test sampling coverage plot
 #
