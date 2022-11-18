@@ -590,9 +590,18 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
   return(pl)
 }
 
+#' Plot Catch At Age
+#' @description 
+#'  Plots total catch in each age group as a barplot with error bars.
+#' @details 
+#'  Error bars correspond to the columns 'High' and 'Low' in 'ReportFdaCatchAtAgeData'
+#'  If 'ReportFdaCatchAtAgeData' has grouping variables a bar will be plotted for each group and age-group,
+#'  and bars will be grouped by age group
+#' @param ReportFdaCatchAtAgeData \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}} with catch at age estimates to plot
+#' @return \code{\link[RstoxFDA]{PlotCatchAtAgeTotalsData}}
 #' @concept StoX-functions
-#' @noRd
-PlotCatcAtAgeTotals <- function(ReportFdaCatchAtAgeData){
+#' @export
+PlotCatchAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   
   ReportFdaCatchAtAgeData$NbyAge <- ReportFdaCatchAtAgeData$NbyAge[order(ReportFdaCatchAtAgeData$NbyAge$Age),]
   levels <- ReportFdaCatchAtAgeData$NbyAge$AgeGroup[!duplicated(ReportFdaCatchAtAgeData$NbyAge$AgeGroup)]
@@ -624,6 +633,8 @@ PlotCatcAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   pl <- pl + ggplot2::ylab(RstoxData::getUnit(ReportFdaCatchAtAgeData$NbyAge$CatchAtAge, property = "shortname"))
   pl <- pl + ggplot2::xlab("Age Group")
   pl <- pl + ggplot2::ggtitle("Catch At Age")
+  
+  pl <- setPlotSaveAttributes(pl)
   
   return(pl)
 }
@@ -704,7 +715,7 @@ PlotMeanLengthAtAge <- function(ReportFdaLengthAtAgeData){
 #' @seealso \code{\link[RstoxData]{ReportRecaCatchAtAgeCovariance}}
 #' @concept StoX-functions
 #' @noRd
-PlotCatcAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
+PlotCatchAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
   
   ReportFdaCatchAtAgeCovarianceData$Variables <- ReportFdaCatchAtAgeCovarianceData$Variables[order(ReportFdaCatchAtAgeCovarianceData$Variables$Age, ReportFdaCatchAtAgeCovarianceData$Variables$VariableId),]
   
@@ -921,7 +932,7 @@ PlotPosteriorTraces <- function(RecaCatchAtAge,
     ggplot2::facet_wrap(~Cluster, scales = "free")
   
   if (!Legend){
-    pl <- ggplot2::theme(legend.position = "none")
+    pl <- pl + ggplot2::theme(legend.position = "none")
   }
     
 

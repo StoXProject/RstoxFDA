@@ -968,6 +968,16 @@ NULL
 #' 
 NULL
 
+#' Total catch by age plot (PlotCatchAtAgeTotalsData)
+#' 
+#' @description 
+#'  a ggplot object that renders estimated total catch by age.
+#'  
+#' @name PlotCatchAtAgeTotalsData
+#' @concept Data types
+#' 
+NULL
+
 #' Sampling Report data (ReportFdaSamplingData)
 #' 
 #' @description 
@@ -2214,6 +2224,11 @@ stoxFunctionAttributes <- list(
       UpperQuant=.95,
       CatLimit=30
     )
+  ),
+  PlotCatchAtAgeTotals = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotCatchAtAgeTotalsData"
   )
 )
 

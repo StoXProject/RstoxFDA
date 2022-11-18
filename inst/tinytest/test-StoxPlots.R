@@ -31,7 +31,7 @@ RstoxFDA:::PlotPosteriorTraces(catchAtAgeFlat, LengthInterval = 20)
 
 # test different options for parameter
 RstoxFDA:::PlotPosteriorTraces(catchAtAgeFlat, Parameter = "MeanWeight")
-RstoxFDA:::PlotPosteriorTraces(catchAtAgeDecomp, Parameter = "MeanLength")
+RstoxFDA:::PlotPosteriorTraces(catchAtAgeDecomp, Parameter = "MeanLength", Legend=F, UseDefaultPlotSettings = F)
 
 # test with decomp
 RstoxFDA:::PlotPosteriorTraces(catchAtAgeDecomp)
@@ -65,17 +65,19 @@ catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds",
 catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.rds", package="RstoxFDA"))
 
 #test caa
+
 catchAtAgeCovarDecomp <- RstoxFDA:::ReportRecaCatchAtAge(catchAtAgeDecomp, PlusGroup = 7)
 catchAtAgeCovarFlat <- RstoxFDA:::ReportRecaCatchAtAge(catchAtAgeFlat, PlusGroup = 7)
-RstoxFDA:::PlotCatcAtAgeTotals(catchAtAgeCovarFlat)
-RstoxFDA:::PlotCatcAtAgeTotals(catchAtAgeCovarDecomp)
+
+RstoxFDA:::PlotCatchAtAgeTotals(catchAtAgeCovarFlat)
+RstoxFDA:::PlotCatchAtAgeTotals(catchAtAgeCovarDecomp)
 
 
 #test covar
 catchAtAgeCovarDecomp <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeDecomp, PlusGroup = 7)
 catchAtAgeCovarFlat <- RstoxFDA:::ReportRecaCatchAtAgeCovariance(catchAtAgeFlat, PlusGroup = 7)
-RstoxFDA:::PlotCatcAtAgeCovariances(catchAtAgeCovarFlat)
-RstoxFDA:::PlotCatcAtAgeCovariances(catchAtAgeCovarDecomp)
+RstoxFDA:::PlotCatchAtAgeCovariances(catchAtAgeCovarFlat)
+RstoxFDA:::PlotCatchAtAgeCovariances(catchAtAgeCovarDecomp)
 
 # test sammpling overview
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
