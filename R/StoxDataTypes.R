@@ -88,6 +88,18 @@ NULL
 #'
 NULL
 
+#' For pattern where a usedefault flag overrides other options
+#' @noRd
+getDefault <- function(argument, argName, useDefault, default){
+  if (!isGiven(argument) | useDefault){
+    if (isGiven(argument)){
+      warning(paste("Argument '", argName, "' is ignored because default settings are chosen.", sep=""))
+    }
+    return(default)
+  }
+  return(argument)
+}
+
 #' Check if table is correctly formatted metier table
 #' @param table \code{\link[RstoxFDA]{MetierTable}}
 #' @param throwError if set errors are raised, if not, validity will be returned as T/F
@@ -942,6 +954,16 @@ NULL
 #'  a ggplot object that renders a stacked barplot of sampling variables for each part of the fishery, with total landings on a secondary axis.
 #'  
 #' @name PlotSamplingVariablesData
+#' @concept Data types
+#' 
+NULL
+
+#' Trace plot (PlotPosteriorTracesData)
+#' 
+#' @description 
+#'  a ggplot object that renders traceplot of Reca predictions.
+#'  
+#' @name PlotPosteriorTracesData
 #' @concept Data types
 #' 
 NULL
@@ -2156,6 +2178,42 @@ stoxFunctionAttributes <- list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "PlotSamplingVariablesData"
+  ),
+  PlotPosteriorTraces = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotPosteriorTracesData",
+    functionArgumentHierarchy = list(
+      Nclust = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      Iter.max = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      Nstart = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      LowerQuant = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      UpperQuant = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      CatLimit = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      Legend = list(
+        UseDefaultPlotSettings=FALSE
+      )
+    ),
+    functionParameterDefaults = list(
+      Nclust=4,
+      Iter.max=20,
+      Nstart=10,
+      LowerQuant=.05,
+      UpperQuant=.95,
+      CatLimit=30
+    )
   )
 )
 

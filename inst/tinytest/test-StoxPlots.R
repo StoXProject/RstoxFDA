@@ -27,7 +27,7 @@ catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.r
 RstoxFDA:::PlotPosteriorTraces(catchAtAgeFlat)
 
 # test w and wo collapselength
-RstoxFDA:::PlotPosteriorTraces(catchAtAgeFlat, LengthInterval = 20, LegendLimit = 1)
+RstoxFDA:::PlotPosteriorTraces(catchAtAgeFlat, LengthInterval = 20)
 
 # test different options for parameter
 RstoxFDA:::PlotPosteriorTraces(catchAtAgeFlat, Parameter = "MeanWeight")
@@ -37,8 +37,9 @@ RstoxFDA:::PlotPosteriorTraces(catchAtAgeDecomp, Parameter = "MeanLength")
 RstoxFDA:::PlotPosteriorTraces(catchAtAgeDecomp)
 # test with stock splitting
 predictiondatafile <- readRDS(system.file("testresources","stocksplitpred.rds", package="RstoxFDA"))
-expect_error(RstoxFDA:::PlotPosteriorTraces(system.file("testresources","stocksplitpred.rds", package="RstoxFDA"), Nclust = 10), "'RecaCatchAtAge' is not correctly formatted.")
-RstoxFDA:::PlotPosteriorTraces(predictiondatafile, Nclust = 10)
+expect_error(RstoxFDA:::PlotPosteriorTraces(system.file("testresources","stocksplitpred.rds", package="RstoxFDA")), "'RecaCatchAtAge' is not correctly formatted.")
+RstoxFDA:::PlotPosteriorTraces(predictiondatafile, Nclust = 10, UseDefaultPlotSettings = F)
+expect_warning(RstoxFDA:::PlotPosteriorTraces(predictiondatafile, Nclust = 10), "Argument 'Nclust' is ignored because default settings are chosen.")
 
 
 #
@@ -114,7 +115,7 @@ expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, Mi
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "Platform")
 expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8), "Cell plot cannot be constructed when sampling report")
 
-browser()
+
 #
 # test sampling coverage plot
 #

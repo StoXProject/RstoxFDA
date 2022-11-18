@@ -731,14 +731,14 @@ PlotCatcAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
 #'  The distribution is plotted in order of iterations, so that issues with autocorrelation in the simulation can be detected.
 #'  Autocorrelation issues may be addressed by adjusting the argument 'Thin' to \code{\link[RstoxFDA]{ParameterizeRecaModels}}
 #'  The upper and lower quantiles of the distributions are highlighted, so that rare spikes or multi-modalities can be detected.
-#'  Rare spikes and multi-modalities can bed addressed by adjusting the argument 'Burnin' to \code{\link[RstoxFDA]{ParameterizeRecaModels}}
+#'  Rare spikes and multi-modalities can be addressed by adjusting the argument 'Burnin' to \code{\link[RstoxFDA]{ParameterizeRecaModels}}
 #'  
 #'  In order to provide an overview of many age-groups at once. Several panels are created and age-groups that
 #'  have closer mean values are plotted together. This is achieved with a k-means clustering (\code{\link[stats]{kmeans}}),
 #'  and some key parameters for the clustering algorithm is provided as options Nclust, Iter.max, Nstart, 
 #'  
 #'  Any grouping variables or length groups in 'RecaCatchAtAge' are incorporated into the age group definition.
-#'  This tends to crowd the plots, and may make them unreadable. While it is desirable to ensure that the parameter has convergened
+#'  This tends to crowd the plots, and may make them unreadable. While it is desirable to ensure that the parameters has converged
 #'  for all ages, grouping variables and length groups, it is often necessary to compromise. One may
 #'  \describe{
 #'   \item{increase 'LengthInterval'}{Default is to collapse length groups entirely}
@@ -756,36 +756,45 @@ PlotCatcAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
 #' @param Parameter which parameter plot traceplots for "TotalCatch", "MeanLength", or "MeanWeight", Defaults to TotalCatch
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param LengthInterval width of length bins in cm, for TotalCatch traceplots. If not provided, length inteval will be set to the maximum length group..
-#' @param Nclust the number of plots to distribute the ages and plus group on. Defaults to 4
-#' @param Iter.max maximal number of iterations for k-means clustering deciding which ages are plotted in same plot. Defaults to 20.
-#' @param Nstart the number of random sets chosen for the k-means clustering. Defaults to 10.
-#' @param LowerLuant lower quantile in each age group to plot as points. Defaults to 0.05.
-#' @param UpperQuant upper quantile in each age group to plot as points. Defaults to 0.95
-#' @param CatLimit the upper limit for number of ages in a plot using categorical coloring. Plots with more than this number of age greoups will use a gradient coloring scheme. Defaults to 8.
-#' @param LegendLimit the upper limit for number of ages in a plot showing legends. Plots with more than this number of age groups will not show plot legend. Defaults to 8.
+#' @param UseDefaultPlotSettings if TRUE default plot settings are used, rather than the values provided by Nclust, Iter.max, Nstart, LowerQuant, UpperQuant, CatLimit, and Legend
+#' @param Nclust the number of plots to distribute the ages and plus group on. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Nclust`.
+#' @param Iter.max maximal number of iterations for k-means clustering deciding which ages are plotted in same plot. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Iter.max`.
+#' @param Nstart the number of random sets chosen for the k-means clustering. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Nstart`.
+#' @param LowerQuant lower quantile in each age group to plot as points. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$LowerLuant`.
+#' @param UpperQuant upper quantile in each age group to plot as points. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$UpperQuant`.
+#' @param CatLimit the upper limit for number of ages in a plot using categorical coloring. Plots with more than this number of age greoups will use a gradient coloring scheme. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$CatLimit`.
+#' @param Legend If true legend will be plotted.
+#' @return \code{\link[RstoxFDA]{PlotPosteriorTracesData}}
 #' @concept StoX-functions
 #' @concept convergence-checks
-#' @noRd
+#' @export
 #' @md
 PlotPosteriorTraces <- function(RecaCatchAtAge, 
                                 Parameter=c("TotalCatch", "MeanLength", "MeanWeight"), 
                                 PlusGroup=integer(), 
                                 LengthInterval=numeric(),
+                                UseDefaultPlotSettings=TRUE,
                                 Nclust=integer(), 
                                 Iter.max=integer(), 
-                                Nstart=integer(), 
+                                Nstart=integer(),
                                 LowerQuant=numeric(), 
                                 UpperQuant=numeric(), 
                                 CatLimit=integer(),
-                                LegendLimit=integer()){
+                                Legend=TRUE){
   
   if (!is.RecaCatchAtAge(RecaCatchAtAge)){
     stop("'RecaCatchAtAge' is not correctly formatted.")
   }
   
-  Parameter <- match.arg(Parameter, Parameter)
+  if (isGiven(Parameter)){
+    Parameter <- match.arg(Parameter, Parameter)
+  }
+  else{
+    stop("Argument 'Parameter' must be provided.")
+  }
   
   if (isGiven(PlusGroup)){
+    Parameter <- match.arg(Parameter, Parameter)
     if (PlusGroup > max(RecaCatchAtAge$CatchAtAge$Age)){
       stop("'PlusGroup' is larger than the oldest age in the model.")
     }
@@ -797,28 +806,13 @@ PlotPosteriorTraces <- function(RecaCatchAtAge,
   if (!isGiven(LengthInterval)){
     LengthInterval <- max(RecaCatchAtAge$CatchAtAge$Length)
   }
-  if (!isGiven(Nclust)){
-    Nclust <- 4
-  }
-  if (!isGiven(Iter.max)){
-    Iter.max <- 20
-  }
-  if (!isGiven(Nstart)){
-    Nstart <- 10
-  }
-  if (!isGiven(LowerQuant)){
-    LowerQuant <- .05
-  }
-  if (!isGiven(UpperQuant)){
-    UpperQuant <- .95
-  }
-  if (!isGiven(CatLimit)){
-    CatLimit <- 8
-  }
-  if (!isGiven(LegendLimit)){
-    LegendLimit <- 8
-  }
-  
+  Nclust <- getDefault(Nclust, "Nclust", UseDefaultPlotSettings, RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Nclust)
+  Iter.max <- getDefault(Iter.max, "Iter.max", UseDefaultPlotSettings, RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Iter.max)
+  Nstart <- getDefault(Nstart, "Nstart", UseDefaultPlotSettings, RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Nstart)
+  LowerQuant <- getDefault(LowerQuant, "LowerQuant", UseDefaultPlotSettings, RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$LowerQuant)
+  UpperQuant <- getDefault(UpperQuant, "UpperQuant", UseDefaultPlotSettings, RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$UpperQuant)
+  CatLimit <- getDefault(CatLimit, "CatLimit", UseDefaultPlotSettings, RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$CatLimit)
+
   if (Parameter == "TotalCatch"){
     
     tab <- RecaCatchAtAge$CatchAtAge
@@ -897,37 +891,42 @@ PlotPosteriorTraces <- function(RecaCatchAtAge,
   # Plots
   #
   
-  plots <- list()
-  plotnr <- 1
+  tab$Cluster <- as.character(NA)
+  clustLabel <- 1
   for (i in seq(1,Nclust)[order(clust$centers, decreasing = T)]){
-    mcp <- tab[tab$AgeGroup %in% names(clust$cluster[clust$cluster==i]),]
-    maxy <- max(mcp[[var]]) + max(mcp[[var]])*.1
-    
-    if (sum(clust$cluster==i)<=CatLimit){
-      mcp$AgeGroup <- as.factor(mcp$AgeGroup)
-      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes_string(x="Iteration", y=var, group="AgeGroup"))+
-        ggplot2::geom_line(ggplot2::aes_string(color="AgeGroup")) + 
-        ggplot2::geom_point(data=mcp[mcp[[var]] > mcp$uq | mcp[[var]] < mcp$lq,], ggplot2::aes_string(color="AgeGroup")) + 
-        ggplot2::scale_color_manual(values = Agecolors) + ggplot2::ylim(0,maxy)
-    }
-    else{
-      mcp$AgeGroup <- as.numeric(as.factor(mcp$AgeGroup))
-      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes_string(x="Iteration", y=var, group="AgeGroup"))+
-        ggplot2::geom_line(data=mcp, ggplot2::aes_string(color="AgeGroup")) + 
-        ggplot2::geom_point(data=mcp[mcp[[var]] > mcp$uq | mcp[[var]] < mcp$lq,], ggplot2::aes_string(color="AgeGroup")) + 
-        ggplot2::ylim(0,maxy) +
-        ggplot2::scale_color_gradient()
-    }
-    plots[[plotnr]] <- plots[[plotnr]] + ggplot2::theme_minimal() +
-        ggplot2::ylab(NULL) +
-        ggplot2::theme(axis.ticks.x=ggplot2::element_blank(), axis.text.x=ggplot2::element_blank())
-    
-    if (sum(clust$cluster==i)>LegendLimit){
-      plots[[plotnr]] <- plots[[plotnr]] + ggplot2::guides(color = "none")
-    }
-    
-    plotnr <- plotnr+1
+    filter <- tab$AgeGroup %in% names(clust$cluster[clust$cluster==i])
+    tab$Cluster[filter] <- paste("C", clustLabel, sep="")
+    tab$AgeGroup[filter] <- paste("C", clustLabel, ": ", tab$AgeGroup[filter], sep="")
+    clustLabel <- clustLabel + 1
   }
-  gridExtra::grid.arrange(grobs=plots, top=grid::textGrob(paste("Traceplot", Parameter),gp=grid::gpar(fontsize=20,font=1)), ncol=2)
+  
+  if (length(unique(tab$AgeGroup)) <= CatLimit){
+    tab$AgeGroup <- as.factor(tab$AgeGroup)
+    pl <- ggplot2::ggplot(data=tab, ggplot2::aes_string(x="Iteration", y=var, group="AgeGroup"))+
+      ggplot2::geom_line(ggplot2::aes_string(color="AgeGroup")) + 
+      ggplot2::geom_point(data=tab[tab[[var]] > tab$uq | tab[[var]] < tab$lq,], ggplot2::aes_string(color="AgeGroup")) + 
+      ggplot2::scale_color_manual(values = Agecolors)   
+  }
+  else{
+    tab$AgeGroup <- as.numeric(as.factor(tab$AgeGroup))
+    pl <- ggplot2::ggplot(data=tab, ggplot2::aes_string(x="Iteration", y=var, group="AgeGroup"))+
+      ggplot2::geom_line(ggplot2::aes_string(color="AgeGroup")) + 
+      ggplot2::geom_point(data=tab[tab[[var]] > tab$uq | tab[[var]] < tab$lq,], ggplot2::aes_string(color="AgeGroup")) + 
+      ggplot2::scale_color_gradient() +
+      ggplot2::guides(colour = ggplot2::guide_colorbar(ticks=FALSE, label=FALSE))
+  }
+  
+  pl <- pl + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    ggplot2::facet_wrap(~Cluster, scales = "free")
+  
+  if (!Legend){
+    pl <- ggplot2::theme(legend.position = "none")
+  }
+    
+
+  pl <- setPlotSaveAttributes(pl)
+  
+  return(pl)
   
 }
