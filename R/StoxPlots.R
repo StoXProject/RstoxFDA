@@ -644,6 +644,9 @@ PlotCatchAtAgeTotals <- function(ReportFdaCatchAtAgeData){
 #' @noRd
 PlotMeanVariableAtAge <- function(ReportFdaVariableAtAgeData, tableName="MeanWeightByAge", variable="MeanIndividualWeight", ylabel=variable){
   
+  #order by min age in agegroup
+  ReportFdaVariableAtAgeData[[tableName]]$AgeGroup <- factor(ReportFdaVariableAtAgeData[[tableName]]$AgeGroup, levels = unique(ReportFdaVariableAtAgeData[[tableName]]$AgeGroup[order(ReportFdaVariableAtAgeData[[tableName]]$Age)]), ordered = T)
+  
   if (nrow(ReportFdaVariableAtAgeData$GroupingVariables) == 0){
 
     pl <- ggplot2::ggplot(ReportFdaVariableAtAgeData[[tableName]], ggplot2::aes(group=1)) + 
