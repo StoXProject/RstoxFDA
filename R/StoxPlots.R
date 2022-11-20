@@ -672,16 +672,17 @@ PlotMeanVariableAtAge <- function(ReportFdaVariableAtAgeData, tableName="MeanWei
 
 #' Plot weight at age
 #' @description
-#'  Plot mean individual weight for each age group, along with an interval rerpesentation for the error of the mean.
+#'  Plot mean individual weight for each age group, along with an interval representation for the error of the mean.
 #'  The interval plotted is as configured in 'ReportFdaWeightAtAgeData' (the interval Low / High) and is represented by dashed lines.
 #'  
-#'  The interval does not represent the range of length occuring in each age group, but the error of the estiamte of mean weight
+#'  The interval does not represent the range of length occurring in each age group, but the error of the estimate of mean weight
 #'  
-#'  If any grouping variables are configued for argument 'ReportFdaWeightAtAgeData', groups will be plotted in different colors.
+#'  If any grouping variables are configured for argument 'ReportFdaWeightAtAgeData', groups will be plotted in different colors.
 #' @param ReportFdaWeightAtAgeData \code{\link[RstoxFDA]{ReportFdaWeightAtAgeData}} with mean weight statistics from Reca simulations
 #' @concept StoX-functions
 #' @concept convergence-checks
-#' @noRd
+#' @return \code{\link[RstoxFDA]{PlotMeanWeightAtAgeData}}
+#' @export
 PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
  if (!is.ReportFdaByAgeData(ReportFdaWeightAtAgeData)){
    stop("Malformed argument: 'ReportFdaWeightAtAgeData'")
@@ -691,16 +692,17 @@ PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
 
 #' Plot length at age
 #' @description
-#'  Plot mean individual length for each age group, along with an interval rerpesentation for the error of the mean.
+#'  Plot mean individual length for each age group, along with an interval representation for the error of the mean.
 #'  The interval plotted is as configured in 'ReportFdaLengthAtAgeData' (the interval Low / High) and is represented by dashed lines.
 #'  
-#'  The interval does not represent the range of weights occuring in each age group, but the error of the estimate of mean length
+#'  The interval does not represent the range of weights occurring in each age group, but the error of the estimate of mean length
 #'  
-#'  If any grouping variables are configued for argument 'ReportFdaLengthAtAgeData', groups will be plotted in different colors.
+#'  If any grouping variables are configured for argument 'ReportFdaLengthAtAgeData', groups will be plotted in different colors.
 #' @param ReportFdaLengthAtAgeData \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}} with mean weight statistics from Reca simulations
 #' @concept StoX-functions
 #' @concept convergence-checks
-#' @noRd
+#' @return \code{\link[RstoxFDA]{PlotMeanLengthAtAgeData}}
+#' @export
 PlotMeanLengthAtAge <- function(ReportFdaLengthAtAgeData){
   if (!is.ReportFdaByAgeData(ReportFdaLengthAtAgeData)){
     stop("Malformed argument: 'ReportFdaLengthAtAgeData'")

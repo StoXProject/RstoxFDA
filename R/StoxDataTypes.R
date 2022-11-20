@@ -978,6 +978,26 @@ NULL
 #' 
 NULL
 
+#' Mean weight at age plot (PlotMeanWeightAtAgeData)
+#' 
+#' @description 
+#'  a ggplot object that renders estimated mean weight by age.
+#'  
+#' @name PlotMeanWeightAtAgeData
+#' @concept Data types
+#' 
+NULL
+
+#' Mean length at age plot (PlotMeanLengthAtAgeData)
+#' 
+#' @description 
+#'  a ggplot object that renders estimated mean length by age.
+#'  
+#' @name PlotMeanLengthAtAgeData
+#' @concept Data types
+#' 
+NULL
+
 #' Sampling Report data (ReportFdaSamplingData)
 #' 
 #' @description 
@@ -2229,6 +2249,16 @@ stoxFunctionAttributes <- list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "PlotCatchAtAgeTotalsData"
+  ),
+  PlotMeanWeightAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotMeanWeightAtAgeData"
+  ),
+  PlotMeanLengthAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotMeanLengthAtAgeData"
   )
 )
 
