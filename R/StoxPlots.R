@@ -177,6 +177,7 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #'   \item{Good}{Cell has sufficient number of individuals, catches and vessels sampled.}
 #'   \item{Few vessels}{Cell has sufficient number of individuals and catches sampled, but not sufficient number of vessels}
 #'   \item{Few catches}{Cell has sufficient number of individuals sampled, but not sufficient number of catches}
+#'   \item{Few measurements}{Cell has sufficient number of individuals sampled, but not sufficient number of catches}
 #'   \item{No samples}{Cell is not sampled}
 #'   \item{No Landings}{Cell is sampled, but there are no official landings recorded for the cell.}
 #'  }
@@ -190,12 +191,13 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
 #' @param ColumnVariable The grouping variable in 'ReportFdaSamplingData' that should be used for columns in the cell plot
 #' @param Measurement The kind of fish measurement that should be used to determine the color of a cell
-#' @param UseDefaultColorSettings Logical, whether to use default color settings or the value specified for the function parameters MinVessels, MinCatches, MinMeasurements, ColorNoSamples, ColorFewCacthes, ColorFewVessels, ColorGoodSampling
+#' @param UseDefaultColorSettings Logical, whether to use default color settings or the value specified for the function parameters MinVessels, MinCatches, MinMeasurements, ColorNoSamples, ColorFewCatches, ColorFewVessels, ColorGoodSampling
 #' @param MinVessels The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels`.
 #' @param MinCatches The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches`.
 #' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements`.
 #' @param ColorNoSamples Color to use for cells not sampled. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorNoSamples`.
-#' @param ColorFewCacthes Color to use for cells with Few Catches. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewCacthes`.
+#' @param ColorFewMeasurements Color to use for cells with few measurements. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewMeasurements`.
+#' @param ColorFewCatches Color to use for cells with Few Catches. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewCatches`.
 #' @param ColorFewVessels Color to use for cells with Few Vessels See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewVessels`.
 #' @param ColorGoodSampling Color to use for cells with Good sampling. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorGoodSampling`.
 #' @param TextSize size of text in cellplot. If not provided, a suitable size will be calculated.
@@ -205,7 +207,7 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @concept StoX-Reca functions
 #' @md
 #' @export
-PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), UseDefaultColorSettings=T, MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), ColorNoSamples = character(), ColorFewCacthes = character(), ColorFewVessels = character(), ColorGoodSampling =character(), TextSize=numeric()){
+PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), UseDefaultColorSettings=T, MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), ColorNoSamples = character(), ColorFewMeasurements = character(), ColorFewCatches = character(), ColorFewVessels = character(), ColorGoodSampling =character(), TextSize=numeric()){
   if (!is.ReportFdaSamplingData(ReportFdaSamplingData)){
     stop("Input must be 'RstoxFDA:::ReportFdaSamplingData'")
   }
@@ -225,8 +227,8 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
     stop("Cell plot cannot be constructed when sampling report ('ReportFdaSamplingData') has sampling variables ('SamplingVariables'). Consider the function 'PlotSamplingVariables' instead.")
   }
 
-  Measurement <- match.arg(Measurement, Measurement)
   if (isGiven(Measurement)){
+    Measurement <- match.arg(Measurement, Measurement)
     if (!Measurement %in% c("AgeReadings","LengthMeasurements","WeightMeasurements")){
       stop(paste("Does not recognize option for measurement:", Measurement))
     }
@@ -235,28 +237,15 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
     Measurement <- "AgeReadings"
   }
 
-  if (!isGiven(MinVessels) | UseDefaultColorSettings){
-    MinVessels <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels
-  }
-  if (!isGiven(MinCatches) | UseDefaultColorSettings){
-    MinCatches <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches
-  }
-  if (!isGiven(MinMeasurements) | UseDefaultColorSettings){
-    MinMeasurements <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements
-  }
-  if (!isGiven(ColorNoSamples) | UseDefaultColorSettings){
-    ColorNoSamples <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorNoSamples
-  }
-  if (!isGiven(ColorFewCacthes) | UseDefaultColorSettings){
-    ColorFewCacthes <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewCacthes
-  }
-  if (!isGiven(ColorFewVessels) | UseDefaultColorSettings){
-    ColorFewVessels <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewVessels
-  }
-  if (!isGiven(ColorGoodSampling) | UseDefaultColorSettings){
-    ColorGoodSampling <- RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorGoodSampling
-  }
-  
+  MinVessels <- getDefault(MinVessels, "MinVessels", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels)
+  MinCatches <- getDefault(MinCatches, "MinCatches", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches)
+  MinMeasurements <- getDefault(MinMeasurements, "MinMeasurements", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements)
+  ColorNoSamples <- getDefault(ColorNoSamples, "ColorNoSamples", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorNoSamples)
+  ColorFewMeasurements <- getDefault(ColorFewMeasurements, "ColorFewMeasurements", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewMeasurements)
+  ColorFewCatches <- getDefault(ColorFewCatches, "ColorFewCatches", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewCatches)
+  ColorFewVessels <- getDefault(ColorFewVessels, "ColorFewVessels", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewVessels)
+  ColorGoodSampling <- getDefault(ColorGoodSampling, "ColorGoodSampling", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorGoodSampling)
+
   if (!isGiven(TextSize)){
     Height <- 17
     Width <- 17
@@ -277,6 +266,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
   RowAxisLabel <- paste(RowVariables, collapse = "-")
   ReportFdaSamplingData$FisheriesSampling$RowLabels <- apply(ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcols=RowVariables], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
   ReportFdaSamplingData$FisheriesSampling$Samples <- "No samples"
+  ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling[[Measurement]] >= 1] <- "Few measurements"
   ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling[[Measurement]] >= MinMeasurements] <- "Few catches"
   ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling$Catches >= MinCatches & ReportFdaSamplingData$FisheriesSampling$Samples=="Few catches"] <- "Few vessels"
   ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling$Vessels >= MinVessels & ReportFdaSamplingData$FisheriesSampling$Samples=="Few vessels"] <- "Good"
@@ -298,7 +288,8 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
     ggplot2::scale_fill_manual(
       values = c(
         "No samples" = ColorNoSamples,
-        "Few catches" = ColorFewCacthes,
+        "Few measurements" = ColorFewMeasurements,
+        "Few catches" = ColorFewCatches,
         "Few vessels" = ColorFewVessels,
         "Good" = ColorGoodSampling,
         "No Landings" = "white"
@@ -349,7 +340,8 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
 #' @param MinCatches color scheme "CellPlot". The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.
 #' @param MinMeasurements color scheme "CellPlot". The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.
 #' @param ColorNoSamples Color to use for cells not sampled. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorNoSamples`.
-#' @param ColorFewCacthes Color to use for cells with Few Catches. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewCacthes`.
+#' @param ColorFewMeasurements Color to use for cells with few measurements. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewMeasurements`.
+#' @param ColorFewCatches Color to use for cells with Few Catches. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewCatches`.
 #' @param ColorFewVessels Color to use for cells with Few Vessels See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewVessels`.
 #' @param ColorGoodSampling Color to use for cells with Good sampling. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorGoodSampling`.
 #' @param SamplingUnit color scheme "Gradient". The sampling unit used: "Vessels","Catches", or "Measurement"
@@ -362,7 +354,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
 #' @concept StoX-Reca functions
 #' @md
 #' @export
-PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorScheme=c("CellPlot", "Gradient"), Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), UseDefaultColorSettings=TRUE, MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), ColorNoSamples = character(), ColorFewCacthes = character(), ColorFewVessels = character(), ColorGoodSampling =character(), SamplingUnit=c("Vessels","Catches","Measurements"), GradientLowColor=character(), GradientMidColor=character(), GradientHighColor=character()){
+PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorScheme=c("CellPlot", "Gradient"), Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), UseDefaultColorSettings=TRUE, MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), ColorNoSamples = character(), ColorFewMeasurements = character(), ColorFewCatches = character(), ColorFewVessels = character(), ColorGoodSampling =character(), SamplingUnit=c("Vessels","Catches","Measurements"), GradientLowColor=character(), GradientMidColor=character(), GradientHighColor=character()){
   
   if (!is.ReportFdaSamplingData(ReportFdaSamplingData)){
     stop("Input must be 'RstoxFDA:::ReportFdaSamplingData'")
@@ -400,40 +392,22 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorS
     SamplingUnit <- Measurement
   }
   
-  if (!isGiven(MinVessels) | UseDefaultColorSettings){
-    MinVessels <- RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$MinVessels
-  }
-  if (!isGiven(MinCatches) | UseDefaultColorSettings){
-    MinCatches <- RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$MinCatches
-  }
-  if (!isGiven(MinMeasurements) | UseDefaultColorSettings){
-    MinMeasurements <- RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$MinMeasurements
-  }
-  if (!isGiven(ColorNoSamples) | UseDefaultColorSettings){
-    ColorNoSamples <- RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorNoSamples
-  }
-  if (!isGiven(ColorFewCacthes) | UseDefaultColorSettings){
-    ColorFewCacthes <- RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewCacthes
-  }
-  if (!isGiven(ColorFewVessels) | UseDefaultColorSettings){
-    ColorFewVessels <- RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewVessels
-  }
-  if (!isGiven(ColorGoodSampling) | UseDefaultColorSettings){
-    ColorGoodSampling <- RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorGoodSampling
-  }
-  if (!isGiven(GradientLowColor) | UseDefaultColorSettings){
-    GradientLowColor <- RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientLowColor
-  }
-  if (!isGiven(GradientMidColor) | UseDefaultColorSettings){
-    GradientMidColor <- RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientMidColor
-  }
-  if (!isGiven(GradientHighColor) | UseDefaultColorSettings){
-    GradientHighColor <- RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientHighColor
-  }
+  MinVessels <- getDefault(MinVessels, "MinVessels", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$MinVessels)
+  MinCatches <- getDefault(MinCatches, "MinCatches", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$MinCatches)
+  MinMeasurements <- getDefault(MinMeasurements, "MinMeasurements", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$MinMeasurements)
+  ColorNoSamples <- getDefault(ColorNoSamples, "ColorNoSamples", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorNoSamples)
+  ColorFewMeasurements <- getDefault(ColorFewMeasurements, "ColorFewMeasurements", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewMeasurements)
+  ColorFewCatches <- getDefault(ColorFewCatches, "ColorFewCatches", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewCatches)
+  ColorFewVessels <- getDefault(ColorFewVessels, "ColorFewVessels", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewVessels)
+  ColorGoodSampling <- getDefault(ColorGoodSampling, "ColorGoodSampling", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorGoodSampling)
+  GradientLowColor <- getDefault(GradientLowColor, "GradientLowColor", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientLowColor)
+  GradientMidColor <- getDefault(GradientMidColor, "GradientMidColor", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientMidColor)
+  GradientHighColor <- getDefault(GradientHighColor, "GradientHighColor", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientHighColor)
   
   axisLabel <- paste(ReportFdaSamplingData$GroupingVariables$GroupingVariables, collapse = "-")
   ReportFdaSamplingData$FisheriesSampling$axisLabel <- apply(ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcols=ReportFdaSamplingData$GroupingVariables$GroupingVariables], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
   ReportFdaSamplingData$FisheriesSampling$Samples <- "No samples"
+  ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling[[Measurement]] >= 1] <- "Few measurements"
   ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling[[Measurement]] >= MinMeasurements] <- "Few catches"
   ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling$Catches >= MinCatches & ReportFdaSamplingData$FisheriesSampling$Samples=="Few catches"] <- "Few vessels"
   ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling$Vessels >= MinVessels & ReportFdaSamplingData$FisheriesSampling$Samples=="Few vessels"] <- "Good"
@@ -455,7 +429,8 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorS
       ggplot2::scale_fill_manual(
         values = c(
           "No samples" = ColorNoSamples,
-          "Few catches" = ColorFewCacthes,
+          "Few measurements" = ColorFewMeasurements,
+          "Few catches" = ColorFewCatches,
           "Few vessels" = ColorFewVessels,
           "Good" = ColorGoodSampling
         )

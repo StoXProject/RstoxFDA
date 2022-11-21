@@ -1667,9 +1667,10 @@ plotDefaultsCellPlotColors <- list(
   MinCatches=2, 
   MinMeasurements=100,
   ColorNoSamples = "#ffffcc", 
-  ColorFewCacthes = "#c2e699", 
-  ColorFewVessels = "#78c679", 
-  ColorGoodSampling = "#238443"
+  ColorFewMeasurements = "#c2e699", 
+  ColorFewCatches = "#78c679", 
+  ColorFewVessels = "#31a354", 
+  ColorGoodSampling = "#006837"
 )
 
 #' Function specification for inclusion in StoX UI
@@ -2129,7 +2130,7 @@ stoxFunctionAttributes <- list(
       ColorNoSamples = list(
         UseDefaultColorSettings = FALSE
       ),
-      ColorFewCacthes = list(
+      ColorFewCatches = list(
         UseDefaultColorSettings = FALSE
       ),
       ColorFewVessels = list(
@@ -2167,7 +2168,7 @@ stoxFunctionAttributes <- list(
         UseDefaultColorSettings = FALSE,
         ColorScheme = "CellPlot"
       ),
-      ColorFewCacthes = list(
+      ColorFewCatches = list(
         UseDefaultColorSettings = FALSE,
         ColorScheme = "CellPlot"
       ),

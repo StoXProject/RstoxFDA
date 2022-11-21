@@ -13,7 +13,8 @@ PlotSamplingOverviewCell(
   MinCatches = integer(),
   MinMeasurements = integer(),
   ColorNoSamples = character(),
-  ColorFewCacthes = character(),
+  ColorFewMeasurements = character(),
+  ColorFewCatches = character(),
   ColorFewVessels = character(),
   ColorGoodSampling = character(),
   TextSize = numeric()
@@ -26,7 +27,7 @@ PlotSamplingOverviewCell(
 
 \item{Measurement}{The kind of fish measurement that should be used to determine the color of a cell}
 
-\item{UseDefaultColorSettings}{Logical, whether to use default color settings or the value specified for the function parameters MinVessels, MinCatches, MinMeasurements, ColorNoSamples, ColorFewCacthes, ColorFewVessels, ColorGoodSampling}
+\item{UseDefaultColorSettings}{Logical, whether to use default color settings or the value specified for the function parameters MinVessels, MinCatches, MinMeasurements, ColorNoSamples, ColorFewCatches, ColorFewVessels, ColorGoodSampling}
 
 \item{MinVessels}{The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to 2.}
 
@@ -36,11 +37,13 @@ PlotSamplingOverviewCell(
 
 \item{ColorNoSamples}{Color to use for cells not sampled. Defaults to #ffffcc.}
 
-\item{ColorFewCacthes}{Color to use for cells with Few Catches. See details. Defaults to #c2e699.}
+\item{ColorFewMeasurements}{Color to use for cells with few measurements. Defaults to #c2e699.}
 
-\item{ColorFewVessels}{Color to use for cells with Few Vessels See details. Defaults to #78c679.}
+\item{ColorFewCatches}{Color to use for cells with Few Catches. See details. Defaults to #78c679.}
 
-\item{ColorGoodSampling}{Color to use for cells with Good sampling. See details. Defaults to #238443.}
+\item{ColorFewVessels}{Color to use for cells with Few Vessels See details. Defaults to #31a354.}
+
+\item{ColorGoodSampling}{Color to use for cells with Good sampling. See details. Defaults to #006837.}
 
 \item{TextSize}{size of text in cellplot. If not provided, a suitable size will be calculated.}
 }
@@ -68,6 +71,7 @@ The color coding indicates five categories of sampling depending on how many ves
 \item{Good}{Cell has sufficient number of individuals, catches and vessels sampled.}
 \item{Few vessels}{Cell has sufficient number of individuals and catches sampled, but not sufficient number of vessels}
 \item{Few catches}{Cell has sufficient number of individuals sampled, but not sufficient number of catches}
+\item{Few measurements}{Cell has sufficient number of individuals sampled, but not sufficient number of catches}
 \item{No samples}{Cell is not sampled}
 \item{No Landings}{Cell is sampled, but there are no official landings recorded for the cell.}
 }

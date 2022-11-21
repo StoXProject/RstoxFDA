@@ -14,7 +14,8 @@ PlotSamplingCoverage(
   MinCatches = integer(),
   MinMeasurements = integer(),
   ColorNoSamples = character(),
-  ColorFewCacthes = character(),
+  ColorFewMeasurements = character(),
+  ColorFewCatches = character(),
   ColorFewVessels = character(),
   ColorGoodSampling = character(),
   SamplingUnit = c("Vessels", "Catches", "Measurements"),
@@ -42,11 +43,13 @@ PlotSamplingCoverage(
 
 \item{ColorNoSamples}{Color to use for cells not sampled. Defaults to #ffffcc.}
 
-\item{ColorFewCacthes}{Color to use for cells with Few Catches. See details. Defaults to #c2e699.}
+\item{ColorFewMeasurements}{Color to use for cells with few measurements. Defaults to #c2e699.}
 
-\item{ColorFewVessels}{Color to use for cells with Few Vessels See details. Defaults to #78c679.}
+\item{ColorFewCatches}{Color to use for cells with Few Catches. See details. Defaults to #78c679.}
 
-\item{ColorGoodSampling}{Color to use for cells with Good sampling. See details. Defaults to #238443.}
+\item{ColorFewVessels}{Color to use for cells with Few Vessels See details. Defaults to #31a354.}
+
+\item{ColorGoodSampling}{Color to use for cells with Good sampling. See details. Defaults to #006837.}
 
 \item{SamplingUnit}{color scheme "Gradient". The sampling unit used: "Vessels","Catches", or "Measurement"}
 

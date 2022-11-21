@@ -102,16 +102,16 @@ tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVari
 RstoxFDA:::PlotSamplingOverviewCell(tab, "Area")
 
 # test with three grouping variable, 
-RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8)
+RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8, UseDefaultColorSettings = F)
 
-expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, c("Area", "Gear"), MinVessels = 7, MinCatches = 8), "Choose at most one column variable. 'ColumnVariable' must be one of the variables in 'GroupingVariables'")
-expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, c(), MinVessels = 7, MinCatches = 8), "Argument 'ColumnVariable' must be provided.")
+expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, c("Area", "Gear"), MinVessels = 7, MinCatches = 8, UseDefaultColorSettings = F), "Choose at most one column variable. 'ColumnVariable' must be one of the variables in 'GroupingVariables'")
+expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, c(), MinVessels = 7, MinCatches = 8, UseDefaultColorSettings = F), "Argument 'ColumnVariable' must be provided.")
 
 # test with non-default Measurement 
-RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8, Measurement = "WeightMeasurements")
+RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8, Measurement = "WeightMeasurements", UseDefaultColorSettings = F)
 
 # test with wrong Measurement 
-expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8, Measurement = "wrong"), "Does not recognize option for measurement: wrong")
+expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8, Measurement = "wrong", UseDefaultColorSettings = F), "Does not recognize option for measurement: wrong")
 
 # test with sampling variable
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "Platform")
