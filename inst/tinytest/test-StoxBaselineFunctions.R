@@ -613,6 +613,7 @@ areaPos <- RstoxFDA::DefineAreaPosition(NULL, FileName = regularfile, StratumPol
 landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", package="RstoxFDA"))
 stoxLandingPre <- RstoxData:::StoxLanding(landingH)
 expect_error(RstoxFDA::AddAreaPositionStoxLanding(stoxLandingPre, areaPos, LocationVariable = "Location"))
+expect_error(RstoxFDA::AddAreaPositionStoxLanding(stoxLandingPre, areaPos, LocationVariable = NULL), "Argument 'LocationVariable' must be provided.")
 expect_error(RstoxFDA::AddAreaPositionStoxLanding(stoxLandingPre, areaPos))
 
 #context("test-StoxBaselineFunctions: AppendPositionLanding regular run")

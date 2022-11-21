@@ -159,6 +159,10 @@ ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"
 #' @md
 AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVariable = c("None", "Location", "Coastal")){
   
+  if (!isGiven(LocationVariable)){
+    stop("Argument 'LocationVariable' must be provided.")
+  }
+  
   LocationVariable <- match.arg(LocationVariable, LocationVariable)
   
   latColName="Latitude"    
