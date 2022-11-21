@@ -608,6 +608,7 @@ PlotCatchAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   pl <- pl + ggplot2::ylab(RstoxData::getUnit(ReportFdaCatchAtAgeData$NbyAge$CatchAtAge, property = "shortname"))
   pl <- pl + ggplot2::xlab("Age Group")
   pl <- pl + ggplot2::ggtitle("Catch At Age")
+  pl <- pl + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1))
   
   pl <- setPlotSaveAttributes(pl)
   
