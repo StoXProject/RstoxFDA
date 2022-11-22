@@ -2168,6 +2168,10 @@ stoxFunctionAttributes <- list(
         UseDefaultColorSettings = FALSE,
         ColorScheme = "CellPlot"
       ),
+      ColorFewMeasurements = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
       ColorFewCatches = list(
         UseDefaultColorSettings = FALSE,
         ColorScheme = "CellPlot"
@@ -2199,9 +2203,9 @@ stoxFunctionAttributes <- list(
     functionParameterDefaults = c(
       plotDefaultsCellPlotColors,
       list(
-        GradientLowColor="white",
-        GradientMidColor="#F6FAAF",
-        GradientHighColor="#238443"
+        GradientLowColor="#ffffcc",
+        GradientMidColor="#c2e699",
+        GradientHighColor="#006837"
       )
     )
   ),

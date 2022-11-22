@@ -817,10 +817,14 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, GroupingVariables=
     }
     
     result <- NULL
-    frame <- unique(StoxLandingData$Landing[,GroupingVariables, with=F])
+    frame <- unique(StoxLandingData$Landing[,.SD, .SDcols=GroupingVariables])
     frame$aggregationId <- 1:nrow(frame)
     
-    l <- merge(StoxLandingData$Landing, frame, by=names(frame)[names(frame) %in% names(StoxLandingData$Landing)])
+    #
+    # have absolutely no clue what is going on here, but the data.table merge very occationally does result in an incomplete merge.
+    # It seems to have to do with columns that are keys in StoxLandingData$Landing.
+    #
+    l <- data.table::as.data.table(merge(as.data.frame(StoxLandingData$Landing), as.data.frame(frame), by=names(frame)[names(frame) %in% names(StoxLandingData$Landing)]))
     for (id in frame$aggregationId){
       partition <- l[l$aggregationId==id,]
       Sl <- StoxLandingData

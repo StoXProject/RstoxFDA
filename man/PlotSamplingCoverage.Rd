@@ -53,11 +53,11 @@ PlotSamplingCoverage(
 
 \item{SamplingUnit}{color scheme "Gradient". The sampling unit used: "Vessels","Catches", or "Measurement"}
 
-\item{GradientLowColor}{Color to use for low end of color gradient. See details. Defaults to white.}
+\item{GradientLowColor}{Color to use for low end of color gradient. See details. Defaults to #ffffcc.}
 
-\item{GradientMidColor}{Color to use for middle of color gradient. See details. Defaults to #F6FAAF.}
+\item{GradientMidColor}{Color to use for middle of color gradient. See details. Defaults to #c2e699.}
 
-\item{GradientHighColor}{Color to use for high end of color gradient. See details. Defaults to #238443.}
+\item{GradientHighColor}{Color to use for high end of color gradient. See details. Defaults to #006837.}
 }
 \value{
 \code{\link[RstoxFDA]{PlotSamplingCoverageData}}
