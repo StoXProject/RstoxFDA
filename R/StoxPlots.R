@@ -333,6 +333,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
 #'  }
 #' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
 #' @param Cumulative logical indicating if the cumulative fraction of the landed weight should be plotted on a secondary axis.
+#' @param OtherPercentage Controls how many bars are shown. The smallest 'OtherPercentage' % bars are combined into one bar.
 #' @param ColorScheme 'CellPlot' or 'Gradient'. See details.
 #' @param Measurement The kind of fish measurement that should be used to determine the color of a cell
 #' @param UseDefaultColorSettings Logical, whether to use default color settings or the values specified in other arguments to this function.
@@ -354,11 +355,15 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
 #' @concept StoX-Reca functions
 #' @md
 #' @export
-PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorScheme=c("CellPlot", "Gradient"), Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), UseDefaultColorSettings=TRUE, MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), ColorNoSamples = character(), ColorFewMeasurements = character(), ColorFewCatches = character(), ColorFewVessels = character(), ColorGoodSampling =character(), SamplingUnit=c("Vessels","Catches","Measurements"), GradientLowColor=character(), GradientMidColor=character(), GradientHighColor=character()){
+PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherPercentage=numeric(), ColorScheme=c("CellPlot", "Gradient"), Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), UseDefaultColorSettings=TRUE, MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), ColorNoSamples = character(), ColorFewMeasurements = character(), ColorFewCatches = character(), ColorFewVessels = character(), ColorGoodSampling =character(), SamplingUnit=c("Vessels","Catches","Measurements"), GradientLowColor=character(), GradientMidColor=character(), GradientHighColor=character()){
   
   if (!is.ReportFdaSamplingData(ReportFdaSamplingData)){
     stop("Input must be 'RstoxFDA:::ReportFdaSamplingData'")
   }
+  if (nrow(ReportFdaSamplingData$FisheriesSampling) == 0){
+    stop("No data to plot")
+  }
+  
   if (nrow(ReportFdaSamplingData$GroupingVariables) == 0){
     stop("Coverage plot can only be constructed when sampling report has grouping variables")
   }
@@ -392,6 +397,7 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorS
     SamplingUnit <- Measurement
   }
   
+  OtherPercentage <- getDefault(OtherPercentage, "OtherPercentage", F, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$OtherPercentage)
   MinVessels <- getDefault(MinVessels, "MinVessels", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$MinVessels)
   MinCatches <- getDefault(MinCatches, "MinCatches", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$MinCatches)
   MinMeasurements <- getDefault(MinMeasurements, "MinMeasurements", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$MinMeasurements)
@@ -406,24 +412,48 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorS
   
   axisLabel <- paste(ReportFdaSamplingData$GroupingVariables$GroupingVariables, collapse = "-")
   ReportFdaSamplingData$FisheriesSampling$axisLabel <- apply(ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcols=ReportFdaSamplingData$GroupingVariables$GroupingVariables], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
-  ReportFdaSamplingData$FisheriesSampling$Samples <- "No samples"
-  ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling[[Measurement]] >= 1] <- "Few measurements"
-  ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling[[Measurement]] >= MinMeasurements] <- "Few catches"
-  ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling$Catches >= MinCatches & ReportFdaSamplingData$FisheriesSampling$Samples=="Few catches"] <- "Few vessels"
-  ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling$Vessels >= MinVessels & ReportFdaSamplingData$FisheriesSampling$Samples=="Few vessels"] <- "Good"
-  
-  ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight[is.na(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight)]<-0
-  
-  ReportFdaSamplingData$FisheriesSampling <- ReportFdaSamplingData$FisheriesSampling[order(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, decreasing = T),]
-  ReportFdaSamplingData$FisheriesSampling$cumSumPercent <- 100*cumsum(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight)/(sum(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight))
-  ReportFdaSamplingData$FisheriesSampling$cumSumPercent <- ReportFdaSamplingData$FisheriesSampling$cumSumPercent*(max(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, na.rm = T)/100)
   ReportFdaSamplingData$FisheriesSampling$axisLabel <- factor(ReportFdaSamplingData$FisheriesSampling$axisLabel, levels=ReportFdaSamplingData$FisheriesSampling$axisLabel, ordered = T)
   
+  tab <- ReportFdaSamplingData$FisheriesSampling[, .SD, .SDcols=c("axisLabel", "LandedRoundWeight", Measurement, "Catches", "Vessels")]
+  
+  tab$LandedRoundWeight[is.na(tab$LandedRoundWeight)]<-0
+  
+  tab <- tab[order(tab$LandedRoundWeight, decreasing = T),]
+  tab$cumSumPercent <- 100*cumsum(tab$LandedRoundWeight)/(sum(tab$LandedRoundWeight))
+  tab$cumSumPercent <- tab$cumSumPercent*(max(tab$LandedRoundWeight, na.rm = T)/100)
+  
+
+    others <- tab[tab$cumSumPercent*100/max(tab$cumSumPercent) >= 100-OtherPercentage,]
+    tab <- tab[tab$cumSumPercent*100/max(tab$cumSumPercent) < 100-OtherPercentage,]
+    
+  if (nrow(others)>0){
+      lastRow <- others[1,]
+      lastRow$axisLabel <- "Other"
+      lastRow$LandedRoundWeight <- sum(others$LandedRoundWeight)
+      lastRow[[Measurement]] <- sum(others[[Measurement]], na.rm=T)
+      lastRow$Catches <- sum(others$Catches, na.rm=T)
+      lastRow$Vessels <- sum(others$Vessels, na.rm=T)
+      lastRow$cumSumPercent <- max(others$cumSumPercent)
+      
+      if (nrow(tab)>0){
+        tab <- rbind(tab, lastRow)      
+      }
+      else{
+        tab <- lastRow
+      }
+  }
+  
+  tab$Samples <- "No samples"
+  tab$Samples[tab[[Measurement]] >= 1] <- "Few measurements"
+  tab$Samples[tab[[Measurement]] >= MinMeasurements] <- "Few catches"
+  tab$Samples[tab$Catches >= MinCatches & tab$Samples=="Few catches"] <- "Few vessels"
+  tab$Samples[tab$Vessels >= MinVessels & tab$Samples=="Few vessels"] <- "Good"
+  
   if (ColorScheme == "CellPlot"){
-    pl <- ggplot2::ggplot(ReportFdaSamplingData$FisheriesSampling, ggplot2::aes_string("axisLabel", "LandedRoundWeight")) +
+    pl <- ggplot2::ggplot(tab, ggplot2::aes_string("axisLabel", "LandedRoundWeight")) +
       ggplot2::geom_col(ggplot2::aes_string(fill="Samples")) +
       ggplot2::xlab(axisLabel) +
-      ggplot2::ylab(paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep="")) +
+      ggplot2::ylab(paste("Landed weight (", RstoxData::getUnit(tab$LandedRoundWeight, property = "symbol"),")",sep="")) +
       ggplot2::theme_minimal() +
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
       ggplot2::scale_fill_manual(
@@ -437,13 +467,13 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorS
       )
   }
   else if (ColorScheme == "Gradient"){
-    if (any(is.na(ReportFdaSamplingData$FisheriesSampling[[SamplingUnit]]))){
-      ReportFdaSamplingData$FisheriesSampling[[SamplingUnit]][is.na(ReportFdaSamplingData$FisheriesSampling[[SamplingUnit]])] <- 0      
+    if (any(is.na(tab[[SamplingUnit]]))){
+      tab[[SamplingUnit]][is.na(tab[[SamplingUnit]])] <- 0      
     }
-    pl <- ggplot2::ggplot(ReportFdaSamplingData$FisheriesSampling, ggplot2::aes_string("axisLabel", "LandedRoundWeight")) +
+    pl <- ggplot2::ggplot(tab, ggplot2::aes_string("axisLabel", "LandedRoundWeight")) +
       ggplot2::geom_col(ggplot2::aes_string(fill=SamplingUnit)) +
       ggplot2::xlab(axisLabel) +
-      ggplot2::ylab(paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep="")) +
+      ggplot2::ylab(paste("Landed weight (", RstoxData::getUnit(tab$LandedRoundWeight, property = "symbol"),")",sep="")) +
       ggplot2::theme_minimal() +
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
       ggplot2::scale_fill_gradient2(low=GradientLowColor, mid=GradientMidColor, high=GradientHighColor)
@@ -455,19 +485,17 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, ColorS
   
   # add secondary scale with cumulative catches in %
   if (Cumulative){
-    coeff <- max(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight)/100
+    coeff <- max(tab$LandedRoundWeight)/100
     pl <- pl + ggplot2::geom_line(ggplot2::aes_string(y="cumSumPercent"), group=1) + 
       ggplot2::scale_y_continuous(
         
         # Features of the first axis
-        name = paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep=""),
+        name = paste("Landed weight (", RstoxData::getUnit(tab$LandedRoundWeight, property = "symbol"),")",sep=""),
         
         # Add a second axis and specify its features
         sec.axis = ggplot2::sec_axis(~.x/coeff, name="Landed weight (cumulative %)")
       )  
   }
-  
-  
   
   return(pl)
   

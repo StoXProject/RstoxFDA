@@ -2205,7 +2205,8 @@ stoxFunctionAttributes <- list(
       list(
         GradientLowColor="#ffffcc",
         GradientMidColor="#c2e699",
-        GradientHighColor="#006837"
+        GradientHighColor="#006837",
+        OtherPercentage=0
       )
     )
   ),

@@ -117,7 +117,6 @@ expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, Mi
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "Platform")
 expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8), "Cell plot cannot be constructed when sampling report")
 
-
 #
 # test sampling coverage plot
 #
@@ -128,6 +127,8 @@ RstoxFDA:::PlotSamplingCoverage(tab)
 # test with three grouping variable, 
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear", "Area", "Quarter"), Unit = "ton")
 RstoxFDA:::PlotSamplingCoverage(tab, Cumulative = T)
+RstoxFDA:::PlotSamplingCoverage(tab, Cumulative = T, OtherPercentage = 30)
+RstoxFDA:::PlotSamplingCoverage(tab, Cumulative = T, OtherPercentage = 100)
 
 # test with different color scheme
 RstoxFDA:::PlotSamplingCoverage(tab, ColorScheme = "Gradient", SamplingUnit = "Catches")
