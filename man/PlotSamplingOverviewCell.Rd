@@ -25,7 +25,7 @@ PlotSamplingOverviewCell(
 
 \item{ColumnVariable}{The grouping variable in 'ReportFdaSamplingData' that should be used for columns in the cell plot}
 
-\item{Measurement}{The kind of fish measurement that should be used to determine the color of a cell}
+\item{Measurement}{The kind of fish measurement that should be used to determine the color of a cell. Defaults to AgeReadings.}
 
 \item{UseDefaultColorSettings}{Logical, whether to use default color settings or the value specified for the function parameters MinVessels, MinCatches, MinMeasurements, ColorNoSamples, ColorFewCatches, ColorFewVessels, ColorGoodSampling}
 

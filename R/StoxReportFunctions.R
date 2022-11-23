@@ -1,31 +1,4 @@
-#' Rounds the specified number of decimals
-#' @noRd
-desimals <- function(x, Decimals=integer()){
-  
-  if (isGiven(Decimals)){
-    return(round(x, digits = Decimals))
-  }
-  
-  return(x)
-  
-}
 
-#' @noRd
-setDecimals <- function(table, columns, decimals){
-  for (co in columns){
-    table[[co]] <- desimals(table[[co]], decimals)
-  }
-  return(table)
-}
-
-#' modifies unit by reference (note: no return value)
-#' @noRd
-setUnits <- function(table, columns, unit, quantity){
-  for (co in columns){
-    table[[co]] <- RstoxData::setUnit(table[[co]], RstoxData::findUnit(quantity, unit))
-  }
-  return(table)
-}
 
 #' Report FDA sampling
 #' @description 
@@ -80,6 +53,15 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
     Unit <- Unit[1]
     if (!(Unit %in% RstoxData::getUnitOptions("mass"))){
       stop(paste(Unit, "is not a recognized unit for mass / weight."))
+    }
+  }
+  
+  # flattening may introduce hard to trace NAs if any higher levels lack children.
+  # Most commonly this occurs if there are stations without hauls, so we will issue a warning for that
+  if (any(GroupingVariables %in% names(StoxBioticData$Haul))){
+    if (!all(StoxBioticData$Station$StationKey %in% StoxBioticData$Haul$StationKey)){
+      haulVars <- GroupingVariables[GroupingVariables %in% names(StoxBioticData$Haul)]
+      stoxWarning(paste("There are some stations with no hauls. This may introduce NAs in ", paste(haulVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
     }
   }
   

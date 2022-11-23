@@ -111,7 +111,7 @@ expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, c(), MinVessels = 7, MinCa
 RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8, Measurement = "WeightMeasurements", UseDefaultColorSettings = F)
 
 # test with wrong Measurement 
-expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8, Measurement = "wrong", UseDefaultColorSettings = F), "Does not recognize option for measurement: wrong")
+expect_error(RstoxFDA:::PlotSamplingOverviewCell(tab, "Area", MinVessels = 7, MinCatches = 8, Measurement = "wrong", UseDefaultColorSettings = F), "Does not recognize option")
 
 # test with sampling variable
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "Platform")
@@ -134,10 +134,10 @@ RstoxFDA:::PlotSamplingCoverage(tab, Cumulative = T, OtherPercentage = 100)
 RstoxFDA:::PlotSamplingCoverage(tab, ColorScheme = "Gradient", SamplingUnit = "Catches")
 
 #test with wrong sampling unit
-expect_error(RstoxFDA:::PlotSamplingCoverage(tab, SamplingUnit = "wrong"), "Does not recognize option wrong for 'SamplingUnit'")
+expect_error(RstoxFDA:::PlotSamplingCoverage(tab, SamplingUnit = "wrong"), "Does not recognize option")
 
 #test with wrong measurement
-expect_error(RstoxFDA:::PlotSamplingCoverage(tab, Measurement = "wrong"), "Does not recognize option wrong for 'Measurement'")
+expect_error(RstoxFDA:::PlotSamplingCoverage(tab, Measurement = "wrong"), "Does not recognize option")
 
 # test with sampling variable
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "IndividualSex")
@@ -149,7 +149,7 @@ tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVari
 RstoxFDA:::PlotSamplingVariables(tab)
 RstoxFDA:::PlotSamplingVariables(tab, Landings = T)
 RstoxFDA:::PlotSamplingVariables(tab, Quantity = "AgeReadings")
-expect_error(RstoxFDA:::PlotSamplingVariables(tab, Quantity = "wrong"), "Does not recognize option wrong for 'Quantity'")
+expect_error(RstoxFDA:::PlotSamplingVariables(tab, Quantity = "wrong"), "Does not recognize option")
 
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = c("IndividualSex", "Platform"))
 RstoxFDA:::PlotSamplingVariables(tab)

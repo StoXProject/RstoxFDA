@@ -125,6 +125,10 @@ StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="R
 StoxLandingData <- readRDS(StoxLandingFile)
 StoxLandingData$Landing$Quarter <- quarters(StoxLandingData$Landing$CatchDate)
 
+sb <- StoxBioticData
+sb$Haul <- sb$Haul[1:44,]
+expect_warning(RstoxFDA::ReportFdaSampling(sb, StoxLandingData, GroupingVariables = c("Gear")))
+
 SamplingReport <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"))
 expect_true(abs(sum(StoxBioticData$Sample$CatchFractionWeight, na.rm=T) - sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches)) / sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches) < .01)
 expect_true(abs(sum(StoxLandingData$Landing$RoundWeight, na.rm=T) - sum(SamplingReport$FisheriesSampling$LandedRoundWeight)) / sum(SamplingReport$FisheriesSampling$LandedRoundWeight) < .01)
