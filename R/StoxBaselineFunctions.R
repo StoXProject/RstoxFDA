@@ -1,27 +1,5 @@
 
-#' Issues warning prefixed with StoX:, necessary to be picked up by GUI
-#' @noRd
-stoxWarning <- function(msg){
-  warning(paste("StoX:", msg))
-}
 
-#' Check if parameter is given
-#' @noRd
-isGiven <- function(value=NULL){
-  if (length(value) == 0){
-    return(FALSE)
-  }
-  if (length(value) == 1){
-    
-    if (value == ""){
-      return(FALSE)
-    }
-  }
-  if (is.null(value)){
-    return(FALSE)
-  }
-  return(TRUE)
-}
 
 #' Checks symmetry of Car table
 #' @noRd

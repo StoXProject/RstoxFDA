@@ -7,6 +7,7 @@
 PlotSamplingCoverage(
   ReportFdaSamplingData,
   Cumulative = FALSE,
+  OtherPercentage = numeric(),
   ColorScheme = c("CellPlot", "Gradient"),
   Measurement = c("AgeReadings", "LengthMeasurements", "WeightMeasurements"),
   UseDefaultColorSettings = TRUE,
@@ -29,9 +30,11 @@ PlotSamplingCoverage(
 
 \item{Cumulative}{logical indicating if the cumulative fraction of the landed weight should be plotted on a secondary axis.}
 
-\item{ColorScheme}{'CellPlot' or 'Gradient'. See details.}
+\item{OtherPercentage}{Controls how many bars are shown. The smallest 'OtherPercentage' \% bars are combined into one bar.}
 
-\item{Measurement}{The kind of fish measurement that should be used to determine the color of a cell}
+\item{ColorScheme}{'CellPlot' or 'Gradient'. See details. Defaults to CellPlot.}
+
+\item{Measurement}{The kind of fish measurement that should be used to determine the color of a cell. Defaults to AgeReadings.}
 
 \item{UseDefaultColorSettings}{Logical, whether to use default color settings or the values specified in other arguments to this function.}
 

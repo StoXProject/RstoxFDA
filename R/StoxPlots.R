@@ -190,16 +190,16 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #'  
 #' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
 #' @param ColumnVariable The grouping variable in 'ReportFdaSamplingData' that should be used for columns in the cell plot
-#' @param Measurement The kind of fish measurement that should be used to determine the color of a cell
+#' @param Measurement The kind of fish measurement that should be used to determine the color of a cell. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$Measurement`.
 #' @param UseDefaultColorSettings Logical, whether to use default color settings or the value specified for the function parameters MinVessels, MinCatches, MinMeasurements, ColorNoSamples, ColorFewCatches, ColorFewVessels, ColorGoodSampling
-#' @param MinVessels The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels`.
-#' @param MinCatches The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches`.
-#' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements`.
-#' @param ColorNoSamples Color to use for cells not sampled. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorNoSamples`.
-#' @param ColorFewMeasurements Color to use for cells with few measurements. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewMeasurements`.
-#' @param ColorFewCatches Color to use for cells with Few Catches. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewCatches`.
-#' @param ColorFewVessels Color to use for cells with Few Vessels See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewVessels`.
-#' @param ColorGoodSampling Color to use for cells with Good sampling. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorGoodSampling`.
+#' @param MinVessels The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels`.
+#' @param MinCatches The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches`.
+#' @param MinMeasurements The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements`.
+#' @param ColorNoSamples Color to use for cells not sampled. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorNoSamples`.
+#' @param ColorFewMeasurements Color to use for cells with few measurements. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewMeasurements`.
+#' @param ColorFewCatches Color to use for cells with Few Catches. See details. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewCatches`.
+#' @param ColorFewVessels Color to use for cells with Few Vessels See details. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewVessels`.
+#' @param ColorGoodSampling Color to use for cells with Good sampling. See details. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorGoodSampling`.
 #' @param TextSize size of text in cellplot. If not provided, a suitable size will be calculated.
 #' @return \code{\link[RstoxFDA]{PlotSamplingOverviewCellData}}
 #' @concept StoX-functions
@@ -214,9 +214,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
   if (nrow(ReportFdaSamplingData$GroupingVariables) == 0){
     stop("Cell plot can only be constructed when sampling report has grouping variables.")
   }
-  if (!isGiven(ColumnVariable)){
-    stop("Argument 'ColumnVariable' must be provided.")
-  }
+  checkMandatory(ColumnVariable, "ColumnVariable")
   if (length(ColumnVariable) > 1){
     stop("Choose at most one column variable. 'ColumnVariable' must be one of the variables in 'GroupingVariables'")
   }
@@ -227,15 +225,8 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
     stop("Cell plot cannot be constructed when sampling report ('ReportFdaSamplingData') has sampling variables ('SamplingVariables'). Consider the function 'PlotSamplingVariables' instead.")
   }
 
-  if (isGiven(Measurement)){
-    Measurement <- match.arg(Measurement, Measurement)
-    if (!Measurement %in% c("AgeReadings","LengthMeasurements","WeightMeasurements")){
-      stop(paste("Does not recognize option for measurement:", Measurement))
-    }
-  }
-  else{
-    Measurement <- "AgeReadings"
-  }
+  Measurement <- getDefault(Measurement, "Measurement", F, RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$Measurement)
+  Measurement <- checkOptions(Measurement, "Measurement", c("AgeReadings","LengthMeasurements","WeightMeasurements"))
 
   MinVessels <- getDefault(MinVessels, "MinVessels", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels)
   MinCatches <- getDefault(MinCatches, "MinCatches", UseDefaultColorSettings, RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches)
@@ -266,6 +257,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
   RowAxisLabel <- paste(RowVariables, collapse = "-")
   ReportFdaSamplingData$FisheriesSampling$RowLabels <- apply(ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcols=RowVariables], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
   ReportFdaSamplingData$FisheriesSampling$Samples <- "No samples"
+  
   ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling[[Measurement]] >= 1] <- "Few measurements"
   ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling[[Measurement]] >= MinMeasurements] <- "Few catches"
   ReportFdaSamplingData$FisheriesSampling$Samples[ReportFdaSamplingData$FisheriesSampling$Catches >= MinCatches & ReportFdaSamplingData$FisheriesSampling$Samples=="Few catches"] <- "Few vessels"
@@ -334,21 +326,21 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
 #' @param ReportFdaSamplingData \code{\link[RstoxFDA]{ReportFdaSamplingData}} with sampling report to plot
 #' @param Cumulative logical indicating if the cumulative fraction of the landed weight should be plotted on a secondary axis.
 #' @param OtherPercentage Controls how many bars are shown. The smallest 'OtherPercentage' % bars are combined into one bar.
-#' @param ColorScheme 'CellPlot' or 'Gradient'. See details.
-#' @param Measurement The kind of fish measurement that should be used to determine the color of a cell
+#' @param ColorScheme 'CellPlot' or 'Gradient'. See details. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorScheme`.
+#' @param Measurement The kind of fish measurement that should be used to determine the color of a cell. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$Measurement`.
 #' @param UseDefaultColorSettings Logical, whether to use default color settings or the values specified in other arguments to this function.
 #' @param MinVessels For color scheme "CellPlot". The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to 2.
 #' @param MinCatches color scheme "CellPlot". The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.
 #' @param MinMeasurements color scheme "CellPlot". The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.
-#' @param ColorNoSamples Color to use for cells not sampled. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorNoSamples`.
-#' @param ColorFewMeasurements Color to use for cells with few measurements. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewMeasurements`.
-#' @param ColorFewCatches Color to use for cells with Few Catches. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewCatches`.
-#' @param ColorFewVessels Color to use for cells with Few Vessels See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewVessels`.
-#' @param ColorGoodSampling Color to use for cells with Good sampling. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorGoodSampling`.
+#' @param ColorNoSamples Color to use for cells not sampled. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorNoSamples`.
+#' @param ColorFewMeasurements Color to use for cells with few measurements. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewMeasurements`.
+#' @param ColorFewCatches Color to use for cells with Few Catches. See details. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewCatches`.
+#' @param ColorFewVessels Color to use for cells with Few Vessels See details. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewVessels`.
+#' @param ColorGoodSampling Color to use for cells with Good sampling. See details. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorGoodSampling`.
 #' @param SamplingUnit color scheme "Gradient". The sampling unit used: "Vessels","Catches", or "Measurement"
-#' @param GradientLowColor Color to use for low end of color gradient. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientLowColor`.
-#' @param GradientMidColor Color to use for middle of color gradient. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientMidColor`.
-#' @param GradientHighColor Color to use for high end of color gradient. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientHighColor`.
+#' @param GradientLowColor Color to use for low end of color gradient. See details. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientLowColor`.
+#' @param GradientMidColor Color to use for middle of color gradient. See details. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientMidColor`.
+#' @param GradientHighColor Color to use for high end of color gradient. See details. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientHighColor`.
 #' @return \code{\link[RstoxFDA]{PlotSamplingCoverageData}}
 #' @concept StoX-functions
 #' @concept landings functions
@@ -371,21 +363,12 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
     stop("Coverage plot cannot be constructed when sampling report has sampling variables")
   }
   
-  if (!isGiven(ColorScheme)){
-    stop("Argument 'ColorScheme' must be provided")
-  }
-  ColorScheme <- match.arg(ColorScheme, ColorScheme)
+  ColorScheme <- getDefault(ColorScheme, "ColorScheme", F, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorScheme)
+  ColorScheme <- checkOptions(ColorScheme, "ColorScheme", c("CellPlot", "Gradient"))
   
-  if (isGiven(Measurement)){
-    Measurement <- match.arg(Measurement, Measurement)
-    if (!Measurement %in% c("AgeReadings","LengthMeasurements","WeightMeasurements")){
-      stop(paste("Does not recognize option", Measurement, "for 'Measurement'"))
-    }
-  }
-  else{
-    Measurement <- "AgeReadings"
-  }
-  
+  Measurement <- getDefault(Measurement, "Measurement", F, RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$Measurement)
+  Measurement <- checkOptions(Measurement, "Measurement", c("AgeReadings","LengthMeasurements","WeightMeasurements"))
+
   if (!isGiven(SamplingUnit) & ColorScheme == "Gradient"){
     stop("Argument 'SamplingUnit' must be provided for color scheme 'Gradient'.")
   }
@@ -497,6 +480,8 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
       )  
   }
   
+  pl <- setPlotSaveAttributes(pl)
+  
   return(pl)
   
 }
@@ -517,15 +502,9 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
 #' @export
 PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches"), Landings=FALSE){
   
-  Quantity <- match.arg(Quantity, Quantity)
-  
-  if (!isGiven(Quantity)){
-    stop("Argument 'Quantity' must be provided")
-  }
-  if (!(Quantity %in% c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches"))){
-    stop(paste("Does not recognize option", Quantity, "for 'Quantity'"))
-  }
-  
+  checkMandatory(Quantity, "Quantity")
+  Quantity <- checkOptions(Quantity, "Quantity", c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches"))
+
   ReportFdaSamplingData$FisheriesSampling$cell <- apply(ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcols=ReportFdaSamplingData$GroupingVariables$GroupingVariables], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
   ReportFdaSamplingData$FisheriesSampling$SamplingVariable <- apply(ReportFdaSamplingData$FisheriesSampling[,.SD, .SDcols=ReportFdaSamplingData$SamplingVariables$SamplingVariables], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
   ReportFdaSamplingData$FisheriesSampling$SamplingVariable[is.na(ReportFdaSamplingData$FisheriesSampling$SamplingVariable)] <- 0
@@ -551,6 +530,7 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
       ggplot2::theme_minimal() +
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
       ggplot2::ggtitle(tab$cell[[1]])
+    pl <- setPlotSaveAttributes(pl)
     return(pl)
   }
   
@@ -694,7 +674,11 @@ PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
  if (!is.ReportFdaByAgeData(ReportFdaWeightAtAgeData)){
    stop("Malformed argument: 'ReportFdaWeightAtAgeData'")
  }
- return(PlotMeanVariableAtAge(ReportFdaWeightAtAgeData, "MeanWeightByAge", "MeanIndividualWeight", ylabel = paste("mean individual weight (",RstoxData::getUnit(ReportFdaWeightAtAgeData$MeanWeightByAge$MeanIndividualWeight, property = "symbol"),")",sep="")))
+  
+  pl <- PlotMeanVariableAtAge(ReportFdaWeightAtAgeData, "MeanWeightByAge", "MeanIndividualWeight", ylabel = paste("mean individual weight (",RstoxData::getUnit(ReportFdaWeightAtAgeData$MeanWeightByAge$MeanIndividualWeight, property = "symbol"),")",sep=""))
+  pl <- setPlotSaveAttributes(pl)
+  
+ return(pl)
 }
 
 #' Plot length at age
@@ -714,7 +698,11 @@ PlotMeanLengthAtAge <- function(ReportFdaLengthAtAgeData){
   if (!is.ReportFdaByAgeData(ReportFdaLengthAtAgeData)){
     stop("Malformed argument: 'ReportFdaLengthAtAgeData'")
   }
-  return(PlotMeanVariableAtAge(ReportFdaLengthAtAgeData, "MeanLengthByAge", "MeanIndividualLength", ylabel = paste("mean length (",RstoxData::getUnit(ReportFdaLengthAtAgeData$MeanLengthByAge$MeanIndividualLength, property = "symbol"),")",sep="")))
+  
+  pl <- PlotMeanVariableAtAge(ReportFdaLengthAtAgeData, "MeanLengthByAge", "MeanIndividualLength", ylabel = paste("mean length (",RstoxData::getUnit(ReportFdaLengthAtAgeData$MeanLengthByAge$MeanIndividualLength, property = "symbol"),")",sep=""))
+  pl <- setPlotSaveAttributes(pl)
+  
+  return(pl)
 }
 
 #' Plot covariances (catch at age)
@@ -773,16 +761,16 @@ PlotCatchAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
 #'  That analysis checks the convergence of model parameters, rather than the estimated parameters,
 #'  and supports handling a large number of model parameters, and filter out indications of non-convergence.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
-#' @param Parameter which parameter plot traceplots for "TotalCatch", "MeanLength", or "MeanWeight", Defaults to TotalCatch
+#' @param Parameter which parameter plot traceplots for "TotalCatch", "MeanLength", or "MeanWeight", Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$TotalCatch`
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param LengthInterval width of length bins in cm, for TotalCatch traceplots. If not provided, length inteval will be set to the maximum length group..
 #' @param UseDefaultPlotSettings if TRUE default plot settings are used, rather than the values provided by Nclust, Iter.max, Nstart, LowerQuant, UpperQuant, CatLimit, and Legend
-#' @param Nclust the number of plots to distribute the ages and plus group on. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Nclust`.
-#' @param Iter.max maximal number of iterations for k-means clustering deciding which ages are plotted in same plot. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Iter.max`.
-#' @param Nstart the number of random sets chosen for the k-means clustering. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Nstart`.
-#' @param LowerQuant lower quantile in each age group to plot as points. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$LowerLuant`.
-#' @param UpperQuant upper quantile in each age group to plot as points. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$UpperQuant`.
-#' @param CatLimit the upper limit for number of ages in a plot using categorical coloring. Plots with more than this number of age greoups will use a gradient coloring scheme. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$CatLimit`.
+#' @param Nclust the number of plots to distribute the ages and plus group on. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Nclust`.
+#' @param Iter.max maximal number of iterations for k-means clustering deciding which ages are plotted in same plot. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Iter.max`.
+#' @param Nstart the number of random sets chosen for the k-means clustering. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Nstart`.
+#' @param LowerQuant lower quantile in each age group to plot as points. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$LowerLuant`.
+#' @param UpperQuant upper quantile in each age group to plot as points. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$UpperQuant`.
+#' @param CatLimit the upper limit for number of ages in a plot using categorical coloring. Plots with more than this number of age greoups will use a gradient coloring scheme. Defaults to `r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$CatLimit`.
 #' @param Legend If true legend will be plotted.
 #' @return \code{\link[RstoxFDA]{PlotPosteriorTracesData}}
 #' @concept StoX-functions
@@ -806,12 +794,8 @@ PlotPosteriorTraces <- function(RecaCatchAtAge,
     stop("'RecaCatchAtAge' is not correctly formatted.")
   }
   
-  if (isGiven(Parameter)){
-    Parameter <- match.arg(Parameter, Parameter)
-  }
-  else{
-    stop("Argument 'Parameter' must be provided.")
-  }
+  Parameter <- getDefault(Parameter, "Parameter", F, RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$TotalCatch)
+  Parameter <- checkOptions(Parameter, "Parameter", c("TotalCatch", "MeanLength", "MeanWeight"))
   
   if (isGiven(PlusGroup)){
     Parameter <- match.arg(Parameter, Parameter)

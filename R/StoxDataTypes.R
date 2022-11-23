@@ -88,18 +88,6 @@ NULL
 #'
 NULL
 
-#' For pattern where a usedefault flag overrides other options
-#' @noRd
-getDefault <- function(argument, argName, useDefault, default){
-  if (!isGiven(argument) | useDefault){
-    if (isGiven(argument)){
-      warning(paste("Argument '", argName, "' is ignored because default settings are chosen.", sep=""))
-    }
-    return(default)
-  }
-  return(argument)
-}
-
 #' Check if table is correctly formatted metier table
 #' @param table \code{\link[RstoxFDA]{MetierTable}}
 #' @param throwError if set errors are raised, if not, validity will be returned as T/F
@@ -2141,7 +2129,8 @@ stoxFunctionAttributes <- list(
       )
     ),
     functionParameterDefaults = c(
-      plotDefaultsCellPlotColors
+      plotDefaultsCellPlotColors,
+      list(Measurement="AgeReadings")
     )
   ),
   PlotSamplingCoverage = list(
@@ -2206,7 +2195,9 @@ stoxFunctionAttributes <- list(
         GradientLowColor="#ffffcc",
         GradientMidColor="#c2e699",
         GradientHighColor="#006837",
-        OtherPercentage=0
+        OtherPercentage=0,
+        ColorScheme = "CellPlot",
+        Measurement = "AgeReadings"
       )
     )
   ),
@@ -2248,7 +2239,8 @@ stoxFunctionAttributes <- list(
       Nstart=10,
       LowerQuant=.05,
       UpperQuant=.95,
-      CatLimit=30
+      CatLimit=30,
+      Parameter="TotalCatch"
     )
   ),
   PlotCatchAtAgeTotals = list(

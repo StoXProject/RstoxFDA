@@ -22,7 +22,7 @@ PlotPosteriorTraces(
 \arguments{
 \item{RecaCatchAtAge}{Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).}
 
-\item{Parameter}{which parameter plot traceplots for "TotalCatch", "MeanLength", or "MeanWeight", Defaults to TotalCatch}
+\item{Parameter}{which parameter plot traceplots for "TotalCatch", "MeanLength", or "MeanWeight", Defaults to}
 
 \item{PlusGroup}{If given, ages 'PlusGroup' or older are included in a plus group.}
 

@@ -83,6 +83,15 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
     }
   }
   
+  # flattening may introduce hard to trace NAs if any higher levels lack children.
+  # Most commonly this occurs if there are stations without hauls, so we will issue a warning for that
+  if (any(GroupingVariables %in% names(StoxBioticData$Haul))){
+    if (!all(StoxBioticData$Station$StationKey %in% StoxBioticData$Haul$StationKey)){
+      haulVars <- GroupingVariables[GroupingVariables %in% names(StoxBioticData$Haul)]
+      stoxWarning(paste("There are some stations with no hauls. This may introduce NAs in ", paste(haulVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
+    }
+  }
+  
   flatlandings <- StoxLandingData$Landing
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData)
   
