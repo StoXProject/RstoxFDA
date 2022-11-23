@@ -27,11 +27,9 @@ ParameterizeRecaModels(
 
 \item{ResultDirectory}{a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.}
 
-\item{Lgamodel}{The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}.}
+\item{Lgamodel}{The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}. Defaults to log-linear}
 
 \item{Delta.age}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.}
-
-\item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. If not provided a random seed will be set.}
 
 \item{UseCachedData}{if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.}
 }

@@ -94,3 +94,26 @@ setUnits <- function(table, columns, unit, quantity){
   }
   return(table)
 }
+
+#' Make tempdir for Reca results
+#' returns path
+#' @noRd
+makeTempDirReca <- function(dirname="Recadir"){
+  fpath <- file.path(tempdir(), dirname)
+  if (dir.exists(fpath)){
+    unlink(fpath, recursive = T)
+  }
+  dir.create(fpath)
+  return(fpath)
+}
+
+#' Remove tempdir for Reca results
+#' @noRd
+removeTempDirReca <- function(fpath){
+  unlink(fpath, recursive = T)
+  write("Removing tempdir:", stderr())
+  write(fpath, stderr())
+  if (dir.exists(fpath)){
+    warning(paste("Could not remove tempdir: ", fpath))
+  }
+}

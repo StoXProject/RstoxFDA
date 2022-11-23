@@ -10,7 +10,6 @@ RunRecaModels(
   GroupingVariables = character(),
   TemporalResolution = c("Quarter", "Month"),
   Caa.burnin = numeric(),
-  Seed = numeric(),
   CollapseLength = TRUE
 )
 }
@@ -21,13 +20,11 @@ RunRecaModels(
 
 \item{GroupingVariables}{character vector identifying columns in 'StoxLandingData' that results should be provided for.}
 
-\item{TemporalResolution}{default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
+\item{TemporalResolution}{Code for temporal resolution in landings: "Month" or "Quarter". Defaults to Quarter.
 Regulates temporal resolution for calculating fractional ages of fish.
 Not to be confused with any temporal covariate.}
 
 \item{Caa.burnin}{see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.}
-
-\item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to seed stored in 'RecaParameterData'.}
 
 \item{CollapseLength}{indicates whether length groups should be collapsed in result. Defaults to TRUE. See details.}
 }

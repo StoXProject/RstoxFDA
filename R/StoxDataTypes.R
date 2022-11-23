@@ -1975,12 +1975,21 @@ stoxFunctionAttributes <- list(
       UseStockSplittingError = list(
         UseStockSplitting = TRUE
       )
+    ),
+    functionParameterDefaults = list(
+      CellEffect = "Off",
+      HatchDay = 1
     )
   ),
   ParameterizeRecaModels = list(
     functionType = "modelData",
     functionCategory = "analysis",
-    functionOutputDataType = "RecaParameterData"
+    functionOutputDataType = "RecaParameterData",
+    functionParameterDefaults = list(
+      Lgamodel = "log-linear",
+      Delta.age = 0.001,
+      Thin = 0
+    )
     #doesnt work for directory ?
     #functionParameterFormat = list(
     #  ResultDirectory = "filePath"
@@ -1992,6 +2001,10 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "RecaCatchAtAge",
     functionParameterFormat = list(
       GroupingVariables = "GroupingVariables"
+    ),
+    functionParameterDefaults = list(
+      TemporalResolution = "Quarter",
+      Caa.burnin = 0
     )
   ),
   ReportFdaSampling = list(

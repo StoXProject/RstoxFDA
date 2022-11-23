@@ -214,8 +214,8 @@ warnMissingLandings <- function(StoxBiotic, StoxLanding, effects){
 #'  \code{\link[RstoxFDA]{CarNeighbours}}, mandatory if 'carEffect' is given.
 #'  Identifies which values of the carEffect are to be considered as neighbours.
 #' @param CellEffect
-#'  Configures the cell effect. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
-#'  Any CAR-effect is always included in the cell effect.
+#'  Configures the cell effect. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$CellEffect`. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
+#'  Any CAR-effect is always included in the cell effect. 
 #' @param UseAgingError 
 #'  If TRUE, aging, error parameters will be incorporated in the models.
 #' @param AgeErrorMatrix
@@ -240,8 +240,8 @@ warnMissingLandings <- function(StoxBiotic, StoxLanding, effects){
 #'  optional, resolution for length measurements in cm.
 #'  If not provided modal value from data is used.
 #' @param HatchDay
-#'  defaults to 1 representing Jan 1st.
-#'  encoding the day of the year when fish is consider to transition from one age to the next.
+#'  defaults to Defaults to `r RstoxFDA:::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$HatchDay`.
+#'  encoding the day of the year when fish is consider to transition from one age to the next. 1 represents Jan 1st.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @seealso 
 #'  \code{\link[RstoxFDA]{ReportFdaSampling}} for inspecting the data availability for potential
@@ -269,7 +269,8 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
   #expose as parameter when implemented
   ContinousEffect<-NULL
   
-  CellEffect <- match.arg(CellEffect, CellEffect)
+  CellEffect <- getDefault(CellEffect, "CellEffect", F, RstoxFDA::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$CellEffect)
+  CellEffect <- checkOptions(CellEffect, "CellEffect", c("Off", "All"))
   
   if (!UseStockSplitting){
     StockSplittingParameters <- NULL
@@ -329,9 +330,8 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
     stop(paste("Option", CellEffect, "is not supported for parameter 'CellEffect'"))
   }
   
-  if (!isGiven(HatchDay)){
-    HatchDay <- 1
-  }
+  HatchDay <- getDefault(HatchDay, "HatchDay", F, RstoxFDA::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$HatchDay)
+  checkMandatory(HatchDay, "HatchDay")
   
   if (!isGiven(CarEffect)){
     CarEffect <- c()
@@ -559,11 +559,10 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @param RecaData \code{\link[RstoxFDA]{RecaData}} as returned from \code{\link[RstoxFDA]{PrepareRecaEstimate}}
 #' @param Nsamples number of MCMC samples that will be made available for \code{\link[Reca]{eca.predict}}. See documentation for \code{\link[Reca]{eca.estimate}},
 #' @param Burnin number of MCMC samples run and discarded by \code{\link[Reca]{eca.estimate}} before any samples are saved. See documentation for \code{\link[Reca]{eca.estimate}}.
-#' @param Lgamodel The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}.
+#' @param Lgamodel The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Lgamodel`
 #' @param ResultDirectory a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
-#' @param Thin controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
-#' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.
-#' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. If not provided a random seed will be set.
+#' @param Thin controls how many iterations are run between each samples saved. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Thin`. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
+#' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Delta.age`.
 #' @param UseCachedData if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.
 #' @return \code{\link[RstoxFDA]{RecaParameterData}} results from Reca Model Parameterization.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for model configuration, and data preparation for this function, and
@@ -579,18 +578,14 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
   }
   
   RecaData <- convertStox2PrepReca(RecaData)
-  Lgamodel <- match.arg(Lgamodel, Lgamodel)
-  if (!isGiven(Lgamodel)){
-    stop("Parameter 'Lgamodel' must be provided.")
-  }
-  
+  Lgamodel <- getDefault(Lgamodel, "Lgamodel", F, RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Lgamodel)
+  Lgamodel <- checkOptions(Lgamodel, "Lgamodel", c("log-linear", "non-linear"))
+
   if (!isGiven(Seed)){
     Seed <- sample.int(.Machine$integer.max, 1)
   }
-  if (!isGiven(ResultDirectory)){
-    stop("Parameter 'ResultDirectory' must be provided. See ?ParameterizeRecaModels for details about the 'ResultDirectory'.")
-  }
   
+  checkMandatory(ResultDirectory, "ResultDirectory")
   ResultDirectory <- path.expand(ResultDirectory)
   
   if (!file.exists(ResultDirectory)){
@@ -617,13 +612,13 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
   if (!isGiven(Burnin)){
     stop("Parameter 'Burnin' must be provided.")
   }
-  if (!isGiven(Thin)){
-    Thin <- 0
-  }
-  if (!isGiven(Delta.age)){
-    Delta.age <- 0.001
-  }
-
+  
+  Thin <- getDefault(Thin, "Thin", F, RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Thin)
+  checkMandatory(Thin, "Thin")
+  
+  Delta.age <- getDefault(Delta.age, "Delta.age", F, RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Delta.age)
+  checkMandatory(Delta.age, "Delta.age")
+  
   stopifnot(is.RecaData(RecaData))
   
   GlobalParameters <- RecaData$GlobalParameters
@@ -734,11 +729,10 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #' @param StoxLandingData Landings data (\code{\link[RstoxData]{StoxLandingData}}).
 #' @param GroupingVariables character vector identifying columns in 'StoxLandingData' that results should be provided for.
 #' @param TemporalResolution
-#'  default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
+#'  Code for temporal resolution in landings: "Month" or "Quarter". Defaults to `r RstoxFDA:::stoxFunctionAttributes$RunRecaModels$functionParameterDefaults$TemporalResolution`.
 #'  Regulates temporal resolution for calculating fractional ages of fish.
 #'  Not to be confused with any temporal covariate.
-#' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
-#' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to seed stored in 'RecaParameterData'.
+#' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to `r RstoxFDA:::stoxFunctionAttributes$RunRecaModels$functionParameterDefaults$Caa.burnin`.
 #' @param CollapseLength indicates whether length groups should be collapsed in result. Defaults to TRUE. See details.
 #' @return \code{\link[RstoxFDA]{RecaCatchAtAge}}
 #' @seealso \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation,
@@ -749,17 +743,16 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #' @concept StoX-functions
 #' @export
 #' @md
-RunRecaModels <- function(RecaParameterData, StoxLandingData, GroupingVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), Seed=numeric(), CollapseLength=TRUE){
+RunRecaModels <- function(RecaParameterData, StoxLandingData, GroupingVariables=character(), TemporalResolution=c("Quarter", "Month"), Caa.burnin=numeric(), CollapseLength=TRUE){
   
-  if (!isGiven(RecaParameterData)){
-    stop("Parameter 'RecaParameterData' must be provided.")
-  }
-  if (!isGiven(StoxLandingData)){
-    stop("Parameter 'StoxLandingData' must be provided.")
-  }
-  if (!isGiven(TemporalResolution)){
-    stop("Parameter 'TemporalResolution' must be provided.")
-  }
+  checkMandatory(RecaParameterData, "RecaParameterData")
+  checkMandatory(StoxLandingData, "StoxLandingData")
+
+  TemporalResolution <- getDefault(TemporalResolution, "TemporalResolution", F, RstoxFDA::stoxFunctionAttributes$RunRecaModels$functionParameterDefaults$TemporalResolution)
+  TemporalResolution <- checkOptions(TemporalResolution, "TemporalResolution", c("Quarter", "Month"))
+
+  Caa.burnin <- getDefault(Caa.burnin, "Caa.burnin", F, RstoxFDA::stoxFunctionAttributes$RunRecaModels$functionParameterDefaults$Caa.burnin)
+  checkMandatory(Caa.burnin, "Caa.burnin")
   
   if (length(GroupingVariables)>1 && !CollapseLength){
     stoxWarning("Producing estimates for all length groups in combination with age and several 'GroupingVariables'. This may exhaust memory, consider the option 'CollapseLength'.")
@@ -770,17 +763,6 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, GroupingVariables=
   RecaParameterData$FitLengthGivenAge <- NULL
   RecaParameterData$FitWeightGivenLength <- NULL
   RecaParameterData <- convertStox2PrepReca(RecaParameterData)
-  
-  TemporalResolution <- match.arg(TemporalResolution, TemporalResolution)
-  if (!isGiven(TemporalResolution)){
-    stop("The parameter 'TemporalResolution' must be provided.")
-  }
-  if (!isGiven(Caa.burnin)){
-    Caa.burnin <- 0
-  }
-  if (!isGiven(Seed)){
-    RecaParameterData$GlobalParameters$Seed <- sample.int(.Machine$integer.max, 1)
-  }
   
   RecaParameterData$GlobalParameters$caa.burnin <- Caa.burnin
   

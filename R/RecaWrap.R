@@ -1,30 +1,4 @@
 
-# convert codes, coherent in landings and samples
-
-# return ECA object, and mapping between codes.
-
-#' Make tempdir for Reca results
-#' returns path
-#' @noRd
-makeTempDirReca <- function(dirname="Recadir"){
-  fpath <- file.path(tempdir(), dirname)
-  if (dir.exists(fpath)){
-    unlink(fpath, recursive = T)
-  }
-  dir.create(fpath)
-  return(fpath)
-}
-
-#' Remove tempdir for Reca results
-#' @noRd
-removeTempDirReca <- function(fpath){
-  unlink(fpath, recursive = T)
-  write("Removing tempdir:", stderr())
-  write(fpath, stderr())
-  if (dir.exists(fpath)){
-    warning(paste("Could not remove tempdir: ", fpath))
-  }
-}
 
 #' Check that all fixed effect combinations are sampled
 #' @noRd
