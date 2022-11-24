@@ -649,7 +649,7 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 #'  two choices are offered for the name of the added column (see argument 'ColumnName').
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated.
 #' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.
-#' @param ColumnName Name of the added column. Defaults to 'Period'.
+#' @param ColumnName Name of the added column. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddPeriodStoxLanding$functionParameterDefaults$ColumnName`.
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @seealso 
 #'  \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
@@ -660,15 +660,14 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 #' @concept StoX-functions
 #' @export
 #' @md
-AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition, ColumnName=c("Period", "ReportPeriod")){
+AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition, ColumnName=character()){
   
-  if (!isGiven(ColumnName)){
-    ColumnName <- "Period"
-  }
+  checkMandatory(StoxLandingData, "StoxLandingData")
+  checkMandatory(TemporalDefinition, "TemporalDefinition")
   
-  columnName=match.arg(ColumnName, ColumnName)
+  columnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA::stoxFunctionAttributes$AddPeriodStoxLanding$functionParameterDefaults$ColumnName)
   
-  if (columnName %in% names(StoxLandingData)){
+  if (columnName %in% names(StoxLandingData$Landing)){
     stop(paste("The column", columnName, "already exists in StoxLandingData."))
   }
   if (any(is.na(StoxLandingData$Landing$CatchDate))){
@@ -690,7 +689,8 @@ AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition, ColumnName
 #'  Temporal definitions (\code{\link[RstoxFDA]{TemporalDefinition}}) may be produced by
 #'  \code{\link[RstoxFDA]{DefinePeriod}}
 #' @param StoxBioticData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated with period.
-#' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definiton of temporal category.
+#' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.
+#' @param ColumnName specifies which column the area should be added to. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddPeriodStoxBiotic$functionParameterDefaults$ColumnName`.
 #' @return StoxBioticData with column appended. See \code{\link[RstoxData]{StoxBioticData}}.
 #'  \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
 #'  \code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data, 
@@ -700,8 +700,11 @@ AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition, ColumnName
 #' @concept StoX-functions
 #' @export
 #' @md
-AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
-  columnName="Period"
+AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition, ColumnName=character()){
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(TemporalDefinition, "TemporalDefinition")
+  
+  columnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA::stoxFunctionAttributes$AddPeriodStoxBiotic$functionParameterDefaults$ColumnName)
   
   if (columnName %in% names(StoxBioticData$Station)){
     stop(paste("The column", columnName, "already exists in StoxLandingData."))
@@ -725,18 +728,17 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
 #' @description
 #'  Adds a column to StoxLandingData with the spatial strata each row belongs to.
 #' @details
-#'  The strata are added to the new column 'Stratum'.
+#'  The strata are added to the new column specified by ColumName.
 #'  
-#'  The Strata may be added as a new column, or to an existing column depending on the 
-#'  argument 'ColumnName'. The option 'Stratum' (default) adds strata to a new column 'Stratum'. 
-#'  The option 'Area' changes the values in the existing column 'Area'.
+#'  If 'ColumnName' is 'Area', The column 'Area' of StoxLandingData is overwritten.
+#'  Other columns in StoxLandingData may not be specified.
 #'  
 #'  \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
 #'  these need to be added as columns 'Latitude' and 'Longitude' before calling this function.
 #'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions, based on area codes.
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
-#' @param ColumnName specifies which column the area should be added to. See details.
+#' @param ColumnName specifies which column the area should be added to. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddStratumStoxLanding$functionParameterDefaults$ColumnName`.
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @seealso \code{\link[RstoxBase]{DefineStratumPolygon}} for configuring stratum definitions.
 #'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to landings,
@@ -749,9 +751,18 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
 #' @concept StoX-functions
 #' @export
 #' @md
-AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=c("Stratum", "Area")){
+AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=character()){
+  checkMandatory(StoxLandingData, "StoxLandingData")
+  checkMandatory(StratumPolygon, "StratumPolygon")
   
-  ColumnName <- match.arg(ColumnName, ColumnName)
+  ColumnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA::stoxFunctionAttributes$AddStratumStoxLanding$functionParameterDefaults$ColumnName)
+  
+  if (ColumnName == "Area"){
+    stoxWarning("Overwriting the column 'Area'")
+  }
+  else if (ColumnName %in% names(StoxLandingData$Landing)){
+    stop(paste("The column", ColumnName, "already exists in StoxLandingData"))
+  }
   
   cname <- "cname"    
   latColumn <- "Latitude"    
@@ -775,6 +786,7 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=c(
 #'  The strata are added to the new column 'Stratum'.
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
+#' @param ColumnName specifies which column the area should be added to. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddStratumStoxBiotic$functionParameterDefaults$ColumnName`.
 #' @return StoxBioticData with column appended to data.table 'Station'. See \code{\link[RstoxData]{StoxBioticData}}.
 #' @seealso \code{\link[RstoxBase]{DefineStratumPolygon}} for configuring stratum definitions.
 #'  \code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data, 
@@ -785,11 +797,13 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=c(
 #' @concept StoX-functions
 #' @export
 #' @md
-AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
+AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, ColumnName=character()){
   
-  columnName <- "Stratum"    
-  
+  checkMandatory(StoxBioticData)
   stopifnot("Station" %in% names(StoxBioticData))
+  checkMandatory(StratumPolygon)
+  
+  columnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA:::stoxFunctionAttributes$AddStratumStoxBiotic$functionParameterDefaults$ColumnName)
   
   missing <- StoxBioticData$Station[is.na(StoxBioticData$Station$Latitude) | is.na(StoxBioticData$Station$Longitude),]
   if (nrow(missing) > 0){
@@ -799,7 +813,7 @@ AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
   }
   
   if (columnName %in% names(StoxBioticData$Station)){
-    stop(paste("Column name", columnName, "already exists."))
+    stop(paste("Column name", columnName, "already exists in StoxBioticData."))
   }
   StoxBioticData$Station <- appendAreaCode(StoxBioticData$Station, StratumPolygon, "Latitude", "Longitude", columnName, strict = F)
   missing <- StoxBioticData$Station[is.na(StoxBioticData$Station[[columnName]])]

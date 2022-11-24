@@ -1925,25 +1925,37 @@ stoxFunctionAttributes <- list(
   AddStratumStoxLanding = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
-    functionOutputDataType = "StoxLandingData"
+    functionOutputDataType = "StoxLandingData",
+    functionParameterDefaults = list(
+      ColumnName = "Stratum"
+    )
   ),
   
   AddStratumStoxBiotic = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
-    functionOutputDataType = "StoxBioticData"
+    functionOutputDataType = "StoxBioticData",
+    functionParameterDefaults = list(
+      ColumnName = "Stratum"
+    )
   ),
   
   AddPeriodStoxLanding = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
-    functionOutputDataType = "StoxLandingData"
+    functionOutputDataType = "StoxLandingData",
+    functionParameterDefaults = list(
+      ColumnName = "Period"
+    )
   ),
   
   AddPeriodStoxBiotic = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
-    functionOutputDataType = "StoxBioticData"
+    functionOutputDataType = "StoxBioticData",
+    functionParameterDefaults = list(
+      ColumnName = "Period"
+    )
   ),
   
   ListBioticDifference = list(

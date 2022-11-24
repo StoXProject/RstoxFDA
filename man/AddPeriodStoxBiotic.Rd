@@ -4,12 +4,18 @@
 \alias{AddPeriodStoxBiotic}
 \title{Add Period to StoxBioticData}
 \usage{
-AddPeriodStoxBiotic(StoxBioticData, TemporalDefinition)
+AddPeriodStoxBiotic(
+  StoxBioticData,
+  TemporalDefinition,
+  ColumnName = character()
+)
 }
 \arguments{
 \item{StoxBioticData}{\code{\link[RstoxData]{StoxLandingData}} data which will be annotated with period.}
 
-\item{TemporalDefinition}{\code{\link[RstoxFDA]{TemporalDefinition}} definiton of temporal category.}
+\item{TemporalDefinition}{\code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.}
+
+\item{ColumnName}{specifies which column the area should be added to. Defaults to Period.}
 }
 \value{
 StoxBioticData with column appended. See \code{\link[RstoxData]{StoxBioticData}}.

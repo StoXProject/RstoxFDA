@@ -7,7 +7,7 @@
 AddPeriodStoxLanding(
   StoxLandingData,
   TemporalDefinition,
-  ColumnName = c("Period", "ReportPeriod")
+  ColumnName = character()
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ AddPeriodStoxLanding(
 
 \item{TemporalDefinition}{\code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.}
 
-\item{ColumnName}{Name of the added column. Defaults to 'Period'.}
+\item{ColumnName}{Name of the added column. Defaults to Period.}
 }
 \value{
 StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.

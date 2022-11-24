@@ -652,7 +652,7 @@ landingPost <- RstoxFDA::AddStratumStoxLanding(landingWpos, strp)
 expect_true(all(as.integer(landingPost$Landing$Stratum)==as.integer(landingPost$area)))
 expect_equal(ncol(landingWpos$Landing)+1, ncol(landingPost$Landing))
 
-landingPost <- RstoxFDA::AddStratumStoxLanding(landingWpos, strp, ColumnName = "Area")
+expect_warning(landingPost <- RstoxFDA::AddStratumStoxLanding(landingWpos, strp, ColumnName = "Area"))
 expect_true(all(as.integer(landingPost$Area)==as.integer(landingPost$area)))
 expect_equal(ncol(landingWpos$Landing), ncol(landingPost$Landing))
 
