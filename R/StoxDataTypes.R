@@ -2014,6 +2014,10 @@ stoxFunctionAttributes <- list(
     functionParameterFormat = list(
       GroupingVariables = "samplereportvariables",
       SamplingVariables = "onlysamplereportvariables"
+    ),
+    functionParameterDefaults = list(
+      Decimals = 0,
+      Unit = "kg"
     )
   ),
   ReportFdaLandings = list(
@@ -2022,37 +2026,66 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "ReportFdaLandingsData",
     functionParameterFormat = list(
       GroupingVariables = "landingsreportvariables"
+    ),
+    functionParameterDefaults = list(
+      Decimals = 0,
+      Unit = "kg"
     )
   ),
   ReportRecaCatchAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaCatchAtAgeData"
+    functionOutputDataType = "ReportFdaCatchAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9
+    )
   ),
   ReportRecaCatchAtAgeCovariance = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaCatchAtAgeCovarianceData"
+    functionOutputDataType = "ReportFdaCatchAtAgeCovarianceData",
+    functionParameterDefaults = list(
+      Decimals = 0
+    )
   ),
   ReportRecaCatchAtLength = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaCatchAtLengthData"
+    functionOutputDataType = "ReportFdaCatchAtLengthData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9
+    )
   ),
   ReportRecaCatchAtLengthAndAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaCatchAtLengthAndAgeData"
+    functionOutputDataType = "ReportFdaCatchAtLengthAndAgeData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9
+    )
   ),
   ReportRecaLengthAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaLengthAtAgeData"
+    functionOutputDataType = "ReportFdaLengthAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 2,
+      IntervalWidth = 0.9,
+      Threshold=0
+    )
   ),
   ReportRecaWeightAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaWeightAtAgeData"
+    functionOutputDataType = "ReportFdaWeightAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 2,
+      IntervalWidth = 0.9,
+      Threshold=0
+    )
   ),
   ReportRecaCatchStatistics = list(
     functionType = "modelData",
@@ -2086,6 +2119,18 @@ stoxFunctionAttributes <- list(
       UnitMeanLength = list(
         UseDefaultUnitOptions = FALSE
       )
+    ),
+    functionParameterDefaults = list(
+      DecimalTotalNumber = 0,
+      DecimalTotalWeight = 0,
+      DecimalMeanAge = 1,
+      DecimalMeanWeight = 3,
+      DecimalMeanLength = 3,
+      UnitTotalNumber = "10^6 individuals",
+      UnitTotalWeight = "kiloton",
+      UnitMeanWeight = "kg",
+      UnitMeanLength = "cm",
+      IntervalWidth = 0.9
     )
   ),
   ReportFdaSOP = list(
@@ -2094,6 +2139,10 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "ReportFdaSopData",
     functionParameterFormat = list(
       GroupingVariables = "GroupingVariablesSop"
+    ),
+    functionParameterDefaults = list(
+      DecimalWeight = 0,
+      DecimalFraction = 3
     )
   ),
   ReportRecaParameterStatistics = list(
@@ -2109,7 +2158,11 @@ stoxFunctionAttributes <- list(
   ReportParameterConvergence = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ParameterConvergenceData"
+    functionOutputDataType = "ParameterConvergenceData",
+    functionParameterDefaults = list(
+      Tolerance = 0.1,
+      Decimals = 2
+    )
   ),
   PlotSamplingOverviewCell = list(
     functionType = "modelData",

@@ -24,29 +24,29 @@ ReportRecaCatchStatistics(
 \arguments{
 \item{RecaCatchAtAge}{Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).}
 
-\item{IntervalWidth}{The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.}
+\item{IntervalWidth}{The width of the reported credible interval. A value to 0.9 gives 90 per cent credible intervals. Defaults to 0.9.}
 
 \item{UseDefaultDecimalOptions}{logical determining whether to use default decimal options.}
 
-\item{DecimalTotalNumber}{integer specifying the number of decimals to report for 'TotalNumber', and the corresponding 'SD', 'Low' and 'High'. to 0}
+\item{DecimalTotalNumber}{integer specifying the number of decimals to report for 'TotalNumber', and the corresponding 'SD', 'Low' and 'High'. Defaults to 0.}
 
-\item{DecimalTotalWeight}{integer specifying the number of decimals to report for 'TotalWeightDefaults', and the corresponding 'SD', 'Low' and 'High'. to 0}
+\item{DecimalTotalWeight}{integer specifying the number of decimals to report for 'TotalWeightDefaults', and the corresponding 'SD', 'Low' and 'High'. Defaults to 0.}
 
-\item{DecimalMeanAge}{integer specifying the number of decimals to report for 'MeanIndividualAge', and the corresponding 'SD', 'Low' and 'High'. Defaults to 1}
+\item{DecimalMeanAge}{integer specifying the number of decimals to report for 'MeanIndividualAge', and the corresponding 'SD', 'Low' and 'High'. 1.}
 
-\item{DecimalMeanWeight}{integer specifying the number of decimals to report for 'MeanIndividualWeight', and the corresponding 'SD', 'Low' and 'High'. Defaults to 3}
+\item{DecimalMeanWeight}{integer specifying the number of decimals to report for 'MeanIndividualWeight', and the corresponding 'SD', 'Low' and 'High'. 3.}
 
-\item{DecimalMeanLength}{integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'. Defaults to 2}
+\item{DecimalMeanLength}{integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'.3.}
 
 \item{UseDefaultUnitOptions}{logical determining whether to use default unit options.}
 
-\item{UnitTotalNumber}{unit for total catch in numbers. Defaults to Mi (millions)}
+\item{UnitTotalNumber}{unit for total catch in numbers. 10^6 individuals.}
 
-\item{UnitTotalWeight}{unit for weight of total catch. Defaults to kt}
+\item{UnitTotalWeight}{unit for weight of total catch. kiloton.}
 
-\item{UnitMeanWeight}{unit for mean weight. Defaults to kg}
+\item{UnitMeanWeight}{unit for mean weight. kg.}
 
-\item{UnitMeanLength}{unit for mean length. Defaults to cm.}
+\item{UnitMeanLength}{unit for mean length. cm.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSummaryData}}

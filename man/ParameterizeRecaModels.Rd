@@ -31,6 +31,8 @@ ParameterizeRecaModels(
 
 \item{Delta.age}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.}
 
+\item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.}
+
 \item{UseCachedData}{if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.}
 }
 \value{

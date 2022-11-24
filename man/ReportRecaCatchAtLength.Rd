@@ -15,9 +15,9 @@ ReportRecaCatchAtLength(
 \arguments{
 \item{RecaCatchAtAge}{Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).}
 
-\item{IntervalWidth}{The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.}
+\item{IntervalWidth}{The width of the reported credible interval. A value of 0.9 gives 90 per cent credible intervals. Defaults to 0.9.}
 
-\item{Decimals}{integer specifying the number of decimals to report for 'CatchAtLength', 'SD', 'Low' and 'High'. Defaults to zero.}
+\item{Decimals}{integer specifying the number of decimals to report for 'CatchAtLength', 'SD', 'Low' and 'High'. Defaults to 0.}
 
 \item{Unit}{unit for 'CatchAtLength', 'SD', 'Low' and 'High'}
 

@@ -27,10 +27,11 @@ isGiven <- function(value=NULL){
 }
 
 #' For pattern where a usedefault flag overrides other options
+#' warning is not issued if the argument is a vector to accomodate combinatin of default an option notations in default arguments
 #' @noRd
 getDefault <- function(argument, argName, useDefault, default){
   if (!isGiven(argument) | useDefault){
-    if (isGiven(argument)){
+    if (isGiven(argument) & length(argument)==1){
       warning(paste("Argument '", argName, "' is ignored because default settings are chosen.", sep=""))
     }
     return(default)

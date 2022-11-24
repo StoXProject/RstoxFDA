@@ -15,7 +15,7 @@ ReportParameterConvergence(
 
 \item{Tolerance}{threshold for reporting parameters. Defaults to 0.1. See details}
 
-\item{Decimals}{integer specifying the number of decimals to report for 'GelmanRubinR'. Defaults to 2}
+\item{Decimals}{integer specifying the number of decimals to report for 'GelmanRubinR'. Defaults to 2.}
 }
 \value{
 \code{\link[RstoxFDA]{ParameterConvergenceData}}

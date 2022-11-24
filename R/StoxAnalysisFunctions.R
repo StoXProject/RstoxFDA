@@ -563,6 +563,7 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @param ResultDirectory a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
 #' @param Thin controls how many iterations are run between each samples saved. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Thin`. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
 #' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Delta.age`.
+#' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
 #' @param UseCachedData if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.
 #' @return \code{\link[RstoxFDA]{RecaParameterData}} results from Reca Model Parameterization.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for model configuration, and data preparation for this function, and

@@ -18,11 +18,11 @@ ReportRecaLengthAtAge(
 
 \item{PlusGroup}{If given, ages 'PlusGroup' or older are included in a plus group.}
 
-\item{IntervalWidth}{The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.}
+\item{IntervalWidth}{The width of the reported credible interval. A value of 0.9 gives 90 per cent credible intervals. Defaults to `r stoxFunctionAttributes$ReportRecaLengthAtAge$functionParameterDefaults$IntervalWidth`.}
 
-\item{Decimals}{integer specifying the number of decimals to report for 'MeanIndividualLength', 'SD', 'Low' and 'High'. Defaults to 1.}
+\item{Decimals}{integer specifying the number of decimals to report for 'MeanIndividualLength', 'SD', 'Low' and 'High'. Defaults to `r stoxFunctionAttributes$ReportRecaLengthAtAge$functionParameterDefaults$Decimals`.}
 
-\item{Threshold}{threshold for reporting mean weight. Rows with an estimated Catch At Age (number of individuals) lower than this will have NA reported for their mean length Defaults to 0.}
+\item{Threshold}{threshold for reporting mean weight. Rows with an estimated Catch At Age (number of individuals) lower than this will have NA reported for their mean length Defaults to `r stoxFunctionAttributes$ReportRecaLengthAtAge$functionParameterDefaults$Threshold`.}
 
 \item{Unit}{unit for 'MeanIndividualLength', 'SD', 'Low' and 'High'}
 }

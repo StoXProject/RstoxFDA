@@ -16,7 +16,7 @@ ReportRecaCatchAtAgeCovariance(
 
 \item{PlusGroup}{If given, ages 'PlusGroup' or older are included in a plus group.}
 
-\item{Decimals}{integer specifying the number of decimals to report for 'Covariance'. Defaults to zero.}
+\item{Decimals}{integer specifying the number of decimals to report for 'Covariance'. Defaults to 0.}
 
 \item{Unit}{unit for 'CatchAtAge'. Covariance will be provided as the square of this unit.}
 }
