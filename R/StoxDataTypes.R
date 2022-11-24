@@ -915,6 +915,17 @@ is.WeightConversionTable <- function(WeightConversionTable){
   return(TRUE)
 }
 
+#' Spatial landings overview data (PlotFisheriesOverviewSpatialData)
+#' 
+#' @description 
+#'  a ggplot object that renders catch density of landings on polygons.
+#'  
+#' @name PlotFisheriesOverviewSpatialData
+#' @concept Data types
+#' 
+NULL
+
+
 #' Sampling Overview cell-plot data (PlotSamplingOverviewCellData)
 #' 
 #' @description 
@@ -2023,7 +2034,7 @@ stoxFunctionAttributes <- list(
   ReportFdaLandings = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaLandingsData",
+    functionOutputDataType = "ReportFdaLandingData",
     functionParameterFormat = list(
       GroupingVariables = "landingsreportvariables"
     ),
@@ -2163,6 +2174,11 @@ stoxFunctionAttributes <- list(
       Tolerance = 0.1,
       Decimals = 2
     )
+  ),
+  PlotFisheriesOverviewSpatial = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotFisheriesOverviewSpatialData"
   ),
   PlotSamplingOverviewCell = list(
     functionType = "modelData",

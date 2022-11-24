@@ -54,8 +54,9 @@ tab2 <- RstoxFDA::ReportFdaLandings(StoxLandingData, GroupingVariables = c("Gear
 RstoxFDA:::PlotFisheriesOverviewTemporal(tab1)
 RstoxFDA:::PlotFisheriesOverviewTemporal(tab2)
 
-tab3 <- RstoxFDA::ReportFdaLandings(StoxLandingData, GroupingVariables = c("Area"), Unit = "ton")
+tab3 <- RstoxFDA::ReportFdaLandings(StoxLandingData, GroupingVariables = c("Area"), Unit = "kg")
 RstoxFDA:::PlotFisheriesOverviewSpatial(tab3, RstoxFDA::mainareaFdir2018)
+RstoxFDA:::PlotFisheriesOverviewSpatial(tab3, RstoxFDA::mainareaFdir2018, AreaLabels = T)
 
 RstoxFDA:::PlotFisheriesOverviewTable(tab3)
 RstoxFDA:::PlotFisheriesOverviewTable(tab2)

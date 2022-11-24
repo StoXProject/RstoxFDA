@@ -61,7 +61,7 @@ PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
   return(pl)
 }
 
-#' Plot landings
+#' Plot spatial distribution of fisheries
 #' @description
 #'  Plots catch density of landings on polygons.
 #' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaLandingData}}
@@ -69,8 +69,14 @@ PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
 #' @param AreaLabels if TRUE, labels with area codes are plotted on map.
 #' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
 #' @concept StoX-functions
-#' @noRd
+#' @concept landings functions
+#' @concept StoX-Reca functions
+#' @return \code{\link[RstoxFDA]{PlotFisheriesOverviewSpatialData}}
+#' @export
 PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, AreaLabels=F){
+  
+  checkMandatory(ReportFdaLandingData, "ReportFdaLandingData")
+  checkMandatory(StratumPolygon, "StratumPolygon")
   
   if (!("Area" %in% ReportFdaLandingData$GroupingVariables$GroupingVariables) | length(ReportFdaLandingData$GroupingVariables$GroupingVariables)>1){
     stop("Requires 'Area' to be the only variable in the 'GroupingVariable' of 'ReportFdaLandingData'")
@@ -90,6 +96,7 @@ PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, A
                 $FisheriesLandings, by.y="Area", by.x="StratumName", all.x=T)
   
   sfPoly$CatchDensity <- sfPoly$LandedRoundWeight / as.numeric(sfPoly$area)
+  sfPoly$CatchDensity[sfPoly$CatchDensity==0] <- NA
   
   densityUnit <- paste(RstoxData::getUnit(ReportFdaLandingData$FisheriesLandings$LandedRoundWeight, property = "symbol"), "/ sq.", attributes(sfPoly$area)$units$numerator[[1]])
   
@@ -97,17 +104,20 @@ PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, A
   
   bbox <- sf::st_bbox(sfPoly)
   pl <- ggplot2::ggplot(data=sfPoly)
-  pl <- pl + ggplot2::geom_sf(data=world)
   pl <- pl + ggplot2::geom_sf(data=sfPoly, ggplot2::aes_string(fill="CatchDensity"), col="black")
+  pl <- pl + ggplot2::scale_fill_gradient(low = "#fee0d2", high="#de2d26", na.value = "white")
+  pl <- pl + ggplot2::geom_sf(data=world)
   pl <- pl + ggplot2::labs(fill=densityUnit)
   pl <- pl + ggplot2::xlim(c(bbox[["xmin"]], bbox[["xmax"]]))
   pl <- pl + ggplot2::ylim(c(bbox[["ymin"]], bbox[["ymax"]]))
   
   if (AreaLabels){
     labelPos <- suppressWarnings(cbind(sfPoly, sf::st_coordinates(sf::st_centroid(sfPoly))))
-    pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label="StratumName"))
+    pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label="StratumName", fill="CatchDensity"))
   }
   
+  pl <- pl + ggplot2::xlab("")
+  pl <- pl + ggplot2::ylab("")
   pl <- pl + ggplot2::theme_minimal()
 
   return(pl)
