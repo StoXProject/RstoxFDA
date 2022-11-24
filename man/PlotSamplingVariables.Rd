@@ -28,7 +28,7 @@ Plots a barplot for a sample quantity,
  Total landings may be plotted on a secondary axis.
 }
 \seealso{
-Provide data for this plot with \code{\link[RstoxData]{ReportFdaSampling}}
+Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaSampling}}
 }
 \concept{StoX-Reca functions}
 \concept{StoX-functions}

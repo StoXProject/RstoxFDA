@@ -83,7 +83,7 @@ is configured with the arguments 'MinVessels', 'MinCatches', 'MinMeasurements'
 Colors are specified by ggplot convention and may be specified as a name (e.g. 'red'), a number (e.g. '2') or a hex-code (e.g. '#78c679').
 }
 \seealso{
-Provide data for this plot with \code{\link[RstoxData]{ReportFdaSampling}}
+Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaSampling}}
 }
 \concept{StoX-Reca functions}
 \concept{StoX-functions}

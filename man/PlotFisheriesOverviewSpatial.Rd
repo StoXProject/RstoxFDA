@@ -28,7 +28,7 @@ Plots catch density of landings on polygons.
  the area names in StratumPolygon$StratumName
 }
 \seealso{
-Provide data for this plot with \code{\link[RstoxData]{ReportFdaLandings}}
+Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaLandings}}
 }
 \concept{StoX-Reca functions}
 \concept{StoX-functions}

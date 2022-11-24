@@ -77,7 +77,7 @@ That analysis checks the convergence of model parameters, rather than the estima
 and supports handling a large number of model parameters, and filter out indications of non-convergence.
 }
 \seealso{
-Provide data for this plot with \code{\link[RstoxData]{RunRecaModels}}
+Provide data for this plot with \code{\link[RstoxFDA]{RunRecaModels}}
 }
 \concept{StoX-functions}
 \concept{convergence-checks}
