@@ -23,8 +23,12 @@ PlotFisheriesOverviewSpatial(
 \description{
 Plots catch density of landings on polygons.
 }
+\details{
+'ReportFdaLandingData' must be configured with only one grouping variable, which must match
+ the area names in StratumPolygon$StratumName
+}
 \seealso{
-\code{\link[RstoxData]{ReportFdaLandings}}
+Provide data for this plot with \code{\link[RstoxData]{ReportFdaLandings}}
 }
 \concept{StoX-Reca functions}
 \concept{StoX-functions}

@@ -64,10 +64,13 @@ PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
 #' Plot spatial distribution of fisheries
 #' @description
 #'  Plots catch density of landings on polygons.
+#' @details 
+#'  'ReportFdaLandingData' must be configured with only one grouping variable, which must match
+#'  the area names in StratumPolygon$StratumName
 #' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaLandingData}}
 #' @param StratumPolygon \code{\link[RstoxBase]{StratumPolygon}}
 #' @param AreaLabels if TRUE, labels with area codes are plotted on map.
-#' @seealso \code{\link[RstoxData]{ReportFdaLandings}}
+#' @seealso Provide data for this plot with \code{\link[RstoxData]{ReportFdaLandings}}
 #' @concept StoX-functions
 #' @concept landings functions
 #' @concept StoX-Reca functions
@@ -78,12 +81,12 @@ PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, A
   checkMandatory(ReportFdaLandingData, "ReportFdaLandingData")
   checkMandatory(StratumPolygon, "StratumPolygon")
   
-  if (!("Area" %in% ReportFdaLandingData$GroupingVariables$GroupingVariables) | length(ReportFdaLandingData$GroupingVariables$GroupingVariables)>1){
-    stop("Requires 'Area' to be the only variable in the 'GroupingVariable' of 'ReportFdaLandingData'")
+  if (length(ReportFdaLandingData$GroupingVariables$GroupingVariables)>1){
+    stop("Plot cannot be construceted for more than one grouping variable in 'ReportFdaLandingData'")
   }
   
   if (!all(ReportFdaLandingData$FisheriesLandings$Area %in% StratumPolygon$StratumName)){
-    stop("The provided polygons does not include all areas in 'Area'.")
+    stop(paste("The provided polygons does not include all areas in ", ReportFdaLandingData$GroupingVariables$GroupingVariables[[1]]))
   }
   
   ftab <- ReportFdaLandingData$FisheriesLandings
@@ -212,6 +215,7 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @param ColorGoodSampling Color to use for cells with Good sampling. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorGoodSampling`.
 #' @param TextSize size of text in cellplot. If not provided, a suitable size will be calculated.
 #' @return \code{\link[RstoxFDA]{PlotSamplingOverviewCellData}}
+#' @seealso Provide data for this plot with \code{\link[RstoxData]{ReportFdaSampling}}
 #' @concept StoX-functions
 #' @concept landings functions
 #' @concept StoX-Reca functions
@@ -352,6 +356,7 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
 #' @param GradientMidColor Color to use for middle of color gradient. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientMidColor`.
 #' @param GradientHighColor Color to use for high end of color gradient. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientHighColor`.
 #' @return \code{\link[RstoxFDA]{PlotSamplingCoverageData}}
+#' @seealso Provide data for this plot with \code{\link[RstoxData]{ReportFdaSampling}}
 #' @concept StoX-functions
 #' @concept landings functions
 #' @concept StoX-Reca functions
@@ -509,6 +514,7 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
 #' @concept landings functions
 #' @concept StoX-Reca functions
 #' @return \code{\link[RstoxFDA]{PlotSamplingVariablesData}}
+#' @seealso Provide data for this plot with \code{\link[RstoxData]{ReportFdaSampling}}
 #' @export
 PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches"), Landings=FALSE){
   
@@ -593,6 +599,7 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
 #' @param ReportFdaCatchAtAgeData \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}} with catch at age estimates to plot
 #' @return \code{\link[RstoxFDA]{PlotCatchAtAgeTotalsData}}
 #' @concept StoX-functions
+#' @seealso Provide data for this plot with \code{\link[RstoxData]{ReportFdaCatchAtAge}}
 #' @export
 PlotCatchAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   
@@ -679,6 +686,7 @@ PlotMeanVariableAtAge <- function(ReportFdaVariableAtAgeData, tableName="MeanWei
 #' @concept StoX-functions
 #' @concept convergence-checks
 #' @return \code{\link[RstoxFDA]{PlotMeanWeightAtAgeData}}
+#' @seealso Provide data for this plot with \code{\link[RstoxData]{ReportFdaWeightAtAge}}
 #' @export
 PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
  if (!is.ReportFdaByAgeData(ReportFdaWeightAtAgeData)){
@@ -703,6 +711,7 @@ PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
 #' @concept StoX-functions
 #' @concept convergence-checks
 #' @return \code{\link[RstoxFDA]{PlotMeanLengthAtAgeData}}
+#' @seealso Provide data for this plot with \code{\link[RstoxData]{ReportFdaLengthAtAge}}
 #' @export
 PlotMeanLengthAtAge <- function(ReportFdaLengthAtAgeData){
   if (!is.ReportFdaByAgeData(ReportFdaLengthAtAgeData)){
@@ -785,6 +794,7 @@ PlotCatchAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
 #' @return \code{\link[RstoxFDA]{PlotPosteriorTracesData}}
 #' @concept StoX-functions
 #' @concept convergence-checks
+#' @seealso Provide data for this plot with \code{\link[RstoxData]{RunRecaModels}}
 #' @export
 #' @md
 PlotPosteriorTraces <- function(RecaCatchAtAge, 

@@ -99,6 +99,9 @@ The coloring is controlled by the arguments 'MinVessels', 'MinCatches', and 'Min
 }
 }
 }
+\seealso{
+Provide data for this plot with \code{\link[RstoxData]{ReportFdaSampling}}
+}
 \concept{StoX-Reca functions}
 \concept{StoX-functions}
 \concept{landings functions}

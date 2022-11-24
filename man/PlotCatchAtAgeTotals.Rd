@@ -20,4 +20,7 @@ Error bars correspond to the columns 'High' and 'Low' in 'ReportFdaCatchAtAgeDat
  If 'ReportFdaCatchAtAgeData' has grouping variables a bar will be plotted for each group and age-group,
  and bars will be grouped by age group
 }
+\seealso{
+Provide data for this plot with \code{\link[RstoxData]{ReportFdaCatchAtAge}}
+}
 \concept{StoX-functions}
