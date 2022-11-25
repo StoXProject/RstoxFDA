@@ -29,6 +29,11 @@ Plots a barplot for a sample quantity,
 }
 \seealso{
 Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaSampling}}
+ #Plot to inspect how many samples (catches) where taken for each producttype
+ samplingReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+           RstoxFDA::StoxLandingDataExample, 
+           GroupingVariables = c("Quarter", "GearGroup"), SamplingVariables=c("sampleproducttype"))
+ PlotSamplingVariables(samplingReport, Quantity = "Catches", Landings = TRUE)
 }
 \concept{StoX-Reca functions}
 \concept{StoX-functions}

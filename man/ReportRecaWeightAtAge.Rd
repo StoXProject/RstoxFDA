@@ -48,6 +48,11 @@ MCMC simulations are typically obtained with \code{\link[RstoxFDA]{RunRecaModels
 Summary statistics are obtained from the posterior distribution, and
 the interval is reported as 90\% equal-tailed credible intervals.
 }
+\examples{
+  weightAtAge <- RstoxFDA::ReportRecaWeightAtAge(RstoxFDA::RecaCatchAtAgeExample, 
+       PlusGroup = 13, Threshold = 1000, Decimals = 0, Unit = "g")
+  weightAtAge
+}
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 }

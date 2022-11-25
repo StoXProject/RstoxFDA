@@ -20,6 +20,11 @@ Error bars correspond to the columns 'High' and 'Low' in 'ReportFdaCatchAtAgeDat
  If 'ReportFdaCatchAtAgeData' has grouping variables a bar will be plotted for each group and age-group,
  and bars will be grouped by age group
 }
+\examples{
+ catchAtAgeReport <- RstoxFDA::ReportRecaCatchAtAge(RstoxFDA::RecaCatchAtAgeExample, 
+       PlusGroup = 13)
+ RstoxFDA::PlotCatchAtAgeTotals(catchAtAgeReport)
+}
 \seealso{
 Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaCatchAtAge}}
 }

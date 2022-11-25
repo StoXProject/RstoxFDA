@@ -122,7 +122,9 @@ StoxLandingData$Landing$Quarter <- quarters(StoxLandingData$Landing$CatchDate)
 
 sb <- StoxBioticData
 sb$Haul <- sb$Haul[1:44,]
+browser()
 expect_warning(RstoxFDA::ReportFdaSampling(sb, StoxLandingData, GroupingVariables = c("Gear")))
+expect_warning(RstoxFDA::ReportFdaSampling(sb, StoxLandingData, SamplingVariables = c("IndividualSex")))
 
 SamplingReport <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"))
 expect_true(abs(sum(StoxBioticData$Sample$CatchFractionWeight, na.rm=T) - sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches)) / sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches) < .01)

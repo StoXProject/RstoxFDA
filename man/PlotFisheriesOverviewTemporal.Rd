@@ -18,6 +18,16 @@ Plots landings by date of catch and by grouping variables.
 \details{
 "CatchDate" must be among the grouping variables of 'ReportFdaLandingData'
 }
+\examples{
+ landingsReport <- RstoxFDA::ReportFdaLandings(
+       RstoxFDA::StoxLandingDataExample, c("CatchDate")
+       )
+ RstoxFDA::PlotFisheriesOverviewTemporal(landingsReport)
+ landingsReportGear <- RstoxFDA::ReportFdaLandings(
+       RstoxFDA::StoxLandingDataExample, c("GearGroup", "CatchDate")
+       )
+ RstoxFDA::PlotFisheriesOverviewTemporal(landingsReportGear)
+}
 \seealso{
 Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaLandings}}
 }

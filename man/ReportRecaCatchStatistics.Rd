@@ -68,6 +68,16 @@ the interval is reported as equal-tailed credible intervals are reported.
 Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 }
+\examples{
+ catchStats <- ReportRecaCatchStatistics(RstoxFDA::RecaCatchAtAgeExample)
+ catchStats$MeanAge
+ catchStats$MeanWeight
+ catchStats$MeanLength
+ 
+ #Note that there is no error on the total weight estimate, when there are no grouping variables
+ catchStats$TotalWeight
+ catchStats$TotalNumber
+}
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting catch, mean length and mean weight by age groups

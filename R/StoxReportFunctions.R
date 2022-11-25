@@ -34,6 +34,10 @@
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @concept landings functions
 #' @concept StoX-functions
+#' @examples 
+#'   samplingreport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+#'       RstoxFDA::StoxLandingDataExample, GroupingVariables = c("GearGroup"), Unit = "ton")
+#'   samplingreport$FisheriesSampling
 #' @export
 #' @md
 ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12)), SamplingVariables=character()){
@@ -47,19 +51,35 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   
   # flattening may introduce hard to trace NAs if any higher levels lack children.
   # Most commonly this occurs if there are stations without hauls, so we will issue a warning for that
-  if (any(GroupingVariables %in% names(StoxBioticData$Haul))){
+  vars <- c(GroupingVariables, SamplingVariables)
+  if (any(vars %in% names(StoxBioticData$Station))){
+    if (!all(StoxBioticData$Cruise$CruiseKey %in% StoxBioticData$Station$CruiseKey)){
+      stationVars <- vars[!(vars %in% names(StoxBioticData$Cruise))]
+      stoxWarning(paste("There are some missions with no stations This may introduce NAs in ", paste(stationVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
+    }
+  }
+  if (any(vars %in% names(StoxBioticData$Haul))){
     if (!all(StoxBioticData$Station$StationKey %in% StoxBioticData$Haul$StationKey)){
-      haulVars <- GroupingVariables[GroupingVariables %in% names(StoxBioticData$Haul)]
+      haulVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise)))]
       stoxWarning(paste("There are some stations with no hauls. This may introduce NAs in ", paste(haulVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
     }
   }
-  
-  # flattening may introduce hard to trace NAs if any higher levels lack children.
-  # Most commonly this occurs if there are stations without hauls, so we will issue a warning for that
-  if (any(GroupingVariables %in% names(StoxBioticData$Haul))){
-    if (!all(StoxBioticData$Station$StationKey %in% StoxBioticData$Haul$StationKey)){
-      haulVars <- GroupingVariables[GroupingVariables %in% names(StoxBioticData$Haul)]
-      stoxWarning(paste("There are some stations with no hauls. This may introduce NAs in ", paste(haulVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
+  if (any(vars %in% names(StoxBioticData$SpeciesCategory))){
+    if (!all(StoxBioticData$Haul$HaulKey %in% StoxBioticData$SpeciesCategory$HaulKey)){
+      scVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise), names(StoxBioticData$Haul)))]
+      stoxWarning(paste("There are some hauls with no SpeciesCategory This may introduce NAs in ", paste(scVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
+    }
+  }
+  if (any(vars %in% names(StoxBioticData$Sample))){
+    if (!all(StoxBioticData$SpeciesCategory$SpeciesCategoryKey %in% StoxBioticData$Sample$SpeciesCategoryKey)){
+      sampleVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise), names(StoxBioticData$Haul), names(StoxBioticData$SpeciesCategory)))]
+      stoxWarning(paste("There are some SpeciesCategory with no samples. This may introduce NAs in ", paste(sampleVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
+    }
+  }
+  if (any(vars %in% names(StoxBioticData$Individual))){
+    if (!all(StoxBioticData$Sample$SampleKey %in% StoxBioticData$Individual$SampleKey)){
+      indVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise), names(StoxBioticData$Haul), names(StoxBiotic$SpeciesCategory), names(StoxBiotic$Sample)))]
+      stoxWarning(paste("There are some Samples with no individuals This may introduce NAs in ", paste(indVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
     }
   }
   
@@ -150,6 +170,10 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
 #' @return \code{\link[RstoxFDA]{ReportFdaLandingData}}
 #' @concept landings functions
 #' @concept StoX-functions
+#' @examples 
+#'  landingsreport <- RstoxFDA::ReportFdaLandings(RstoxFDA::StoxLandingDataExample, 
+#'     GroupingVariables = c("Area"), Unit="ton")
+#'  landingsreport$FisheriesLandings
 #' @export
 #' @md
 ReportFdaLandings <- function(StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12))){
@@ -392,7 +416,7 @@ setLengthGroup <- function(LengthReport, interval){
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 #'  
-#'  The units considered valid for catch at age in nnumbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
+#'  The units considered valid for catch at age in numbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param IntervalWidth The width of the reported credible interval. A value of 0.9 gives 90 per cent credible intervals. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchAtAge$functionParameterDefaults$IntervalWidth`
@@ -402,6 +426,10 @@ setLengthGroup <- function(LengthReport, interval){
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length composition.
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
+#' @examples 
+#'   catchAtAgeReport <- RstoxFDA::ReportRecaCatchAtAge(RstoxFDA::RecaCatchAtAgeExample, 
+#'         PlusGroup = 13)
+#'   catchAtAgeReport$NbyAge
 #' @export
 #' @md
 ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
@@ -474,6 +502,10 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length composition.
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
+#' @examples
+#'  covariances <- RstoxFDA::ReportRecaCatchAtAgeCovariance(RstoxFDA::RecaCatchAtAgeExample, 
+#'         PlusGroup = 13)
+#'  covariances$CovarianceNbyAge
 #' @export
 #' @md
 ReportRecaCatchAtAgeCovariance <- function(RecaCatchAtAge, PlusGroup=integer(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
@@ -553,6 +585,11 @@ ReportRecaCatchAtAgeCovariance <- function(RecaCatchAtAge, PlusGroup=integer(), 
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
+#' @examples
+#'  catchAtLength <- RstoxFDA::ReportRecaCatchAtLength(RstoxFDA::RecaCatchAtAgeExample,
+#'           LengthInterval = 10)
+#'  catchAtLength$NbyLength
+#'  
 #' @export
 #' @md
 ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12)), LengthInterval=numeric()){
@@ -631,6 +668,9 @@ ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Dec
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
+#' @examples 
+#'   lengthAge <- ReportRecaCatchAtLengthAndAge(RstoxFDA::RecaCatchAtAgeExample, 13, 10)
+#'   lengthAge$NbyLengthAge
 #' @export
 #' @md
 ReportRecaCatchAtLengthAndAge <- function(RecaCatchAtAge, 
@@ -767,6 +807,10 @@ getPlusGroupMeans <- function(RecaCatchAtAge, table, parameter, PlusGroup=intege
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
+#' @examples 
+#'   weightAtAge <- RstoxFDA::ReportRecaWeightAtAge(RstoxFDA::RecaCatchAtAgeExample, 
+#'        PlusGroup = 13, Threshold = 1000, Decimals = 0, Unit = "g")
+#'   weightAtAge
 #' @export
 #' @md
 ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10))){
@@ -847,6 +891,10 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
+#' @examples
+#'   lengthAtAge <- ReportRecaLengthAtAge(RstoxFDA::RecaCatchAtAgeExample, 
+#'         PlusGroup = 13, Unit="cm", Decimals = 0)
+#'   lengthAtAge$MeanLengthByAge
 #' @export
 ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Threshold=numeric(), Unit=RstoxData::getUnitOptions("length", conversionRange=c(1e-7, 10))){
   checkMandatory(RecaCatchAtAge, "RecaCatchAtAge")
@@ -933,6 +981,15 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #'  \code{\link[RstoxFDA]{ReportRecaCatchAtLengthAndAge}} for reporting catch by age-group and length-group combinations.
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
+#' @examples 
+#'  catchStats <- ReportRecaCatchStatistics(RstoxFDA::RecaCatchAtAgeExample)
+#'  catchStats$MeanAge
+#'  catchStats$MeanWeight
+#'  catchStats$MeanLength
+#'  
+#'  #Note that there is no error on the total weight estimate, when there are no grouping variables
+#'  catchStats$TotalWeight
+#'  catchStats$TotalNumber
 #' @export
 #' @md
 ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(), 
@@ -1098,6 +1155,12 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
 #'  \code{\link[RstoxData]{StoxLanding}} and \code{\link[RstoxData]{FilterStoxLanding}} for ways of preparing 'StoxLandingData'.
 #' @concept data QA functions
 #' @concept StoX-functions
+#' @examples 
+#'  catchAtAge <- RstoxFDA::ReportRecaCatchAtAge(RstoxFDA::RecaCatchAtAgeExample)
+#'  weightAtAge <- RstoxFDA::ReportRecaWeightAtAge(RstoxFDA::RecaCatchAtAgeExample)
+#'  sop <- ReportFdaSOP(catchAtAge, weightAtAge, RstoxFDA::StoxLandingDataExample, 
+#'       DecimalFraction = 6)
+#'  sop$SopReport
 #' @export
 ReportFdaSOP <- function(ReportFdaCatchAtAgeData, ReportFdaWeightAtAgeData, StoxLandingData, 
                          GroupingVariables=character(), 

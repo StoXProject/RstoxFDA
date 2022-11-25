@@ -20,6 +20,11 @@ Plot mean individual weight for each age group, along with an interval represent
  
  If any grouping variables are configured for argument 'ReportFdaWeightAtAgeData', groups will be plotted in different colors.
 }
+\examples{
+ weightAtAge <- RstoxFDA::ReportRecaWeightAtAge(RstoxFDA::RecaCatchAtAgeExample,
+        PlusGroup = 13)
+ RstoxFDA::PlotMeanWeightAtAge(weightAtAge)
+}
 \seealso{
 Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaWeightAtAge}}
 }

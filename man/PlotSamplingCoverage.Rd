@@ -99,6 +99,13 @@ The coloring is controlled by the arguments 'MinVessels', 'MinCatches', and 'Min
 }
 }
 }
+\examples{
+ #plot to inspect sampling coverage
+ samplingReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+           RstoxFDA::StoxLandingDataExample, 
+           GroupingVariables = c("Quarter", "GearGroup", "Stratum"))
+ PlotSamplingCoverage(samplingReport, Cumulative = TRUE, OtherPercentage = 5)
+}
 \seealso{
 Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaSampling}}
 }

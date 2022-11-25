@@ -46,6 +46,12 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 
 The units considered valid for catch at length in numbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
 }
+\examples{
+ catchAtLength <- RstoxFDA::ReportRecaCatchAtLength(RstoxFDA::RecaCatchAtAgeExample,
+          LengthInterval = 10)
+ catchAtLength$NbyLength
+ 
+}
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
 }

@@ -47,6 +47,11 @@ Tabulates summary statistics for mean length at age from MCMC simulations using 
  
  The units considered valid for mean lengths are those listed for quantity 'length' in \code{\link[RstoxData]{StoxUnits}}
 }
+\examples{
+  lengthAtAge <- ReportRecaLengthAtAge(RstoxFDA::RecaCatchAtAgeExample, 
+        PlusGroup = 13, Unit="cm", Decimals = 0)
+  lengthAtAge$MeanLengthByAge
+}
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 }

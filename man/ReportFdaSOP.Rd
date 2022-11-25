@@ -51,6 +51,13 @@ Report sum-of-product test (SOP-test) for catch estimates.
  
  The units considered valid for mean lengths are those listed for quantity 'fraction' in \code{\link[RstoxData]{StoxUnits}}
 }
+\examples{
+ catchAtAge <- RstoxFDA::ReportRecaCatchAtAge(RstoxFDA::RecaCatchAtAgeExample)
+ weightAtAge <- RstoxFDA::ReportRecaWeightAtAge(RstoxFDA::RecaCatchAtAgeExample)
+ sop <- ReportFdaSOP(catchAtAge, weightAtAge, RstoxFDA::StoxLandingDataExample, 
+      DecimalFraction = 6)
+ sop$SopReport
+}
 \seealso{
 \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for some ways of preparing 'ReportFdaWeightAtAgeData' and 'ReportFdaCatchAtAgeData'.
  \code{\link[RstoxData]{StoxLanding}} and \code{\link[RstoxData]{FilterStoxLanding}} for ways of preparing 'StoxLandingData'.

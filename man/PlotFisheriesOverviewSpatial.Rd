@@ -27,6 +27,12 @@ Plots catch density of landings on polygons.
 'ReportFdaLandingData' must be configured with only one grouping variable, which must match
  the area names in StratumPolygon$StratumName
 }
+\examples{
+ landingsReport <- RstoxFDA::ReportFdaLandings(
+       RstoxFDA::StoxLandingDataExample, c("Area")
+       )
+ RstoxFDA::PlotFisheriesOverviewSpatial(landingsReport, RstoxFDA::mainareaFdir2018)
+}
 \seealso{
 Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaLandings}}
 }

@@ -38,5 +38,10 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 
 The units considered valid for weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
 }
+\examples{
+ landingsreport <- RstoxFDA::ReportFdaLandings(RstoxFDA::StoxLandingDataExample, 
+    GroupingVariables = c("Area"), Unit="ton")
+ landingsreport$FisheriesLandings
+}
 \concept{StoX-functions}
 \concept{landings functions}

@@ -76,6 +76,10 @@ the functions \code{\link[RstoxFDA]{ReportRecaParameterStatistics}} and \code{\l
 That analysis checks the convergence of model parameters, rather than the estimated parameters,
 and supports handling a large number of model parameters, and filter out indications of non-convergence.
 }
+\examples{
+ RstoxFDA::PlotPosteriorTraces(RstoxFDA::RecaCatchAtAgeExample, PlusGroup = 13)
+ RstoxFDA::PlotPosteriorTraces(RstoxFDA::RecaCatchAtAgeExample, PlusGroup = 13, Parameter = "MeanWeight")
+}
 \seealso{
 Provide data for this plot with \code{\link[RstoxFDA]{RunRecaModels}}
 }

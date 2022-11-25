@@ -36,6 +36,11 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 
 The units considered valid for catch at age in numbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
 }
+\examples{
+ covariances <- RstoxFDA::ReportRecaCatchAtAgeCovariance(RstoxFDA::RecaCatchAtAgeExample, 
+        PlusGroup = 13)
+ covariances$CovarianceNbyAge
+}
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length composition.
 }

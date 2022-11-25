@@ -82,6 +82,26 @@ is configured with the arguments 'MinVessels', 'MinCatches', 'MinMeasurements'
 
 Colors are specified by ggplot convention and may be specified as a name (e.g. 'red'), a number (e.g. '2') or a hex-code (e.g. '#78c679').
 }
+\examples{
+ #plot to inspect sampling og key covariate (spatial, temporal, gear)
+ samplingReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+           RstoxFDA::StoxLandingDataExample, 
+           GroupingVariables = c("Quarter", "GearGroup", "Stratum"))
+ PlotSamplingOverviewCell(samplingReport, ColumnVariable = "Stratum")
+ 
+ #plot to suggest regrouping categorical variables for fixed effect configuration in Reca
+ fixedEffectReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+             RstoxFDA::StoxLandingDataExample, 
+             GroupingVariables = c("Quarter", "GearGroup"), Unit = "ton")
+ PlotSamplingOverviewCell(fixedEffectReport, ColumnVariable = "GearGroup")
+
+ #same plot with regroping of quarter (Period)
+ fixedEffectReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+             RstoxFDA::StoxLandingDataExample, 
+             GroupingVariables = c("Period", "GearGroup"), Unit = "ton")
+ PlotSamplingOverviewCell(fixedEffectReport, ColumnVariable = "GearGroup")
+
+}
 \seealso{
 Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaSampling}}
 }

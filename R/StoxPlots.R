@@ -29,6 +29,15 @@ setPlotSaveAttributes <- function(plotObject, Format="pdf", Width=17, Height=17,
 #' @concept StoX-functions
 #' @concept landings functions
 #' @concept StoX-Reca functions
+#' @examples 
+#'  landingsReport <- RstoxFDA::ReportFdaLandings(
+#'        RstoxFDA::StoxLandingDataExample, c("CatchDate")
+#'        )
+#'  RstoxFDA::PlotFisheriesOverviewTemporal(landingsReport)
+#'  landingsReportGear <- RstoxFDA::ReportFdaLandings(
+#'        RstoxFDA::StoxLandingDataExample, c("GearGroup", "CatchDate")
+#'        )
+#'  RstoxFDA::PlotFisheriesOverviewTemporal(landingsReportGear)
 #' @md
 #' @export
 PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
@@ -81,6 +90,11 @@ PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
 #' @concept landings functions
 #' @concept StoX-Reca functions
 #' @return \code{\link[RstoxFDA]{PlotFisheriesOverviewSpatialData}}
+#' @examples 
+#'  landingsReport <- RstoxFDA::ReportFdaLandings(
+#'        RstoxFDA::StoxLandingDataExample, c("Area")
+#'        )
+#'  RstoxFDA::PlotFisheriesOverviewSpatial(landingsReport, RstoxFDA::mainareaFdir2018)
 #' @export
 PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, AreaLabels=F){
   
@@ -225,6 +239,25 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
 #' @concept StoX-functions
 #' @concept landings functions
 #' @concept StoX-Reca functions
+#' @examples
+#'  #plot to inspect sampling og key covariate (spatial, temporal, gear)
+#'  samplingReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+#'            RstoxFDA::StoxLandingDataExample, 
+#'            GroupingVariables = c("Quarter", "GearGroup", "Stratum"))
+#'  PlotSamplingOverviewCell(samplingReport, ColumnVariable = "Stratum")
+#'  
+#'  #plot to suggest regrouping categorical variables for fixed effect configuration in Reca
+#'  fixedEffectReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+#'              RstoxFDA::StoxLandingDataExample, 
+#'              GroupingVariables = c("Quarter", "GearGroup"), Unit = "ton")
+#'  PlotSamplingOverviewCell(fixedEffectReport, ColumnVariable = "GearGroup")
+#'
+#'  #same plot with regroping of quarter (Period)
+#'  fixedEffectReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+#'              RstoxFDA::StoxLandingDataExample, 
+#'              GroupingVariables = c("Period", "GearGroup"), Unit = "ton")
+#'  PlotSamplingOverviewCell(fixedEffectReport, ColumnVariable = "GearGroup")
+#'
 #' @md
 #' @export
 PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), UseDefaultColorSettings=T, MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), ColorNoSamples = character(), ColorFewMeasurements = character(), ColorFewCatches = character(), ColorFewVessels = character(), ColorGoodSampling =character(), TextSize=numeric()){
@@ -367,6 +400,12 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
 #' @concept landings functions
 #' @concept StoX-Reca functions
 #' @md
+#' @examples
+#'  #plot to inspect sampling coverage
+#'  samplingReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+#'            RstoxFDA::StoxLandingDataExample, 
+#'            GroupingVariables = c("Quarter", "GearGroup", "Stratum"))
+#'  PlotSamplingCoverage(samplingReport, Cumulative = TRUE, OtherPercentage = 5)
 #' @export
 PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherPercentage=numeric(), ColorScheme=c("CellPlot", "Gradient"), Measurement=c("AgeReadings","LengthMeasurements","WeightMeasurements"), UseDefaultColorSettings=TRUE, MinVessels=integer(), MinCatches=integer(), MinMeasurements=integer(), ColorNoSamples = character(), ColorFewMeasurements = character(), ColorFewCatches = character(), ColorFewVessels = character(), ColorGoodSampling =character(), SamplingUnit=c("Vessels","Catches","Measurements"), GradientLowColor=character(), GradientMidColor=character(), GradientHighColor=character()){
   
@@ -521,6 +560,11 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
 #' @concept StoX-Reca functions
 #' @return \code{\link[RstoxFDA]{PlotSamplingVariablesData}}
 #' @seealso Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaSampling}}
+#'  #Plot to inspect how many samples (catches) where taken for each producttype
+#'  samplingReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+#'            RstoxFDA::StoxLandingDataExample, 
+#'            GroupingVariables = c("Quarter", "GearGroup"), SamplingVariables=c("sampleproducttype"))
+#'  PlotSamplingVariables(samplingReport, Quantity = "Catches", Landings = TRUE)
 #' @export
 PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings", "WeightOfSampledCatches"), Landings=FALSE){
   
@@ -606,6 +650,10 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
 #' @return \code{\link[RstoxFDA]{PlotCatchAtAgeTotalsData}}
 #' @concept StoX-functions
 #' @seealso Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaCatchAtAge}}
+#' @examples
+#'  catchAtAgeReport <- RstoxFDA::ReportRecaCatchAtAge(RstoxFDA::RecaCatchAtAgeExample, 
+#'        PlusGroup = 13)
+#'  RstoxFDA::PlotCatchAtAgeTotals(catchAtAgeReport)
 #' @export
 PlotCatchAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   
@@ -693,6 +741,10 @@ PlotMeanVariableAtAge <- function(ReportFdaVariableAtAgeData, tableName="MeanWei
 #' @concept convergence-checks
 #' @return \code{\link[RstoxFDA]{PlotMeanWeightAtAgeData}}
 #' @seealso Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaWeightAtAge}}
+#' @examples 
+#'  weightAtAge <- RstoxFDA::ReportRecaWeightAtAge(RstoxFDA::RecaCatchAtAgeExample,
+#'         PlusGroup = 13)
+#'  RstoxFDA::PlotMeanWeightAtAge(weightAtAge)
 #' @export
 PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
  if (!is.ReportFdaByAgeData(ReportFdaWeightAtAgeData)){
@@ -718,6 +770,10 @@ PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
 #' @concept convergence-checks
 #' @return \code{\link[RstoxFDA]{PlotMeanLengthAtAgeData}}
 #' @seealso Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}
+#' @examples 
+#'  lengthAtAge <- RstoxFDA::ReportRecaLengthAtAge(RstoxFDA::RecaCatchAtAgeExample,
+#'         PlusGroup = 13)
+#'  RstoxFDA::PlotMeanLengthAtAge(lengthAtAge)
 #' @export
 PlotMeanLengthAtAge <- function(ReportFdaLengthAtAgeData){
   if (!is.ReportFdaByAgeData(ReportFdaLengthAtAgeData)){
@@ -802,6 +858,10 @@ PlotCatchAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
 #' @concept convergence-checks
 #' @seealso Provide data for this plot with \code{\link[RstoxFDA]{RunRecaModels}}
 #' @export
+#' @examples 
+#'  RstoxFDA::PlotPosteriorTraces(RstoxFDA::RecaCatchAtAgeExample, PlusGroup = 13)
+#'  RstoxFDA::PlotPosteriorTraces(RstoxFDA::RecaCatchAtAgeExample, PlusGroup = 13,
+#'           Parameter = "MeanWeight")
 #' @md
 PlotPosteriorTraces <- function(RecaCatchAtAge, 
                                 Parameter=c("TotalCatch", "MeanLength", "MeanWeight"), 

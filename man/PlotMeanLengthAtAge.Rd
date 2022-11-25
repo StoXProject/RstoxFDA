@@ -20,6 +20,11 @@ Plot mean individual length for each age group, along with an interval represent
  
  If any grouping variables are configured for argument 'ReportFdaLengthAtAgeData', groups will be plotted in different colors.
 }
+\examples{
+ lengthAtAge <- RstoxFDA::ReportRecaLengthAtAge(RstoxFDA::RecaCatchAtAgeExample,
+        PlusGroup = 13)
+ RstoxFDA::PlotMeanLengthAtAge(lengthAtAge)
+}
 \seealso{
 Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}
 }
