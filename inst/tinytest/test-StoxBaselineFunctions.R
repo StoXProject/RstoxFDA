@@ -130,7 +130,7 @@ tab <- RstoxFDA::DefineLengthConversionParameters(FileName=conversionfile)
 expect_true(RstoxFDA::is.LengthConversionTable(tab))
 
 expect_equal(sum(!is.na(tab$Alpha)), 2)
-suppressWarnings(expect_error(RstoxFDA::DefineLengthConversionParameters(FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))), "Resource file does not have required columns: Description, Species, MeasurementType, Alpha, Beta")
+suppressWarnings(expect_error(RstoxFDA::DefineLengthConversionParameters(FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA")), "Resource file does not have required columns: Description, Species, MeasurementType, Alpha, Beta"))
 expect_error(RstoxFDA::DefineLengthConversionParameters(FileName=system.file("testresources","lengthConversionDup.txt", package="RstoxFDA")), "File contains duplicate definitions ")
 
 #context("test-StoxBaselineFunctions: convertLengthBiotic")
