@@ -66,7 +66,7 @@ p <- RstoxFDA::LoadFdaStratumPolygon(NULL, "ICES.Unit.2018")
 expect_equal(nrow(p), length(unique(paste(RstoxFDA::ICESareas$SubArea[!is.na(RstoxFDA::ICESareas$Unit)], RstoxFDA::ICESareas$Division[!is.na(RstoxFDA::ICESareas$Unit)], RstoxFDA::ICESareas$SubDivision[!is.na(RstoxFDA::ICESareas$Unit)], RstoxFDA::ICESareas$Unit[!is.na(RstoxFDA::ICESareas$Unit)], sep="."))))
 p <- RstoxFDA::LoadFdaStratumPolygon(NULL, "ICES.Rectangles.2018")
 expect_true(all(nchar(p$StratumName)==4))
-expect_error(RstoxFDA::LoadFdaStratumPolygon(NULL, "NAFO.FDIR.201"), "StrataSystem NAFO.FDIR.201 not recognized.")
+expect_error(RstoxFDA::LoadFdaStratumPolygon(NULL, "NAFO.FDIR.201"), "Does not recognize option")
 
 
 
@@ -75,7 +75,7 @@ expect_error(RstoxFDA::LoadFdaStratumPolygon(NULL, "NAFO.FDIR.201"), "StrataSyst
 bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA")
 nmdbiotic <- RstoxData::ReadBiotic(bioticfile)
 nmdbiotic$biotic_v3_example.xml$fishstation$stationstartdate <- nmdbiotic$biotic_v3_example.xml$fishstation$stationstopdate
-nmdbiotic <- RstoxFDA::SetTimeBiotic(nmdbiotic)
+expect_warning(nmdbiotic <- RstoxFDA::SetTimeBiotic(nmdbiotic))
 nmdbiotic$biotic_v3_example.xml$individual$individualproducttype <- 1
 nmdbiotic$biotic_v3_example.xml$catchsample <- nmdbiotic$biotic_v3_example.xml$catchsample[nmdbiotic$biotic_v3_example.xml$catchsample$lengthmeasurement == "E",]
 nmdbiotic$biotic_v3_example.xml$catchsample$sampleproducttype <- 1
@@ -130,7 +130,7 @@ tab <- RstoxFDA::DefineLengthConversionParameters(FileName=conversionfile)
 expect_true(RstoxFDA::is.LengthConversionTable(tab))
 
 expect_equal(sum(!is.na(tab$Alpha)), 2)
-expect_error(suppressWarnings(RstoxFDA::DefineLengthConversionParameters(FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))), "Resource file does not have required columns: Description, Species, MeasurementType, Alpha, Beta")
+suppressWarnings(expect_error(RstoxFDA::DefineLengthConversionParameters(FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))), "Resource file does not have required columns: Description, Species, MeasurementType, Alpha, Beta")
 expect_error(RstoxFDA::DefineLengthConversionParameters(FileName=system.file("testresources","lengthConversionDup.txt", package="RstoxFDA")), "File contains duplicate definitions ")
 
 #context("test-StoxBaselineFunctions: convertLengthBiotic")
@@ -160,7 +160,7 @@ tab <- RstoxFDA::DefineWeightConversionFactor(FileName=conversionfile)
 expect_true(RstoxFDA::is.WeightConversionTable(tab))
 expect_true(is.na(tab$WeightFactor[7]))
 expect_equal(sum(!is.na(tab$WeightFactor)), 6)
-expect_error(suppressWarnings(RstoxFDA::DefineWeightConversionFactor(FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))))
+suppressWarnings(expect_error(RstoxFDA::DefineWeightConversionFactor(FileName=system.file("testresources","geargroupsLandings.txt", package="RstoxFDA"))))
 expect_error(RstoxFDA::DefineWeightConversionFactor(FileName=system.file("testresources","conversionFactorsDuplicates.txt", package="RstoxFDA")), "File contains duplicate definitions ")
 
 #context("test-StoxBaselineFunctions: ConvertWeightBiotic")
@@ -309,27 +309,27 @@ BioticData$biotic_v3_example.xml$catchsample$sampleproducttype <- 1
 BioticData$biotic_v3_example.xml$catchsample$catchproducttype <- 1
 BioticData$biotic_v3_example.xml$fishstation$stationstartdate <- BioticData$biotic_v3_example.xml$fishstation$stationstopdate
 StoxBioticPre <- RstoxData::StoxBiotic(BioticData)
-BioticDataPost <- RstoxFDA::SetTimeBiotic(BioticData)
+expect_warning(BioticDataPost <- RstoxFDA::SetTimeBiotic(BioticData))
 
 expect_true(all(!is.na(BioticDataPost$biotic_v3_example.xml$fishstation$stationstarttime)))
 StoxBioticPost <- RstoxData::StoxBiotic(BioticDataPost)
 expect_true(sum(is.na(StoxBioticPost$Station$DateTime)) < sum(is.na(StoxBioticPre$Station$DateTime)))
 
 #test other time format
-BioticDataPost <- RstoxFDA::SetTimeBiotic(BioticData, Time="21:00:01Z")
+expect_warning(BioticDataPost <- RstoxFDA::SetTimeBiotic(BioticData, Time="21:00:01Z"))
 StoxBioticPost <- RstoxData::StoxBiotic(BioticDataPost)
 expect_true(all(grepl("21:00:01", as.character(StoxBioticPost$Station$DateTime))))
 
 #test missing Z
-expect_error(RstoxFDA::SetTimeBiotic(BioticData, Time="21:00:01"), "Invalid time specification: 21:00:01. Provide as %H:%M:%SZ, e.g: 12:00:00Z")
+suppressWarnings(expect_error(RstoxFDA::SetTimeBiotic(BioticData, Time="21:00:01"), "Invalid time specification: 21:00:01. Provide as %H:%M:%SZ, e.g: 12:00:00Z"))
 
 #test wrong time format
-expect_error(RstoxFDA::SetTimeBiotic(BioticData, Time="32:00:01Z"), "Invalid time specification: 32:00:01Z. Provide as %H:%M:%SZ, e.g: 12:00:00Z")
+suppressWarnings(expect_error(RstoxFDA::SetTimeBiotic(BioticData, Time="32:00:01Z"), "Invalid time specification: 32:00:01Z. Provide as %H:%M:%SZ, e.g: 12:00:00Z"))
 BioticData$biotic_v3_example.xml$fishstation$stationstarttime[1] <- "21:00:02"
 
 #test overwrite
-expect_equal(RstoxFDA::SetTimeBiotic(BioticData, Time="21:00:01Z")$biotic_v3_example.xml$fishstation$stationstarttime[1], "21:00:02")
-expect_equal(RstoxFDA::SetTimeBiotic(BioticData, Time="21:00:01Z", Overwrite = T)$biotic_v3_example.xml$fishstation$stationstarttime[1], "21:00:01Z")
+suppressWarnings(expect_equal(RstoxFDA::SetTimeBiotic(BioticData, Time="21:00:01Z")$biotic_v3_example.xml$fishstation$stationstarttime[1], "21:00:02"))
+suppressWarnings(expect_equal(RstoxFDA::SetTimeBiotic(BioticData, Time="21:00:01Z", Overwrite = T)$biotic_v3_example.xml$fishstation$stationstarttime[1], "21:00:01Z"))
 
 #context("test-StoxBaselineFunctions: SetStartDateBiotic")
 bioticfiles <- system.file("testresources","biotic_v3_example.xml", package="RstoxFDA")
@@ -397,7 +397,7 @@ expect_false(any(is.na(temp$StartYear)))
 
 
 #context("test-StoxBaselineFunctions: DefinePeriod unrecognized category")
-expect_error(RstoxFDA::DefinePeriod(NULL, TemporalCategory = "Something"), "Temporal category Something not recognized.")
+expect_error(RstoxFDA::DefinePeriod(NULL, TemporalCategory = "Something"), "Does not recognize option")
 
 #context("test-StoxBaselineFunctions: DefinePeriod Custom seasonal")
 temp <- RstoxFDA::DefinePeriod(NULL, TemporalCategory = "Custom", CustomPeriods = c("05-02","15-09"))

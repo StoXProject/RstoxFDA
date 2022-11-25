@@ -144,7 +144,7 @@ StoxLandingData <- readRDS(StoxLandingFile)
 
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseAgingError = T, AgeErrorMatrix = ageerror, MinAge = 0, MaxAge = 14)
 expect_true(!is.null(prep$AgeLength$AgeErrorMatrix))
-est <- RstoxFDA::RunRecaEstimate(prep, 10, 50)
+expect_warning(est <- RstoxFDA::RunRecaEstimate(prep, 10, 50))
 
 #context("PrepareRecaEstimate: configuration tests")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
@@ -286,7 +286,7 @@ expect_equal(length(prep$CovariateMaps$CovariateMaps_randomEffects_AgeLength_cat
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), MinAge=1, MaxAge=30)
 
 #context("test-StoxAnalysisFunctions: RunRecaEstimate simple case")
-result <- RstoxFDA::RunRecaEstimate(prep, 10, 50, Thin=1)
+expect_warning(result <- RstoxFDA::RunRecaEstimate(prep, 10, 50, Thin=1))
 expect_true(all(c("input", "fit", "prediction", "covariateMaps") %in% names(result)))
 expect_equal(dim(result$prediction$TotalCount)[3], 10)
 
@@ -333,8 +333,6 @@ expect_true("cell" %in% names(paramOut$FitProportionAtAge))
 RstoxFDA:::removeTempDirReca(fpath)
 
 #context("test-StoxAnalysisFunctions: RunRecaEstimate with random effect Area")
-est <- RstoxFDA::RunRecaEstimate(prep, 10, 100, 0, Seed = 112)
+expect_warning(est <- RstoxFDA::RunRecaEstimate(prep, 10, 100, 0, Seed = 112))
 expect_true("Area" %in% names(est$fit$ProportionAtAge$Intercept$cov))
 
-#context("RunRecaEstimate not providing burnin")
-expect_error(RstoxFDA::RunRecaEstimate(prep, 10))

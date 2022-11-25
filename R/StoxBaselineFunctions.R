@@ -930,8 +930,11 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
 
 #' Set time Biotic
 #' @description 
-#'  Set start time to a fixed time for all stations. Appropriate when BioticData is read from NMDbiotic.
+#'  This function is deprecated, and may be replaced by \code{\link[RstoxData]{TranslateBiotic}},
+#'  with VariableName: stationstarttime, and TranslationTable: `[{"stationstarttime":"function(stationstarttime) is.na(stationstarttime)","NewValue":"12:00:00.000Z"}]`
 #' @details 
+#'  Set start time to a fixed time for all stations. Appropriate when BioticData is read from NMDbiotic.
+#'  
 #'  Set the column 'stationstarttime' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to a fixed time.
 #'  
 #'  Setting a fixed time to stationstarttime facilitates conversion to \code{\link[RstoxData]{StoxBioticData}} 
@@ -947,12 +950,13 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
 #' @param Overwrite if True any existing values in stationstarttime will be overwritten.
 #' @return \code{\link[RstoxData]{BioticData}}
 #' @seealso \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
-#' @concept nmdbiotic functions
-#' @concept temporal coding functions
-#' @concept StoX-functions
+#' @concept deprecated
+#' @md
 #' @export
 SetTimeBiotic <- function(BioticData, Time=character(), Overwrite=F){
-  
+
+  deprecationWarning("SetTimeBiotic", "Oct 2022")
+    
   if (!isGiven(Time)){
     Time="12:00:00Z"
   }

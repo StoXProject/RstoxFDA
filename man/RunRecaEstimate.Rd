@@ -2,7 +2,7 @@
 % Please edit documentation in R/StoxAnalysisFunctions.R
 \name{RunRecaEstimate}
 \alias{RunRecaEstimate}
-\title{Run Reca. Being kept for testing purposes. Is replaced by \code{\link[RstoxFDA]{ParameterizeRecaModels}} and reporting functions}
+\title{Run Reca.}
 \usage{
 RunRecaEstimate(
   RecaData,
@@ -39,18 +39,18 @@ RunRecaEstimate(
 \code{\link[RstoxFDA]{RecaResult}} results from Reca run.
 }
 \description{
-StoX-function.
- Runs \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
+This function is deprecated and are being kept for testing purposes.
+It is replaced by \code{\link[RstoxFDA]{ParameterizeRecaModels}} and \code{\link[RstoxFDA]{RunRecaModels}}
 }
 \details{
 \code{\link[Reca]{eca.estimate}} performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
 
- \code{\link[Reca]{eca.predict}} samples the posterior distributions of parameters estimated in \code{\link[Reca]{eca.estimate}},
- in order to obtain proportinos of catches and fish parameters.
- Using these parameters and the given total landings, predictions of distribution of catch-parameter distributions will be calculated.
+\code{\link[Reca]{eca.predict}} samples the posterior distributions of parameters estimated in \code{\link[Reca]{eca.estimate}},
+in order to obtain proportions of catches and fish parameters.
+Using these parameters and the given total landings, predictions of distribution of catch-parameter distributions will be calculated.
 
- If resultdir is NULL,  a temporary directory will be created for its purpose.
- This will be attempted removed after execution.
- If removal is not successful a warning will be issued which includes the path to the temporary directory.
+If resultdir is NULL,  a temporary directory will be created for its purpose.
+This will be attempted removed after execution.
+If removal is not successful a warning will be issued which includes the path to the temporary directory.
 }
 \concept{deprecated}

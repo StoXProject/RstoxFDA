@@ -118,3 +118,14 @@ removeTempDirReca <- function(fpath){
     warning(paste("Could not remove tempdir: ", fpath))
   }
 }
+
+#' warns user about deprection
+#' @noRd
+deprecationWarning <- function(functionName, deprecationTime, message=NULL){
+  warningstring <- paste("The function", functionName, "has been marked for deprecation since", deprecationTime, "and may be removed in future releases.")
+  warningstring <- paste(warningstring, " See functon help page (?", functionName, ") for suggestions for replacement function.")
+  if (!is.null(message)){
+    warningstring <- paste(warningstring, message)
+  }
+  stoxWarning(warningstring)
+}

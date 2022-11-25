@@ -465,15 +465,15 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
 }
 
 
-#' Run Reca. Being kept for testing purposes. Is replaced by \code{\link[RstoxFDA]{ParameterizeRecaModels}} and reporting functions
+#' Run Reca.
 #' @description
-#'  StoX-function.
-#'  Runs \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
+#'  This function is deprecated and are being kept for testing purposes. 
+#'  It is replaced by \code{\link[RstoxFDA]{ParameterizeRecaModels}} and \code{\link[RstoxFDA]{RunRecaModels}}
 #' @details
 #'  \code{\link[Reca]{eca.estimate}} performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
 #'
 #'  \code{\link[Reca]{eca.predict}} samples the posterior distributions of parameters estimated in \code{\link[Reca]{eca.estimate}},
-#'  in order to obtain proportinos of catches and fish parameters.
+#'  in order to obtain proportions of catches and fish parameters.
 #'  Using these parameters and the given total landings, predictions of distribution of catch-parameter distributions will be calculated.
 #'
 #'  If resultdir is NULL,  a temporary directory will be created for its purpose.
@@ -491,9 +491,12 @@ PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=ch
 #' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.
 #' @return \code{\link[RstoxFDA]{RecaResult}} results from Reca run.
 #' @concept deprecated
+#' @md
 #' @export
 RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin=integer(), Lgamodel=c("log-linear", "non-linear"), Resultdir=character(), Delta.age=numeric(), Seed=numeric(), Caa.burnin=numeric()){
 
+  deprecationWarning("RunRecaEstimate", "August 2022")
+  
   fitfile="fit"
   predictfile="pred"
   
