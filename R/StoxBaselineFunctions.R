@@ -59,16 +59,10 @@ checkSymmetry <- function(tab){
 #' @export
 ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"), FileEncoding=c("Default", "UTF-8", "Latin-1")){
   
-  if (isGiven(FileEncoding)){
-    FileEncoding <- "Default"
-  }
+  checkMandatory(FileNames, "FileNames")
   
-  FileEncoding <- match.arg(FileEncoding, FileEncoding)
-  Format <- match.arg(Format, Format)
-  
-  if (!isGiven(Format)){
-    stop("Argument 'Format' must be provided")
-  }
+  FileEncoding <- checkOptions(FileEncoding, "FileEncoding", c("Default", "UTF-8", "Latin-1"))
+  Format <- checkOptions(Format, "Format", c("landingerv2", "lss", "FDIR.2021"))
   
   if (Format == "landingerv2"){
     if (isGiven(FileEncoding) & !(FileEncoding %in% c("UTF-8", "Default"))){
@@ -137,19 +131,16 @@ ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"
 #' @md
 AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVariable = c("None", "Location", "Coastal")){
   
-  if (!isGiven(LocationVariable)){
-    stop("Argument 'LocationVariable' must be provided.")
-  }
+  checkMandatory(StoxLandingData, "StoxLandingData")
+  checkMandatory(AreaPosition, "AreaPosition")
+  stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
+  stopifnot(is.AreaPosition(AreaPosition))
   
-  LocationVariable <- match.arg(LocationVariable, LocationVariable)
-  
+  LocationVariable <- checkOptions(LocationVariable, "LocationVariable", c("None", "Location", "Coastal"))
+
   latColName="Latitude"    
   lonColName="Longitude"
   
-
-  stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
-  stopifnot(is.AreaPosition(AreaPosition))
-
   if (latColName %in% names(StoxLandingData$Landing)){
     stop(paste("Column", latColName, "already exists."))
   }
@@ -236,9 +227,10 @@ getBioticCatchSampleAdress <- function(tab){
 #' @md
 ConvertLengthBiotic <- function(BioticData, LengthConversionTable, TargetLengthMeasurement=character()){
   
-  if (!isGiven(TargetLengthMeasurement)){
-    stop("'TargetLengthMeasurement' must be provided.")
-  }
+  checkMandatory(BioticData, "BioticData")
+  checkMandatory(LengthConversionTable, "LengthConversionTable")
+  checkMandatory(TargetLengthMeasurement, "TargetLengthMeasurement")
+  
   if (!is.LengthConversionTable(LengthConversionTable)){
     stop("invalid LengthConversionTable")
   }
@@ -348,14 +340,13 @@ ConvertLengthBiotic <- function(BioticData, LengthConversionTable, TargetLengthM
 #' @md
 ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeights", "IndividualWeight"), WeightConversionTable, TargetProductType=character()){
   
-  ConversionType <- match.arg(ConversionType, ConversionType)
-  
-  if (!isGiven(TargetProductType)){
-    stop("'TargetProductType' must be provided.")
-  }
+  checkMandatory(BioticData, "BioticData")
+  checkMandatory(WeightConversionTable, "WeightConversionTable")
   if (!is.WeightConversionTable(WeightConversionTable)){
     stop("invalid WeightConversionTable")
   }
+  checkMandatory(TargetProductType, "TargetProductType")
+  ConversionType <- checkOptions(ConversionType, "ConversionType", c("All", "CatchWeights", "IndividualWeight"))
   
   for (file in names(BioticData)){
     if ("catchsample" %in% names(BioticData[[file]]) &
@@ -478,14 +469,11 @@ ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeight
 #' @md
 SetAreaPositionsBiotic <- function(BioticData, AreaPosition, LocationVariable = c("None", "location"), System=character(), Overwrite=F){
   
-  if (!isGiven(System)){
-    stop("Parameter 'System' must be provided.")
-  }
-  if (!isGiven(LocationVariable)){
-    stop("Parameter 'LocationVariable' must be provided.")
-  }
+  checkMandatory(AreaPosition, "AreaPosition")
+  checkMandatory(BioticData, "BioticData")
+  checkMandatory(System, "System")
+  LocationVariable <- checkOptions(LocationVariable, "LocationVariable", c("None", "location"))
   
-  LocationVariable <- match.arg(LocationVariable, LocationVariable)
   if (LocationVariable == "None"){
     AreaPosition <- AreaPosition[is.na(AreaPosition$Location)]
   }
@@ -873,6 +861,10 @@ appendGear <- function(table, gearcolumn, gearDefinition, colName){
 #' @export
 #' @md
 AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
+  
+  checkMandatory(StoxLandingData, "StoxLandingData")
+  checkMandatory(Translation, "Translation")
+  
   if (!is.Translation(Translation)){
     stop("Translation is not a valid Translation table.")
   }
@@ -912,6 +904,10 @@ AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
 #' @export
 #' @md
 AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
+  
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(Translation, "Translation")
+  
   if (!is.Translation(Translation)){
     stop("Translation is not a valid Translation table.")
   }
@@ -956,6 +952,7 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
 #' @concept StoX-functions
 #' @export
 SetTimeBiotic <- function(BioticData, Time=character(), Overwrite=F){
+  
   if (!isGiven(Time)){
     Time="12:00:00Z"
   }
@@ -1002,6 +999,8 @@ SetTimeBiotic <- function(BioticData, Time=character(), Overwrite=F){
 #' @export
 SetShortGearBiotic <- function(BioticData){
 
+  checkMandatory(BioticData, "BioticData")
+  
   for (file in names(BioticData)){
     if ("fishstation" %in% names(BioticData[[file]]) & "gear" %in% names(BioticData[[file]]$fishstation)){
       
@@ -1038,6 +1037,8 @@ SetShortGearBiotic <- function(BioticData){
 #' @md
 SetStartDateBiotic <- function(BioticData, Overwrite=F){
  
+  checkMandatory(BioticData, "BioticData")
+  
   for (file in names(BioticData)){
     if ("fishstation" %in% names(BioticData[[file]]) & 
         "stationstartdate" %in% names(BioticData[[file]]$fishstation) &
@@ -1103,7 +1104,7 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
     return(processData)
   }
   
-  TemporalCategory <- match.arg(TemporalCategory, TemporalCategory)
+  TemporalCategory <- checkOptions(TemporalCategory, "TemporalCategory", c("Quarter", "Month", "Custom"))
 
   if (length(CustomPeriods)>0 & TemporalCategory != "Custom"){
     stop(paste("Custom period provided, but 'TemporalCategory' is", TemporalCategory))
@@ -1264,12 +1265,13 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
 #' @md
 DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "StratumPolygon"), FileName=character(), StratumPolygon, UseProcessData=F){
 
-  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
-  encoding="UTF-8"
-  
   if (UseProcessData){
     return(processData)
   }
+  
+
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile", "StratumPolygon"))
+  encoding="UTF-8"
 
   if (DefinitionMethod == "ResourceFile"){
     tab <- readTabSepFile(FileName, col_classes = c("character", "character", "numeric", "numeric"), col_names = c("Area", "Location",	"Latitude",	"Longitude"), encoding = encoding)
@@ -1383,7 +1385,7 @@ DefineCarNeighbours <- function(processData,
     return(processData)
   }
 
-  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile", "StratumPolygon"))
   
   if (DefinitionMethod == "ResourceFile"){
     encoding = "UTF-8"
@@ -1429,6 +1431,9 @@ DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile")
   if (UseProcessData){
     return(processData)
   }
+  
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile"))
+  checkMandatory(FileName, "FileName")
 
   stream <- file(FileName, open="r")
   matrixNoHeader <- utils::read.delim(stream, sep="\t", header=F, encoding = encoding)
@@ -1545,7 +1550,7 @@ DefineStockSplittingParameters <- function(processData, DefinitionMethod=c("Reso
     return(processData)
   }
 
-  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile", "FunctionParameters"))
   
   if (DefinitionMethod == "ResourceFile"){
     encoding <- "UTF-8"
@@ -1618,6 +1623,9 @@ DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("Re
   
   encoding <- "UTF-8"
   
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile"))
+  checkMandatory(FileName, "FileName")
+  
   if (DefinitionMethod == "ResourceFile"){
     tab <- readTabSepFile(FileName,
                           col_classes = c(rep("character", 3), rep("numeric", 2)),
@@ -1671,11 +1679,7 @@ DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("Resour
     return(processData)
   }
   
-  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
-  
-  if (!isGiven(DefinitionMethod)){
-    stop("'DefinitionMethod' must be provided.")
-  }
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile", "FDIR.VIII.2022"))
   
   if (DefinitionMethod == "FDIR.VIII.2022"){
     return(RstoxFDA::FDIR.factors.VIII.2022)
@@ -1721,6 +1725,8 @@ DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("Resour
 #' @export
 #' @md
 ListBioticDifference <- function(StoxBioticData, BioticData){
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(BioticData, "BioticData")
   return(bioticDiff(BioticData, StoxBioticData))
 }
 
@@ -1778,13 +1784,16 @@ FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData,
                                     kAl=numeric(),
                                     kAu=numeric()){
   
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(Linf, "Linf")
+  checkMandatory(K, "K")
+  checkMandatory(sigma, "sigma")
+  checkMandatory(kAl, "kAl")
+  
   if (!isGiven(kAu)){
     kAu <- kAl
   }
-  if (!isGiven(Linf) | !isGiven(K) | !isGiven(sigma) | !isGiven(kAl)){
-    stop("All the parameters 'Linf', 'K', 'sigma', and 'kAl' must be provided.")
-  }
-  
+
   #make sure temp columns are not taken.
   stopifnot(!any(c("vonBFilter", "month", "IndividualAgeFractional") %in% names(StoxBioticData$Individual)))
   
@@ -1866,13 +1875,17 @@ FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData,
 FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
                                        FilterUpwards=FALSE,
                                        logalfa=numeric(), beta=numeric(), sigma=numeric(), kAl=numeric(), kAu=numeric()){
+  
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(logalfa, "logalfa")
+  checkMandatory(beta, "beta")
+  checkMandatory(sigma, "sigma")
+  checkMandatory(kAl, "kAl")
+  
   if (!isGiven(kAu)){
     kAu <- kAl
   }
-  if (!isGiven(logalfa) | !isGiven(beta) | !isGiven(sigma) | !isGiven(kAl)){
-    stop("All the parameters 'logalfa', 'beta', 'sigma', and 'kAl' must be provided.")
-  }
-  
+
   #make sure temp columns are not taken.
   stopifnot(!any(c("logLinFilter") %in% names(StoxBioticData$Individual)))
   
@@ -1928,6 +1941,8 @@ LoadFdaStratumPolygon <- function(processData, StrataSystem=c("FDIR.2017", "FDIR
   if (UseProcessData){
     return(processData)
   }
+  
+  checkOptions(StrataSystem, "StrataSystem", c("FDIR.2017", "FDIR.2018", "ICES.2018", "ICES.SubArea.2018", "ICES.Division.2018", "ICES.SubDivision.2018", "ICES.Unit.2018", "ICES.Rectangles.2018", "NAFO", "NAFO.FDIR.2017", "NAFO.FDIR.2018"))
   
   if (StrataSystem == "FDIR.2017"){
     return(RstoxFDA::mainareaFdir2017)
