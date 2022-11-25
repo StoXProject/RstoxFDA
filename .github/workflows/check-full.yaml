@@ -19,6 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
+
           #- {os: macOS-latest,   r: 'oldrel',  pkgext: '.tgz'}
           #- {os: macOS-latest,   r: 'release', pkgext: '.tgz'}
           #- {os: macOS-latest,   r: '4.0', pkgext: '.tgz'}
@@ -29,6 +30,7 @@ jobs:
           #- {os: ubuntu-latest,   r: 'oldrel',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           #- {os: ubuntu-latest,   r: '4.0',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           #- {os: ubuntu-latest,   r: '3.6',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
