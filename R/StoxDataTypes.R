@@ -925,6 +925,16 @@ is.WeightConversionTable <- function(WeightConversionTable){
 #' 
 NULL
 
+#' Temporal landings overview data (PlotFisheriesOverviewTemporalData)
+#' 
+#' @description 
+#'  a ggplot object that renders landings by date of catch and by grouping variables.
+#'  
+#' @name PlotFisheriesOverviewTemporalData
+#' @concept Data types
+#' 
+NULL
+
 
 #' Sampling Overview cell-plot data (PlotSamplingOverviewCellData)
 #' 
@@ -2191,6 +2201,11 @@ stoxFunctionAttributes <- list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "PlotFisheriesOverviewSpatialData"
+  ),
+  PlotFisheriesOverviewTemporal = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotFisheriesOverviewTemporalData"
   ),
   PlotSamplingOverviewCell = list(
     functionType = "modelData",

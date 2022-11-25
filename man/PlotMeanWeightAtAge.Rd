@@ -21,7 +21,7 @@ Plot mean individual weight for each age group, along with an interval represent
  If any grouping variables are configured for argument 'ReportFdaWeightAtAgeData', groups will be plotted in different colors.
 }
 \seealso{
-Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaWeightAtAge}}
+Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaWeightAtAge}}
 }
 \concept{StoX-functions}
 \concept{convergence-checks}

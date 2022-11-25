@@ -21,7 +21,7 @@ Plot mean individual length for each age group, along with an interval represent
  If any grouping variables are configured for argument 'ReportFdaLengthAtAgeData', groups will be plotted in different colors.
 }
 \seealso{
-Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaLengthAtAge}}
+Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}
 }
 \concept{StoX-functions}
 \concept{convergence-checks}

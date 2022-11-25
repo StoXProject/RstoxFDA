@@ -931,7 +931,7 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
 #' Set time Biotic
 #' @description 
 #'  This function is deprecated, and may be replaced by \code{\link[RstoxData]{TranslateBiotic}},
-#'  with VariableName: stationstarttime, and TranslationTable: `[{"stationstarttime":"function(stationstarttime) is.na(stationstarttime)","NewValue":"12:00:00.000Z"}]`
+#'  with VariableName: stationstarttime, and TranslationTable: ```[{"stationstarttime":"function(stationstarttime) is.na(stationstarttime)","NewValue":"12:00:00.000Z"}]```
 #' @details 
 #'  Set start time to a fixed time for all stations. Appropriate when BioticData is read from NMDbiotic.
 #'  
@@ -946,10 +946,10 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
 #'  
 #' @param BioticData \code{\link[RstoxData]{BioticData}} data for which time should be set
 #' @param Time character encoding time. Defaults to 12:00:00Z if not given, otherwise provide 
-#'   UTC-time formatted as \code{\link[base]{strptime}}-string: \%H:\%M:\%SZ, e.g. 12:00:00Z
+#'   UTC-time formatted as \code{\link[base]{strptime}}-string: ```%H:%M:%SZ, e.g. 12:00:00Z```
 #' @param Overwrite if True any existing values in stationstarttime will be overwritten.
 #' @return \code{\link[RstoxData]{BioticData}}
-#' @seealso \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
+#' @seealso \code{\link[RstoxData]{StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
 #' @concept deprecated
 #' @md
 #' @export

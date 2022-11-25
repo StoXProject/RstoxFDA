@@ -21,6 +21,6 @@ Error bars correspond to the columns 'High' and 'Low' in 'ReportFdaCatchAtAgeDat
  and bars will be grouped by age group
 }
 \seealso{
-Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaCatchAtAge}}
+Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaCatchAtAge}}
 }
 \concept{StoX-functions}

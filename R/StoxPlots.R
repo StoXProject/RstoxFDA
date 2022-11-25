@@ -20,11 +20,17 @@ setPlotSaveAttributes <- function(plotObject, Format="pdf", Width=17, Height=17,
 
 #' Plot landings
 #' @description
-#'  Plots landings by date of catch and by group
+#'  Plots landings by date of catch and by grouping variables.
+#' @details 
+#'  "CatchDate" must be among the grouping variables of 'ReportFdaLandingData'
 #' @param ReportFdaLandingData \code{\link[RstoxFDA]{ReportFdaLandingData}}
-#' @seealso \code{\link[RstoxFDA]{ReportFdaLandings}}
+#' @return \code{\link[RstoxFDA]{PlotFisheriesOverviewTemporalData}}
+#' @seealso Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaLandings}}
 #' @concept StoX-functions
-#' @noRd
+#' @concept landings functions
+#' @concept StoX-Reca functions
+#' @md
+#' @export
 PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
   
   if (!("CatchDate" %in% ReportFdaLandingData$GroupingVariables$GroupingVariables)){
@@ -599,7 +605,7 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
 #' @param ReportFdaCatchAtAgeData \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}} with catch at age estimates to plot
 #' @return \code{\link[RstoxFDA]{PlotCatchAtAgeTotalsData}}
 #' @concept StoX-functions
-#' @seealso Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaCatchAtAge}}
+#' @seealso Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaCatchAtAge}}
 #' @export
 PlotCatchAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   
@@ -686,7 +692,7 @@ PlotMeanVariableAtAge <- function(ReportFdaVariableAtAgeData, tableName="MeanWei
 #' @concept StoX-functions
 #' @concept convergence-checks
 #' @return \code{\link[RstoxFDA]{PlotMeanWeightAtAgeData}}
-#' @seealso Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaWeightAtAge}}
+#' @seealso Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaWeightAtAge}}
 #' @export
 PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
  if (!is.ReportFdaByAgeData(ReportFdaWeightAtAgeData)){
@@ -711,7 +717,7 @@ PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
 #' @concept StoX-functions
 #' @concept convergence-checks
 #' @return \code{\link[RstoxFDA]{PlotMeanLengthAtAgeData}}
-#' @seealso Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaLengthAtAge}}
+#' @seealso Provide data for this plot with e.g. \code{\link[RstoxFDA]{ReportRecaLengthAtAge}}
 #' @export
 PlotMeanLengthAtAge <- function(ReportFdaLengthAtAgeData){
   if (!is.ReportFdaByAgeData(ReportFdaLengthAtAgeData)){

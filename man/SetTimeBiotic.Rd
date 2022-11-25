@@ -10,7 +10,7 @@ SetTimeBiotic(BioticData, Time = character(), Overwrite = F)
 \item{BioticData}{\code{\link[RstoxData]{BioticData}} data for which time should be set}
 
 \item{Time}{character encoding time. Defaults to 12:00:00Z if not given, otherwise provide
-UTC-time formatted as \code{\link[base]{strptime}}-string: \\%H:\\%M:\\%SZ, e.g. 12:00:00Z}
+UTC-time formatted as \code{\link[base]{strptime}}-string: \verb{\%H:\%M:\%SZ, e.g. 12:00:00Z}}
 
 \item{Overwrite}{if True any existing values in stationstarttime will be overwritten.}
 }
@@ -34,6 +34,6 @@ for subsequent analysis.
 For bioticdata that does not conform to this, no modifications are done.
 }
 \seealso{
-\code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
+\code{\link[RstoxData]{StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
 }
 \concept{deprecated}
