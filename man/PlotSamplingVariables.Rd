@@ -27,13 +27,15 @@ Plots a barplot for a sample quantity,
  If the fishery is partitioned by grouping variables a stacked barplot is produced.
  Total landings may be plotted on a secondary axis.
 }
-\seealso{
-Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaSampling}}
+\examples{
  #Plot to inspect how many samples (catches) where taken for each producttype
  samplingReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
            RstoxFDA::StoxLandingDataExample, 
            GroupingVariables = c("Quarter", "GearGroup"), SamplingVariables=c("sampleproducttype"))
  PlotSamplingVariables(samplingReport, Quantity = "Catches", Landings = TRUE)
+}
+\seealso{
+Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaSampling}}
 }
 \concept{StoX-Reca functions}
 \concept{StoX-functions}

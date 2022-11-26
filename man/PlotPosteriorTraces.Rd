@@ -78,7 +78,8 @@ and supports handling a large number of model parameters, and filter out indicat
 }
 \examples{
  RstoxFDA::PlotPosteriorTraces(RstoxFDA::RecaCatchAtAgeExample, PlusGroup = 13)
- RstoxFDA::PlotPosteriorTraces(RstoxFDA::RecaCatchAtAgeExample, PlusGroup = 13, Parameter = "MeanWeight")
+ RstoxFDA::PlotPosteriorTraces(RstoxFDA::RecaCatchAtAgeExample, PlusGroup = 13,
+          Parameter = "MeanWeight")
 }
 \seealso{
 Provide data for this plot with \code{\link[RstoxFDA]{RunRecaModels}}
