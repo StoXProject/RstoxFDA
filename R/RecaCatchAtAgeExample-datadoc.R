@@ -2,6 +2,7 @@
 #'
 #' Example of data formatted as \code{\link[RstoxFDA]{RecaCatchAtAgeExample}}.
 #' Data is obtained by running Reca with the data in \code{\link[RstoxFDA]{StoxBioticDataExample}}, and \code{\link[RstoxFDA]{StoxLandingDataExample}}.
+#' In order to control the size of the example data, Reca was configured with a rather low length resolution of 5 cm.
 #'
 #' @docType data
 #'
