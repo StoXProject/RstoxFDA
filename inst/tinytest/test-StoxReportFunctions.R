@@ -122,9 +122,15 @@ StoxLandingData$Landing$Quarter <- quarters(StoxLandingData$Landing$CatchDate)
 
 sb <- StoxBioticData
 sb$Haul <- sb$Haul[1:44,]
-browser()
-expect_warning(RstoxFDA::ReportFdaSampling(sb, StoxLandingData, GroupingVariables = c("Gear")))
-expect_warning(RstoxFDA::ReportFdaSampling(sb, StoxLandingData, SamplingVariables = c("IndividualSex")))
+
+#test warnings when StoxBioticData has leaf nodes, higher up the hiearchy
+expect_warning(RstoxFDA::ReportFdaSampling(sb, StoxLandingData, GroupingVariables = c("Gear")), "There are some stations with no hauls.")
+expect_warning(RstoxFDA::ReportFdaSampling(sb, StoxLandingData, SamplingVariables = c("IndividualSex")), "There are some stations with no hauls.")
+sb <- StoxBioticData
+sb$Individual <-  sb$Individual[sb$Individual$SampleKey != sb$Sample$SampleKey[1],]
+RstoxFDA::ReportFdaSampling(sb, StoxLandingData, GroupingVariables = c("Gear"))
+expect_warning(RstoxFDA::ReportFdaSampling(sb, StoxLandingData, SamplingVariables = c("IndividualSex")), "StoX: There are some Samples with no individuals")
+
 
 SamplingReport <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"))
 expect_true(abs(sum(StoxBioticData$Sample$CatchFractionWeight, na.rm=T) - sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches)) / sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches) < .01)

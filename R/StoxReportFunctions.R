@@ -49,42 +49,42 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
   Unit <- getDefault(Unit, "Unit", F, RstoxFDA::stoxFunctionAttributes$ReportFdaSampling$functionParameterDefaults$Unit)
   Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12)))
   
-  # flattening may introduce hard to trace NAs if any higher levels lack children.
-  # Most commonly this occurs if there are stations without hauls, so we will issue a warning for that
-  vars <- c(GroupingVariables, SamplingVariables)
-  if (any(vars %in% names(StoxBioticData$Station))){
-    if (!all(StoxBioticData$Cruise$CruiseKey %in% StoxBioticData$Station$CruiseKey)){
-      stationVars <- vars[!(vars %in% names(StoxBioticData$Cruise))]
-      stoxWarning(paste("There are some missions with no stations This may introduce NAs in ", paste(stationVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
-    }
-  }
-  if (any(vars %in% names(StoxBioticData$Haul))){
-    if (!all(StoxBioticData$Station$StationKey %in% StoxBioticData$Haul$StationKey)){
-      haulVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise)))]
-      stoxWarning(paste("There are some stations with no hauls. This may introduce NAs in ", paste(haulVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
-    }
-  }
-  if (any(vars %in% names(StoxBioticData$SpeciesCategory))){
-    if (!all(StoxBioticData$Haul$HaulKey %in% StoxBioticData$SpeciesCategory$HaulKey)){
-      scVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise), names(StoxBioticData$Haul)))]
-      stoxWarning(paste("There are some hauls with no SpeciesCategory This may introduce NAs in ", paste(scVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
-    }
-  }
-  if (any(vars %in% names(StoxBioticData$Sample))){
-    if (!all(StoxBioticData$SpeciesCategory$SpeciesCategoryKey %in% StoxBioticData$Sample$SpeciesCategoryKey)){
-      sampleVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise), names(StoxBioticData$Haul), names(StoxBioticData$SpeciesCategory)))]
-      stoxWarning(paste("There are some SpeciesCategory with no samples. This may introduce NAs in ", paste(sampleVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
-    }
-  }
-  if (any(vars %in% names(StoxBioticData$Individual))){
-    if (!all(StoxBioticData$Sample$SampleKey %in% StoxBioticData$Individual$SampleKey)){
-      indVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise), names(StoxBioticData$Haul), names(StoxBiotic$SpeciesCategory), names(StoxBiotic$Sample)))]
-      stoxWarning(paste("There are some Samples with no individuals This may introduce NAs in ", paste(indVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))
-    }
-  }
-  
   flatlandings <- StoxLandingData$Landing
   flatbiotic <- RstoxData::MergeStoxBiotic(StoxBioticData)
+  
+  # flattening may introduce hard to trace NAs if any higher levels lack children.
+  
+  vars <- c(GroupingVariables, SamplingVariables)
+  if (any(is.na(flatbiotic$StationKey))){
+    stationVars <- vars[!(vars %in% names(StoxBioticData$Cruise))]
+    if (length(stationVars)>0){
+      stoxWarning(paste("There are some missions with no stations This may introduce NAs in ", paste(stationVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep="")) 
+    }
+  }
+  if (any(!is.na(flatbiotic$StationKey) & is.na(flatbiotic$HaulKey))){
+    haulVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise)))]
+    if (length(haulVars)>0){
+      stoxWarning(paste("There are some stations with no hauls. This may introduce NAs in ", paste(haulVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))  
+    }
+  }
+  if (any(!is.na(flatbiotic$HaulKey) & is.na(flatbiotic$SpeciesCategoryKey))){
+    scVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise), names(StoxBioticData$Haul)))]
+    if (length(scVars)>0){
+      stoxWarning(paste("There are some hauls with no SpeciesCategory This may introduce NAs in ", paste(scVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep="")) 
+    }
+  }
+  if (any(!is.na(flatbiotic$SpeciesCategoryKey) & is.na(flatbiotic$SampleKey))){
+    sampleVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise), names(StoxBioticData$Haul), names(StoxBioticData$SpeciesCategory)))]
+    if (length(sampleVars)>0){
+      stoxWarning(paste("There are some SpeciesCategory with no samples. This may introduce NAs in ", paste(sampleVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep=""))   
+    }
+  }
+  if (any(!is.na(flatbiotic$SampleKey) & is.na(flatbiotic$Individual))){
+    indVars <- vars[!(vars %in% c(names(StoxBioticData$Station), names(StoxBioticData$Cruise), names(StoxBioticData$Haul), names(StoxBioticData$SpeciesCategory), names(StoxBioticData$Sample)))]
+    if (length(indVars)>0){
+      stoxWarning(paste("There are some Samples with no individuals. This may introduce NAs in ", paste(indVars, collapse=","), ". Consider filtering with argument 'FilterUpwards'", sep="")) 
+    }
+  }
   
   if (!isGiven(GroupingVariables)){
     GroupingVariables <- c("Segment")
