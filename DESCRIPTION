@@ -19,7 +19,7 @@ License: LGPL-3
 LazyData: true
 Encoding: UTF-8
 Imports: 
-    data.table (>= 1.14.6),
+    data.table (>= 1.14.2),
     ggplot2 (>= 3.2.1),
     gridExtra (>= 2.3),
     methods (>= 3.5.0),

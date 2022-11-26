@@ -73,6 +73,8 @@ PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
   
   pl <- pl + ggplot2::theme_minimal()
   
+  pl <- setPlotSaveAttributes(pl)
+  
   return(pl)
 }
 
@@ -143,6 +145,8 @@ PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, A
   pl <- pl + ggplot2::ylab("")
   pl <- pl + ggplot2::theme_minimal()
 
+  pl <- setPlotSaveAttributes(pl)
+  
   return(pl)
 }
 
