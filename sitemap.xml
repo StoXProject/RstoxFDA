@@ -154,6 +154,60 @@
     <loc>/reference/ParameterizeRecaModels.html</loc>
   </url>
   <url>
+    <loc>/reference/PlotCatchAtAgeTotals.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotCatchAtAgeTotalsData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotFisheriesOverviewSpatial.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotFisheriesOverviewSpatialData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotFisheriesOverviewTemporal.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotFisheriesOverviewTemporalData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotMeanLengthAtAge.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotMeanLengthAtAgeData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotMeanWeightAtAge.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotMeanWeightAtAgeData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotPosteriorTraces.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotPosteriorTracesData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotSamplingCoverage.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotSamplingCoverageData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotSamplingOverviewCell.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotSamplingOverviewCellData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotSamplingVariables.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PlotSamplingVariablesData.html</loc>
+  </url>
+  <url>
     <loc>/reference/PrepareRecaEstimate.html</loc>
   </url>
   <url>
@@ -161,6 +215,9 @@
   </url>
   <url>
     <loc>/reference/RecaCatchAtAge.html</loc>
+  </url>
+  <url>
+    <loc>/reference/RecaCatchAtAgeExample.html</loc>
   </url>
   <url>
     <loc>/reference/RecaData.html</loc>
@@ -263,6 +320,12 @@
   </url>
   <url>
     <loc>/reference/StockSplittingParameters.html</loc>
+  </url>
+  <url>
+    <loc>/reference/StoxBioticDataExample.html</loc>
+  </url>
+  <url>
+    <loc>/reference/StoxLandingDataExample.html</loc>
   </url>
   <url>
     <loc>/reference/TemporalDefinition.html</loc>
