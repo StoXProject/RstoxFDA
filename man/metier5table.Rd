@@ -34,16 +34,5 @@ annotatedShrimp <- annotated[annotated$targetFAO \%in\% c("PAN", "PRA"),]
 table(paste(annotatedShrimp$gearFAO, annotatedShrimp$targetFAO, sep="/"),
       annotatedShrimp$metier5)
 }
-\seealso{
-Other gear coding functions: 
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{GearGroupFdirTable}},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{appendMetier}()},
-\code{\link{metier4table}},
-\code{\link{metier6table}},
-\code{\link{readMetierTable}()}
-}
 \concept{gear coding functions}
 \keyword{datasets}

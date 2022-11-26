@@ -27,11 +27,11 @@ ParameterizeRecaModels(
 
 \item{ResultDirectory}{a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.}
 
-\item{Lgamodel}{The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}.}
+\item{Lgamodel}{The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}. Defaults to log-linear}
 
 \item{Delta.age}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.}
 
-\item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. If not provided a random seed will be set.}
+\item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.}
 
 \item{UseCachedData}{if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.}
 }
@@ -74,62 +74,6 @@ StoX projects between computers.
 \seealso{
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for model configuration, and data preparation for this function, and
 \code{\link[RstoxFDA]{RunRecaModels}} for obtaining predictions / estimates from the Reca-models.
-
-Other StoX-Reca functions: 
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()}
-
-Other StoX-functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{AddPeriodStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{ConvertLengthBiotic}()},
-\code{\link{ConvertWeightBiotic}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{DefineLengthConversionParameters}()},
-\code{\link{DefinePeriod}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{DefineWeightConversionFactor}()},
-\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
-\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
-\code{\link{ListBioticDifference}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{ReportFdaSOP}()},
-\code{\link{ReportFdaSampling}()},
-\code{\link{ReportParameterConvergence}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{SetStartDateBiotic}()},
-\code{\link{SetTimeBiotic}()}
 }
 \concept{StoX-Reca functions}
 \concept{StoX-functions}

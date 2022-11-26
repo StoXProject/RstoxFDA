@@ -23,23 +23,5 @@ Parses logbooks from tabular format (.lst) delivered by Directorate of Fisheries
 A variant of .lst does not provide headers. These are read with assumed standard order of headers,
  and a warning is issued.
 }
-\seealso{
-Other IO functions: 
-\code{\link{ReadLandingFDA}()},
-\code{\link{convertToErsData}()},
-\code{\link{readFdirLandingsArchive}()}
-
-Other logbook functions: 
-\code{\link{activityCensus}},
-\code{\link{addLogbookColumns}()},
-\code{\link{appendTripIdLandings}()},
-\code{\link{appendTripIdLogbooks}()},
-\code{\link{calculateLogbookPartitionByTrip}()},
-\code{\link{convertToErsData}()},
-\code{\link{imputeCatchesLandings}()},
-\code{\link{logbookAdjustment}()},
-\code{\link{makeTripIds}()},
-\code{\link{sourceLogbookColumns}()}
-}
 \concept{IO functions}
 \concept{logbook functions}

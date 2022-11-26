@@ -7,7 +7,7 @@
 AddStratumStoxLanding(
   StoxLandingData,
   StratumPolygon,
-  ColumnName = c("Stratum", "Area")
+  ColumnName = character()
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ AddStratumStoxLanding(
 
 \item{StratumPolygon}{Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}}
 
-\item{ColumnName}{specifies which column the area should be added to. See details.}
+\item{ColumnName}{specifies which column the area should be added to. See details. Defaults to Stratum.}
 }
 \value{
 StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
@@ -24,11 +24,10 @@ StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData
 Adds a column to StoxLandingData with the spatial strata each row belongs to.
 }
 \details{
-The strata are added to the new column 'Stratum'.
+The strata are added to the new column specified by ColumName.
 
-The Strata may be added as a new column, or to an existing column depending on the
-argument 'ColumnName'. The option 'Stratum' (default) adds strata to a new column 'Stratum'.
-The option 'Area' changes the values in the existing column 'Area'.
+If 'ColumnName' is 'Area', The column 'Area' of StoxLandingData is overwritten.
+Other columns in StoxLandingData may not be specified.
 
 \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
 these need to be added as columns 'Latitude' and 'Longitude' before calling this function.
@@ -41,77 +40,6 @@ these need to be added as columns 'Latitude' and 'Longitude' before calling this
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Stratum' as an effect in Reca-estimation,
 \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
 and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
-
-Other spatial coding functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{appendAreaCode}()},
-\code{\link{appendPosition}()},
-\code{\link{areaCodeConversionTable}()},
-\code{\link{mergePolygons}()},
-\code{\link{plotAreaComparison}()},
-\code{\link{plotArea}()},
-\code{\link{writeSpDataFrameAsWKT}()}
-
-Other StoX-Reca functions: 
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()}
-
-Other StoX-functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{AddPeriodStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{ConvertLengthBiotic}()},
-\code{\link{ConvertWeightBiotic}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{DefineLengthConversionParameters}()},
-\code{\link{DefinePeriod}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{DefineWeightConversionFactor}()},
-\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
-\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
-\code{\link{ListBioticDifference}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{ReportFdaSOP}()},
-\code{\link{ReportFdaSampling}()},
-\code{\link{ReportParameterConvergence}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{SetStartDateBiotic}()},
-\code{\link{SetTimeBiotic}()}
 }
 \concept{StoX-Reca functions}
 \concept{StoX-functions}

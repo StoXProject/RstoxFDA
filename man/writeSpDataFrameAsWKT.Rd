@@ -16,20 +16,4 @@ writeSpDataFrameAsWKT(shape, output, namecol = "StratumName")
 \description{
 Writes \code{\link[sp]{SpatialPolygonsDataFrame}}, such as \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)
 }
-\seealso{
-Other spatial coding functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{appendAreaCode}()},
-\code{\link{appendPosition}()},
-\code{\link{areaCodeConversionTable}()},
-\code{\link{mergePolygons}()},
-\code{\link{plotAreaComparison}()},
-\code{\link{plotArea}()}
-}
 \concept{spatial coding functions}

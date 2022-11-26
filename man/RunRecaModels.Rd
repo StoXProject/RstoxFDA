@@ -10,7 +10,6 @@ RunRecaModels(
   GroupingVariables = character(),
   TemporalResolution = c("Quarter", "Month"),
   Caa.burnin = numeric(),
-  Seed = numeric(),
   CollapseLength = TRUE
 )
 }
@@ -21,13 +20,11 @@ RunRecaModels(
 
 \item{GroupingVariables}{character vector identifying columns in 'StoxLandingData' that results should be provided for.}
 
-\item{TemporalResolution}{default "Quarter", code for temporal resolution in landings: "Month" or "Quarter".
+\item{TemporalResolution}{Code for temporal resolution in landings: "Month" or "Quarter". Defaults to Quarter.
 Regulates temporal resolution for calculating fractional ages of fish.
 Not to be confused with any temporal covariate.}
 
 \item{Caa.burnin}{see documentation for \code{\link[Reca]{eca.predict}}. Defaults to 0.}
-
-\item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to seed stored in 'RecaParameterData'.}
 
 \item{CollapseLength}{indicates whether length groups should be collapsed in result. Defaults to TRUE. See details.}
 }
@@ -60,62 +57,6 @@ If this is used in combination with several grouping variables, there is some ri
 \code{\link[RstoxFDA]{ReportRecaCatchAtAge}},
 \code{\link[RstoxFDA]{ReportRecaLengthAtAge}},
 \code{\link[RstoxFDA]{ReportRecaWeightAtAge}} for compiling reports of predictions / estimates.
-
-Other StoX-Reca functions: 
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()}
-
-Other StoX-functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{AddPeriodStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{ConvertLengthBiotic}()},
-\code{\link{ConvertWeightBiotic}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{DefineLengthConversionParameters}()},
-\code{\link{DefinePeriod}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{DefineWeightConversionFactor}()},
-\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
-\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
-\code{\link{ListBioticDifference}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{ReportFdaSOP}()},
-\code{\link{ReportFdaSampling}()},
-\code{\link{ReportParameterConvergence}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{SetStartDateBiotic}()},
-\code{\link{SetTimeBiotic}()}
 }
 \concept{StoX-Reca functions}
 \concept{StoX-functions}

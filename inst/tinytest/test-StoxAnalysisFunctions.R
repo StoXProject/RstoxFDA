@@ -12,8 +12,19 @@ expect_error(RstoxFDA:::PrepareRecaEstimate(StoxBioticDataWDupl, StoxLandingData
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
 
 fpath <- RstoxFDA:::makeTempDirReca()
+# check that seed works
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath)
+paramOut2 <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed = paramOut$GlobalParameters$GlobalParameters$seed)
+paramOut3 <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed = paramOut$GlobalParameters$GlobalParameters$seed+1)
+
+expect_equal(paramOut2$FitProportionAtAge, paramOut$FitProportionAtAge)
+expect_equal(paramOut2$FitLengthGivenAge, paramOut$FitLengthGivenAge)
+expect_equal(paramOut2$FitWeightGivenLength, paramOut$FitWeightGivenLength)
+expect_true(!all(paramOut$FitWeightGivenLength$fish$tau_Intercept == paramOut3$FitWeightGivenLength$fish$tau_Intercept))
+
+
 # check that cache works
-paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=155, )
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=155)
 expect_warning(paramOut2 <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=155, UseCache=T), "Using cached data for ParameterizeRecaModels")
 expect_true(identical(paramOut, paramOut2))
 # check that cache fails when arguments are changed
@@ -100,7 +111,7 @@ expect_equal(param$FitProportionAtAge$constant$Age[1], "S1 2")
 #context("Check that back conversion to eca objects works fine with stock splitting")
 ecafit <- RstoxFDA:::stox2recaFit(param)
 
-result <- RstoxFDA:::RunRecaModels(param, StoxLandingData = StoxLandingData, Seed = 100)
+result <- RstoxFDA:::RunRecaModels(param, StoxLandingData = StoxLandingData)
 
 expect_true("Stock" %in% result$GroupingVariables$GroupingVariables)
 resultAgg <- RstoxFDA:::RunRecaModels(param, StoxLandingData = StoxLandingData, GroupingVariables = c("Gear"))
@@ -133,7 +144,7 @@ StoxLandingData <- readRDS(StoxLandingFile)
 
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseAgingError = T, AgeErrorMatrix = ageerror, MinAge = 0, MaxAge = 14)
 expect_true(!is.null(prep$AgeLength$AgeErrorMatrix))
-est <- RstoxFDA::RunRecaEstimate(prep, 10, 50)
+expect_warning(est <- RstoxFDA::RunRecaEstimate(prep, 10, 50))
 
 #context("PrepareRecaEstimate: configuration tests")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
@@ -198,7 +209,7 @@ expect_true(RstoxFDA::is.RecaCatchAtAge(results))
 expect_warning(RstoxFDA:::RunRecaModels(paramOut, StoxLandingData, GroupingVariables = c("Area", "Usage"), CollapseLength = F), "StoX: Producing estimates for all length groups in combination with age and several 'GroupingVariables'. This may exhaust memory, consider the option 'CollapseLength'")
 RstoxFDA:::removeTempDirReca(fpath)
 
-#context("test-StoxAnalysisFunctions: RunRecaModels wirh random effects in landings")
+#context("test-StoxAnalysisFunctions: RunRecaModels with random effects in landings")
 
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
@@ -210,9 +221,21 @@ StoxBioticData$Haul$Gear <- StoxLandingData$Landing$Gear[sample.int(20,45, repla
 fpath <- RstoxFDA:::makeTempDirReca()
 
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Gear"))
-paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 50, 50, 1, fpath, Seed=100)
 
-results <- RstoxFDA:::RunRecaModels(paramOut, StoxLandingData, Seed=100)
+#check that seed works
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 50, 50, 1, fpath)
+seed <- sample.int(.Machine$integer.max, 1)
+results <- RstoxFDA:::RunRecaModels(paramOut, StoxLandingData)
+paramOut2 <- RstoxFDA:::ParameterizeRecaModels(prep, 50, 50, 1, fpath, Seed=paramOut$GlobalParameters$GlobalParameters$seed)
+results2 <- RstoxFDA:::RunRecaModels(paramOut2, StoxLandingData)
+paramOut3 <- RstoxFDA:::ParameterizeRecaModels(prep, 50, 50, 1, fpath, Seed=paramOut$GlobalParameters$GlobalParameters$seed+1)
+results3 <- RstoxFDA:::RunRecaModels(paramOut3, StoxLandingData)
+expect_equal(results2, results)
+expect_true(!all(results$CatchAtAge == results3$CatchAtAge))
+#/ seed
+
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 50, 50, 1, fpath, Seed=100)
+results <- RstoxFDA:::RunRecaModels(paramOut, StoxLandingData)
 
 expect_true("Gear" %in% names(paramOut$Landings$AgeLengthCov))
 expect_true("Age" %in% names(results$CatchAtAge))
@@ -246,7 +269,7 @@ expect_true(length(unique(resultsWlength$CatchAtAge$Length))> 1)
 
 
 #context("test-StoxAnalysisFunctions: PrepareRecaEstimate missing arguments")
-expect_error(RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Lgamodel = NULL), "Parameter 'Lgamodel' must be provided.")
+expect_error(RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = NULL), "Argument 'ResultDirectory' must be provided.")
 
 RstoxFDA:::removeTempDirReca(fpath)
 
@@ -263,7 +286,7 @@ expect_equal(length(prep$CovariateMaps$CovariateMaps_randomEffects_AgeLength_cat
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), MinAge=1, MaxAge=30)
 
 #context("test-StoxAnalysisFunctions: RunRecaEstimate simple case")
-result <- RstoxFDA::RunRecaEstimate(prep, 10, 50, Thin=1)
+expect_warning(result <- RstoxFDA::RunRecaEstimate(prep, 10, 50, Thin=1))
 expect_true(all(c("input", "fit", "prediction", "covariateMaps") %in% names(result)))
 expect_equal(dim(result$prediction$TotalCount)[3], 10)
 
@@ -310,8 +333,6 @@ expect_true("cell" %in% names(paramOut$FitProportionAtAge))
 RstoxFDA:::removeTempDirReca(fpath)
 
 #context("test-StoxAnalysisFunctions: RunRecaEstimate with random effect Area")
-est <- RstoxFDA::RunRecaEstimate(prep, 10, 100, 0, Seed = 112)
+expect_warning(est <- RstoxFDA::RunRecaEstimate(prep, 10, 100, 0, Seed = 112))
 expect_true("Area" %in% names(est$fit$ProportionAtAge$Intercept$cov))
 
-#context("RunRecaEstimate not providing burnin")
-expect_error(RstoxFDA::RunRecaEstimate(prep, 10))

@@ -73,20 +73,4 @@ Map ranges to plot are specified by 'xlim' and 'ylim'. These should always be gi
                     areaLabels2 = TRUE, 
                     title="Comparing Fdir main area definitions, before and as of 2018")
 }
-\seealso{
-Other spatial coding functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{appendAreaCode}()},
-\code{\link{appendPosition}()},
-\code{\link{areaCodeConversionTable}()},
-\code{\link{mergePolygons}()},
-\code{\link{plotArea}()},
-\code{\link{writeSpDataFrameAsWKT}()}
-}
 \concept{spatial coding functions}

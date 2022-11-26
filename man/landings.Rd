@@ -18,37 +18,6 @@ Gear-codes are converted from national standard and should be considered approxi
 data(landings)
 sum(landings$OfficialLandingsWeight)
 }
-\seealso{
-Other Reca functions: 
-\code{\link{catchsamples}},
-\code{\link{convertRecaData}()},
-\code{\link{getCovariateMap}()},
-\code{\link{getLandings}()},
-\code{\link{makeAgeTracesRECA}()},
-\code{\link{makeResultTableRECA}()},
-\code{\link{plotAgeTraces}()},
-\code{\link{plotCatchAtAge}()},
-\code{\link{prepRECA}()},
-\code{\link{rEcaDataReport}()},
-\code{\link{recaDataExample}},
-\code{\link{recaPrediction}},
-\code{\link{runRECA}()},
-\code{\link{sanitizeRecaInput}()},
-\code{\link{tabulateFisheries}()}
-
-Other landings functions: 
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{ReportFdaSampling}()},
-\code{\link{addLogbookColumns}()},
-\code{\link{appendTripIdLandings}()},
-\code{\link{imputeCatchesLandings}()},
-\code{\link{logbookAdjustment}()},
-\code{\link{makeTripIds}()},
-\code{\link{plotBubbleMap}()},
-\code{\link{sourceLogbookColumns}()},
-\code{\link{tabulateFisheries}()}
-}
 \concept{Reca functions}
 \concept{landings functions}
 \keyword{datasets}

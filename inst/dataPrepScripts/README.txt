@@ -1,1 +1,1 @@
-scripts for preparing example data bundled in this package
+scripts for preparing example data bundled in this package. Mainly kept for documentation, and to simplify preparing new versions of example data. References may be local, and dependencies are not controlled (are not limited to package dependencies).

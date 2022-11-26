@@ -55,7 +55,7 @@ mandatory if UseAgingError is TRUE.}
 
 \item{StockSplittingParameters}{Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParameters}}.}
 
-\item{CellEffect}{Configures the cell effect. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
+\item{CellEffect}{Configures the cell effect. Defaults to Off. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
 Any CAR-effect is always included in the cell effect.}
 
 \item{MinAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
@@ -70,8 +70,8 @@ If not provided it will be derived from data.}
 \item{LengthResolution}{optional, resolution for length measurements in cm.
 If not provided modal value from data is used.}
 
-\item{HatchDay}{defaults to 1 representing Jan 1st.
-encoding the day of the year when fish is consider to transition from one age to the next.}
+\item{HatchDay}{defaults to Defaults to 1.
+encoding the day of the year when fish is consider to transition from one age to the next. 1 represents Jan 1st.}
 }
 \value{
 \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
@@ -136,62 +136,6 @@ and \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for making 'GearGroup' part 
 \code{\link[RstoxFDA]{DefineAgeErrorMatrix}} for making an age-error matrix available for the Reca-analysis.
 \code{\link[RstoxFDA]{DefineStockSplittingParameters}} for configuring stock-splitting parameters,
 and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
-
-Other StoX-Reca functions: 
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()}
-
-Other StoX-functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{AddPeriodStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{ConvertLengthBiotic}()},
-\code{\link{ConvertWeightBiotic}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{DefineLengthConversionParameters}()},
-\code{\link{DefinePeriod}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{DefineWeightConversionFactor}()},
-\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
-\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
-\code{\link{ListBioticDifference}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{ReportFdaSOP}()},
-\code{\link{ReportFdaSampling}()},
-\code{\link{ReportParameterConvergence}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{SetStartDateBiotic}()},
-\code{\link{SetTimeBiotic}()}
 }
 \concept{StoX-Reca functions}
 \concept{StoX-functions}

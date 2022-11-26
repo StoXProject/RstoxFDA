@@ -39,7 +39,7 @@ is.Date <- function(date){
 #' }
 #'
 #' @name TripPartition
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -84,7 +84,7 @@ NULL
 #'  The metier-defining parameters are written in camelCase, parameters that may be used to distinguish applicability of different metierdefinitions are writter in UPPER case.
 #'
 #' @name MetierTable
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -92,7 +92,7 @@ NULL
 #' @param table \code{\link[RstoxFDA]{MetierTable}}
 #' @param throwError if set errors are raised, if not, validity will be returned as T/F
 #' @return validity
-#' @family Data types
+#' @concept Data types
 #' @noRd
 is.MetierTable <- function(table, throwError=F){
   
@@ -311,7 +311,7 @@ is.StoxBioticData <- function(StoxBioticData, raiseErrors=F){
 #' 
 #' 
 #' @name LocodeTable
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -330,7 +330,7 @@ NULL
 #'   }
 #'  
 #' @name KommunePolygons
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -367,7 +367,7 @@ NULL
 #' 
 #' 
 #' @name LandingsArchiveData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -414,7 +414,7 @@ NULL
 #' 
 #' 
 #' @name LstLogbookData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -440,7 +440,7 @@ NULL
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaByAgeData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -468,7 +468,7 @@ NULL
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaSummaryData
-#' @family Data types
+#' @concept Data types
 NULL
 
 #' Fisheries dependent Catch At Age Report (ReportFdaCatchAtAgeData)
@@ -486,7 +486,7 @@ NULL
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaCatchAtAgeData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -515,7 +515,7 @@ NULL
 #' 
 #' 
 #' @name ReportFdaCatchAtAgeCovarianceData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -535,7 +535,7 @@ NULL
 #' 
 #' 
 #' @name ReportFdaCatchAtLengthData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -554,7 +554,7 @@ NULL
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
 #' @name ReportFdaCatchAtLengthAndAgeData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -577,7 +577,7 @@ NULL
 #'  and does not characterize the length distribution of fish.
 #' 
 #' @name ReportFdaLengthAtAgeData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -600,7 +600,7 @@ NULL
 #'  and does not characterize the weight distribution of fish.
 #' 
 #' @name ReportFdaWeightAtAgeData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -609,7 +609,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
 #' @param ReportFdaByAgeData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.ReportFdaByAgeData <- function(ReportFdaByAgeData){
   if (!is.list(ReportFdaByAgeData)){
@@ -657,7 +657,7 @@ is.ReportFdaByAgeData <- function(ReportFdaByAgeData){
 #'  The unit for RelativeDifference is configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaSopData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -666,7 +666,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSOP}}
 #' @param ReportFdaSOP argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSOP}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.ReportFdaSOP <- function(ReportFdaSOP){
   
@@ -721,7 +721,7 @@ is.ReportFdaSOP <- function(ReportFdaSOP){
 #'  for creating ParameterizationSummaryData from Reca-simulations.
 #' 
 #' @name ParameterizationSummaryData
-#' @family Data types
+#' @concept Data types
 NULL
 
 #' Checks if argument is \code{\link[RstoxFDA]{ParameterizationSummaryData}}
@@ -729,7 +729,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ParameterizationSummaryData}}
 #' @param ParameterizationSummaryData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ParameterizationSummaryData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.ParameterizationSummaryData <- function(ParameterizationSummaryData){
   
@@ -785,7 +785,7 @@ is.ParameterizationSummaryData <- function(ParameterizationSummaryData){
 #'  for creating ParameterConvergenceData.
 #' 
 #' @name ParameterConvergenceData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -794,7 +794,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ParameterConvergenceData}}
 #' @param ParameterConvergenceData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ParameterConvergenceData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.ParameterConvergenceData <- function(ParameterConvergenceData){
   
@@ -820,7 +820,7 @@ is.ParameterConvergenceData <- function(ParameterConvergenceData){
 #'  Checks if argument conforms to specification for \code{\link[RstoxData]{Translation}}
 #' @param Translation argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxData]{Translation}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.Translation <- function(Translation){
   if (!data.table::is.data.table(Translation)){
@@ -856,7 +856,7 @@ is.Translation <- function(Translation){
 #'  }
 #'  
 #' @name LengthConversionTable
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -865,7 +865,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{LengthConversionTable}}
 #' @param LengthConversionTable argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{LengthConversionTable}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.LengthConversionTable <- function(LengthConversionTable){
   if (!data.table::is.data.table(LengthConversionTable)){
@@ -893,7 +893,7 @@ is.LengthConversionTable <- function(LengthConversionTable){
 #'  NA is allowed for 'WeightFactor', which will result in NA for weights after conversion
 #'  
 #' @name WeightConversionTable
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -902,7 +902,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{WeightConversionTable}}
 #' @param WeightConversionTable argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{WeightConversionTable}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.WeightConversionTable <- function(WeightConversionTable){
   if (!data.table::is.data.table(WeightConversionTable)){
@@ -914,6 +914,98 @@ is.WeightConversionTable <- function(WeightConversionTable){
   
   return(TRUE)
 }
+
+#' Spatial landings overview data (PlotFisheriesOverviewSpatialData)
+#' 
+#' @description 
+#'  a ggplot object that renders catch density of landings on polygons.
+#'  
+#' @name PlotFisheriesOverviewSpatialData
+#' @concept Data types
+#' 
+NULL
+
+#' Temporal landings overview data (PlotFisheriesOverviewTemporalData)
+#' 
+#' @description 
+#'  a ggplot object that renders landings by date of catch and by grouping variables.
+#'  
+#' @name PlotFisheriesOverviewTemporalData
+#' @concept Data types
+#' 
+NULL
+
+
+#' Sampling Overview cell-plot data (PlotSamplingOverviewCellData)
+#' 
+#' @description 
+#'  a ggplot object that renders the a colored 'cell plot' overview of samples and landings.
+#'  
+#' @name PlotSamplingOverviewCellData
+#' @concept Data types
+#' 
+NULL
+
+#' Sampling variables plot data (PlotSamplingCoverageData)
+#' 
+#' @description 
+#'  a ggplot object that renders a a barplot of landings with color codes for how much each part of the fishery is sampled.
+#'  
+#' @name PlotSamplingCoverageData
+#' @concept Data types
+#' 
+NULL
+
+
+#' Sampling variables plot data (PlotSamplingVariablesData)
+#' 
+#' @description 
+#'  a ggplot object that renders a stacked barplot of sampling variables for each part of the fishery, with total landings on a secondary axis.
+#'  
+#' @name PlotSamplingVariablesData
+#' @concept Data types
+#' 
+NULL
+
+#' Trace plot (PlotPosteriorTracesData)
+#' 
+#' @description 
+#'  a ggplot object that renders traceplot of Reca predictions.
+#'  
+#' @name PlotPosteriorTracesData
+#' @concept Data types
+#' 
+NULL
+
+#' Total catch by age plot (PlotCatchAtAgeTotalsData)
+#' 
+#' @description 
+#'  a ggplot object that renders estimated total catch by age.
+#'  
+#' @name PlotCatchAtAgeTotalsData
+#' @concept Data types
+#' 
+NULL
+
+#' Mean weight at age plot (PlotMeanWeightAtAgeData)
+#' 
+#' @description 
+#'  a ggplot object that renders estimated mean weight by age.
+#'  
+#' @name PlotMeanWeightAtAgeData
+#' @concept Data types
+#' 
+NULL
+
+#' Mean length at age plot (PlotMeanLengthAtAgeData)
+#' 
+#' @description 
+#'  a ggplot object that renders estimated mean length by age.
+#'  
+#' @name PlotMeanLengthAtAgeData
+#' @concept Data types
+#' 
+NULL
 
 #' Sampling Report data (ReportFdaSamplingData)
 #' 
@@ -940,7 +1032,7 @@ is.WeightConversionTable <- function(WeightConversionTable){
 #'  }
 #' 
 #' @name ReportFdaSamplingData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -949,7 +1041,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @param ReportFdaSamplingData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaSamplingData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
   if (!is.list(ReportFdaSamplingData)){
@@ -987,7 +1079,7 @@ is.ReportFdaSamplingData <- function(ReportFdaSamplingData){
 #'  }
 #' 
 #' @name ReportFdaLandingData
-#' @family Data types
+#' @concept Data types
 #' 
 NULL
 
@@ -1009,7 +1101,7 @@ NULL
 #' }
 #'
 #' @name RecaData
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1018,7 +1110,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaData}}
 #' @param RecaData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.RecaData <- function(RecaData){
   if (!is.list(RecaData)){
@@ -1105,7 +1197,7 @@ is.RecaData <- function(RecaData){
 #' }
 #'
 #' @name RecaParameterData
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1114,7 +1206,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
 #' @param RecaParameterData argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaParameterData}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.RecaParameterData <- function(RecaParameterData){
   
@@ -1215,7 +1307,7 @@ is.RecaParameterData <- function(RecaParameterData){
 #' }
 #'
 #' @name RecaCatchAtAge
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1224,7 +1316,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
 #' @param RecaCatchAtAge argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaCatchAtAge}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.RecaCatchAtAge <- function(RecaCatchAtAge){
   if (!is.list(RecaCatchAtAge)){
@@ -1271,7 +1363,7 @@ is.RecaCatchAtAge <- function(RecaCatchAtAge){
 #' }
 #'
 #' @name RecaResult
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1300,7 +1392,7 @@ is.RecaPrediction <- function(prediction){
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}
 #' @param RecaResult argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{RecaResult}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.RecaResult <- function(RecaResult){
   if (!is.list(RecaResult)){
@@ -1337,7 +1429,7 @@ is.RecaResult <- function(RecaResult){
 #'  it is taken to be included in the last category of the preceding year.
 #'
 #' @name TemporalDefinition
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1346,7 +1438,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
 #' @param TemporalDefinition argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{TemporalDefinition}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.TemporalDefinition <- function(TemporalDefinition){
   if (!data.table::is.data.table(TemporalDefinition)){
@@ -1377,7 +1469,7 @@ is.TemporalDefinition <- function(TemporalDefinition){
 #'  If location is provided, the case for missing location is also encoded.
 #'
 #' @name AreaPosition
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1386,7 +1478,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AreaPosition}}
 #' @param AreaPosition argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{AreaPosition}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.AreaPosition <- function(AreaPosition){
   if (!data.table::is.data.table(AreaPosition)){
@@ -1413,7 +1505,7 @@ is.AreaPosition <- function(AreaPosition){
 #'  The table is symmetric, so that if b is a neighbour of a. a is also a neighbour of b.
 #'
 #' @name CarNeighbours
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1424,7 +1516,7 @@ NULL
 #'  See \code{\link[RstoxData]{LandingData}}
 #'
 #' @name LandingData
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1433,7 +1525,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
 #' @param CarNeighbours argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{CarNeighbours}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.CarNeighbours <- function(CarNeighbours){
   if (!data.table::is.data.table(CarNeighbours)){
@@ -1460,7 +1552,7 @@ is.CarNeighbours <- function(CarNeighbours){
 #'  Columns sum to 1.
 #'
 #' @name AgeErrorMatrix
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1469,7 +1561,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
 #' @param AgeErrorMatrix argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{AgeErrorMatrix}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.AgeErrorMatrix <- function(AgeErrorMatrix){
   if (!data.table::is.data.table(AgeErrorMatrix)){
@@ -1518,7 +1610,7 @@ is.AgeErrorMatrix <- function(AgeErrorMatrix){
 #'  The data table contains only one row.
 #'
 #' @name StockSplittingParameters
-#' @family Data types
+#' @concept Data types
 #'
 NULL
 
@@ -1527,7 +1619,7 @@ NULL
 #'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParameters}}
 #' @param StockSplittingParameters argument to be checked for data conformity
 #' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{StockSplittingParameters}}
-#' @family Data types
+#' @concept Data types
 #' @export
 is.StockSplittingParameters <- function(StockSplittingParameters){
   if (!data.table::is.data.table(StockSplittingParameters)){
@@ -1578,6 +1670,17 @@ is.StockSplittingParameters <- function(StockSplittingParameters){
   
   return(TRUE)
 }
+
+plotDefaultsCellPlotColors <- list(
+  MinVessels=2,
+  MinCatches=2, 
+  MinMeasurements=100,
+  ColorNoSamples = "#ffffcc", 
+  ColorFewMeasurements = "#c2e699", 
+  ColorFewCatches = "#78c679", 
+  ColorFewVessels = "#31a354", 
+  ColorGoodSampling = "#006837"
+)
 
 #' Function specification for inclusion in StoX UI
 #' @export
@@ -1832,25 +1935,37 @@ stoxFunctionAttributes <- list(
   AddStratumStoxLanding = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
-    functionOutputDataType = "StoxLandingData"
+    functionOutputDataType = "StoxLandingData",
+    functionParameterDefaults = list(
+      ColumnName = "Stratum"
+    )
   ),
   
   AddStratumStoxBiotic = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
-    functionOutputDataType = "StoxBioticData"
+    functionOutputDataType = "StoxBioticData",
+    functionParameterDefaults = list(
+      ColumnName = "Stratum"
+    )
   ),
   
   AddPeriodStoxLanding = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
-    functionOutputDataType = "StoxLandingData"
+    functionOutputDataType = "StoxLandingData",
+    functionParameterDefaults = list(
+      ColumnName = "Period"
+    )
   ),
   
   AddPeriodStoxBiotic = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
-    functionOutputDataType = "StoxBioticData"
+    functionOutputDataType = "StoxBioticData",
+    functionParameterDefaults = list(
+      ColumnName = "Period"
+    )
   ),
   
   ListBioticDifference = list(
@@ -1875,7 +1990,7 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "RecaData",
     functionParameterFormat = list(
       RandomEffects = "randomcovariates",
-      CarEffect = "randomcovariates",
+      CarEffect = "carcovariate",
       FixedEffects = "fixedcovariates"),
     functionArgumentHierarchy = list(
       AgeErrorMatrix = list(
@@ -1893,12 +2008,21 @@ stoxFunctionAttributes <- list(
       UseStockSplittingError = list(
         UseStockSplitting = TRUE
       )
+    ),
+    functionParameterDefaults = list(
+      CellEffect = "Off",
+      HatchDay = 1
     )
   ),
   ParameterizeRecaModels = list(
     functionType = "modelData",
     functionCategory = "analysis",
-    functionOutputDataType = "RecaParameterData"
+    functionOutputDataType = "RecaParameterData",
+    functionParameterDefaults = list(
+      Lgamodel = "log-linear",
+      Delta.age = 0.001,
+      Thin = 0
+    )
     #doesnt work for directory ?
     #functionParameterFormat = list(
     #  ResultDirectory = "filePath"
@@ -1910,6 +2034,10 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "RecaCatchAtAge",
     functionParameterFormat = list(
       GroupingVariables = "GroupingVariables"
+    ),
+    functionParameterDefaults = list(
+      TemporalResolution = "Quarter",
+      Caa.burnin = 0
     )
   ),
   ReportFdaSampling = list(
@@ -1919,45 +2047,78 @@ stoxFunctionAttributes <- list(
     functionParameterFormat = list(
       GroupingVariables = "samplereportvariables",
       SamplingVariables = "onlysamplereportvariables"
+    ),
+    functionParameterDefaults = list(
+      Decimals = 0,
+      Unit = "kg"
     )
   ),
   ReportFdaLandings = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaLandingsData",
+    functionOutputDataType = "ReportFdaLandingData",
     functionParameterFormat = list(
       GroupingVariables = "landingsreportvariables"
+    ),
+    functionParameterDefaults = list(
+      Decimals = 0,
+      Unit = "kg"
     )
   ),
   ReportRecaCatchAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaCatchAtAgeData"
+    functionOutputDataType = "ReportFdaCatchAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9
+    )
   ),
   ReportRecaCatchAtAgeCovariance = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaCatchAtAgeCovarianceData"
+    functionOutputDataType = "ReportFdaCatchAtAgeCovarianceData",
+    functionParameterDefaults = list(
+      Decimals = 0
+    )
   ),
   ReportRecaCatchAtLength = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaCatchAtLengthData"
+    functionOutputDataType = "ReportFdaCatchAtLengthData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9
+    )
   ),
   ReportRecaCatchAtLengthAndAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaCatchAtLengthAndAgeData"
+    functionOutputDataType = "ReportFdaCatchAtLengthAndAgeData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9
+    )
   ),
   ReportRecaLengthAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaLengthAtAgeData"
+    functionOutputDataType = "ReportFdaLengthAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 2,
+      IntervalWidth = 0.9,
+      Threshold=0
+    )
   ),
   ReportRecaWeightAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaWeightAtAgeData"
+    functionOutputDataType = "ReportFdaWeightAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 2,
+      IntervalWidth = 0.9,
+      Threshold=0
+    )
   ),
   ReportRecaCatchStatistics = list(
     functionType = "modelData",
@@ -1991,6 +2152,18 @@ stoxFunctionAttributes <- list(
       UnitMeanLength = list(
         UseDefaultUnitOptions = FALSE
       )
+    ),
+    functionParameterDefaults = list(
+      DecimalTotalNumber = 0,
+      DecimalTotalWeight = 0,
+      DecimalMeanAge = 1,
+      DecimalMeanWeight = 3,
+      DecimalMeanLength = 3,
+      UnitTotalNumber = "10^6 individuals",
+      UnitTotalWeight = "kiloton",
+      UnitMeanWeight = "kg",
+      UnitMeanLength = "cm",
+      IntervalWidth = 0.9
     )
   ),
   ReportFdaSOP = list(
@@ -1999,6 +2172,10 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "ReportFdaSopData",
     functionParameterFormat = list(
       GroupingVariables = "GroupingVariablesSop"
+    ),
+    functionParameterDefaults = list(
+      DecimalWeight = 0,
+      DecimalFraction = 3
     )
   ),
   ReportRecaParameterStatistics = list(
@@ -2014,7 +2191,181 @@ stoxFunctionAttributes <- list(
   ReportParameterConvergence = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ParameterConvergenceData"
+    functionOutputDataType = "ParameterConvergenceData",
+    functionParameterDefaults = list(
+      Tolerance = 0.1,
+      Decimals = 2
+    )
+  ),
+  PlotFisheriesOverviewSpatial = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotFisheriesOverviewSpatialData"
+  ),
+  PlotFisheriesOverviewTemporal = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotFisheriesOverviewTemporalData"
+  ),
+  PlotSamplingOverviewCell = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotSamplingOverviewCellData",
+    functionParameterFormat = list(
+      ColumnVariable = "columnvariablecellplot"
+    ),
+    functionArgumentHierarchy = list(
+      MinVessels = list(
+        UseDefaultColorSettings = FALSE
+      ),
+      MinCatches = list(
+        UseDefaultColorSettings = FALSE
+      ),
+      MinMeasurements = list(
+        UseDefaultColorSettings = FALSE
+      ),
+      ColorNoSamples = list(
+        UseDefaultColorSettings = FALSE
+      ),
+      ColorFewCatches = list(
+        UseDefaultColorSettings = FALSE
+      ),
+      ColorFewVessels = list(
+        UseDefaultColorSettings = FALSE
+      ),
+      ColorGoodSampling = list(
+        UseDefaultColorSettings = FALSE
+      )
+    ),
+    functionParameterDefaults = c(
+      plotDefaultsCellPlotColors,
+      list(Measurement="AgeReadings")
+    )
+  ),
+  PlotSamplingCoverage = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotSamplingCoverageData",
+    functionArgumentHierarchy = list(
+      Measurement = list(
+        ColorScheme = "CellPlot"
+      ),
+      MinVessels = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      MinCatches = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      MinMeasurements = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      ColorNoSamples = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      ColorFewMeasurements = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      ColorFewCatches = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      ColorFewVessels = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      ColorGoodSampling = list(
+        UseDefaultColorSettings = FALSE,
+        ColorScheme = "CellPlot"
+      ),
+      SamplingUnit = list(
+        ColorScheme = "Gradient"
+      ),
+      GradientLowColor = list(
+        ColorScheme = "Gradient",
+        UseDefaultColorSettings = FALSE
+      ),
+      GradientMidColor = list(
+        ColorScheme = "Gradient",
+        UseDefaultColorSettings = FALSE
+      ),
+      GradientHighColor = list(
+        ColorScheme = "Gradient",
+        UseDefaultColorSettings = FALSE
+      )
+    ),
+    functionParameterDefaults = c(
+      plotDefaultsCellPlotColors,
+      list(
+        GradientLowColor="#ffffcc",
+        GradientMidColor="#c2e699",
+        GradientHighColor="#006837",
+        OtherPercentage=0,
+        ColorScheme = "CellPlot",
+        Measurement = "AgeReadings"
+      )
+    )
+  ),
+  PlotSamplingVariables = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotSamplingVariablesData"
+  ),
+  PlotPosteriorTraces = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotPosteriorTracesData",
+    functionArgumentHierarchy = list(
+      Nclust = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      Iter.max = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      Nstart = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      LowerQuant = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      UpperQuant = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      CatLimit = list(
+        UseDefaultPlotSettings=FALSE
+      ),
+      Legend = list(
+        UseDefaultPlotSettings=FALSE
+      )
+    ),
+    functionParameterDefaults = list(
+      Nclust=4,
+      Iter.max=20,
+      Nstart=10,
+      LowerQuant=.05,
+      UpperQuant=.95,
+      CatLimit=30,
+      Parameter="TotalCatch"
+    )
+  ),
+  PlotCatchAtAgeTotals = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotCatchAtAgeTotalsData"
+  ),
+  PlotMeanWeightAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotMeanWeightAtAgeData"
+  ),
+  PlotMeanLengthAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "PlotMeanLengthAtAgeData"
   )
 )
 
@@ -2132,7 +2483,8 @@ processPropertyFormats <- list(
     variableTypes = "character"
   ),
   carcovariate = list(
-    class = "single",
+    class = "vector", #convert to class single, if that becomes available.
+    title = "A variable (choose only one) to use for the CAR variable in Reca.",
     possibleValues = function(StoxBioticData) {
       possibleValues <- c()
       for (n in c("Station", "Haul", "SpeciesCategory", "Sample")){
@@ -2145,7 +2497,17 @@ processPropertyFormats <- list(
       possibleValues <- unique(possibleValues)
       possibleValues <- possibleValues[!(possibleValues %in% c("CruiseKey", "StationKey", "HaulKey", "SpeciesCategoryKey", "SampleKey"))]
       return(sort(possibleValues))
-    }
+    }, 
+    variableTypes = "character"
+  ),
+  columnvariablecellplot = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "A variable (choose only one) to use for columns in cell plot.", 
+    possibleValues = function(ReportFdaSamplingData) {
+      possibleValues <- ReportFdaSamplingData$GroupingVariables$GroupingVariables
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
   )
 )
 

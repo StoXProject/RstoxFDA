@@ -28,15 +28,4 @@ The file identified by 'filename' must be a tab-separated file, and must provide
  Comments may be provided on lines with a leading '#'.
  Logical values ('meshedGear' and 'meshedSelectivityDevice') should be encoded with 'T' for true and 'F' for false.
 }
-\seealso{
-Other gear coding functions: 
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{GearGroupFdirTable}},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{appendMetier}()},
-\code{\link{metier4table}},
-\code{\link{metier5table}},
-\code{\link{metier6table}}
-}
 \concept{gear coding functions}

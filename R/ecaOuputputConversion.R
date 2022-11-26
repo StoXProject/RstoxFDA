@@ -680,7 +680,7 @@ convertStockSplittingParameters2stox <- function(CCerrorList, covariateMaps){
 #'   \item{GlobalParameters}{Data prepared for the argument GlobalParameters to \code{\link[Reca]{eca.estimate}}, Completeness of this data structure depend on whether optional parameters where provided.}
 #'   \item{CovariateMaps}{Not input to Reca. Nested list, providing mapping between integer encoding and character encoding of the levels of categorical variables.}
 #'  }
-#' @family Reca functions
+#' @concept Reca functions
 #' @export
 convertRecaData <- function(RecaData, nSamples=as.integer(NA), 
                             burnin=as.integer(NA), 

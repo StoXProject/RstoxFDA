@@ -66,22 +66,4 @@ Runs \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
  # run (produce recaPrediction as in data(recaPrediction))
  \dontrun{recaPrediction <- runRECA(recaDataExample, 500, 5000)$prediction}
 }
-\seealso{
-Other Reca functions: 
-\code{\link{catchsamples}},
-\code{\link{convertRecaData}()},
-\code{\link{getCovariateMap}()},
-\code{\link{getLandings}()},
-\code{\link{landings}},
-\code{\link{makeAgeTracesRECA}()},
-\code{\link{makeResultTableRECA}()},
-\code{\link{plotAgeTraces}()},
-\code{\link{plotCatchAtAge}()},
-\code{\link{prepRECA}()},
-\code{\link{rEcaDataReport}()},
-\code{\link{recaDataExample}},
-\code{\link{recaPrediction}},
-\code{\link{sanitizeRecaInput}()},
-\code{\link{tabulateFisheries}()}
-}
 \concept{Reca functions}

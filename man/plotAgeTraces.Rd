@@ -27,7 +27,7 @@ plotAgeTraces(
 
 \item{nclust}{the number of plots to distribute the ages and plus group on}
 
-\item{iter.max}{maximal number of iterations for k-means clustering deciding which ages are ploted in same plot.}
+\item{iter.max}{maximal number of iterations for k-means clustering deciding which ages are plotted in same plot.}
 
 \item{nstart}{the number of random sets chosen for the k-means clustering}
 
@@ -65,23 +65,5 @@ The number of iterations of \code{\link[Reca]{eca.predict}}
 \examples{
  data(recaPrediction)
  plotAgeTraces(recaPrediction, plusGroup=13, nclust = 6)
-}
-\seealso{
-Other Reca functions: 
-\code{\link{catchsamples}},
-\code{\link{convertRecaData}()},
-\code{\link{getCovariateMap}()},
-\code{\link{getLandings}()},
-\code{\link{landings}},
-\code{\link{makeAgeTracesRECA}()},
-\code{\link{makeResultTableRECA}()},
-\code{\link{plotCatchAtAge}()},
-\code{\link{prepRECA}()},
-\code{\link{rEcaDataReport}()},
-\code{\link{recaDataExample}},
-\code{\link{recaPrediction}},
-\code{\link{runRECA}()},
-\code{\link{sanitizeRecaInput}()},
-\code{\link{tabulateFisheries}()}
 }
 \concept{Reca functions}

@@ -55,7 +55,7 @@ readTabSepFile <- function(filepath, encoding="UTF-8", col_classes = NULL, col_n
 #'  categoriseDate(dates, temporalType = "custom", FUN=inDecember, seasonal = FALSE)
 #'
 #' @return character() a vector of values for the categorical variable, corresponding to the dates in 'date'
-#' @family temporal coding functions
+#' @concept temporal coding functions
 #' @export
 categoriseDate <- function(date, temporalType="quarter", seasonal=T, FUN=NULL){
 
@@ -104,10 +104,11 @@ categoriseDate <- function(date, temporalType="quarter", seasonal=T, FUN=NULL){
 #' @description
 #'  Apply conversion table, perform approriate checks and return result.
 #' @details
-#'  Will stop with error if any codes can not be converted, or if any entries are NA.
+#'  By default. This will stop with error if any codes can not be converted, or if any entries are NA.
 #'  Require all codes (original and converted) to be character().
 #' @param code character() with original codes
 #' @param conversionTable list() mapping code to converted code.
+#' @param strict logical() If true, execution halts at incomplete conversion tables. If false unmapped codes are set to NA.
 #' @return character() with converted codes
 #' @examples
 #'  gearConversion <- list()
@@ -115,9 +116,11 @@ categoriseDate <- function(date, temporalType="quarter", seasonal=T, FUN=NULL){
 #'  gearConversion["TBN"] <- "OTB"
 #'  gearConversion["OTB"] <- "OTB"
 #'  convertCodes(c("TBS", "TBN", "OTB"), gearConversion)
-#' @family parameter conversion functions
+#' @concept spatial coding functions
+#' @concept gear coding functions
+#' @concept temporal coding functions
 #' @export
-convertCodes <- function(code, conversionTable){
+convertCodes <- function(code, conversionTable, strict=T){
 
   if (length(code) == 0){
     return(character())
@@ -135,19 +138,27 @@ convertCodes <- function(code, conversionTable){
     stop("Conversion table must be indexed by character(). names(conversionTable) is NULL.")
   }
 
-  if (any(is.na(code))){
-    stop("NAs in codes")
+  if (any(is.na(code)) & strict){
+    stop("NAs in codes. Consider turning off the option 'strict'")
   }
 
-  if (!all(code %in% names(conversionTable))){
+  if ((!all(code %in% names(conversionTable))) & strict){
     missing <- unique(code[!(code %in% names(conversionTable))])
     stop(paste("Conversion not defined for all codes. Missing for:", paste(missing, collapse=", ")))
   }
 
-  return(as.character(conversionTable[code]))
+  filter <- !is.na(code) & code %in% names(conversionTable)
+  converted <- rep(as.character(NA), length(code))
+  
+  if (sum(filter)==0){
+    return(converted)
+  }
+  
+  converted[filter] <- as.character(conversionTable[code[filter]])
+  return(converted)
 }
 
-#' Area code conversion table
+#' Make area code conversion table
 #' @description 
 #'  Make conversion table from area code-definitions.
 #'  
@@ -189,7 +200,7 @@ convertCodes <- function(code, conversionTable){
 #'  catchsamples$LEarea <- RstoxFDA::convertCodes(catchsamples$LEstatRect, 
 #'              areaCodeConversionTable(selectedRects, 
 #'              RstoxFDA::ICESareas))
-#' @family spatial coding functions
+#' @concept spatial coding functions
 #' @md
 #' @export
 areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName", areaName2=areaName1, method=c("overlap", "centroids"), dTolerance=1){
@@ -263,7 +274,7 @@ areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName",
 #' @param StratumName name of column in 'areaPolygons' that identify the area name
 #' @param strict logical determining whether to run in strict mode. See details.
 #' @return 'table' with the area appended in the column 'colName'
-#' @family spatial coding functions
+#' @concept spatial coding functions
 #' @export
 appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, StratumName="StratumName", strict=T){
   if (!data.table::is.data.table(table)){
@@ -340,7 +351,7 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
 #' @param lonColName name of the longitude column to be appended to 'table'
 #' @param StratumName name of the column in 'areaPolygons' that identifies the area.
 #' @return 'table' with the positions appended in the columns 'latColName' and 'lonColName'.
-#' @family spatial coding functions
+#' @concept spatial coding functions
 #' @export
 appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName, StratumName="StratumName"){
   if (latColName %in% names(table)){

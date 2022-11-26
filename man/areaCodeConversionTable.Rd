@@ -2,7 +2,7 @@
 % Please edit documentation in R/DataPrep.R
 \name{areaCodeConversionTable}
 \alias{areaCodeConversionTable}
-\title{Area code conversion table}
+\title{Make area code conversion table}
 \usage{
 areaCodeConversionTable(
   areaDef1,
@@ -66,20 +66,5 @@ Areas in areaDef1 that has no corresponding area in areaDef2 will be omitted fro
 }
 \seealso{
 \code{\link[RstoxFDA]{plotAreaComparison}} for visual inspection of how different area definitions correspond.
-
-Other spatial coding functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{appendAreaCode}()},
-\code{\link{appendPosition}()},
-\code{\link{mergePolygons}()},
-\code{\link{plotAreaComparison}()},
-\code{\link{plotArea}()},
-\code{\link{writeSpDataFrameAsWKT}()}
 }
 \concept{spatial coding functions}

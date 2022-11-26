@@ -47,6 +47,12 @@ expect_error(RstoxFDA:::convertCodes(c("TBS", NA, "OTB"), gearConversion))
 #context("test-DataPrep: categoriseDate incomplete code list")
 expect_error(RstoxFDA:::convertCodes(c("TBS", "PTB", "PTM", "OTB"), gearConversion), "Conversion not defined for all codes. Missing for: PTB, PTM")
 
+#context("test-DataPrep: categoriseDate incomplete code list with strict=F")
+convertedGear <- RstoxFDA:::convertCodes(c("TBS", "PTB", "PTM", "OTB"), gearConversion, strict=F)
+expect_equal(is.na(convertedGear), c(F,T,T,F))
+expect_equal(convertedGear[[1]], "OTB")
+expect_equal(convertedGear[[4]], "OTB")
+
 #context("test-DataPrep: categoriseDate mapped to integers")
 gearConversion2 <- list()
 gearConversion2["TBS"] <- 1

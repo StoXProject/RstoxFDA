@@ -9,8 +9,8 @@ SetTimeBiotic(BioticData, Time = character(), Overwrite = F)
 \arguments{
 \item{BioticData}{\code{\link[RstoxData]{BioticData}} data for which time should be set}
 
-\item{Time}{character encoding time. Defaults to 12:00:00Z if not given, otherwise provide 
-UTC-time formatted as \code{\link[base]{strptime}}-string: \%H:\%M:\%SZ, e.g. 12:00:00Z}
+\item{Time}{character encoding time. Defaults to 12:00:00Z if not given, otherwise provide
+UTC-time formatted as \code{\link[base]{strptime}}-string: \verb{\%H:\%M:\%SZ, e.g. 12:00:00Z}}
 
 \item{Overwrite}{if True any existing values in stationstarttime will be overwritten.}
 }
@@ -18,77 +18,22 @@ UTC-time formatted as \code{\link[base]{strptime}}-string: \%H:\%M:\%SZ, e.g. 12
 \code{\link[RstoxData]{BioticData}}
 }
 \description{
-Set start time to a fixed time for all stations. Appropriate when BioticData is read from NMDbiotic.
+This function is deprecated, and may be replaced by \code{\link[RstoxData]{TranslateBiotic}},
+with VariableName: stationstarttime, and TranslationTable: \verb{[\{"stationstarttime":"function(stationstarttime) is.na(stationstarttime)","NewValue":"12:00:00.000Z"\}]}
 }
 \details{
+Set start time to a fixed time for all stations. Appropriate when BioticData is read from NMDbiotic.
+
 Set the column 'stationstarttime' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to a fixed time.
- 
- Setting a fixed time to stationstarttime facilitates conversion to \code{\link[RstoxData]{StoxBioticData}} 
- using \code{\link[RstoxData]{StoxBiotic}}, and is applicable if hourly resolution of date and time is not necessary
- for subsequent analysis.
- 
- 'stationstarttime' is on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
- For bioticdata that does not conform to this, no modifications are done.
+
+Setting a fixed time to stationstarttime facilitates conversion to \code{\link[RstoxData]{StoxBioticData}}
+using \code{\link[RstoxData]{StoxBiotic}}, and is applicable if hourly resolution of date and time is not necessary
+for subsequent analysis.
+
+'stationstarttime' is on the table 'fishstation' in data originating from NMDBiotic (http://www.imr.no/formats/nmdbiotic/).
+For bioticdata that does not conform to this, no modifications are done.
 }
 \seealso{
-\code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
-
-Other nmdbiotic functions: 
-\code{\link{ConvertLengthBiotic}()},
-\code{\link{ConvertWeightBiotic}()},
-\code{\link{ListBioticDifference}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{SetStartDateBiotic}()}
-
-Other temporal coding functions: 
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{AddPeriodStoxLanding}()},
-\code{\link{DefinePeriod}()},
-\code{\link{SetStartDateBiotic}()},
-\code{\link{categoriseDate}()}
-
-Other StoX-functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{AddPeriodStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{ConvertLengthBiotic}()},
-\code{\link{ConvertWeightBiotic}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{DefineLengthConversionParameters}()},
-\code{\link{DefinePeriod}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{DefineWeightConversionFactor}()},
-\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
-\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
-\code{\link{ListBioticDifference}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{ReportFdaSOP}()},
-\code{\link{ReportFdaSampling}()},
-\code{\link{ReportParameterConvergence}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{SetStartDateBiotic}()}
+\code{\link[RstoxData]{StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
 }
-\concept{StoX-functions}
-\concept{nmdbiotic functions}
-\concept{temporal coding functions}
+\concept{deprecated}

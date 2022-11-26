@@ -1,27 +1,5 @@
 
-#' Issues warning prefixed with StoX:, necessary to be picked up by GUI
-#' @noRd
-stoxWarning <- function(msg){
-  warning(paste("StoX:", msg))
-}
 
-#' Check if parameter is given
-#' @noRd
-isGiven <- function(value=NULL){
-  if (length(value) == 0){
-    return(FALSE)
-  }
-  if (length(value) == 1){
-    
-    if (value == ""){
-      return(FALSE)
-    }
-  }
-  if (is.null(value)){
-    return(FALSE)
-  }
-  return(TRUE)
-}
 
 #' Checks symmetry of Car table
 #' @noRd
@@ -75,22 +53,16 @@ checkSymmetry <- function(tab){
 #' @param FileNames The paths of the landing files.
 #' @param Format The file format of the landing files.
 #' @param FileEncoding encoding for the files that should be read. If not given the default encoding for each format is used.
-#' @family IO functions
-#' @family landings functions
-#' @family StoX-functions
+#' @concept IO functions
+#' @concept landings functions
+#' @concept StoX-functions
 #' @export
 ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"), FileEncoding=c("Default", "UTF-8", "Latin-1")){
   
-  if (isGiven(FileEncoding)){
-    FileEncoding <- "Default"
-  }
+  checkMandatory(FileNames, "FileNames")
   
-  FileEncoding <- match.arg(FileEncoding, FileEncoding)
-  Format <- match.arg(Format, Format)
-  
-  if (!isGiven(Format)){
-    stop("Argument 'Format' must be provided")
-  }
+  FileEncoding <- checkOptions(FileEncoding, "FileEncoding", c("Default", "UTF-8", "Latin-1"))
+  Format <- checkOptions(Format, "Format", c("landingerv2", "lss", "FDIR.2021"))
   
   if (Format == "landingerv2"){
     if (isGiven(FileEncoding) & !(FileEncoding %in% c("UTF-8", "Default"))){
@@ -153,21 +125,22 @@ ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"
 #' @param AreaPosition coordinates for Area and Location codes, see \code{\link[RstoxFDA]{AreaPosition}}
 #' @param LocationVariable Specify which column in 'StoxLandingsData' should are represented by 'Location' in 'AreaPosition'. See details.
 #' @return \code{\link[RstoxData]{StoxLandingData}} with columns for latitude and longitude appended.
-#' @family spatial coding functions
-#' @family StoX-functions
+#' @concept spatial coding functions
+#' @concept StoX-functions
 #' @export
 #' @md
 AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVariable = c("None", "Location", "Coastal")){
   
-  LocationVariable <- match.arg(LocationVariable, LocationVariable)
+  checkMandatory(StoxLandingData, "StoxLandingData")
+  checkMandatory(AreaPosition, "AreaPosition")
+  stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
+  stopifnot(is.AreaPosition(AreaPosition))
   
+  LocationVariable <- checkOptions(LocationVariable, "LocationVariable", c("None", "Location", "Coastal"))
+
   latColName="Latitude"    
   lonColName="Longitude"
   
-
-  stopifnot(RstoxData::is.StoxLandingData(StoxLandingData))
-  stopifnot(is.AreaPosition(AreaPosition))
-
   if (latColName %in% names(StoxLandingData$Landing)){
     stop(paste("Column", latColName, "already exists."))
   }
@@ -247,16 +220,17 @@ getBioticCatchSampleAdress <- function(tab){
 #' @param TargetLengthMeasurement The desired length measurement. Typically the code for 'total length'.
 #' @return \code{\link[RstoxData]{BioticData}} with converted lengths.
 #' @seealso \code{\link[RstoxFDA]{DefineLengthConversionParameters}} for configuration of length parameters.
-#' @family nmdbiotic functions
-#' @family parameter conversion functions
-#' @family StoX-functions
+#' @concept nmdbiotic functions
+#' @concept parameter conversion functions
+#' @concept StoX-functions
 #' @export
 #' @md
 ConvertLengthBiotic <- function(BioticData, LengthConversionTable, TargetLengthMeasurement=character()){
   
-  if (!isGiven(TargetLengthMeasurement)){
-    stop("'TargetLengthMeasurement' must be provided.")
-  }
+  checkMandatory(BioticData, "BioticData")
+  checkMandatory(LengthConversionTable, "LengthConversionTable")
+  checkMandatory(TargetLengthMeasurement, "TargetLengthMeasurement")
+  
   if (!is.LengthConversionTable(LengthConversionTable)){
     stop("invalid LengthConversionTable")
   }
@@ -359,21 +333,20 @@ ConvertLengthBiotic <- function(BioticData, LengthConversionTable, TargetLengthM
 #' @param TargetProductType The desired producttype. Typically the code for Round fish.
 #' @return \code{\link[RstoxData]{BioticData}} with converted weights.
 #' @seealso \code{\link[RstoxFDA]{DefineWeightConversionFactor}} for configuration of weight conversion parameters.
-#' @family nmdbiotic functions
-#' @family parameter conversion functions
-#' @family StoX-functions
+#' @concept nmdbiotic functions
+#' @concept parameter conversion functions
+#' @concept StoX-functions
 #' @export
 #' @md
 ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeights", "IndividualWeight"), WeightConversionTable, TargetProductType=character()){
   
-  ConversionType <- match.arg(ConversionType, ConversionType)
-  
-  if (!isGiven(TargetProductType)){
-    stop("'TargetProductType' must be provided.")
-  }
+  checkMandatory(BioticData, "BioticData")
+  checkMandatory(WeightConversionTable, "WeightConversionTable")
   if (!is.WeightConversionTable(WeightConversionTable)){
     stop("invalid WeightConversionTable")
   }
+  checkMandatory(TargetProductType, "TargetProductType")
+  ConversionType <- checkOptions(ConversionType, "ConversionType", c("All", "CatchWeights", "IndividualWeight"))
   
   for (file in names(BioticData)){
     if ("catchsample" %in% names(BioticData[[file]]) &
@@ -490,20 +463,17 @@ ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeight
 #' @return \code{\link[RstoxData]{BioticData}}
 #' @seealso \code{\link[RstoxFDA]{DefineAreaPosition}} for configuring definitions of positions for area codes.
 #' @export
-#' @family nmdbiotic functions
-#' @family spatial coding functions
-#' @family StoX-functions
+#' @concept nmdbiotic functions
+#' @concept spatial coding functions
+#' @concept StoX-functions
 #' @md
 SetAreaPositionsBiotic <- function(BioticData, AreaPosition, LocationVariable = c("None", "location"), System=character(), Overwrite=F){
   
-  if (!isGiven(System)){
-    stop("Parameter 'System' must be provided.")
-  }
-  if (!isGiven(LocationVariable)){
-    stop("Parameter 'LocationVariable' must be provided.")
-  }
+  checkMandatory(AreaPosition, "AreaPosition")
+  checkMandatory(BioticData, "BioticData")
+  checkMandatory(System, "System")
+  LocationVariable <- checkOptions(LocationVariable, "LocationVariable", c("None", "location"))
   
-  LocationVariable <- match.arg(LocationVariable, LocationVariable)
   if (LocationVariable == "None"){
     AreaPosition <- AreaPosition[is.na(AreaPosition$Location)]
   }
@@ -667,26 +637,25 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 #'  two choices are offered for the name of the added column (see argument 'ColumnName').
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated.
 #' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.
-#' @param ColumnName Name of the added column. Defaults to 'Period'.
+#' @param ColumnName Name of the added column. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddPeriodStoxLanding$functionParameterDefaults$ColumnName`.
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @seealso 
 #'  \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
 #'  \code{\link[RstoxFDA]{AddStratumStoxBiotic}} for similar function for sample data, 
 #'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
-#' @family temporal coding functions
-#' @family StoX-functions
+#' @concept temporal coding functions
+#' @concept StoX-functions
 #' @export
 #' @md
-AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition, ColumnName=c("Period", "ReportPeriod")){
+AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition, ColumnName=character()){
   
-  if (!isGiven(ColumnName)){
-    ColumnName <- "Period"
-  }
+  checkMandatory(StoxLandingData, "StoxLandingData")
+  checkMandatory(TemporalDefinition, "TemporalDefinition")
   
-  columnName=match.arg(ColumnName, ColumnName)
+  columnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA::stoxFunctionAttributes$AddPeriodStoxLanding$functionParameterDefaults$ColumnName)
   
-  if (columnName %in% names(StoxLandingData)){
+  if (columnName %in% names(StoxLandingData$Landing)){
     stop(paste("The column", columnName, "already exists in StoxLandingData."))
   }
   if (any(is.na(StoxLandingData$Landing$CatchDate))){
@@ -708,18 +677,22 @@ AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition, ColumnName
 #'  Temporal definitions (\code{\link[RstoxFDA]{TemporalDefinition}}) may be produced by
 #'  \code{\link[RstoxFDA]{DefinePeriod}}
 #' @param StoxBioticData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated with period.
-#' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definiton of temporal category.
+#' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.
+#' @param ColumnName specifies which column the area should be added to. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddPeriodStoxBiotic$functionParameterDefaults$ColumnName`.
 #' @return StoxBioticData with column appended. See \code{\link[RstoxData]{StoxBioticData}}.
 #'  \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
 #'  \code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data, 
 #'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
-#' @family temporal coding functions
-#' @family StoX-functions
+#' @concept temporal coding functions
+#' @concept StoX-functions
 #' @export
 #' @md
-AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
-  columnName="Period"
+AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition, ColumnName=character()){
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(TemporalDefinition, "TemporalDefinition")
+  
+  columnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA::stoxFunctionAttributes$AddPeriodStoxBiotic$functionParameterDefaults$ColumnName)
   
   if (columnName %in% names(StoxBioticData$Station)){
     stop(paste("The column", columnName, "already exists in StoxLandingData."))
@@ -743,18 +716,17 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
 #' @description
 #'  Adds a column to StoxLandingData with the spatial strata each row belongs to.
 #' @details
-#'  The strata are added to the new column 'Stratum'.
+#'  The strata are added to the new column specified by ColumName.
 #'  
-#'  The Strata may be added as a new column, or to an existing column depending on the 
-#'  argument 'ColumnName'. The option 'Stratum' (default) adds strata to a new column 'Stratum'. 
-#'  The option 'Area' changes the values in the existing column 'Area'.
+#'  If 'ColumnName' is 'Area', The column 'Area' of StoxLandingData is overwritten.
+#'  Other columns in StoxLandingData may not be specified.
 #'  
 #'  \code{\link[RstoxData]{StoxLandingData}} does not contain columns for positions,
 #'  these need to be added as columns 'Latitude' and 'Longitude' before calling this function.
 #'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions, based on area codes.
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
-#' @param ColumnName specifies which column the area should be added to. See details.
+#' @param ColumnName specifies which column the area should be added to. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddStratumStoxLanding$functionParameterDefaults$ColumnName`.
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @seealso \code{\link[RstoxBase]{DefineStratumPolygon}} for configuring stratum definitions.
 #'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to landings,
@@ -762,14 +734,23 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition){
 #'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Stratum' as an effect in Reca-estimation,
 #'  \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
-#' @family spatial coding functions
-#' @family StoX-Reca functions
-#' @family StoX-functions
+#' @concept spatial coding functions
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
 #' @export
 #' @md
-AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=c("Stratum", "Area")){
+AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=character()){
+  checkMandatory(StoxLandingData, "StoxLandingData")
+  checkMandatory(StratumPolygon, "StratumPolygon")
   
-  ColumnName <- match.arg(ColumnName, ColumnName)
+  ColumnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA::stoxFunctionAttributes$AddStratumStoxLanding$functionParameterDefaults$ColumnName)
+  
+  if (ColumnName == "Area"){
+    stoxWarning("Overwriting the column 'Area'")
+  }
+  else if (ColumnName %in% names(StoxLandingData$Landing)){
+    stop(paste("The column", ColumnName, "already exists in StoxLandingData"))
+  }
   
   cname <- "cname"    
   latColumn <- "Latitude"    
@@ -793,21 +774,24 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=c(
 #'  The strata are added to the new column 'Stratum'.
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
+#' @param ColumnName specifies which column the area should be added to. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddStratumStoxBiotic$functionParameterDefaults$ColumnName`.
 #' @return StoxBioticData with column appended to data.table 'Station'. See \code{\link[RstoxData]{StoxBioticData}}.
 #' @seealso \code{\link[RstoxBase]{DefineStratumPolygon}} for configuring stratum definitions.
 #'  \code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data, 
 #'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Stratum' as an effect in Reca-estimation,
 #'  \code{\link[RstoxFDA]{DefineCarNeighbours}} for obtaining a neighbour-definition for using 'Stratum' as CAR-effect in Reca-estimation.
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
-#' @family spatial coding functions
-#' @family StoX-functions
+#' @concept spatial coding functions
+#' @concept StoX-functions
 #' @export
 #' @md
-AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
+AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, ColumnName=character()){
   
-  columnName <- "Stratum"    
-  
+  checkMandatory(StoxBioticData)
   stopifnot("Station" %in% names(StoxBioticData))
+  checkMandatory(StratumPolygon)
+  
+  columnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA:::stoxFunctionAttributes$AddStratumStoxBiotic$functionParameterDefaults$ColumnName)
   
   missing <- StoxBioticData$Station[is.na(StoxBioticData$Station$Latitude) | is.na(StoxBioticData$Station$Longitude),]
   if (nrow(missing) > 0){
@@ -817,7 +801,7 @@ AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon){
   }
   
   if (columnName %in% names(StoxBioticData$Station)){
-    stop(paste("Column name", columnName, "already exists."))
+    stop(paste("Column name", columnName, "already exists in StoxBioticData."))
   }
   StoxBioticData$Station <- appendAreaCode(StoxBioticData$Station, StratumPolygon, "Latitude", "Longitude", columnName, strict = F)
   missing <- StoxBioticData$Station[is.na(StoxBioticData$Station[[columnName]])]
@@ -871,12 +855,16 @@ appendGear <- function(table, gearcolumn, gearDefinition, colName){
 #'  \code{\link[RstoxFDA]{AddGearGroupStoxBiotic}} for similar function for sample data, 
 #'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'GearGroup' as an effect in Reca-estimation,
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'GearGroup' as an aggregation variable when comparing sampling with landed volume.
-#' @family gear coding functions
-#' @family StoX-functions
+#' @concept gear coding functions
+#' @concept StoX-functions
 #' @importFrom data.table .SD
 #' @export
 #' @md
 AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
+  
+  checkMandatory(StoxLandingData, "StoxLandingData")
+  checkMandatory(Translation, "Translation")
+  
   if (!is.Translation(Translation)){
     stop("Translation is not a valid Translation table.")
   }
@@ -911,11 +899,15 @@ AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
 #'  \code{\link[RstoxFDA]{AddGearGroupStoxLanding}} for similar function for landing data, 
 #'  \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'GearGroup' as an effect in Reca-estimation,
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'GearGroup' as an aggregation variable when comparing sampling with landed volume.
-#' @family gear coding functions
-#' @family StoX-functions
+#' @concept gear coding functions
+#' @concept StoX-functions
 #' @export
 #' @md
 AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
+  
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(Translation, "Translation")
+  
   if (!is.Translation(Translation)){
     stop("Translation is not a valid Translation table.")
   }
@@ -938,8 +930,11 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
 
 #' Set time Biotic
 #' @description 
-#'  Set start time to a fixed time for all stations. Appropriate when BioticData is read from NMDbiotic.
+#'  This function is deprecated, and may be replaced by \code{\link[RstoxData]{TranslateBiotic}},
+#'  with VariableName: stationstarttime, and TranslationTable: ```[{"stationstarttime":"function(stationstarttime) is.na(stationstarttime)","NewValue":"12:00:00.000Z"}]```
 #' @details 
+#'  Set start time to a fixed time for all stations. Appropriate when BioticData is read from NMDbiotic.
+#'  
 #'  Set the column 'stationstarttime' on the table 'fishstation' in \code{\link[RstoxData]{BioticData}} to a fixed time.
 #'  
 #'  Setting a fixed time to stationstarttime facilitates conversion to \code{\link[RstoxData]{StoxBioticData}} 
@@ -951,15 +946,17 @@ AddGearGroupStoxBiotic <- function(StoxBioticData, Translation){
 #'  
 #' @param BioticData \code{\link[RstoxData]{BioticData}} data for which time should be set
 #' @param Time character encoding time. Defaults to 12:00:00Z if not given, otherwise provide 
-#'   UTC-time formatted as \code{\link[base]{strptime}}-string: \%H:\%M:\%SZ, e.g. 12:00:00Z
+#'   UTC-time formatted as \code{\link[base]{strptime}}-string: ```%H:%M:%SZ, e.g. 12:00:00Z```
 #' @param Overwrite if True any existing values in stationstarttime will be overwritten.
 #' @return \code{\link[RstoxData]{BioticData}}
-#' @seealso \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
-#' @family nmdbiotic functions
-#' @family temporal coding functions
-#' @family StoX-functions
+#' @seealso \code{\link[RstoxData]{StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
+#' @concept deprecated
+#' @md
 #' @export
 SetTimeBiotic <- function(BioticData, Time=character(), Overwrite=F){
+
+  deprecationWarning("SetTimeBiotic", "Oct 2022")
+    
   if (!isGiven(Time)){
     Time="12:00:00Z"
   }
@@ -1000,12 +997,14 @@ SetTimeBiotic <- function(BioticData, Time=character(), Overwrite=F){
 #' @param BioticData \code{\link[RstoxData]{BioticData}} data for which short gear codes should be set
 #' @return \code{\link[RstoxData]{BioticData}}
 #' @seealso \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
-#' @family nmdbiotic functions
-#' @family gear coding functions
-#' @family StoX-functions
+#' @concept nmdbiotic functions
+#' @concept gear coding functions
+#' @concept StoX-functions
 #' @export
 SetShortGearBiotic <- function(BioticData){
 
+  checkMandatory(BioticData, "BioticData")
+  
   for (file in names(BioticData)){
     if ("fishstation" %in% names(BioticData[[file]]) & "gear" %in% names(BioticData[[file]]$fishstation)){
       
@@ -1035,13 +1034,15 @@ SetShortGearBiotic <- function(BioticData){
 #' @param Overwrite if True any existing values in stationstartdate will be overwritten.
 #' @return \code{\link[RstoxData]{BioticData}}
 #' @seealso \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
-#' @family nmdbiotic functions
-#' @family temporal coding functions
-#' @family StoX-functions
+#' @concept nmdbiotic functions
+#' @concept temporal coding functions
+#' @concept StoX-functions
 #' @export
 #' @md
 SetStartDateBiotic <- function(BioticData, Overwrite=F){
  
+  checkMandatory(BioticData, "BioticData")
+  
   for (file in names(BioticData)){
     if ("fishstation" %in% names(BioticData[[file]]) & 
         "stationstartdate" %in% names(BioticData[[file]]$fishstation) &
@@ -1097,8 +1098,8 @@ SetStartDateBiotic <- function(BioticData, Overwrite=F){
 #'  # Add years to speficiation to define four periods "15th March 2015 - 31st Dec 2015" ...
 #'  DefinePeriod(TemporalCategory = "Custom", CustomPeriods = c("15-09-2105", "15-03-2015"))
 #' 
-#' @family temporal coding functions
-#' @family StoX-functions
+#' @concept temporal coding functions
+#' @concept StoX-functions
 #' @export
 #' @md
 DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Custom"), CustomPeriods = character(), UseProcessData=F){
@@ -1107,7 +1108,7 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
     return(processData)
   }
   
-  TemporalCategory <- match.arg(TemporalCategory, TemporalCategory)
+  TemporalCategory <- checkOptions(TemporalCategory, "TemporalCategory", c("Quarter", "Month", "Custom"))
 
   if (length(CustomPeriods)>0 & TemporalCategory != "Custom"){
     stop(paste("Custom period provided, but 'TemporalCategory' is", TemporalCategory))
@@ -1262,18 +1263,19 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{AreaPosition}}.
 #' @seealso \code{\link[RstoxFDA]{SetAreaPositionsBiotic}} and \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to data.
-#' @family spatial coding functions
-#' @family StoX-functions
+#' @concept spatial coding functions
+#' @concept StoX-functions
 #' @export
 #' @md
 DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "StratumPolygon"), FileName=character(), StratumPolygon, UseProcessData=F){
 
-  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
-  encoding="UTF-8"
-  
   if (UseProcessData){
     return(processData)
   }
+  
+
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile", "StratumPolygon"))
+  encoding="UTF-8"
 
   if (DefinitionMethod == "ResourceFile"){
     tab <- readTabSepFile(FileName, col_classes = c("character", "character", "numeric", "numeric"), col_names = c("Area", "Location",	"Latitude",	"Longitude"), encoding = encoding)
@@ -1376,8 +1378,8 @@ calculateCarNeighbours <- function(StratumPolygon){
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Area Neighbour Definition, see: \code{\link[RstoxFDA]{CarNeighbours}}.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of the definition in Reca-estimates, and \code{\link[RstoxBase]{DefineStratumPolygon}} for how to define a spatial variable from a strata-definition.
-#' @family spatial coding functions
-#' @family StoX-functions
+#' @concept spatial coding functions
+#' @concept StoX-functions
 #' @export
 #' @md
 DefineCarNeighbours <- function(processData,
@@ -1387,7 +1389,7 @@ DefineCarNeighbours <- function(processData,
     return(processData)
   }
 
-  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile", "StratumPolygon"))
   
   if (DefinitionMethod == "ResourceFile"){
     encoding = "UTF-8"
@@ -1422,8 +1424,8 @@ DefineCarNeighbours <- function(processData,
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return Age Error Matrix, see: \code{\link[RstoxFDA]{AgeErrorMatrix}}.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of age-error matrices in Reca-estimation
-#' @family StoX-Reca functions
-#' @family StoX-functions
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
 #' @export
 #' @md
 DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile"), FileName = character(), UseProcessData=F){
@@ -1433,6 +1435,9 @@ DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile")
   if (UseProcessData){
     return(processData)
   }
+  
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile"))
+  checkMandatory(FileName, "FileName")
 
   stream <- file(FileName, open="r")
   matrixNoHeader <- utils::read.delim(stream, sep="\t", header=F, encoding = encoding)
@@ -1533,8 +1538,8 @@ checkProbabilities <- function(tab, tolerance=1e-10){
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{StockSplittingParameters}}.
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of stock-splitting parameters in Reca-estimation.
-#' @family StoX-Reca functions
-#' @family StoX-functions
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
 #' @export
 #' @md
 DefineStockSplittingParameters <- function(processData, DefinitionMethod=c("ResourceFile", "FunctionParameters"), FileName=character(),
@@ -1549,7 +1554,7 @@ DefineStockSplittingParameters <- function(processData, DefinitionMethod=c("Reso
     return(processData)
   }
 
-  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile", "FunctionParameters"))
   
   if (DefinitionMethod == "ResourceFile"){
     encoding <- "UTF-8"
@@ -1610,8 +1615,8 @@ DefineStockSplittingParameters <- function(processData, DefinitionMethod=c("Reso
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{LengthConversionTable}}
 #' @seealso \code{\link[RstoxFDA]{ConvertLengthBiotic}} for applying length conversion to data
-#' @family parameter conversion functions
-#' @family StoX-functions
+#' @concept parameter conversion functions
+#' @concept StoX-functions
 #' @export
 #' @md
 DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("ResourceFile"), FileName = character(), UseProcessData=F){
@@ -1621,6 +1626,9 @@ DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("Re
   }
   
   encoding <- "UTF-8"
+  
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile"))
+  checkMandatory(FileName, "FileName")
   
   if (DefinitionMethod == "ResourceFile"){
     tab <- readTabSepFile(FileName,
@@ -1665,8 +1673,8 @@ DefineLengthConversionParameters <- function(processData, DefinitionMethod=c("Re
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{WeightConversionTable}}
 #' @seealso \code{\link[RstoxFDA]{ConvertWeightBiotic}} for applying weight conversion to data.
-#' @family parameter conversion functions
-#' @family StoX-functions
+#' @concept parameter conversion functions
+#' @concept StoX-functions
 #' @export
 #' @md
 DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("ResourceFile", "FDIR.VIII.2022"), FileName = character(), UseProcessData=F){
@@ -1675,11 +1683,7 @@ DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("Resour
     return(processData)
   }
   
-  DefinitionMethod <- match.arg(DefinitionMethod, DefinitionMethod)
-  
-  if (!isGiven(DefinitionMethod)){
-    stop("'DefinitionMethod' must be provided.")
-  }
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile", "FDIR.VIII.2022"))
   
   if (DefinitionMethod == "FDIR.VIII.2022"){
     return(RstoxFDA::FDIR.factors.VIII.2022)
@@ -1719,12 +1723,14 @@ DefineWeightConversionFactor <- function(processData, DefinitionMethod=c("Resour
 #'  \code{\link[RstoxData]{BioticData}} that has been read from a NMDbiotic v 3.x file
 #' @return
 #'  \code{\link[RstoxData]{BioticData}} with data that is not found in 'StoxBioticData'.
-#' @family nmdbiotic functions
-#' @family data QA functions
-#' @family StoX-functions
+#' @concept nmdbiotic functions
+#' @concept data QA functions
+#' @concept StoX-functions
 #' @export
 #' @md
 ListBioticDifference <- function(StoxBioticData, BioticData){
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(BioticData, "BioticData")
   return(bioticDiff(BioticData, StoxBioticData))
 }
 
@@ -1771,8 +1777,8 @@ ListBioticDifference <- function(StoxBioticData, BioticData){
 #' @param kAu Number of standard deviations (on a log scale) that defines the upper limit of the acceptable region. Defaults to the same value as kAl.
 #' @return \code{\link[RstoxData]{StoxBioticData}} with individuals outside the acceptable region removed.
 #' @seealso \code{\link[RstoxFDA]{FilterWeightLengthOutliersStoxBiotic}}
-#' @family data QA functions
-#' @family StoX-functions
+#' @concept data QA functions
+#' @concept StoX-functions
 #' @export
 FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData, 
                                     FilterUpwards = FALSE,
@@ -1782,13 +1788,16 @@ FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData,
                                     kAl=numeric(),
                                     kAu=numeric()){
   
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(Linf, "Linf")
+  checkMandatory(K, "K")
+  checkMandatory(sigma, "sigma")
+  checkMandatory(kAl, "kAl")
+  
   if (!isGiven(kAu)){
     kAu <- kAl
   }
-  if (!isGiven(Linf) | !isGiven(K) | !isGiven(sigma) | !isGiven(kAl)){
-    stop("All the parameters 'Linf', 'K', 'sigma', and 'kAl' must be provided.")
-  }
-  
+
   #make sure temp columns are not taken.
   stopifnot(!any(c("vonBFilter", "month", "IndividualAgeFractional") %in% names(StoxBioticData$Individual)))
   
@@ -1863,20 +1872,24 @@ FilterAgeLengthOutliersStoxBiotic <- function(StoxBioticData,
 #' @param kAu Number of standard deviations (on a log scale) that defines the upper limit of the acceptable region
 #' @return \code{\link[RstoxData]{StoxBioticData}} with individuals outside the acceptable region removed.
 #' @seealso \code{\link[RstoxFDA]{FilterAgeLengthOutliersStoxBiotic}}
-#' @family data QA functions
-#' @family StoX-functions
+#' @concept data QA functions
+#' @concept StoX-functions
 #' @export
 #' @md
 FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
                                        FilterUpwards=FALSE,
                                        logalfa=numeric(), beta=numeric(), sigma=numeric(), kAl=numeric(), kAu=numeric()){
+  
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(logalfa, "logalfa")
+  checkMandatory(beta, "beta")
+  checkMandatory(sigma, "sigma")
+  checkMandatory(kAl, "kAl")
+  
   if (!isGiven(kAu)){
     kAu <- kAl
   }
-  if (!isGiven(logalfa) | !isGiven(beta) | !isGiven(sigma) | !isGiven(kAl)){
-    stop("All the parameters 'logalfa', 'beta', 'sigma', and 'kAl' must be provided.")
-  }
-  
+
   #make sure temp columns are not taken.
   stopifnot(!any(c("logLinFilter") %in% names(StoxBioticData$Individual)))
   
@@ -1923,8 +1936,8 @@ FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
 #' @param StrataSystem the strata system to load
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxBase]{StratumPolygon}} with the desired strata definition.
-#' @family spatial coding functions
-#' @family StoX-functions
+#' @concept spatial coding functions
+#' @concept StoX-functions
 #' @export
 #' @md
 LoadFdaStratumPolygon <- function(processData, StrataSystem=c("FDIR.2017", "FDIR.2018", "ICES.2018", "ICES.SubArea.2018", "ICES.Division.2018", "ICES.SubDivision.2018", "ICES.Unit.2018", "ICES.Rectangles.2018", "NAFO", "NAFO.FDIR.2017", "NAFO.FDIR.2018"), UseProcessData=F){
@@ -1932,6 +1945,8 @@ LoadFdaStratumPolygon <- function(processData, StrataSystem=c("FDIR.2017", "FDIR
   if (UseProcessData){
     return(processData)
   }
+  
+  checkOptions(StrataSystem, "StrataSystem", c("FDIR.2017", "FDIR.2018", "ICES.2018", "ICES.SubArea.2018", "ICES.Division.2018", "ICES.SubDivision.2018", "ICES.Unit.2018", "ICES.Rectangles.2018", "NAFO", "NAFO.FDIR.2017", "NAFO.FDIR.2018"))
   
   if (StrataSystem == "FDIR.2017"){
     return(RstoxFDA::mainareaFdir2017)

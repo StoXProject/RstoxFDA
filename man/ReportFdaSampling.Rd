@@ -22,9 +22,9 @@ and approriate columns added for identifying corresponding samples}
 
 \item{GroupingVariables}{Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. If not provided, a single row for all landings will be produced.}
 
-\item{Decimals}{integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to zero.}
+\item{Decimals}{integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 0.}
 
-\item{Unit}{unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 'kg'}
+\item{Unit}{unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to kg}
 
 \item{SamplingVariables}{Columns of 'StoxBioticData' identifying sampling variables to be use to partition the report. See details.}
 }
@@ -53,60 +53,10 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 
 The units considered valid for weights are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
 }
-\seealso{
-Other landings functions: 
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{addLogbookColumns}()},
-\code{\link{appendTripIdLandings}()},
-\code{\link{imputeCatchesLandings}()},
-\code{\link{landings}},
-\code{\link{logbookAdjustment}()},
-\code{\link{makeTripIds}()},
-\code{\link{plotBubbleMap}()},
-\code{\link{sourceLogbookColumns}()},
-\code{\link{tabulateFisheries}()}
-
-Other StoX-functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{AddPeriodStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{ConvertLengthBiotic}()},
-\code{\link{ConvertWeightBiotic}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{DefineLengthConversionParameters}()},
-\code{\link{DefinePeriod}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{DefineWeightConversionFactor}()},
-\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
-\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
-\code{\link{ListBioticDifference}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{ReportFdaSOP}()},
-\code{\link{ReportParameterConvergence}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{SetStartDateBiotic}()},
-\code{\link{SetTimeBiotic}()}
+\examples{
+  samplingreport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
+      RstoxFDA::StoxLandingDataExample, GroupingVariables = c("GearGroup"), Unit = "ton")
+  samplingreport$FisheriesSampling
 }
 \concept{StoX-functions}
 \concept{landings functions}

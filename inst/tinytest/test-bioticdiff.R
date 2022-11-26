@@ -1,5 +1,7 @@
 #context("Test bioticdiff")
 
+library(RstoxData) #workaround for issue in RstoxData (https://github.com/StoXProject/RstoxData/issues/253)
+
 bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA")
 nmdbiotic <- RstoxData::ReadBiotic(bioticfile)
 nmdbiotic$biotic_v3_example.xml$catchsample$catchproducttype <- 1

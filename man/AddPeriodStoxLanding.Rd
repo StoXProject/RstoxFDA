@@ -7,7 +7,7 @@
 AddPeriodStoxLanding(
   StoxLandingData,
   TemporalDefinition,
-  ColumnName = c("Period", "ReportPeriod")
+  ColumnName = character()
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ AddPeriodStoxLanding(
 
 \item{TemporalDefinition}{\code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.}
 
-\item{ColumnName}{Name of the added column. Defaults to 'Period'.}
+\item{ColumnName}{Name of the added column. Defaults to Period.}
 }
 \value{
 StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
@@ -36,54 +36,6 @@ two choices are offered for the name of the added column (see argument 'ColumnNa
 \code{\link[RstoxFDA]{AddStratumStoxBiotic}} for similar function for sample data,
 \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of 'Period' as an effect in Reca-estimation,
 and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Period' as an aggregation variable when comparing sampling with landed volume.
-
-Other temporal coding functions: 
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{DefinePeriod}()},
-\code{\link{SetStartDateBiotic}()},
-\code{\link{SetTimeBiotic}()},
-\code{\link{categoriseDate}()}
-
-Other StoX-functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{ConvertLengthBiotic}()},
-\code{\link{ConvertWeightBiotic}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{DefineLengthConversionParameters}()},
-\code{\link{DefinePeriod}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{DefineWeightConversionFactor}()},
-\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
-\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
-\code{\link{ListBioticDifference}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{ReportFdaSOP}()},
-\code{\link{ReportFdaSampling}()},
-\code{\link{ReportParameterConvergence}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaCatchStatistics}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{SetStartDateBiotic}()},
-\code{\link{SetTimeBiotic}()}
 }
 \concept{StoX-functions}
 \concept{temporal coding functions}

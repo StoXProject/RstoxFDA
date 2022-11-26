@@ -74,7 +74,7 @@ filterVonBsigmaMask <- function(individuals,
 #' @param ageCol name of column in 'individuals' that contain fish age in decimal years. Default correspond to the Individual level of \code{\link[RstoxData]{StoxBioticData}}, but see details.
 #' @param lengthCol name of column in 'individuals' that contain fish length in the same unit as Linf and sigma. Default correspond to the Individual level of \code{\link[RstoxData]{StoxBioticData}}
 #' @return \code{\link[data.table]{data.table}}, like individuals, but with some records removed.
-#' @family data QA functions
+#' @concept data QA functions
 #' @export
 filterVonBsigma <- function(individuals, 
                       Linf,
@@ -173,7 +173,7 @@ filterLogLinearMask <- function(individuals,
 #' @param weightCol name of column in 'individuals' that contain fish weight (in a unit corresponding to alfa and beta). Default correspond to the Individual level of \code{\link[RstoxData]{StoxBioticData}}, but see details.
 #' @param lengthCol name of column in 'individuals' that contain fish length (in a unit corresponding to alfa and beta). Default correspond to the Individual level of \code{\link[RstoxData]{StoxBioticData}}
 #' @return \code{\link[data.table]{data.table}}, like individuals, but with some records removed.
-#' @family data QA functions
+#' @concept data QA functions
 #' @export
 filterLogLinear <- function(individuals, 
                             logalfa,

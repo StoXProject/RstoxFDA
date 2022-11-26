@@ -24,29 +24,29 @@ ReportRecaCatchStatistics(
 \arguments{
 \item{RecaCatchAtAge}{Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).}
 
-\item{IntervalWidth}{The width of the reported credible interval. Defaults to 0.9 for 90 per cent credible intervals.}
+\item{IntervalWidth}{The width of the reported credible interval. A value to 0.9 gives 90 per cent credible intervals. Defaults to 0.9.}
 
 \item{UseDefaultDecimalOptions}{logical determining whether to use default decimal options.}
 
-\item{DecimalTotalNumber}{integer specifying the number of decimals to report for 'TotalNumber', and the corresponding 'SD', 'Low' and 'High'. to 0}
+\item{DecimalTotalNumber}{integer specifying the number of decimals to report for 'TotalNumber', and the corresponding 'SD', 'Low' and 'High'. Defaults to 0.}
 
-\item{DecimalTotalWeight}{integer specifying the number of decimals to report for 'TotalWeightDefaults', and the corresponding 'SD', 'Low' and 'High'. to 0}
+\item{DecimalTotalWeight}{integer specifying the number of decimals to report for 'TotalWeightDefaults', and the corresponding 'SD', 'Low' and 'High'. Defaults to 0.}
 
-\item{DecimalMeanAge}{integer specifying the number of decimals to report for 'MeanIndividualAge', and the corresponding 'SD', 'Low' and 'High'. Defaults to 1}
+\item{DecimalMeanAge}{integer specifying the number of decimals to report for 'MeanIndividualAge', and the corresponding 'SD', 'Low' and 'High'. 1.}
 
-\item{DecimalMeanWeight}{integer specifying the number of decimals to report for 'MeanIndividualWeight', and the corresponding 'SD', 'Low' and 'High'. Defaults to 3}
+\item{DecimalMeanWeight}{integer specifying the number of decimals to report for 'MeanIndividualWeight', and the corresponding 'SD', 'Low' and 'High'. 3.}
 
-\item{DecimalMeanLength}{integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'. Defaults to 2}
+\item{DecimalMeanLength}{integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'.3.}
 
 \item{UseDefaultUnitOptions}{logical determining whether to use default unit options.}
 
-\item{UnitTotalNumber}{unit for total catch in numbers. Defaults to Mi (millions)}
+\item{UnitTotalNumber}{unit for total catch in numbers. 10^6 individuals.}
 
-\item{UnitTotalWeight}{unit for weight of total catch. Defaults to kt}
+\item{UnitTotalWeight}{unit for weight of total catch. kiloton.}
 
-\item{UnitMeanWeight}{unit for mean weight. Defaults to kg}
+\item{UnitMeanWeight}{unit for mean weight. kg.}
 
-\item{UnitMeanLength}{unit for mean length. Defaults to cm.}
+\item{UnitMeanLength}{unit for mean length. cm.}
 }
 \value{
 \code{\link[RstoxFDA]{ReportFdaSummaryData}}
@@ -68,67 +68,21 @@ the interval is reported as equal-tailed credible intervals are reported.
 Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 }
+\examples{
+ catchStats <- ReportRecaCatchStatistics(RstoxFDA::RecaCatchAtAgeExample)
+ catchStats$MeanAge
+ catchStats$MeanWeight
+ catchStats$MeanLength
+ 
+ #Note that there is no error on the total weight estimate, when there are no grouping variables
+ catchStats$TotalWeight
+ catchStats$TotalNumber
+}
 \seealso{
 \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
 \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting catch, mean length and mean weight by age groups
 \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length distributions
 \code{\link[RstoxFDA]{ReportRecaCatchAtLengthAndAge}} for reporting catch by age-group and length-group combinations.
-
-Other StoX-Reca functions: 
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()}
-
-Other StoX-functions: 
-\code{\link{AddAreaPositionStoxLanding}()},
-\code{\link{AddGearGroupStoxBiotic}()},
-\code{\link{AddGearGroupStoxLanding}()},
-\code{\link{AddPeriodStoxBiotic}()},
-\code{\link{AddPeriodStoxLanding}()},
-\code{\link{AddStratumStoxBiotic}()},
-\code{\link{AddStratumStoxLanding}()},
-\code{\link{ConvertLengthBiotic}()},
-\code{\link{ConvertWeightBiotic}()},
-\code{\link{DefineAgeErrorMatrix}()},
-\code{\link{DefineAreaPosition}()},
-\code{\link{DefineCarNeighbours}()},
-\code{\link{DefineLengthConversionParameters}()},
-\code{\link{DefinePeriod}()},
-\code{\link{DefineStockSplittingParameters}()},
-\code{\link{DefineWeightConversionFactor}()},
-\code{\link{FilterAgeLengthOutliersStoxBiotic}()},
-\code{\link{FilterWeightLengthOutliersStoxBiotic}()},
-\code{\link{ListBioticDifference}()},
-\code{\link{LoadFdaStratumPolygon}()},
-\code{\link{ParameterizeRecaModels}()},
-\code{\link{PrepareRecaEstimate}()},
-\code{\link{ReadLandingFDA}()},
-\code{\link{ReportFdaLandings}()},
-\code{\link{ReportFdaSOP}()},
-\code{\link{ReportFdaSampling}()},
-\code{\link{ReportParameterConvergence}()},
-\code{\link{ReportRecaCatchAtAgeCovariance}()},
-\code{\link{ReportRecaCatchAtAge}()},
-\code{\link{ReportRecaCatchAtLengthAndAge}()},
-\code{\link{ReportRecaCatchAtLength}()},
-\code{\link{ReportRecaLengthAtAge}()},
-\code{\link{ReportRecaParameterStatistics}()},
-\code{\link{ReportRecaWeightAtAge}()},
-\code{\link{RunRecaModels}()},
-\code{\link{SetAreaPositionsBiotic}()},
-\code{\link{SetShortGearBiotic}()},
-\code{\link{SetStartDateBiotic}()},
-\code{\link{SetTimeBiotic}()}
 }
 \concept{StoX-Reca functions}
 \concept{StoX-functions}

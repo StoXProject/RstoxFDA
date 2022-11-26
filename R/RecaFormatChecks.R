@@ -380,7 +380,7 @@ checkGlobalParameters <- function(globalparameters, agelength, weightlength, sta
 #' @param GlobalParameters list that is to be provided as the AgeLength argument to \code{\link[Reca]{eca.estimate}} or \code{\link[Reca]{eca.predict}}
 #' @param stage character specifying which stage the sanitation should be performed for. See details.
 #' @return NULL
-#' @family Reca functions
+#' @concept Reca functions
 #' @export  
 sanitizeRecaInput <- function(AgeLength=NULL, WeightLength=NULL, Landings=NULL, GlobalParameters=NULL, stage=c("dataprep", "parameterize", "predict")){
   
