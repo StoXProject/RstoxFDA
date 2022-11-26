@@ -560,6 +560,7 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
 #' @concept StoX-Reca functions
 #' @return \code{\link[RstoxFDA]{PlotSamplingVariablesData}}
 #' @seealso Provide data for this plot with \code{\link[RstoxFDA]{ReportFdaSampling}}
+#' @examples
 #'  #Plot to inspect how many samples (catches) where taken for each producttype
 #'  samplingReport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
 #'            RstoxFDA::StoxLandingDataExample, 
