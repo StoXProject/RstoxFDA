@@ -311,8 +311,8 @@ ConvertLengthBiotic <- function(BioticData, LengthConversionTable, TargetLengthM
 #'  this function converts weights to desired product type ('TargetProductType') by matching 'producttype'-variables to 'ProductType' in 'WeightConversionTable'.
 #'  The following weights may be converted, depending on the parameter 'ConversionType':
 #'  \describe{
-#'   \item{'All' or 'CatchWeights'}{'catchweight' is converted based on 'catchproducttype' both on the table 'catchsample'}
-#'   \item{'All' or 'CatchWeights'}{'lengthsampleweight' is converted based on 'sampleproducttype' both on the table 'catchsample'}
+#'   \item{'All' or 'CatchWeights'}{'catchweight' on the table 'catchsample' is converted based on 'catchproducttype'}
+#'   \item{'All' or 'CatchWeights'}{'lengthsampleweight' on the table 'catchsample' is converted based on 'sampleproducttype'}
 #'   \item{'All' or 'IndividualWeight'}{'individualweight' is converted based on 'individualproducttype' both on the table 'individual'} 
 #'  }
 #'  
@@ -384,7 +384,7 @@ ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeight
           
           if (!all(BioticData[[file]]$catchsample$catchproducttype[filterCatchSample] %in% spectab$ProductType)){
             missing <- unique(BioticData[[file]]$catchsample$catchproducttype[filterCatchSample][!(BioticData[[file]]$catchsample$catchproducttype[filterCatchSample] %in% spectab$ProductType)])
-            stop(paste("Not all necessary conversion factors found for species ", species, ". Missing: ", paste(missing, collapse=","), sep=""))
+            stop(paste("Not all necessary conversion factors found for species ", species, ". Missing for product types: ", paste(missing, collapse=","), sep=""))
           }
           
           BioticData[[file]]$catchsample$catchweight[filterCatchSample] <- BioticData[[file]]$catchsample$catchweight[filterCatchSample] * conversionCatch[filterCatchSample]
