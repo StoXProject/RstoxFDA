@@ -14,7 +14,7 @@ jobs:
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
-    # We include 'release' in order to always test the altest release, but mac and Windows binaries are not deployed to the drat repo:
+    # We include 'next' in order to always test the latest patched release, but mac and Windows binaries are not deployed to the drat repo:
     strategy:
       fail-fast: false
       matrix:
@@ -135,6 +135,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Install prereleases on Linux
+        if: runner.os == 'Linux'
         run: |
           # After installing Rstox pakcages from the drat repo it may be that the installed versions are not the minimum versions specified in the DESCRIPTION file, since pre-releases are not deployed to the drat repo due to size restrictions. The following installs from the package repos directly, those packages that differ (from source):
           # Get the installed versions:
@@ -156,6 +157,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Install prereleases on macOS and Windows
+        if: runner.os != 'Linux'
         run: |
           # After installing Rstox pakcages from the drat repo it may be that the installed versions are not the minimum versions specified in the DESCRIPTION file, since pre-releases are not deployed to the drat repo due to size restrictions. The following installs from the package repos directly, those packages that differ (from source):
           # Get the installed versions:
@@ -238,23 +240,9 @@ jobs:
           file.copy(Sys.getenv("PKG_FILE"), Sys.getenv("PKG_FREL"))
         shell: Rscript {0}
 
-      # - name: Upload package source as artifact
-      #   if: runner.os == 'Linux' && matrix.config.r == 'release'
-      #   uses: actions/upload-artifact@master
-      #   with:
-      #     name: ${{ env.PKG_FILE }}
-      #     path: '${{ github.workspace }}/${{ env.PKG_FILE }}'
-
-      # - name: Upload package binary as artifact
-      #   if: runner.os == 'Windows' || runner.os == 'macOS'
-      #   uses: actions/upload-artifact@master
-      #   with:
-      #     name: ${{ runner.os }}-${{ matrix.config.r }}-pkg
-      #     path: '${{ github.workspace }}/*${{ matrix.config.pkgext }}'
-
-        # Upload to drat repo only for release on Linux, and onlly for all the specifically given R versions for macOS and Windows, where release is included to detect errors immediatelly when the new R is released:
+        # Upload to drat repo only for one version (4.1) on Linux, and only for all the specifically given R versions for macOS and Windows (not next). Next is included to detect errors immediatelly when the new R is patched:
       - name: Upload to DRAT repo
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'release') || (runner.os == 'macOS' && matrix.config.r != 'release') || (runner.os == 'Linux' && matrix.config.r == 'release') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           BUILD_NUMBER: ${{ github.sha  }}
           DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
@@ -262,7 +250,7 @@ jobs:
         shell: bash
 
       - name: Create release and upload files
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'release') || (runner.os == 'macOS' && matrix.config.r != 'release') || (runner.os == 'Linux' && matrix.config.r == 'release') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
