@@ -33,15 +33,15 @@ Reca is a library for estimating total catch at age from commerical catches. Rst
 Reca is primarily available at: https://github.com/NorskRegnesentral/Reca.
 One may also consider installing from the fork at: https://github.com/StoXProject/reca
 
-```r
-    remotes::install_github("https://github.com/StoXProject/reca")
-```
+  ```r
+  remotes::install_github("https://github.com/StoXProject/reca")
+  ```
 
 or at https://stoxproject.github.io/repo/: 
 
-```r
-install.packages("Reca", repos=c("https://stoxproject.github.io/repo/"))
-```
+  ```r
+  install.packages("Reca", repos=c("https://stoxproject.github.io/repo/"))
+  ```
 
 but these resources should be considered experimental, and they are not backed by a maintenance policy.
 
