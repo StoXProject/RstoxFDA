@@ -31,7 +31,25 @@ When reporting bugs, please report the versions your were using of R, RstoxFDA, 
 Reca is a library for estimating total catch at age from commerical catches. RstoxFDA contains functions for adapting data to Reca, running estimates, and plotting or tabulating results. These functions are availble in the StoX user interface. In addition some functions are provided for adapting Reca to other data formats than just the ones supported by Stox.
 
 Reca is primarily available at: https://github.com/NorskRegnesentral/Reca.
-One may also consider installing from the fork at: https://github.com/StoXProject/reca, or at https://stoxproject.github.io/repo/: install.packages("Reca", repos=c("https://stoxproject.github.io/repo/")), but these resources should be considered experimental, and they are not backed by a maintenance policy.
+One may also consider installing from the fork at: https://github.com/StoXProject/reca
+
+```r
+    remotes::install_github("https://github.com/StoXProject/reca")
+```
+
+or at https://stoxproject.github.io/repo/: 
+
+```r
+install.packages("Reca", repos=c("https://stoxproject.github.io/repo/"))
+```
+
+but these resources should be considered experimental, and they are not backed by a maintenance policy.
 
 ## Maintainance policy
-We are still in the process of developing a policy for exactly which versions of R and operating systems we will strive to keep RstoxFDA working for, and how often to revise that policy. This page will be updated as those policies av finalized, but users should be prepared that it will be necessary to keep their environment up to date for continued used of RstoxFDA. We will also make public a policy on backwards compatibility, in order for us to manage deprecation of functions.
+We are still in the process of developing a policy for exactly which versions of R and operating systems we will strive to keep RstoxFDA working for, and how often to revise that policy. This page will be updated as those policies av finalized, but users should be prepared that it will be necessary to keep their environment up to date for continued used of RstoxFDA. We will also make public a policy on backwards compatibility, in order for us to manage deprecation of functions. 
+
+Currently RstoxFDA is being tested for the following R versions:
+
+* R 4.0
+* R 4.1
+* R 4.2
