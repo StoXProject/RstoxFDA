@@ -145,7 +145,8 @@ jobs:
           Rstox_deps <- deps[startsWith(deps, "Rstox")]
           Rstox_deps <- data.frame(
               Package = sub("[ (].*", "", Rstox_deps),
-              MinimumVersion = sub(".*>=  *(.*?) *).*", "\\1", Rstox_deps)
+              MinimumVersion = sub(".*>=  *(.*?) *).*", "\\1", Rstox_deps),
+              stringsAsFactors = F
           )
           Rstox_deps <- merge(Rstox_deps, installed)
           differ <- which(Rstox_deps$MinimumVersion != Rstox_deps$Version)
@@ -167,7 +168,8 @@ jobs:
           Rstox_deps <- deps[startsWith(deps, "Rstox")]
           Rstox_deps <- data.frame(
               Package = sub("[ (].*", "", Rstox_deps),
-              MinimumVersion = sub(".*>=  *(.*?) *).*", "\\1", Rstox_deps)
+              MinimumVersion = sub(".*>=  *(.*?) *).*", "\\1", Rstox_deps),
+              stringsAsFactors = F
           )
           Rstox_deps <- merge(Rstox_deps, installed)
           differ <- which(Rstox_deps$MinimumVersion != Rstox_deps$Version)
