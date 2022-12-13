@@ -103,6 +103,8 @@ fpath <- RstoxFDA:::makeTempDirReca()
 print("Parameterize CC")
 param <- RstoxFDA:::ParameterizeRecaModels(prep, 100, 400, ResultDirectory = fpath, Seed = 100)
 
+browser()
+
 #context("check that age group names are set correct for stock splitting")
 expect_equal(sum(is.na(param$FitProportionAtAge$constant$Age)), 0)
 expect_equal(param$FitProportionAtAge$constant$Age[1], "S1 2")

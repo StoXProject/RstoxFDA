@@ -402,7 +402,7 @@ ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeight
           
           if (!all(BioticData[[file]]$catchsample$sampleproducttype[filterCatchSample] %in% spectab$ProductType)){
             missing <- unique(BioticData[[file]]$catchsample$sampleproducttype[filterCatchSample][!(BioticData[[file]]$catchsample$sampleproducttype[filterCatchSample] %in% spectab$ProductType)])
-            stop(paste("Not all necessary conversion factors found for species ", species, ". Missing: ", paste(missing, collapse=","), sep=""))
+            stop(paste("Not all necessary conversion factors found for species ", species, ". Missing for product types: ", paste(missing, collapse=","), sep=""))
           }
           
           BioticData[[file]]$catchsample$lengthsampleweight[filterCatchSample] <- BioticData[[file]]$catchsample$lengthsampleweight[filterCatchSample] * conversionSample[filterCatchSample]
@@ -424,7 +424,7 @@ ConvertWeightBiotic <- function(BioticData, ConversionType=c("All", "CatchWeight
           
           if (!all(BioticData[[file]]$individual$individualproducttype[filterIndividual] %in% spectab$ProductType)){
             missing <- unique(BioticData[[file]]$individual$individualproducttype[filterIndividual][!(BioticData[[file]]$individual$individualproducttype[filterIndividual] %in% spectab$ProductType)])
-            stop(paste("Not all necessary conversion factors found for species ", species, ". Missing: ", paste(missing, collapse=","), sep=""))
+            stop(paste("Not all necessary conversion factors found for species ", species, ". Missing for product types: ", paste(missing, collapse=","), sep=""))
           }
           
           conversionInd <- spectab$WeightFactor[match(BioticData[[file]]$individual$individualproducttype, spectab$ProductType)]

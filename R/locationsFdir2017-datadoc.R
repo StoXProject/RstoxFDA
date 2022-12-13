@@ -21,5 +21,5 @@
 #'     ylim=c(70,75), 
 #'     linetype2 = "dotted", 
 #'     polygonColor1 = "green", 
-#'     areaLabels2 = T)
+#'     areaLabels2 = TRUE)
 "locationsFdir2017"

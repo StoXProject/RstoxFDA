@@ -19,6 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
+        # for windows and mac all builds are pushed to drat repo on merge to master (except pre-release builds), except 'next'
           - {os: macOS-latest,   r: 'next', pkgext: '.tgz'}
           - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'}
           - {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'}
@@ -29,8 +30,10 @@ jobs:
           - {os: windows-latest, r: '4.0',     pkgext: '.zip',    rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-latest,  r: 'next', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-22.04,   r: '4.2',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          # 4.1 is pushed to drat repo on mergre to master for ubunutu (except pre-release builds), update script if 4.1 is taken out
           - {os: ubuntu-18.04,   r: '4.1',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-18.04,   r: '4.0',     pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          # checking 3.6 only on ubuntu as that builds all deps from source.
           - {os: ubuntu-18.04,   r: '3.6',     pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
 
     env:

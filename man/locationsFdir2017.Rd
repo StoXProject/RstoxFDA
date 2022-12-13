@@ -23,7 +23,7 @@ Polygons are defined in WGS84 coordinates (unprojected).
     ylim=c(70,75), 
     linetype2 = "dotted", 
     polygonColor1 = "green", 
-    areaLabels2 = T)
+    areaLabels2 = TRUE)
 }
 \concept{area code polygons}
 \keyword{datasets}
