@@ -4,6 +4,10 @@ StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="Rst
 StoxBioticData <- readRDS(StoxBioticFile)
 
 ecaPrep <- RstoxFDA:::convertStox2PrepReca(RstoxFDA::PrepareRecaEstimate(StoxBioticData, StoxLandingData))
+sb <- StoxBioticData
+sb$Haul$Gear <- rep(StoxLandingData$Landing$Gear, 3)[1:nrow(sb$Haul)]
+ecaPrepWcov <- RstoxFDA:::convertStox2PrepReca(RstoxFDA::PrepareRecaEstimate(sb, StoxLandingData, RandomEffects = c("Gear")))
+
 RstoxFDA:::checkLandings(ecaPrep$Landings)
 RstoxFDA:::check_cov_vs_info(ecaPrep$AgeLength)
 RstoxFDA:::check_cov_vs_info(ecaPrep$WeightLength)
@@ -24,6 +28,22 @@ RstoxFDA:::checkGlobalParameters(ecaPrep$GlobalParameters, ecaPrep$AgeLength, ec
 errorPrep <- ecaPrep
 errorPrep$AgeLength$info["constant","nlev"] <- 2
 expect_error(RstoxFDA:::check_cov_vs_info(errorPrep$AgeLength), "Not all values present for fixed covariate")
+
+errorPrep <- ecaPrepWcov
+rownames(errorPrep$AgeLength$info) <- c("constant", "Gir")
+expect_error(RstoxFDA:::check_cov_vs_info(errorPrep$AgeLength), "Covariate Gear not in info matrix")
+
+errorPrep <- ecaPrepWcov
+errorPrep$AgeLength$CovariateMatrix$Gear[1] <- NA
+expect_error(RstoxFDA:::check_cov_vs_info(errorPrep$AgeLength), "NAs for covariate Gear")
+
+errorPrep <- ecaPrepWcov
+errorPrep$AgeLength$CovariateMatrix$Gear[1] <- max(errorPrep$AgeLength$CovariateMatrix$Gear) +1
+expect_error(RstoxFDA:::check_cov_vs_info(errorPrep$AgeLength), "Max value higher than nlev for covariate Gear")
+
+errorPrep <- ecaPrepWcov
+errorPrep$AgeLength$CovariateMatrix$Gear[1] <- 0
+expect_error(RstoxFDA:::check_cov_vs_info(errorPrep$AgeLength), "Min value lower than 1 for covariate Gear")
 
 errorPrep <- ecaPrep
 errorPrep$AgeLength$DataMatrix$samplingID <- NULL
@@ -113,6 +133,7 @@ expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParam
 
 errorPrep <- ecaPrep
 expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength, stage="parameterize"), "Some required global parameters are missing: nSamples,thin,burnin,resultdir,fitfile,delta.age,lgamodel")
+expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength, stage="predict"), "Some required global parameters are missing: nSamples,thin,burnin,resultdir,fitfile,predictfile,delta.age,lgamodel,caa.burnin")
 
 errorPrep <- ecaPrep
 errorPrep$GlobalParameters$nSamples <- 10

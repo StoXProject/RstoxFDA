@@ -57,9 +57,6 @@ check_cov_vs_info <- function(modelobj){
     if (modelobj$info[co,"CAR"]==1 & modelobj$info[co,"random"]!=1){
       stop("CAR variable not designated as random effect.")
     }
-    if (modelobj$info[co,"CAR"]==1 & modelobj$info[co,"random"]!=1){
-      stop("CAR variable not designated as random effect.")
-    }
     if (modelobj$info[co,"continuous"]==1 & modelobj$info[co,"nlev"]!=1){
       stop(paste("nlev wrongly configured for continuous variable", co))
     }
