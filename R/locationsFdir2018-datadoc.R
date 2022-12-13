@@ -14,8 +14,7 @@
 #' @keywords datasets
 #'
 #' @examples
-#' data(locationsFdir2017)
-#' data(locationsFdir2018)
-#' sp::plot(locationsFdir2018, ylim=c(57,60), xlim=c(0,25), border="blue")
-#' sp::plot(locationsFdir2017, add=TRUE)
+#'  RstoxFDA::plotAreaComparison(RstoxFDA::mainareaFdir2017, 
+#'      RstoxFDA::mainareaFdir2018, 
+#'      xlim=c(0,20), ylim=c(50,60))
 "locationsFdir2018"

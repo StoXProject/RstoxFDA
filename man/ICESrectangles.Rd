@@ -35,9 +35,13 @@ Polygons are derived from shapefiles provided by ICES web-portals.
 Polygons are defined in WGS84 coordinates (unprojected).
 }
 \examples{
- # plot ICES areas alongside main areas
- data(ICESrectangles)
- sp::plot(ICESrectangles)
+ # plot statistical rectangles in 27.3.a
+ rect27.3.a <- RstoxFDA::ICESrectangles[
+    RstoxFDA::ICESrectangles$SubArea==3 & 
+    RstoxFDA::ICESrectangles$Division=="a",]
+    
+ RstoxFDA::plotArea(areaDef = rect27.3.a)
+ 
 }
 \concept{area code polygons}
 \keyword{datasets}

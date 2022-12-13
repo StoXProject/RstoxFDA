@@ -14,6 +14,5 @@
 #' @keywords datasets
 #'
 #' @examples
-#'  data(mainareaFdir2018)
-#'  sp::plot(mainareaFdir2018)
+#'  RstoxFDA::plotArea(areaDef = RstoxFDA::mainareaFdir2018)
 "mainareaFdir2018"

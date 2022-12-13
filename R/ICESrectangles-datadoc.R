@@ -32,7 +32,11 @@
 #' @keywords datasets
 #'
 #' @examples
-#'  # plot ICES areas alongside main areas
-#'  data(ICESrectangles)
-#'  sp::plot(ICESrectangles)
+#'  # plot statistical rectangles in 27.3.a
+#'  rect27.3.a <- RstoxFDA::ICESrectangles[
+#'     RstoxFDA::ICESrectangles$SubArea==3 & 
+#'     RstoxFDA::ICESrectangles$Division=="a",]
+#'     
+#'  RstoxFDA::plotArea(areaDef = rect27.3.a)
+#'  
 "ICESrectangles"

@@ -16,8 +16,7 @@ This revision has been in use for their fishery statistics as of 2018 (inclusive
 Polygons are defined in WGS84 coordinates (unprojected).
 }
 \examples{
- data(mainareaFdir2018)
- sp::plot(mainareaFdir2018)
+ RstoxFDA::plotArea(areaDef = RstoxFDA::mainareaFdir2018)
 }
 \concept{area code polygons}
 \keyword{datasets}

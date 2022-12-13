@@ -25,14 +25,13 @@ For Division 21.3P and 21.4V a polygon is defined for each subdivision.
 Polygons are defined in WGS84 coordinates (unprojected).
 }
 \examples{
- # plot NAFO areas alongside main areas
- data(mainareaFdir2017)
- data(NAFOareas)
- sp::plot(NAFOareas)
- sp::plot(mainareaFdir2017, add=TRUE)
+ # combine NAFO and mainarea and plot
+ combo <- rbind(RstoxFDA::NAFOareas[,"StratumName"], 
+    RstoxFDA::mainareaFdir2018[,"StratumName"])
+ RstoxFDA::plotArea(areaDef = combo)
 
  # conversion table Norwegian and international convention
- NAFOareas@data[,c("homr", "nafo_names")]
+ RstoxFDA::NAFOareas@data[,c("homr", "nafo_names")]
 }
 \concept{area code polygons}
 \keyword{datasets}
