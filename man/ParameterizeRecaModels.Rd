@@ -25,7 +25,7 @@ ParameterizeRecaModels(
 
 \item{Thin}{controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}}
 
-\item{ResultDirectory}{a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.}
+\item{ResultDirectory}{a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. See details.}
 
 \item{Lgamodel}{The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}. Defaults to log-linear}
 
@@ -66,6 +66,7 @@ Various report functions may use output of this function with the function \code
 Communication between \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}} is managed by writing and reading files,
 and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
 For multi-chain analysis, a different directory should be provided for each chain.
+The result directory will be created if it does not exist.
 
 Be aware that this breaks with the general design of StoX and somewhat limits the transferrability of
 StoX projects between computers.

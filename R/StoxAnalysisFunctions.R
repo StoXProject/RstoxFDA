@@ -554,7 +554,8 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #'  Various report functions may use output of this function with the function \code{\link[Reca]{eca.predict}} which samples the posterior distributions of parameters.
 #'  Communication between \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}} is managed by writing and reading files, 
 #'  and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
-#'  For multi-chain analysis, a different directory should be provided for each chain. 
+#'  For multi-chain analysis, a different directory should be provided for each chain.
+#'  The result directory will be created if it does not exist.
 #'  
 #'  Be aware that this breaks with the general design of StoX and somewhat limits the transferrability of
 #'  StoX projects between computers. 
@@ -563,7 +564,7 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @param Nsamples number of MCMC samples that will be made available for \code{\link[Reca]{eca.predict}}. See documentation for \code{\link[Reca]{eca.estimate}},
 #' @param Burnin number of MCMC samples run and discarded by \code{\link[Reca]{eca.estimate}} before any samples are saved. See documentation for \code{\link[Reca]{eca.estimate}}.
 #' @param Lgamodel The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Lgamodel`
-#' @param ResultDirectory a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}.
+#' @param ResultDirectory a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. See details.
 #' @param Thin controls how many iterations are run between each samples saved. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Thin`. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
 #' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Delta.age`.
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
@@ -590,10 +591,13 @@ ParameterizeRecaModels <- function(RecaData, Nsamples=integer(), Burnin=integer(
   }
   
   checkMandatory(ResultDirectory, "ResultDirectory")
-  ResultDirectory <- path.expand(ResultDirectory)
+  suppressWarnings(ResultDirectory <- normalizePath(path.expand(ResultDirectory)))
   
   if (!file.exists(ResultDirectory)){
-    stop(paste("Could not find the 'ResultDirectory'", ResultDirectory, ". See ?ParameterizeRecaModels for details about the 'ResultDirectory'."))
+    dir.create(ResultDirectory, recursive = T)
+    if (!file.exists(ResultDirectory)){
+      stop(paste("Could not find or create the 'ResultDirectory'", ResultDirectory, ". See ?ParameterizeRecaModels for details about the 'ResultDirectory'."))
+    }
   }
   
   if (grepl(" ", ResultDirectory)) {

@@ -104,7 +104,8 @@ fpath <- RstoxFDA:::makeTempDirReca()
 pathWtrailing <- paste0(fpath, "/")
 param <- RstoxFDA:::ParameterizeRecaModels(prep, 100, 400, ResultDirectory = pathWtrailing, Seed = 100)
 
-browser()
+pathWsubDir <- file.path(fpath, "subdir")
+param <- RstoxFDA:::ParameterizeRecaModels(prep, 100, 400, ResultDirectory = pathWsubDir, Seed = 100)
 
 #context("check that age group names are set correct for stock splitting")
 expect_equal(sum(is.na(param$FitProportionAtAge$constant$Age)), 0)
