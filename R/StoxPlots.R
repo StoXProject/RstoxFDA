@@ -467,12 +467,13 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
   
   tab <- tab[order(tab$LandedRoundWeight, decreasing = T),]
   tab$cumSumPercent <- 100*cumsum(tab$LandedRoundWeight)/(sum(tab$LandedRoundWeight))
-  tab$cumSumPercent <- tab$cumSumPercent*(max(tab$LandedRoundWeight, na.rm = T)/100)
   
-
-    others <- tab[tab$cumSumPercent*100/max(tab$cumSumPercent) >= 100-OtherPercentage,]
-    tab <- tab[tab$cumSumPercent*100/max(tab$cumSumPercent) < 100-OtherPercentage,]
-    
+  #
+  # group other column and put it at end of table
+  #
+  others <- tab[tab$cumSumPercent >= 100-OtherPercentage,]
+  tab <- tab[tab$cumSumPercent < 100-OtherPercentage,]
+  
   if (nrow(others)>0){
       lastRow <- others[1,]
       lastRow$axisLabel <- "Other"
@@ -490,6 +491,10 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
       }
   }
   
+  #scale cumulative percent for sec axis
+  tab$cumSumPercent <- tab$cumSumPercent*(max(tab$LandedRoundWeight, na.rm = T)/100)
+  
+  #add color to bars
   tab$Samples <- "No samples"
   tab$Samples[tab[[Measurement]] >= 1] <- "Few measurements"
   tab$Samples[tab[[Measurement]] >= MinMeasurements] <- "Few catches"
@@ -531,9 +536,10 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
 
   
   # add secondary scale with cumulative catches in %
+  sec.axis.color <- "grey"
   if (Cumulative){
     coeff <- max(tab$LandedRoundWeight)/100
-    pl <- pl + ggplot2::geom_line(ggplot2::aes_string(y="cumSumPercent"), group=1) + 
+    pl <- pl + ggplot2::geom_line(ggplot2::aes_string(y="cumSumPercent"), group=1, color=sec.axis.color) + 
       ggplot2::scale_y_continuous(
         
         # Features of the first axis
@@ -541,7 +547,11 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
         
         # Add a second axis and specify its features
         sec.axis = ggplot2::sec_axis(~.x/coeff, name="Landed weight (cumulative %)")
-      )  
+      )
+    pl <- pl + ggplot2::theme( 
+                   axis.ticks.y.right = ggplot2::element_line(color = sec.axis.color),
+                   axis.text.y.right = ggplot2::element_text(color = sec.axis.color),
+                   axis.title.y.right = ggplot2::element_text(color = sec.axis.color))
   }
   
   pl <- setPlotSaveAttributes(pl)
@@ -626,8 +636,8 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
     coeff <- max(landings$LandedRoundWeight, na.rm=T) / maxbarsize
     landings$scaledLandings <- landings$LandedRoundWeight / coeff
     
-    
-    pl <- pl + ggplot2::geom_line(ggplot2::aes_string(y="scaledLandings"), landings, group=1) + 
+    sec.axis.color <- "grey"
+    pl <- pl + ggplot2::geom_line(ggplot2::aes_string(y="scaledLandings"), landings, group=1, color=sec.axis.color) + 
       ggplot2::scale_y_continuous(
         
         # Features of the first axis
@@ -635,7 +645,11 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
         
         # Add a second axis and specify its features
         sec.axis = ggplot2::sec_axis(~.x*coeff, name=paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep=""))
-      )      
+      )
+    pl <- pl + ggplot2::theme( 
+      axis.ticks.y.right = ggplot2::element_line(color = sec.axis.color),
+      axis.text.y.right = ggplot2::element_text(color = sec.axis.color),
+      axis.title.y.right = ggplot2::element_text(color = sec.axis.color))
   }
   
   pl <- setPlotSaveAttributes(pl)
