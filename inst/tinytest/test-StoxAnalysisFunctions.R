@@ -100,8 +100,9 @@ expect_true(prep$GlobalParameters$GlobalParameters$CCerror)
 expect_true(RstoxFDA:::is.StockSplittingParameters(prep$AgeLength$StockSplittingParameters))
 expect_true(is.null(prep$AgeLength$CCerrorList))
 fpath <- RstoxFDA:::makeTempDirReca()
-print("Parameterize CC")
-param <- RstoxFDA:::ParameterizeRecaModels(prep, 100, 400, ResultDirectory = fpath, Seed = 100)
+#make sure it works with trailing "/" on path
+pathWtrailing <- paste0(fpath, "/")
+param <- RstoxFDA:::ParameterizeRecaModels(prep, 100, 400, ResultDirectory = pathWtrailing, Seed = 100)
 
 browser()
 
