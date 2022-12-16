@@ -243,7 +243,10 @@
   		     "99" : { "type": "number" },
   		     "100" : { "type": "number" },
   		     "ReadAge" : { "type": "string" }
-  		    }
+  		    },
+  		    "required": [
+  					"ReadAge"
+  				]
   		  }
   		  
   		  ]
