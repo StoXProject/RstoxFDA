@@ -30,7 +30,7 @@
   					"Period": { "type": "string"},
   					"StartDay": { "type": "number"},
   					"StartMonth": { "type": "number"},
-  					"StartYear": { "type": "number"}
+  					"StartYear": { "type": ["number", "string"]}
   				},
   				"required": [
   					"Period",
