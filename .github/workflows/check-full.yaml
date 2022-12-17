@@ -104,6 +104,7 @@ jobs:
           rm '/usr/local/bin/idle3'
           rm '/usr/local/bin/pydoc3'
           rm '/usr/local/bin/python3'
+          rm '/usr/local/bin/python3-config'
           export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=false # This prevents Homebrew from re-installing R, which will lead to .Platform$pkgType = "source".
           brew install gdal
         shell: bash
