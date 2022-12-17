@@ -102,7 +102,10 @@ jobs:
           rm '/usr/local/bin/gfortran'
           rm '/usr/local/bin/2to3'
           rm '/usr/local/bin/idle3'
+<<<<<<< HEAD
           rm '/usr/local/bin/pydoc3'
+=======
+>>>>>>> 5ed0b9372d2a2a6de881893dd496634dd432ac57
           export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=false # This prevents Homebrew from re-installing R, which will lead to .Platform$pkgType = "source".
           brew install gdal
         shell: bash
