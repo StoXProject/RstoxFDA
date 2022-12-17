@@ -101,6 +101,7 @@ jobs:
         run: |
           rm '/usr/local/bin/gfortran'
           rm '/usr/local/bin/2to3'
+          rm '/usr/local/bin/idle3'
           export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=false # This prevents Homebrew from re-installing R, which will lead to .Platform$pkgType = "source".
           brew install gdal
         shell: bash
@@ -108,9 +109,6 @@ jobs:
       - name: Prepare for dependencies on Linux
         if: runner.os == 'Linux'
         run: |
-          # The following two lines caused trouble for sf on the new R 4.2 on Ubuntu in May 2022:
-          #sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
-          #sudo apt-get update
           sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
         shell: bash
       
