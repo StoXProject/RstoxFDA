@@ -170,6 +170,21 @@ BioticData <- RstoxData::ReadBiotic(bioticfile)
 tab <- RstoxFDA::DefineWeightConversionFactor(FileName=conversionfile)
 BioticDataPost <- RstoxFDA::ConvertWeightBiotic(BioticData, WeightConversionTable = tab, TargetProductType = "1")
 
+
+#check error message
+Bd <- BioticData
+Bd$biotic_v3_producttypes.xml$catchsample$sampleproducttype[9]<-NA
+expect_error(RstoxFDA::ConvertWeightBiotic(Bd, WeightConversionTable = tab, TargetProductType = "1"), "Not all necessary conversion factors found for species 164712. Missing for product types: NA")
+Bd <- BioticData
+Bd$biotic_v3_producttypes.xml$catchsample$catchproducttype[9]<-NA
+expect_error(RstoxFDA::ConvertWeightBiotic(Bd, WeightConversionTable = tab, TargetProductType = "1"), "Not all necessary conversion factors found for species 164712. Missing for product types: NA")
+Bd <- BioticData
+Bd$biotic_v3_producttypes.xml$individual$individualproducttype<-NA
+expect_error(RstoxFDA::ConvertWeightBiotic(Bd, WeightConversionTable = tab, TargetProductType = "1"), "Not all necessary conversion factors found for species 164712. Missing for product types: NA")
+
+
+
+
 #check that producttype NAs are preserved
 expect_equal(is.na(BioticData$biotic_v3_producttypes.xml$catchsample$sampleproducttype), is.na(BioticDataPost$biotic_v3_producttypes.xml$catchsample$sampleproducttype))
 expect_equal(is.na(BioticData$biotic_v3_producttypes.xml$individual$individualproducttype), is.na(BioticDataPost$biotic_v3_producttypes.xml$individual$individualproducttype))

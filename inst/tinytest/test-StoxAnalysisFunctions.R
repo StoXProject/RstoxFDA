@@ -13,7 +13,7 @@ prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEff
 
 fpath <- RstoxFDA:::makeTempDirReca()
 # check that seed works
-paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath)
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=99)
 paramOut2 <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed = paramOut$GlobalParameters$GlobalParameters$seed)
 paramOut3 <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed = paramOut$GlobalParameters$GlobalParameters$seed+1)
 
@@ -100,8 +100,12 @@ expect_true(prep$GlobalParameters$GlobalParameters$CCerror)
 expect_true(RstoxFDA:::is.StockSplittingParameters(prep$AgeLength$StockSplittingParameters))
 expect_true(is.null(prep$AgeLength$CCerrorList))
 fpath <- RstoxFDA:::makeTempDirReca()
-print("Parameterize CC")
-param <- RstoxFDA:::ParameterizeRecaModels(prep, 100, 400, ResultDirectory = fpath, Seed = 100)
+#make sure it works with trailing "/" on path
+pathWtrailing <- paste0(fpath, "/")
+param <- RstoxFDA:::ParameterizeRecaModels(prep, 100, 400, ResultDirectory = pathWtrailing, Seed = 100)
+
+pathWsubDir <- file.path(fpath, "subdir")
+param <- RstoxFDA:::ParameterizeRecaModels(prep, 100, 400, ResultDirectory = pathWsubDir, Seed = 100)
 
 #context("check that age group names are set correct for stock splitting")
 expect_equal(sum(is.na(param$FitProportionAtAge$constant$Age)), 0)
@@ -174,7 +178,7 @@ car$Neighbours[29] <- paste(car$Neighbours[29], "08", sep=",")
 prepCar <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), CarEffect = "Area", UseCarEffect = T, CarNeighbours = car)
 
 fpath <- RstoxFDA:::makeTempDirReca()
-paramOut <- RstoxFDA:::ParameterizeRecaModels(prepCar, 10, 50, 1, fpath)
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prepCar, 10, 50, 1, fpath, Seed=42)
 result <- RstoxFDA:::RunRecaModels(paramOut, StoxLandingData)
 RstoxFDA:::removeTempDirReca(fpath)
 expect_true(RstoxFDA::is.RecaParameterData(paramOut))
@@ -191,7 +195,7 @@ StoxLandingData <- readRDS(StoxLandingFile)
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
 
 fpath <- RstoxFDA:::makeTempDirReca()
-paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath)
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=43)
 
 expect_true(c("FitLengthGivenAge") %in% names(paramOut))
 expect_equal(length(paramOut$FitLengthGivenAge), 4)
@@ -223,7 +227,7 @@ fpath <- RstoxFDA:::makeTempDirReca()
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Gear"))
 
 #check that seed works
-paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 50, 50, 1, fpath)
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 50, 50, 1, fpath, Seed=111)
 seed <- sample.int(.Machine$integer.max, 1)
 results <- RstoxFDA:::RunRecaModels(paramOut, StoxLandingData)
 paramOut2 <- RstoxFDA:::ParameterizeRecaModels(prep, 50, 50, 1, fpath, Seed=paramOut$GlobalParameters$GlobalParameters$seed)
@@ -241,7 +245,7 @@ expect_true("Gear" %in% names(paramOut$Landings$AgeLengthCov))
 expect_true("Age" %in% names(results$CatchAtAge))
 expect_true(RstoxFDA::is.RecaCatchAtAge(results))
 
-paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath)
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=44)
 results <- RstoxFDA:::RunRecaModels(paramOut, StoxLandingData, GroupingVariables = "Gear")
 expect_true("Gear" %in% names(paramOut$Landings$AgeLengthCov))
 expect_true("Age" %in% names(results$CatchAtAge))

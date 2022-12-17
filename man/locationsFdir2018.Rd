@@ -16,10 +16,9 @@ This revision has been in use for their fishery statistics as of 2018 (inclusive
 Polygons are defined in WGS84 coordinates (unprojected).
 }
 \examples{
-data(locationsFdir2017)
-data(locationsFdir2018)
-sp::plot(locationsFdir2018, ylim=c(57,60), xlim=c(0,25), border="blue")
-sp::plot(locationsFdir2017, add=TRUE)
+ RstoxFDA::plotAreaComparison(RstoxFDA::mainareaFdir2017, 
+     RstoxFDA::mainareaFdir2018, 
+     xlim=c(0,20), ylim=c(50,60))
 }
 \concept{area code polygons}
 \keyword{datasets}

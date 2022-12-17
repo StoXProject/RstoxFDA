@@ -15,10 +15,15 @@ Definition for location coding system defined by the Norwegian directorate of Fi
 Polygons are defined in WGS84 coordinates (unprojected).
 }
 \examples{
-data(locationsFdir2017)
-data(locationsFdir2018)
-sp::plot(locationsFdir2018, ylim=c(57,60), xlim=c(0,25), border="blue")
-sp::plot(locationsFdir2017, add=TRUE)
+ # compare locations and ICES rectangles in Barents Sea
+ RstoxFDA::plotAreaComparison(
+    RstoxFDA::ICESrectangles, 
+    RstoxFDA::locationsFdir2017, 
+    xlim=c(20,30), 
+    ylim=c(70,75), 
+    linetype2 = "dotted", 
+    polygonColor1 = "green", 
+    areaLabels2 = TRUE)
 }
 \concept{area code polygons}
 \keyword{datasets}

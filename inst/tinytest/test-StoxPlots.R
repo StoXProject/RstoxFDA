@@ -128,6 +128,7 @@ RstoxFDA:::PlotSamplingCoverage(tab)
 # test with three grouping variable, 
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear", "Area", "Quarter"), Unit = "ton")
 RstoxFDA:::PlotSamplingCoverage(tab, Cumulative = T)
+
 RstoxFDA:::PlotSamplingCoverage(tab, Cumulative = T, OtherPercentage = 30)
 RstoxFDA:::PlotSamplingCoverage(tab, Cumulative = T, OtherPercentage = 100)
 
@@ -147,6 +148,7 @@ expect_error(RstoxFDA:::PlotSamplingCoverage(tab), "Coverage plot cannot be cons
 
 #test sampling variable plot
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear","Area","Quarter"), Unit = "ton", SamplingVariables = "IndividualSex")
+
 RstoxFDA:::PlotSamplingVariables(tab)
 RstoxFDA:::PlotSamplingVariables(tab, Landings = T)
 RstoxFDA:::PlotSamplingVariables(tab, Quantity = "AgeReadings")

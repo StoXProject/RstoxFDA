@@ -34,8 +34,8 @@ For records where the variable 'catchcategory' on the table 'catchsample' matche
 this function converts weights to desired product type ('TargetProductType') by matching 'producttype'-variables to 'ProductType' in 'WeightConversionTable'.
 The following weights may be converted, depending on the parameter 'ConversionType':
 \describe{
-\item{'All' or 'CatchWeights'}{'catchweight' is converted based on 'catchproducttype' both on the table 'catchsample'}
-\item{'All' or 'CatchWeights'}{'lengthsampleweight' is converted based on 'sampleproducttype' both on the table 'catchsample'}
+\item{'All' or 'CatchWeights'}{'catchweight' on the table 'catchsample' is converted based on 'catchproducttype'}
+\item{'All' or 'CatchWeights'}{'lengthsampleweight' on the table 'catchsample' is converted based on 'sampleproducttype'}
 \item{'All' or 'IndividualWeight'}{'individualweight' is converted based on 'individualproducttype' both on the table 'individual'}
 }
 

@@ -11,19 +11,21 @@ stoxWarning <- function(msg){
 #' Check if parameter is given
 #' @noRd
 isGiven <- function(value=NULL){
+  if (length(value) > 1){
+    return(TRUE)
+  }
+  if (length(value) == 1){
+    if (is.character(value)){
+      if (value == ""){
+        return(FALSE)
+      }
+    }
+    return(TRUE)
+  }
   if (length(value) == 0){
     return(FALSE)
   }
-  if (length(value) == 1){
-    
-    if (value == ""){
-      return(FALSE)
-    }
-  }
-  if (is.null(value)){
-    return(FALSE)
-  }
-  return(TRUE)
+
 }
 
 #' For pattern where a usedefault flag overrides other options

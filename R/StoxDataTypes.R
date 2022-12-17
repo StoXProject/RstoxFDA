@@ -2227,6 +2227,9 @@ stoxFunctionAttributes <- list(
       ColorNoSamples = list(
         UseDefaultColorSettings = FALSE
       ),
+      ColorFewMeasurements = list(
+        UseDefaultColorSettings = FALSE
+      ),
       ColorFewCatches = list(
         UseDefaultColorSettings = FALSE
       ),
