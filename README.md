@@ -25,5 +25,14 @@ Reca is a library for estimating total catch at age from commerical catches. Rst
 Reca is primarily available at: https://github.com/NorskRegnesentral/Reca.
 One may also consider installing from the fork at: https://github.com/StoXProject/reca, or at https://stoxproject.github.io/repo/: install.packages("Reca", repos=c("https://stoxproject.github.io/repo/")), but these resources should be considered experimental, and they are not backed by a maintenance policy.
 
+### Reca on managed systems
+Special considerations may have to be made for managed systems, as Reca needs to start some programs bundled with the package and needs necessary system permission to do so. Problems related to executing Reca with insufficient system permissions are indicated by error messages stating that the program CAA_MA~1.EXE failed to run. For instance Windows-users at IMR may want to adress this by installing Reca in an R-session started as administrator. Installing Reca as administrator may lead to several copies of Reca being installed, and one also has to make sure that R chooses the right one. One way to ensure this is to first uninstall any Reca package that is installed in the more common way:
+* open R as regular user
+* uninstall Reca with _remove.packages()_
+* close R
+* open R as administrator
+* install Reca, e.g.: _install.packages("Reca", repos=c("https://stoxproject.github.io/repo/"))_
+* close R.
+
 ## Maintainance policy
 We are still in the process of developing a policy for exactly which versions of R and operating systems we will strive to keep RstoxFDA working for, and how often to revise that policy. This page will be updated as those policies av finalized, but users should be prepared that it will be necessary to keep their environment up to date for continued used of RstoxFDA. We will also make public a policy on backwards compatibility, in order for us to manage deprecation of functions.
