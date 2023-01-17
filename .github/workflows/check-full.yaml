@@ -42,11 +42,6 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - name: Anticipate Bintray shutdown
-        if: runner.os == 'macOS'
-        run: |
-          brew update
-        shell: bash
 
       - uses: actions/checkout@v3
 
@@ -72,6 +67,12 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
 
       - uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Anticipate Bintray shutdown
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+        shell: bash
 
       - name: Query dependencies
         run: |
