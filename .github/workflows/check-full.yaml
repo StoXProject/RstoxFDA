@@ -66,13 +66,13 @@ jobs:
           rtools-version: ${{ matrix.config.rtools }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
 
+      - uses: r-lib/actions/setup-pandoc@v2
+
       - name: Anticipate Bintray shutdown
         if: runner.os == 'macOS'
         run: |
           brew update
         shell: bash
-
-      - uses: r-lib/actions/setup-pandoc@v2
 
       - name: Query dependencies
         run: |
