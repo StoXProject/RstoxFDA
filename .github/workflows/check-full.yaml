@@ -21,9 +21,9 @@ jobs:
         config:
         # for windows and mac all builds are pushed to drat repo on merge to master (except pre-release builds), except 'next'
           - {os: macOS-latest,   r: 'next', pkgext: '.tgz'}
-          #- {os: macOS-latest,   r: '4.2', pkgext: '.tgz'}
-          #- {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'}
-          #- {os: macOS-latest,   r: '4.0',     pkgext: '.tgz'}
+          - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'}
+          - {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'}
+          - {os: macOS-latest,   r: '4.0',     pkgext: '.tgz'}
           #- {os: windows-latest, r: 'next', pkgext: '.zip'}
           #- {os: windows-latest, r: '4.2', pkgext: '.zip'}
           #- {os: windows-latest, r: '4.1',  pkgext: '.zip'}
