@@ -89,6 +89,7 @@ expect_error(RstoxFDA::appendAreaCode(areaOutSide, RstoxFDA::mainareaFdir2018, "
 areaPosPost <- RstoxFDA::appendAreaCode(areaOutSide, RstoxFDA::mainareaFdir2018, "Latitude", "Longitude", "AreaAppended", strict=F)
 expect_equal(sum(is.na(areaPosPost$AreaAppended)), 1)
 expect_true(is.na(areaPosPost$AreaAppended[4]))
+expect_equal(nrow(areaPosPost), nrow(areaOutSide))
 
 
 # check missing positions
@@ -148,5 +149,5 @@ expect_equal(loc.rectangles.map$'43-69', "47E0")
 selectedRects <- RstoxFDA::ICESrectangles[
             RstoxFDA::ICESrectangles$StratumName %in% RstoxFDA::catchsamples$LEstatRect,]
 expect_equal(RstoxFDA::catchsamples$LEarea, RstoxFDA::convertCodes(RstoxFDA::catchsamples$LEstatRect, 
-            areaCodeConversionTable(selectedRects, 
+            RstoxFDA::areaCodeConversionTable(selectedRects, 
             RstoxFDA::ICESareas)))
