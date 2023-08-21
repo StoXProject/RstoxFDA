@@ -91,11 +91,11 @@
   			{
   				"type": "object",
   				"properties": {
-  					"CarValues": { "type": "string"},
+  					"CarValue": { "type": "string"},
   					"Neighbours": { "type": "string"}
   				},
   				"required": [
-  					"CarValues",
+  					"CarValue",
   					"Neighbours"
   				]
   			}

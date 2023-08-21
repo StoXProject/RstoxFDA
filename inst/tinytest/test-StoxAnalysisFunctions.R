@@ -11,6 +11,13 @@ expect_error(RstoxFDA:::PrepareRecaEstimate(StoxBioticDataWDupl, StoxLandingData
 
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
 
+#test non-linear setting
+prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
+fpath <- RstoxFDA:::makeTempDirReca()
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=99, Lgamodel = "log-linear")
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=99, Lgamodel = "non-linear")
+RstoxFDA:::removeTempDirReca(fpath)
+
 fpath <- RstoxFDA:::makeTempDirReca()
 # check that seed works
 paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=99)

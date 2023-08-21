@@ -1,3 +1,6 @@
+# RstoxFDA v1.2.1-9001
+* Fixed issue where the DefineCarNeighbours would format column headers differently depending on the chosen DefinitionMethods. The column header 'CarValue' is now consistently written in the singular form, which means that output from the DefinitionMethod 'StratumPolygon' has changed, and the json schema for CarNeighbours has changed.
+
 # RstoxFDA v1.2.0  (2023-01-24)
 * Bumped version number in order to get latest release in line with semantic versioning
 
