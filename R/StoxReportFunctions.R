@@ -382,7 +382,7 @@ setLengthGroup <- function(LengthReport, interval){
     }
     
     if (interval < max(diffs)){
-      stoxWarning("Length interval is specified lower than the available resolution.")
+      stoxWarning("Length interval is specified lower than the available resolution. Check if options 'LengthResolution' or 'CollapseLength' are set as intended.")
     }
     
     groups <- seq(0,max(LengthReport$Length)+interval,interval)
