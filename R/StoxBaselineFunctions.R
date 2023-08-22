@@ -760,7 +760,7 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=ch
   if (!(all(c(latColumn, lonColumn) %in% names(StoxLandingData$Landing)))){
     stop(paste("Could not find columns:", latColumn, "and", lonColumn, "that should be added to StoxLandingData"))
   }
-  StoxLandingData$Landing <- appendAreaCode(StoxLandingData$Landing, StratumPolygon, latColumn, lonColumn, cname)
+  StoxLandingData$Landing <- appendAreaCode(StoxLandingData$Landing, StratumPolygon, latColumn, lonColumn, cname, strict = F)
   StoxLandingData$Landing[[ColumnName]] <- StoxLandingData$Landing$cname
   StoxLandingData$Landing$cname <- NULL
   return(StoxLandingData)

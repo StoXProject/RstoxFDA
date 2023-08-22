@@ -40,6 +40,7 @@
 #'           projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
 #'           +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 #' @concept spatial coding functions
+#' @importFrom ggplot2 .data
 #' @export
 plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="StratumName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL, polygonColor="blue"){
 
