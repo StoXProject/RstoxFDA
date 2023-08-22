@@ -756,6 +756,13 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, GroupingVariables=
   checkMandatory(RecaParameterData, "RecaParameterData")
   checkMandatory(StoxLandingData, "StoxLandingData")
 
+  if (!RstoxData::is.StoxLandingData(StoxLandingData)){
+    stop("Malformed StoxLandingData")
+  }
+  if (!RstoxFDA::is.RecaParameterData(RecaParameterData)){
+    stop("Malformed RecaParameterData")
+  }
+  
   TemporalResolution <- getDefault(TemporalResolution, "TemporalResolution", F, RstoxFDA::stoxFunctionAttributes$RunRecaModels$functionParameterDefaults$TemporalResolution)
   TemporalResolution <- checkOptions(TemporalResolution, "TemporalResolution", c("Quarter", "Month"))
 
@@ -764,6 +771,12 @@ RunRecaModels <- function(RecaParameterData, StoxLandingData, GroupingVariables=
   
   if (length(GroupingVariables)>1 && !CollapseLength){
     stoxWarning("Producing estimates for all length groups in combination with age and several 'GroupingVariables'. This may exhaust memory, consider the option 'CollapseLength'.")
+  }
+  if (length(GroupingVariables)>0){
+    missing <- GroupingVariables[!(GroupingVariables %in% names(StoxLandingData$Landing))]
+    if (length(missing)>0){
+      stop(paste("All 'GroupingVariables' must be column in 'StoxLandingData', the following are not:", paste(missing, collapse=",")))
+    }
   }
   
   #discard fit info and convert
