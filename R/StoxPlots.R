@@ -65,8 +65,8 @@ PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
   }
   
   ftab <- ftab[order(ftab$CatchDate),]
-  pl <- ggplot2::ggplot(data=ftab, ggplot2::aes_string(x="CatchDate", y="LandedRoundWeight", group="group"))
-  pl <- pl + ggplot2::geom_line(ggplot2::aes_string(col="group"))
+  pl <- ggplot2::ggplot(data=ftab, ggplot2::aes(x=.data[["CatchDate"]], y=.data[["LandedRoundWeight"]], group=.data[["group"]]))
+  pl <- pl + ggplot2::geom_line(ggplot2::aes(col=.data[["group"]]))
   pl <- pl + ggplot2::ylab(paste("weight [", RstoxData::getUnit(ReportFdaLandingData$FisheriesLandings$LandedRoundWeight, property = "shortname"), "]", sep=""))
   pl <- pl + ggplot2::xlab("catch date")
   pl <- pl + ggplot2::ggtitle(paste(groupvars, collapse=","))
@@ -129,7 +129,7 @@ PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, A
   
   bbox <- sf::st_bbox(sfPoly)
   pl <- ggplot2::ggplot(data=sfPoly)
-  pl <- pl + ggplot2::geom_sf(data=sfPoly, ggplot2::aes_string(fill="CatchDensity"), col="black")
+  pl <- pl + ggplot2::geom_sf(data=sfPoly, ggplot2::aes(fill=.data[["CatchDensity"]]), col="black")
   pl <- pl + ggplot2::scale_fill_gradient(low = "#fee0d2", high="#de2d26", na.value = "white")
   pl <- pl + ggplot2::geom_sf(data=world)
   pl <- pl + ggplot2::labs(fill=densityUnit)
@@ -138,7 +138,7 @@ PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, A
   
   if (AreaLabels){
     labelPos <- suppressWarnings(cbind(sfPoly, sf::st_coordinates(sf::st_centroid(sfPoly))))
-    pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label="StratumName", fill="CatchDensity"))
+    pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes(x=.data[["X"]],y=.data[["Y"]],label=.data[["StratumName"]], fill=.data[["CatchDensity"]]))
   }
   
   pl <- pl + ggplot2::xlab("")
@@ -179,7 +179,7 @@ PlotFisheriesOverviewTable <- function(ReportFdaLandingData){
   
   ftab <- ftab[order(ftab$LandedRoundWeight, decreasing = T),]
   ftab$group <- factor(ftab$group, levels = ftab$group,  ordered = T)
-  pl <- ggplot2::ggplot(data=ftab, ggplot2::aes_string(x="group", y="LandedRoundWeight"))
+  pl <- ggplot2::ggplot(data=ftab, ggplot2::aes(x=.data[["group"]], y=.data[["LandedRoundWeight"]]))
   pl <- pl + ggplot2::geom_col()
   pl <- pl + ggplot2::ylab(paste("weight [", RstoxData::getUnit(ReportFdaLandingData$FisheriesLandings$LandedRoundWeight, property = "shortname"), "]", sep=""))
   pl <- pl + ggplot2::xlab("")
@@ -326,10 +326,10 @@ PlotSamplingOverviewCell <- function(ReportFdaSamplingData, ColumnVariable, Meas
   ReportFdaSamplingData$FisheriesSampling$Text[filterSampled] <- paste(ReportFdaSamplingData$FisheriesSampling$Text[filterSampled], apply(ReportFdaSamplingData$FisheriesSampling[filterSampled,.SD, .SDcols=c("Vessels", "Catches", Measurement)], FUN=function(x){paste(x, collapse=",")}, MARGIN = 1), sep="\n")
   ReportFdaSamplingData$FisheriesSampling[[ColumnVariable]] <- as.factor(ReportFdaSamplingData$FisheriesSampling[[ColumnVariable]])
                                                     
-  pl <- ggplot2::ggplot(ReportFdaSamplingData$FisheriesSampling, ggplot2::aes_string(ColumnVariable, "RowLabels")) +
-    ggplot2::geom_tile(ggplot2::aes_string(fill="Samples"), color="grey") +
+  pl <- ggplot2::ggplot(ReportFdaSamplingData$FisheriesSampling, ggplot2::aes(.data[[ColumnVariable]], .data[["RowLabels"]])) +
+    ggplot2::geom_tile(ggplot2::aes(fill=.data[["Samples"]]), color="grey") +
     ggplot2::coord_equal() +
-    ggplot2::geom_text(ggplot2::aes_string(label="Text"), size=TextSize) +
+    ggplot2::geom_text(ggplot2::aes(label=.data[["Text"]]), size=TextSize) +
     ggplot2::ylab(RowAxisLabel) +
     ggplot2::ggtitle(paste("Landed weight (", RstoxData::getUnit(ReportFdaSamplingData$FisheriesSampling$LandedRoundWeight, property = "symbol"),")",sep=""), paste(Measurement, ": #Vessels, #Catches, #Individuals", sep="")) +
     ggplot2::theme_minimal() +
@@ -502,8 +502,8 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
   tab$Samples[tab$Vessels >= MinVessels & tab$Samples=="Few vessels"] <- "Good"
   
   if (ColorScheme == "CellPlot"){
-    pl <- ggplot2::ggplot(tab, ggplot2::aes_string("axisLabel", "LandedRoundWeight")) +
-      ggplot2::geom_col(ggplot2::aes_string(fill="Samples")) +
+    pl <- ggplot2::ggplot(tab, ggplot2::aes(.data[["axisLabel"]], .data[["LandedRoundWeight"]])) +
+      ggplot2::geom_col(ggplot2::aes(fill=.data[["Samples"]])) +
       ggplot2::xlab(axisLabel) +
       ggplot2::ylab(paste("Landed weight (", RstoxData::getUnit(tab$LandedRoundWeight, property = "symbol"),")",sep="")) +
       ggplot2::theme_minimal() +
@@ -522,8 +522,8 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
     if (any(is.na(tab[[SamplingUnit]]))){
       tab[[SamplingUnit]][is.na(tab[[SamplingUnit]])] <- 0      
     }
-    pl <- ggplot2::ggplot(tab, ggplot2::aes_string("axisLabel", "LandedRoundWeight")) +
-      ggplot2::geom_col(ggplot2::aes_string(fill=SamplingUnit)) +
+    pl <- ggplot2::ggplot(tab, ggplot2::aes(.data[["axisLabel"]], .data[["LandedRoundWeight"]])) +
+      ggplot2::geom_col(ggplot2::aes(fill=.data[[SamplingUnit]])) +
       ggplot2::xlab(axisLabel) +
       ggplot2::ylab(paste("Landed weight (", RstoxData::getUnit(tab$LandedRoundWeight, property = "symbol"),")",sep="")) +
       ggplot2::theme_minimal() +
@@ -539,7 +539,7 @@ PlotSamplingCoverage <- function(ReportFdaSamplingData, Cumulative=FALSE, OtherP
   sec.axis.color <- "grey"
   if (Cumulative){
     coeff <- max(tab$LandedRoundWeight)/100
-    pl <- pl + ggplot2::geom_line(ggplot2::aes_string(y="cumSumPercent"), group=1, color=sec.axis.color) + 
+    pl <- pl + ggplot2::geom_line(ggplot2::aes(y=.data[["cumSumPercent"]]), group=1, color=sec.axis.color) + 
       ggplot2::scale_y_continuous(
         
         # Features of the first axis
@@ -605,8 +605,8 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
       stop("ReportFdaSamplingData does not partition the fishery. Cannot plot total landings on secondary axis. Consider setting argument 'Landings' to False.")
     }
     
-    pl <- ggplot2::ggplot(tab, ggplot2::aes_string("SamplingVariable", Quantity)) +
-      ggplot2::geom_col(ggplot2::aes_string(fill="SamplingVariable"), group=1) +
+    pl <- ggplot2::ggplot(tab, ggplot2::aes(.data[["SamplingVariable"]], .data[[Quantity]])) +
+      ggplot2::geom_col(ggplot2::aes(fill=.data[["SamplingVariable"]]), group=1) +
       ggplot2::xlab(samplingVariableLabel) +
       ggplot2::theme_minimal() +
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
@@ -615,8 +615,8 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
     return(pl)
   }
   
-  pl <- ggplot2::ggplot(tab, ggplot2::aes_string("cell", Quantity)) +
-    ggplot2::geom_col(ggplot2::aes_string(fill="SamplingVariable")) +
+  pl <- ggplot2::ggplot(tab, ggplot2::aes(.data[["cell"]], .data[[Quantity]])) +
+    ggplot2::geom_col(ggplot2::aes(fill=.data[["SamplingVariable"]])) +
     ggplot2::xlab(cellLabel) +
     ggplot2::theme_minimal() +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
@@ -637,7 +637,7 @@ PlotSamplingVariables <- function(ReportFdaSamplingData, Quantity=c("Catches", "
     landings$scaledLandings <- landings$LandedRoundWeight / coeff
     
     sec.axis.color <- "grey"
-    pl <- pl + ggplot2::geom_line(ggplot2::aes_string(y="scaledLandings"), landings, group=1, color=sec.axis.color) + 
+    pl <- pl + ggplot2::geom_line(ggplot2::aes(y=.data[["scaledLandings"]]), landings, group=1, color=sec.axis.color) + 
       ggplot2::scale_y_continuous(
         
         # Features of the first axis
@@ -699,9 +699,9 @@ PlotCatchAtAgeTotals <- function(ReportFdaCatchAtAgeData){
   }
 
   
-  pl <- ggplot2::ggplot(ReportFdaCatchAtAgeData$NbyAge, ggplot2::aes_string(x="AgeGroup", y="CatchAtAge", fill="Group"))
+  pl <- ggplot2::ggplot(ReportFdaCatchAtAgeData$NbyAge, ggplot2::aes(x=.data[["AgeGroup"]], y=.data[["CatchAtAge"]], fill=.data[["Group"]]))
   pl <- pl + ggplot2::geom_col(position=ggplot2::position_dodge())
-  pl <- pl + ggplot2::geom_errorbar(position=ggplot2::position_dodge(0.9), ggplot2::aes_string(ymin="Low", ymax="High"),width=0.8/(length(ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables)+1))
+  pl <- pl + ggplot2::geom_errorbar(position=ggplot2::position_dodge(0.9), ggplot2::aes(ymin=.data[["Low"]], ymax=.data[["High"]]),width=0.8/(length(ReportFdaCatchAtAgeData$GroupingVariables$GroupingVariables)+1))
   pl <- pl + ggplot2::theme_minimal()
   pl <- pl + ggplot2::ylab(RstoxData::getUnit(ReportFdaCatchAtAgeData$NbyAge$CatchAtAge, property = "shortname"))
   pl <- pl + ggplot2::xlab("Age Group")
@@ -724,18 +724,18 @@ PlotMeanVariableAtAge <- function(ReportFdaVariableAtAgeData, tableName="MeanWei
   if (nrow(ReportFdaVariableAtAgeData$GroupingVariables) == 0){
 
     pl <- ggplot2::ggplot(ReportFdaVariableAtAgeData[[tableName]], ggplot2::aes(group=1)) + 
-      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y=variable), linetype="solid") +
-      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y="High"), linetype="dashed") +
-      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y="Low"), linetype="dashed")
+      ggplot2::geom_line(ggplot2::aes(x=.data[["AgeGroup"]], y=variable), linetype="solid") +
+      ggplot2::geom_line(ggplot2::aes(x=.data[["AgeGroup"]], y=.data[["High"]]), linetype="dashed") +
+      ggplot2::geom_line(ggplot2::aes(x=.data[["AgeGroup"]], y=.data[["Low"]]), linetype="dashed")
   }
   else{
   
     groupLabel <- paste(ReportFdaVariableAtAgeData$GroupingVariables$GroupingVariables, collapse = "-")
     ReportFdaVariableAtAgeData[[tableName]]$group <- apply(ReportFdaVariableAtAgeData[[tableName]][,.SD, .SDcols=ReportFdaVariableAtAgeData$GroupingVariables$GroupingVariables], FUN=function(x){paste(x, collapse="-")}, MARGIN = 1)
     pl <- ggplot2::ggplot(ReportFdaVariableAtAgeData[[tableName]]) + 
-      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y=variable, group="group", color="group"), linetype="solid") +
-      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y="High", group="group", color="group"), linetype="dashed") +
-      ggplot2::geom_line(ggplot2::aes_string(x="AgeGroup", y="Low", group="group", color="group"), linetype="dashed") +
+      ggplot2::geom_line(ggplot2::aes(x=.data[["AgeGroup"]], y=.data[[variable]], group=.data[["group"]], color=.data[["group"]]), linetype="solid") +
+      ggplot2::geom_line(ggplot2::aes(x=.data[["AgeGroup"]], y=.data[["High"]], group=.data[["group"]], color=.data[["group"]]), linetype="dashed") +
+      ggplot2::geom_line(ggplot2::aes(x=.data[["AgeGroup"]], y=.data[["Low"]], group=.data[["group"]], color=.data[["group"]]), linetype="dashed") +
       ggplot2::guides(color=ggplot2::guide_legend(title=groupLabel))
   
   }
@@ -819,7 +819,7 @@ PlotCatchAtAgeCovariances <- function(ReportFdaCatchAtAgeCovarianceData){
   ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge$VariableId1 <- factor(ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge$VariableId1, levels=ReportFdaCatchAtAgeCovarianceData$Variables$VariableId, ordered = T)
   ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge$VariableId2 <- factor(ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge$VariableId2, levels=ReportFdaCatchAtAgeCovarianceData$Variables$VariableId, ordered = T)
   
-  pl <- ggplot2::ggplot(data=ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge, ggplot2::aes_string(x="VariableId1", y="VariableId2", fill="Covariance"))
+  pl <- ggplot2::ggplot(data=ReportFdaCatchAtAgeCovarianceData$CovarianceNbyAge, ggplot2::aes(x=.data[["VariableId1"]], y=.data[["VariableId2"]], fill=.data[["Covariance"]]))
   pl <- pl + ggplot2::geom_tile()
   pl <- pl + ggplot2::theme_minimal()
   pl <- pl + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1))
@@ -991,6 +991,10 @@ PlotPosteriorTraces <- function(RecaCatchAtAge,
   ageGroupLabel <- paste(groupIdVars, collapse="-")
   Agecolors <- c(RColorBrewer::brewer.pal(8, "Accent"), RColorBrewer::brewer.pal(9, "Set1"), RColorBrewer::brewer.pal(8, "Dark2"), RColorBrewer::brewer.pal(8, "Set3"))
   
+  if (length(Agecolors) < length(unique(tab$AgeGroup))){
+    Agecolors <- rep(Agecolors, ceiling(length(unique(tab$AgeGroup))/length(Agecolors)))
+  }
+  
   lq <- tab[,list(lq=stats::quantile(get(var), LowerQuant)), list(AgeGroup=get("AgeGroup"))]
   uq <- tab[,list(uq=stats::quantile(get(var), UpperQuant)), list(AgeGroup=get("AgeGroup"))]
   tab <- merge(tab, lq)
@@ -1011,16 +1015,16 @@ PlotPosteriorTraces <- function(RecaCatchAtAge,
   
   if (length(unique(tab$AgeGroup)) <= CatLimit){
     tab$AgeGroup <- as.factor(tab$AgeGroup)
-    pl <- ggplot2::ggplot(data=tab, ggplot2::aes_string(x="Iteration", y=var, group="AgeGroup"))+
-      ggplot2::geom_line(ggplot2::aes_string(color="AgeGroup")) + 
-      ggplot2::geom_point(data=tab[tab[[var]] > tab$uq | tab[[var]] < tab$lq,], ggplot2::aes_string(color="AgeGroup")) + 
+    pl <- ggplot2::ggplot(data=tab, ggplot2::aes(x=.data[["Iteration"]], y=.data[[var]], group=.data[["AgeGroup"]]))+
+      ggplot2::geom_line(ggplot2::aes(color=.data[["AgeGroup"]])) + 
+      ggplot2::geom_point(data=tab[tab[[var]] > tab$uq | tab[[var]] < tab$lq,], ggplot2::aes(color=.data[["AgeGroup"]])) + 
       ggplot2::scale_color_manual(values = Agecolors)   
   }
   else{
     tab$AgeGroup <- as.numeric(as.factor(tab$AgeGroup))
-    pl <- ggplot2::ggplot(data=tab, ggplot2::aes_string(x="Iteration", y=var, group="AgeGroup"))+
-      ggplot2::geom_line(ggplot2::aes_string(color="AgeGroup")) + 
-      ggplot2::geom_point(data=tab[tab[[var]] > tab$uq | tab[[var]] < tab$lq,], ggplot2::aes_string(color="AgeGroup")) + 
+    pl <- ggplot2::ggplot(data=tab, ggplot2::aes(x=.data[["Iteration"]], y=.data[[var]], group=.data[["AgeGroup"]]))+
+      ggplot2::geom_line(ggplot2::aes(color=.data[["AgeGroup"]])) + 
+      ggplot2::geom_point(data=tab[tab[[var]] > tab$uq | tab[[var]] < tab$lq,], ggplot2::aes(color=.data[["AgeGroup"]])) + 
       ggplot2::scale_color_gradient() +
       ggplot2::guides(colour = ggplot2::guide_colorbar(ticks=FALSE, label=FALSE))
   }

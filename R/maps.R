@@ -86,7 +86,7 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
     }
     else{
       pl <- pl + ggplot2::geom_sf(data=sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326)), size = pointSize,
-                                  shape = pointShape, ggplot2::aes_string(color=groupCol))
+                                  shape = pointShape, ggplot2::aes(color=.data[[groupCol]]))
     }
   }
 
@@ -95,7 +95,7 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 
     if (areaLabels){
       labelPos <- suppressWarnings(cbind(areaDef, sf::st_coordinates(sf::st_centroid(sf::st_transform(areaDef, newcrs)))))
-      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label=areaNameCol), size=areaLabelSize)
+      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes(x=.data[["X"]],y=.data[["Y"]],label=.data[[areaNameCol]]), size=areaLabelSize)
     }
   }
 
@@ -182,11 +182,11 @@ plotAreaComparison <- function(areaDef1, areaDef2, areaNameCol1="StratumName", a
     
   if (areaLabels1){
       labelPos <- suppressWarnings(cbind(areaDef1, sf::st_coordinates(sf::st_centroid(sf::st_transform(areaDef1, newcrs)))))
-      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label=areaNameCol1), size=areaLabelSize, col=polygonColor1)
+      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes(x=.data[["X"]],y=.data[["Y"]],label=.data[[areaNameCol1]]), size=areaLabelSize, col=polygonColor1)
   }
   if (areaLabels2){
       labelPos <- suppressWarnings(cbind(areaDef2, sf::st_coordinates(sf::st_centroid(sf::st_transform(areaDef2, newcrs)))))
-      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label=areaNameCol2), size=areaLabelSize, col=polygonColor2)
+      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes(x=.data[["X"]],y=.data[["Y"]],label=.data[[areaNameCol2]]), size=areaLabelSize, col=polygonColor2)
     }
   
   #transform limits to desired projection
@@ -287,7 +287,7 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="Stra
   pos <- pos[!is.na(pos$quant),]
 
 
-    pl <- pl + ggplot2::geom_sf(data=pos, ggplot2::aes_string(size = "quant"), shape=bubbleShape, alpha = 0.7, colour = "black",fill=bubbleColor,stroke = .2) +
+    pl <- pl + ggplot2::geom_sf(data=pos, ggplot2::aes(size = .data[["quant"]]), shape=bubbleShape, alpha = 0.7, colour = "black",fill=bubbleColor,stroke = .2) +
       ggplot2::scale_size_area(max_size=bubbleSize)
 
   pl <- pl +  ggplot2::labs(size=legendTitle)
@@ -295,7 +295,7 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="Stra
   #add area labels
   if (areaLabels){
     labelPos <- suppressWarnings(cbind(pos, sf::st_coordinates(sf::st_centroid(sf::st_transform(pos, newcrs)))))
-    pl <- pl + ggplot2::geom_text(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label=areaNameCol), size=areaLabelSize)
+    pl <- pl + ggplot2::geom_text(data=labelPos, mapping=ggplot2::aes(x=.data[["X"]],y=.data[["Y"]],label=.data[[areaNameCol]]), size=areaLabelSize)
   }
 
   #transform limits to desired projection
