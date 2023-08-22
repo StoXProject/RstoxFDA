@@ -344,6 +344,13 @@ expect_true(all(nchar(as.character(MeanLengthReportDecimals$MeanLengthByAge$Mean
 MeanLengthReportTk <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Decimals = 4, Threshold = 1000)
 expect_true(all(is.na(MeanLengthReportTk$MeanLengthByAge$MeanIndividualLength) == is.na(MeanWeightReportTk$MeanLengthByAge$MeanIndividualWeight)))
 
+# Report Mean length interval width
+expect_error(RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Unit="cm", Decimals=1, IntervalWidth = 0), "'IntervalWidth' must be larger than 0 and smaller than 1.")
+expect_error(RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Unit="cm", Decimals=1, IntervalWidth = 5), "'IntervalWidth' must be larger than 0 and smaller than 1.")
+MeanLengthReportInterv <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Unit="cm", Decimals=1, IntervalWidth = .1)
+expect_true(all(MeanLengthReportInterv$MeanLengthByAge$High <= MeanLengthReportDecomp$MeanLengthByAge$High))
+
+
 # Report Mean length Plus gr
 MeanLengthReportDecompPlusGr <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, PlusGroup=5)
 

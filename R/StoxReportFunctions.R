@@ -1,4 +1,10 @@
-
+#' checks that intervalwidth is in the range <0,1>
+#' @noRd
+check_intervalWidth <- function(intervalwidth){
+  if (intervalwidth <= 0 || intervalwidth >= 1){
+    stop("'IntervalWidth' must be larger than 0 and smaller than 1.")
+  }
+}
 
 #' Report FDA sampling
 #' @description 
@@ -440,7 +446,8 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
   Decimals <- getDefault(Decimals, "Decimals", F, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtAge$functionParameterDefaults$Decimals)
   Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12)))
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtAge$functionParameterDefaults$IntervalWidth)
-
+  check_intervalWidth(IntervalWidth)
+  
   aggNames <- c("Iteration", "Age", RecaCatchAtAge$GroupingVariables$GroupingVariables)
   stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
   totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
@@ -606,6 +613,7 @@ ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Dec
   Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12)))
   
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtLength$functionParameterDefaults$IntervalWidth)
+  check_intervalWidth(IntervalWidth)
   
   aggNames <- c("Iteration", "Length", RecaCatchAtAge$GroupingVariables$GroupingVariables)
   stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
@@ -685,6 +693,7 @@ ReportRecaCatchAtLengthAndAge <- function(RecaCatchAtAge,
   
   Decimals <- getDefault(Decimals, "Decimals", F, stoxFunctionAttributes$ReportRecaCatchAtLengthAndAge$functionParameterDefaults$Decimals)
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, stoxFunctionAttributes$ReportRecaCatchAtLengthAndAge$functionParameterDefaults$IntervalWidth)
+  check_intervalWidth(IntervalWidth)
   
   if (!isGiven(LengthInterval)){
     LengthInterval <- NULL
@@ -822,6 +831,7 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
   }
   Decimals <- getDefault(Decimals, "Decimals", F, stoxFunctionAttributes$ReportRecaWeightAtAge$functionParameterDefaults$Decimals)
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, stoxFunctionAttributes$ReportRecaWeightAtAge$functionParameterDefaults$IntervalWidth)
+  check_intervalWidth(IntervalWidth)
   Threshold <- getDefault(Threshold, "Threshold", F, stoxFunctionAttributes$ReportRecaWeightAtAge$functionParameterDefaults$Threshold)
   Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10)))
   
@@ -905,6 +915,7 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
   
   Decimals <- getDefault(Decimals, "Decimals", F, stoxFunctionAttributes$ReportRecaLengthAtAge$functionParameterDefaults$Decimals)
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, stoxFunctionAttributes$ReportRecaLengthAtAge$functionParameterDefaults$IntervalWidth)
+  check_intervalWidth(IntervalWidth)
   Threshold <- getDefault(Threshold, "Threshold", F, stoxFunctionAttributes$ReportRecaLengthAtAge$functionParameterDefaults$Threshold)
   Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("length", conversionRange=c(1e-7, 10)))
   
@@ -1007,6 +1018,7 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   
   checkMandatory(RecaCatchAtAge, "RecaCatchAtAge")
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$IntervalWidth)
+  check_intervalWidth(IntervalWidth)
   DecimalTotalNumber <- getDefault(DecimalTotalNumber, "DecimalTotalNumber", UseDefaultDecimalOptions, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalTotalNumber)
   DecimalTotalWeight <- getDefault(DecimalTotalWeight, "DecimalTotalWeight", UseDefaultDecimalOptions, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalTotalWeight)
   DecimalMeanAge <- getDefault(DecimalMeanAge, "DecimalMeanAge", UseDefaultDecimalOptions, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalMeanAge)
