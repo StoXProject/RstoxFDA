@@ -42,8 +42,12 @@
 #' @concept spatial coding functions
 #' @importFrom ggplot2 .data
 #' @export
-plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="StratumName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL, polygonColor="blue"){
+plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef=NULL, areaNameCol="StratumName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL, polygonColor="blue"){
 
+  if ((is.null(data) || is.null(latCol) || is.null(lonCol)) && is.null(areaDef) && (is.null(xlim) || is.null(ylim))){
+    stop("Provide either some data with latitude and longitue (data, latCol, lonCol), an area definition (areaDef) or extent to plot (xlim, ylim)")
+  }
+  
   if (is.null(projection)) {
     projection <- "+proj=merc +datum=WGS84"
   }
@@ -65,21 +69,17 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 
   newcrs <- sf::st_crs(projection)
 
-  areaDef <- sf::st_as_sf(areaDef)
-
-  limbox <- sf::st_bbox(sf::st_transform(areaDef, sf::st_crs(4326))) #get bounding box in lat lon
-  if (is.null(xlim)){
-    xlim <- c(limbox$xmin, limbox$xmax)
-  }
-  if (is.null(ylim)){
-    ylim <- c(limbox$ymin, limbox$ymax)
-  }
-
   world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
 
   pl <- ggplot2::ggplot(data)
   pl <- pl + ggplot2::geom_sf(data=world)
 
+  limbox <- NULL
+  if (!is.null(areaDef)){
+    areaDef <- sf::st_as_sf(areaDef)
+    limbox <- sf::st_bbox(sf::st_transform(areaDef, sf::st_crs(4326))) #get bounding box in lat lon
+  }
+  
   if (!is.null(data)){
     if (is.null(groupCol)){
       pl <- pl + ggplot2::geom_sf(data=sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326)), size = pointSize,
@@ -89,8 +89,20 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
       pl <- pl + ggplot2::geom_sf(data=sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326)), size = pointSize,
                                   shape = pointShape, ggplot2::aes(color=.data[[groupCol]]))
     }
+    if (is.null(limbox)){
+      limbox <- sf::st_bbox(sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326))) #get bounding box in lat lon
+    }
   }
 
+  if (is.null(xlim)){
+    xlim <- c(limbox$xmin, limbox$xmax)
+  }
+  if (is.null(ylim)){
+    ylim <- c(limbox$ymin, limbox$ymax)
+  }
+  
+  
+  
   if (!is.null(areaDef)){
     pl <- pl + ggplot2::geom_sf(data=areaDef, fill=NA, colour=polygonColor)
 
