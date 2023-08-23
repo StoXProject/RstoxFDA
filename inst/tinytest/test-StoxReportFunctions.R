@@ -131,6 +131,10 @@ sb$Individual <-  sb$Individual[sb$Individual$SampleKey != sb$Sample$SampleKey[1
 RstoxFDA::ReportFdaSampling(sb, StoxLandingData, GroupingVariables = c("Gear"))
 expect_warning(RstoxFDA::ReportFdaSampling(sb, StoxLandingData, SamplingVariables = c("IndividualSex")), "StoX: There are some Samples with no individuals")
 
+gReport <- RstoxFDA::ReportFdaSampling(sb, StoxLandingData, GroupingVariables = c("Gear"))
+qgReport <- RstoxFDA::ReportFdaSampling(sb, StoxLandingData, GroupingVariables = c("Gear", "Quarter"))
+expect_true(sum(gReport$FisheriesSampling$Vessels, na.rm=T) <= sum(qgReport$FisheriesSampling$Vessels, na.rm=T))
+expect_true(sum(gReport$FisheriesSampling$Catches, na.rm=T) == sum(qgReport$FisheriesSampling$Catches, na.rm=T))
 
 SamplingReport <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"))
 expect_true(abs(sum(StoxBioticData$Sample$CatchFractionWeight, na.rm=T) - sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches)) / sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches) < .01)

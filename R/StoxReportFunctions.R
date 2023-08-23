@@ -17,6 +17,10 @@ check_intervalWidth <- function(intervalwidth){
 #'  while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
 #'  with another area listed as dominant area.
 #'  
+#'  Note that the columns Catches and Vessels summarize the number of unique catches and vessels in each partition / cell.
+#'  So depending on which grouping variables are added, the sum of vessels does not have to correspond to the total sum of vessels in the fleet.
+#'  In principle the same applies to Catches, but in practice that situation does less commonly arise.
+#'  
 #'  In addition sampling may be reported partitioned on the provided 'SamplingVariables'. For instance the variable 'IndividualSex' may be provided
 #'  to see how many samples are collected for each sex. NAs will be treated as a separate category.
 #'  When 'SamplingVariables' are provided, each partition specified by 'GroupingVariables' will be reported several times,
@@ -120,9 +124,9 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
     stop(paste("All 'GroupingVariables' must be present in 'StoxBioticData'. Missing:", paste(missing, sep=",")))
   }
 
-  samples <- flatbiotic[,c(GroupingVariables, SamplingVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "StationKey", "IndividualKey", "Sample"), with=F]
+  samples <- flatbiotic[,c(GroupingVariables, SamplingVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "Haul", "Sample"), with=F]
   
-  sampledTab <- samples[,list(Catches=length(unique(get("StationKey"))), 
+  sampledTab <- samples[,list(Catches=length(unique(get("Haul"))), 
                               Vessels=length(unique(get("CatchPlatform"))),
                               WeightMeasurements=sum(!is.na(get("IndividualRoundWeight"))),
                               LengthMeasurements=sum(!is.na(get("IndividualTotalLength"))),
