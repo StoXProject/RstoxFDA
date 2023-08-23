@@ -22,18 +22,20 @@ jobs:
         # for windows and mac all builds are pushed to drat repo on merge to master (except pre-release builds), except 'next'
         # 2023-08-23 fails, not getting Reca. Because it is not built yet for windows and next.
           - {os: macOS-latest,   r: 'next', pkgext: '.tgz'}
+          - {os: macOS-latest,   r: '4.3', pkgext: '.tgz'}
           - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'}
           - {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'}
           - {os: macOS-latest,   r: '4.0',     pkgext: '.tgz'}
           
           # 2023-08-23 fails, not getting Reca. Because it is not built yet for windows and next.
           - {os: windows-latest, r: 'next', pkgext: '.zip'} 
+          - {os: windows-latest, r: '4.3', pkgext: '.zip'}
           - {os: windows-latest, r: '4.2', pkgext: '.zip'}
           - {os: windows-latest, r: '4.1',  pkgext: '.zip'}
           - {os: windows-latest, r: '4.0',     pkgext: '.zip',    rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-latest,  r: 'next', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-22.04,   r: '4.2',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
-          # 4.1 is pushed to drat repo on mergre to master for ubunutu (except pre-release builds), update script if 4.1 is taken out
+          # 4.1 is pushed to drat repo on merge to master for ubunutu (except pre-release builds), update script if 4.1 is taken out
           - {os: ubuntu-20.04,   r: '4.1',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-20.04,   r: '4.0',     pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           
