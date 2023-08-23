@@ -1,5 +1,12 @@
 # RstoxFDA v1.2.1-9001
 * Fixed issue where the DefineCarNeighbours would format column headers differently depending on the chosen DefinitionMethods. The column header 'CarValue' is now consistently written in the singular form, which means that output from the DefinitionMethod 'StratumPolygon' has changed, and the json schema for CarNeighbours has changed.
+* Changed the behavior of AddStratumStoxLanding so that it assigns area NA, rather than halting with error, when positions cannot be assigned to an area.
+* Changed the behaviour of ReportFdaSampling to count cacthes as unique hauls (column Haul on StoxBiotic$Haul), rather than stations. Improved documentation for the same function.
+* Added checking on the validity of IntervalWidths in report functions that report Reca-credible intervals
+* Clarified various warnings and error messages.
+* Made provision of area defintion optional in PlotArea, so that the function can be used to examine the spatial distribution of data without providing a spatial coding system, or to just make maps without providing either data or area definitions.
+* Refactored to get rid og usages of ggplot::aes_string which is soft deprecated by ggplot.
+* Added guidance to vignettes about how to deal with several hauls assigned the same station when the field 'station' is not correctly filled in NMDbiotic.
 
 # RstoxFDA v1.2.0  (2023-01-24)
 * Bumped version number in order to get latest release in line with semantic versioning
