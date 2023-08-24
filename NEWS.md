@@ -7,6 +7,7 @@
 * Made provision of area defintion optional in PlotArea, so that the function can be used to examine the spatial distribution of data without providing a spatial coding system, or to just make maps without providing either data or area definitions.
 * Refactored to get rid og usages of ggplot::aes_string which is soft deprecated by ggplot.
 * Added guidance to vignettes about how to deal with several hauls assigned the same station when the field 'station' is not correctly filled in NMDbiotic.
+* Added workaround so that the non-linear option for lgamodel can be used with with all version of Reca.
 
 # RstoxFDA v1.2.0  (2023-01-24)
 * Bumped version number in order to get latest release in line with semantic versioning
