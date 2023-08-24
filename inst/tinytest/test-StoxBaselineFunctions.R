@@ -102,7 +102,7 @@ StoxBioticCod$Individual <- StoxBioticCod$Individual[!is.na(StoxBioticCod$Indivi
 filt <- RstoxFDA::FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=1)
 expect_true(nrow(filt$Individual) < nrow(StoxBioticCod$Individual))
 expect_equal(nrow(filt$Station), nrow(StoxBioticCod$Station))
-filt <- RstoxFDA::FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=.01, FilterUpwards = T)
+filt <- RstoxFDA::FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=.5, FilterUpwards = T)
 expect_true(nrow(filt$Individual) < nrow(StoxBioticCod$Individual))
 expect_true(nrow(filt$Station) < nrow(StoxBioticCod$Station))
 

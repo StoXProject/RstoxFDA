@@ -17,8 +17,8 @@ list with tow members:
   \item{...}{A column for each of the provided Aggregation variables}
   \item{...}{A column for each of the provided Sampling variables}
   \item{LandedRoundWeight}{Total landings in kg}
-  \item{Catches}{Number of catches sampled}
-  \item{Vessels}{Number of vessels sampled}
+  \item{Catches}{Number of unique catches sampled}
+  \item{Vessels}{Number of unique vessels sampled}
   \item{WeightMeasurements}{Number of fished measured for weight}
   \item{LengthMeasurements}{Number of fished measured for length}
   \item{AgeReadings}{Number of fished with age determined}

@@ -1328,6 +1328,7 @@ loadCarNeighboursFile <- function(FileName, encoding){
 calculateCarNeighbours <- function(StratumPolygon){
   
   #force planar geometry for sf operations, for compability reasons
+  #consider transforming to equirectangular projection instead st_transform(sfpoly, "+proj=eqc")
   sphergeom <- sf::sf_use_s2()
   sf::sf_use_s2(FALSE)
   

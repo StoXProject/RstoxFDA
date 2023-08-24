@@ -9,7 +9,7 @@ plotArea(
   latCol = NULL,
   lonCol = NULL,
   groupCol = NULL,
-  areaDef,
+  areaDef = NULL,
   areaNameCol = "StratumName",
   areaLabels = is.null(data),
   xlim = NULL,
@@ -57,13 +57,16 @@ plotArea(
 \item{polygonColor}{color to be used for plotting polygons.}
 }
 \description{
-Plots area polygons on a map, may point a set of positions as well.
+Plots area polygons on a map, may plot a set of positions as well.
 }
 \details{
 Map ranges to plot are specified by 'xlim' and 'ylim'. These should always be given in lon/lat.
  if these are not given they will be derived in order to include all positions in 'data'.
  if 'data is not given they will be derived from the bounding box of 'areaDef'.
  To allow for flexible projection, some space will be added around 'xlim' and 'ylim'.
+ 
+ Both 'areaDef' and 'data' are optional, so the function may be used to plot position without an area defintion, 
+ or even to just plot maps if xlim and ylim are provided.
  
  Colors can be specified as understood by ggplot2. E.g. one of those listed by \code{\link[grDevices]{colors}}.
 }

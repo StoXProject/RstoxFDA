@@ -42,6 +42,10 @@ but unequal category-definitions. For instance area are coded in landings as dom
 while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
 with another area listed as dominant area.
 
+Note that the columns Catches and Vessels summarize the number of unique catches and vessels in each partition / cell.
+So depending on which grouping variables are added, the sum of vessels does not have to correspond to the total sum of vessels in the fleet.
+In principle the same applies to Catches, but in practice that situation does less commonly arise.
+
 In addition sampling may be reported partitioned on the provided 'SamplingVariables'. For instance the variable 'IndividualSex' may be provided
 to see how many samples are collected for each sex. NAs will be treated as a separate category.
 When 'SamplingVariables' are provided, each partition specified by 'GroupingVariables' will be reported several times,
