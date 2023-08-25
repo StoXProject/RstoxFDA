@@ -592,7 +592,7 @@ ReportRecaCatchAtAgeCovariance <- function(RecaCatchAtAge, PlusGroup=integer(), 
 #' @param Decimals integer specifying the number of decimals to report for 'CatchAtLength', 'SD', 'Low' and 'High'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchAtLength$functionParameterDefaults$Decimals`.
 #' @param Unit unit for 'CatchAtLength', 'SD', 'Low' and 'High'
 #' @param LengthInterval width of length bins in cm. If not provided, the interval in 'RecaCatchAtAge' will be used.
-#' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
+#' @return \code{\link[RstoxFDA]{ReportFdaCatchAtLengthData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
 #' @concept StoX-Reca functions
 #' @concept StoX-functions

@@ -766,7 +766,7 @@ PlotMeanVariableAtAge <- function(ReportFdaVariableAtAgeData, tableName="MeanWei
 #'  RstoxFDA::PlotMeanWeightAtAge(weightAtAge)
 #' @export
 PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
- if (!is.ReportFdaByAgeData(ReportFdaWeightAtAgeData)){
+ if (!is.ReportFdaData(ReportFdaWeightAtAgeData)){
    stop("Malformed argument: 'ReportFdaWeightAtAgeData'")
  }
   
@@ -795,7 +795,7 @@ PlotMeanWeightAtAge <- function(ReportFdaWeightAtAgeData){
 #'  RstoxFDA::PlotMeanLengthAtAge(lengthAtAge)
 #' @export
 PlotMeanLengthAtAge <- function(ReportFdaLengthAtAgeData){
-  if (!is.ReportFdaByAgeData(ReportFdaLengthAtAgeData)){
+  if (!is.ReportFdaData(ReportFdaLengthAtAgeData)){
     stop("Malformed argument: 'ReportFdaLengthAtAgeData'")
   }
   

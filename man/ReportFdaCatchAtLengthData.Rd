@@ -7,7 +7,7 @@
 A list with two members: 'NbyLength', and 'GroupingVariables'.
  
  \describe{
-  \item{NbyLength}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'CacthAtLength': the total catch at length in numbers.}
+  \item{NbyLength}{A \code{\link[RstoxFDA]{ReportFdaData}} table with reported <Statistic> being 'CacthAtLength': the total catch at length in numbers.}
   \item{GroupingVariables}{Any specified Grouping variables.}
  }
  

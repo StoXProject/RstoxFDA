@@ -209,8 +209,8 @@ catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.r
 catchAtAgeReportDecomp <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeDecomp)
 catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat)
 
-expect_true(RstoxFDA::is.ReportFdaByAgeData(catchAtAgeReportDecomp))
-expect_true(RstoxFDA::is.ReportFdaByAgeData(catchAtAgeReportFlat))
+expect_true(RstoxFDA::is.ReportFdaData(catchAtAgeReportDecomp))
+expect_true(RstoxFDA::is.ReportFdaData(catchAtAgeReportFlat))
 
 diff <- sum(catchAtAgeReportFlat$NbyAge$CatchAtAge) - sum(catchAtAgeReportDecomp$NbyAge$CatchAtAge)
 reldiff <- abs(diff/sum(catchAtAgeReportFlat$NbyAge$CatchAtAge))
@@ -294,7 +294,7 @@ expect_equal(catchAtAgeReportMi$NbyAge$SD[1:3]*1e6, catchAtAgeReportFlatPlusGr$N
 # Report Mean weight
 
 MeanWeightReportDecomp <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimals = 4, Unit = "kg")
-expect_true(RstoxFDA::is.ReportFdaByAgeData(MeanWeightReportDecomp))
+expect_true(RstoxFDA::is.ReportFdaData(MeanWeightReportDecomp))
 expect_equal(RstoxData::getUnit(MeanWeightReportDecomp$MeanWeightByAge$MeanIndividualWeight), "mass-kg")
 
 MeanWeightReportDecimal <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4)
@@ -333,7 +333,7 @@ expect_true(all(MeanWeightReportDecompPlusGr$MeanWeightByAge$MeanIndividualWeigh
 
 # Report Mean length
 MeanLengthReportDecomp <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Unit="cm", Decimals=1)
-expect_true(RstoxFDA::is.ReportFdaByAgeData(MeanLengthReportDecomp))
+expect_true(RstoxFDA::is.ReportFdaData(MeanLengthReportDecomp))
 expect_true(!all(nchar(as.character(MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength[MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength>0]))>5))
 expect_equal(RstoxData::getUnit(MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength), "length-cm")
 

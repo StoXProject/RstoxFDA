@@ -418,13 +418,13 @@ NULL
 #' 
 NULL
 
-#' Age group statistics (ReportFdaByAgeData)
+#' Age group statistics (ReportFdaData)
 #' 
 #' @description 
 #'  Results from catch at age estimations. The results may be presented
 #'  decomposed on combinations of aggregation variables, such as gear, area, stock etc.
 #'  
-#'  ReportFdaByAgeData is a \code{\link[data.table]{data.table}} which may have the following columns:
+#'  ReportFdaData is a \code{\link[data.table]{data.table}} which may have the following columns:
 #'  \describe{
 #'   \item{AgeGroup}{character. The age group the estimate is reported for. May be age or plus group}
 #'   \item{Age}{integer. The lower age the estimate is reported for. May be an age or lower limit of plus group (inclusive)}
@@ -439,7 +439,7 @@ NULL
 #' 
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #' 
-#' @name ReportFdaByAgeData
+#' @name ReportFdaData
 #' @concept Data types
 #' 
 NULL
@@ -477,9 +477,10 @@ NULL
 #'  A list with two members: 'NbyAge' and 'GroupingVariables'.
 #'  
 #'  \describe{
-#'   \item{NbyAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'CatchAtAge': the total catch at age in numbers.}
+#'   \item{NbyAge}{A \code{\link[RstoxFDA]{ReportFdaData}} table with reported <Statistic> being 'CatchAtAge': the total catch at age in numbers.}
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
+#'  
 #'  
 #'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
 #'  
@@ -525,7 +526,7 @@ NULL
 #'  A list with two members: 'NbyLength', and 'GroupingVariables'.
 #'  
 #'  \describe{
-#'   \item{NbyLength}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'CacthAtLength': the total catch at length in numbers.}
+#'   \item{NbyLength}{A \code{\link[RstoxFDA]{ReportFdaData}} table with reported <Statistic> being 'CacthAtLength': the total catch at length in numbers.}
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
@@ -545,7 +546,7 @@ NULL
 #'  A list with two members: 'NbyLengthAge', and 'GroupingVariables'.
 #'  
 #'  \describe{
-#'   \item{NbyLengthAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'CatchAtAgeLength': the total catch at length and age in numbers.}
+#'   \item{NbyLengthAge}{A \code{\link[RstoxFDA]{ReportFdaData}} table with reported <Statistic> being 'CatchAtAgeLength': the total catch at length and age in numbers.}
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
@@ -564,7 +565,7 @@ NULL
 #'  A list with two members: 'MeanLengthByAge', and 'GroupingVariables'.
 #'  
 #'  \describe{
-#'   \item{MeanLengthByAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'MeanIndividualLength': the mean length.}
+#'   \item{MeanLengthByAge}{A \code{\link[RstoxFDA]{ReportFdaData}} table with reported <Statistic> being 'MeanIndividualLength': the mean length.}
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
@@ -587,7 +588,7 @@ NULL
 #'  A list with two members: 'MeanWeightByAge', and 'GroupingVariables'.
 #'  
 #'  \describe{
-#'   \item{MeanWeightByAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'MeanIndividualWeight': the mean weight}
+#'   \item{MeanWeightByAge}{A \code{\link[RstoxFDA]{ReportFdaData}} table with reported <Statistic> being 'MeanIndividualWeight': the mean weight}
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
@@ -604,33 +605,33 @@ NULL
 #' 
 NULL
 
-#' Checks if argument is \code{\link[RstoxFDA]{ReportFdaByAgeData}}
+#' Checks if argument is \code{\link[RstoxFDA]{ReportFdaData}}
 #' @description
-#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
-#' @param ReportFdaByAgeData argument to be checked for data conformity
-#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaByAgeData}}
+#'  Checks if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaData}}
+#' @param ReportFdaData argument to be checked for data conformity
+#' @return logical, TRUE if argument conforms to specification for \code{\link[RstoxFDA]{ReportFdaData}}
 #' @concept Data types
 #' @export
-is.ReportFdaByAgeData <- function(ReportFdaByAgeData){
-  if (!is.list(ReportFdaByAgeData)){
+is.ReportFdaData <- function(ReportFdaData){
+  if (!is.list(ReportFdaData)){
     return(FALSE)
   }
-  if (!all(c("GroupingVariables") %in% names(ReportFdaByAgeData))){
+  if (!all(c("GroupingVariables") %in% names(ReportFdaData))){
     return(FALSE)
   }
-  if (length(ReportFdaByAgeData)<2){
+  if (length(ReportFdaData)<2){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportFdaByAgeData[[1]])){
+  if (!data.table::is.data.table(ReportFdaData[[1]])){
     return(FALSE)
   }
-  if (!data.table::is.data.table(ReportFdaByAgeData$GroupingVariables)){
+  if (!data.table::is.data.table(ReportFdaData$GroupingVariables)){
     return(FALSE)
   }
-  if (!all(c("Age", "Low", "High", "SD") %in% names(ReportFdaByAgeData[[1]]))){
+  if (!all(c("Age", "Low", "High", "SD") %in% names(ReportFdaData[[1]]))){
     return(FALSE)
   }
-  if (!all(c("GroupingVariables") %in% names(ReportFdaByAgeData$GroupingVariables))){
+  if (!all(c("GroupingVariables") %in% names(ReportFdaData$GroupingVariables))){
     return(FALSE)
   }
   return(TRUE)

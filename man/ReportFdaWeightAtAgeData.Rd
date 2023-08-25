@@ -7,7 +7,7 @@
 A list with two members: 'MeanWeightByAge', and 'GroupingVariables'.
  
  \describe{
-  \item{MeanWeightByAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'MeanIndividualWeight': the mean weight}
+  \item{MeanWeightByAge}{A \code{\link[RstoxFDA]{ReportFdaData}} table with reported <Statistic> being 'MeanIndividualWeight': the mean weight}
   \item{GroupingVariables}{Any specified Grouping variables.}
  }
  

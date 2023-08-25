@@ -5,11 +5,11 @@ Title: Fisheries Dependent Analysis with RstoX
 Authors@R: c(
   person(given = "Arne Johannes", 
     family = "Holmin", 
-    role = "aut", 
+    role = c("cre", "aut"), 
     email = "arnejh@hi.no"), 
   person(given = "Edvin", 
     family = "Fuglebakk", 
-    role = c("cre", "aut")))
+    role = "aut"))
 Depends: R (>= 4.0)
 Description: Fisheries dependent analysis, including running the Estimated Catch at Age
   model through the Reca package developed by the Norwegian Computing Center.
