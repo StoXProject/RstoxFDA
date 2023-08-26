@@ -1,12 +1,15 @@
 
 #' Plot area definitions on a map
 #' @description
-#'  Plots area polygons on a map, may point a set of positions as well.
+#'  Plots area polygons on a map, may plot a set of positions as well.
 #' @details
 #'  Map ranges to plot are specified by 'xlim' and 'ylim'. These should always be given in lon/lat.
 #'  if these are not given they will be derived in order to include all positions in 'data'.
 #'  if 'data is not given they will be derived from the bounding box of 'areaDef'.
 #'  To allow for flexible projection, some space will be added around 'xlim' and 'ylim'.
+#'  
+#'  Both 'areaDef' and 'data' are optional, so the function may be used to plot position without an area defintion, 
+#'  or even to just plot maps if xlim and ylim are provided.
 #'  
 #'  Colors can be specified as understood by ggplot2. E.g. one of those listed by \code{\link[grDevices]{colors}}.
 #'  
@@ -40,9 +43,14 @@
 #'           projection="+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
 #'           +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 #' @concept spatial coding functions
+#' @importFrom ggplot2 .data
 #' @export
-plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef, areaNameCol="StratumName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL, polygonColor="blue"){
+plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef=NULL, areaNameCol="StratumName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL, polygonColor="blue"){
 
+  if ((is.null(data) || is.null(latCol) || is.null(lonCol)) && is.null(areaDef) && (is.null(xlim) || is.null(ylim))){
+    stop("Provide either some data with latitude and longitue (data, latCol, lonCol), an area definition (areaDef) or extent to plot (xlim, ylim)")
+  }
+  
   if (is.null(projection)) {
     projection <- "+proj=merc +datum=WGS84"
   }
@@ -64,21 +72,17 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 
   newcrs <- sf::st_crs(projection)
 
-  areaDef <- sf::st_as_sf(areaDef)
-
-  limbox <- sf::st_bbox(sf::st_transform(areaDef, sf::st_crs(4326))) #get bounding box in lat lon
-  if (is.null(xlim)){
-    xlim <- c(limbox$xmin, limbox$xmax)
-  }
-  if (is.null(ylim)){
-    ylim <- c(limbox$ymin, limbox$ymax)
-  }
-
   world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
 
   pl <- ggplot2::ggplot(data)
   pl <- pl + ggplot2::geom_sf(data=world)
 
+  limbox <- NULL
+  if (!is.null(areaDef)){
+    areaDef <- sf::st_as_sf(areaDef)
+    limbox <- sf::st_bbox(sf::st_transform(areaDef, sf::st_crs(4326))) #get bounding box in lat lon
+  }
+  
   if (!is.null(data)){
     if (is.null(groupCol)){
       pl <- pl + ggplot2::geom_sf(data=sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326)), size = pointSize,
@@ -86,16 +90,28 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
     }
     else{
       pl <- pl + ggplot2::geom_sf(data=sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326)), size = pointSize,
-                                  shape = pointShape, ggplot2::aes_string(color=groupCol))
+                                  shape = pointShape, ggplot2::aes(color=.data[[groupCol]]))
+    }
+    if (is.null(limbox)){
+      limbox <- sf::st_bbox(sf::st_as_sf(data, coords=c(lonCol,latCol), crs=sf::st_crs(4326))) #get bounding box in lat lon
     }
   }
 
+  if (is.null(xlim)){
+    xlim <- c(limbox$xmin, limbox$xmax)
+  }
+  if (is.null(ylim)){
+    ylim <- c(limbox$ymin, limbox$ymax)
+  }
+  
+  
+  
   if (!is.null(areaDef)){
     pl <- pl + ggplot2::geom_sf(data=areaDef, fill=NA, colour=polygonColor)
 
     if (areaLabels){
       labelPos <- suppressWarnings(cbind(areaDef, sf::st_coordinates(sf::st_centroid(sf::st_transform(areaDef, newcrs)))))
-      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label=areaNameCol), size=areaLabelSize)
+      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes(x=.data[["X"]],y=.data[["Y"]],label=.data[[areaNameCol]]), size=areaLabelSize)
     }
   }
 
@@ -182,11 +198,11 @@ plotAreaComparison <- function(areaDef1, areaDef2, areaNameCol1="StratumName", a
     
   if (areaLabels1){
       labelPos <- suppressWarnings(cbind(areaDef1, sf::st_coordinates(sf::st_centroid(sf::st_transform(areaDef1, newcrs)))))
-      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label=areaNameCol1), size=areaLabelSize, col=polygonColor1)
+      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes(x=.data[["X"]],y=.data[["Y"]],label=.data[[areaNameCol1]]), size=areaLabelSize, col=polygonColor1)
   }
   if (areaLabels2){
       labelPos <- suppressWarnings(cbind(areaDef2, sf::st_coordinates(sf::st_centroid(sf::st_transform(areaDef2, newcrs)))))
-      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label=areaNameCol2), size=areaLabelSize, col=polygonColor2)
+      pl <- pl + ggplot2::geom_label(data=labelPos, mapping=ggplot2::aes(x=.data[["X"]],y=.data[["Y"]],label=.data[[areaNameCol2]]), size=areaLabelSize, col=polygonColor2)
     }
   
   #transform limits to desired projection
@@ -287,7 +303,7 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="Stra
   pos <- pos[!is.na(pos$quant),]
 
 
-    pl <- pl + ggplot2::geom_sf(data=pos, ggplot2::aes_string(size = "quant"), shape=bubbleShape, alpha = 0.7, colour = "black",fill=bubbleColor,stroke = .2) +
+    pl <- pl + ggplot2::geom_sf(data=pos, ggplot2::aes(size = .data[["quant"]]), shape=bubbleShape, alpha = 0.7, colour = "black",fill=bubbleColor,stroke = .2) +
       ggplot2::scale_size_area(max_size=bubbleSize)
 
   pl <- pl +  ggplot2::labs(size=legendTitle)
@@ -295,7 +311,7 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="Stra
   #add area labels
   if (areaLabels){
     labelPos <- suppressWarnings(cbind(pos, sf::st_coordinates(sf::st_centroid(sf::st_transform(pos, newcrs)))))
-    pl <- pl + ggplot2::geom_text(data=labelPos, mapping=ggplot2::aes_string(x="X",y="Y",label=areaNameCol), size=areaLabelSize)
+    pl <- pl + ggplot2::geom_text(data=labelPos, mapping=ggplot2::aes(x=.data[["X"]],y=.data[["Y"]],label=.data[[areaNameCol]]), size=areaLabelSize)
   }
 
   #transform limits to desired projection

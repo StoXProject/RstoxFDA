@@ -34,6 +34,7 @@ RstoxFDA:::PlotPosteriorTraces(catchAtAgeFlat, Parameter = "MeanWeight")
 RstoxFDA:::PlotPosteriorTraces(catchAtAgeDecomp, Parameter = "MeanLength", Legend=F, UseDefaultPlotSettings = F)
 
 # test with decomp
+RstoxFDA:::PlotPosteriorTraces(catchAtAgeDecomp, CatLimit = 1000, UseDefaultPlotSettings = F)
 RstoxFDA:::PlotPosteriorTraces(catchAtAgeDecomp)
 # test with stock splitting
 predictiondatafile <- readRDS(system.file("testresources","stocksplitpred.rds", package="RstoxFDA"))
@@ -161,3 +162,4 @@ RstoxFDA:::PlotSamplingVariables(tab)
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c(), Unit = "ton", SamplingVariables = c("IndividualSex", "Platform"))
 RstoxFDA:::PlotSamplingVariables(tab)
 expect_error(RstoxFDA:::PlotSamplingVariables(tab, Landings = T), "ReportFdaSamplingData does not partition the fishery. Cannot plot total landings on secondary axis. Consider setting argument 'Landings' to False.")
+

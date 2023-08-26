@@ -7,9 +7,10 @@
 A list with two members: 'NbyAge' and 'GroupingVariables'.
  
  \describe{
-  \item{NbyAge}{A \code{\link[RstoxFDA]{ReportFdaByAgeData}} table with reported <Statistic> being 'CatchAtAge': the total catch at age in numbers.}
+  \item{NbyAge}{A \code{\link[RstoxFDA]{ReportFdaData}} table with reported <Statistic> being 'CatchAtAge': the total catch at age in numbers.}
   \item{GroupingVariables}{Any specified Grouping variables.}
  }
+ 
  
  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
  

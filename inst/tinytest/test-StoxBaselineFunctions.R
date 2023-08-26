@@ -102,7 +102,7 @@ StoxBioticCod$Individual <- StoxBioticCod$Individual[!is.na(StoxBioticCod$Indivi
 filt <- RstoxFDA::FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=1)
 expect_true(nrow(filt$Individual) < nrow(StoxBioticCod$Individual))
 expect_equal(nrow(filt$Station), nrow(StoxBioticCod$Station))
-filt <- RstoxFDA::FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=.01, FilterUpwards = T)
+filt <- RstoxFDA::FilterAgeLengthOutliersStoxBiotic(StoxBioticCod, Linf = 232.98028344, K=0.05284384, sigma=0.16180306, kAl=.5, FilterUpwards = T)
 expect_true(nrow(filt$Individual) < nrow(StoxBioticCod$Individual))
 expect_true(nrow(filt$Station) < nrow(StoxBioticCod$Station))
 
@@ -475,13 +475,13 @@ expect_error(RstoxFDA::DefineCarNeighbours(NULL, FileName = errorfile), "Malform
 #context("test-StoxBaselineFunctions: DefineCarNeighbours StratumPolygon")
 car <- RstoxFDA::DefineCarNeighbours(NULL, DefinitionMethod = "StratumPolygon", StratumPolygon = RstoxFDA::mainareaFdir2018)
 
-neighbours44 <- strsplit(car$Neighbours[car$CarValues=="44"], ",")[[1]]
+neighbours44 <- strsplit(car$Neighbours[car$CarValue=="44"], ",")[[1]]
 expect_true(all(c("43", "45", "49") %in% neighbours44))
 expect_equal(length(neighbours44), 3)
-neighbours08 <- strsplit(car$Neighbours[car$CarValues=="08"], ",")[[1]]
+neighbours08 <- strsplit(car$Neighbours[car$CarValue=="08"], ",")[[1]]
 expect_true(all(c("09", "28", "41", "42") %in% neighbours08))
 expect_equal(length(neighbours08), 4)
-neighbours62 <- strsplit(car$Neighbours[car$CarValues=="62"], ",")[[1]]
+neighbours62 <- strsplit(car$Neighbours[car$CarValue=="62"], ",")[[1]]
 expect_true(all(c("26", "38", "35", "50", "56", "55", "54", "53", "61") %in% neighbours62))
 expect_equal(length(neighbours62), 9)
 

@@ -20,21 +20,28 @@ jobs:
       matrix:
         config:
         # for windows and mac all builds are pushed to drat repo on merge to master (except pre-release builds), except 'next'
-          - {os: macOS-latest,   r: 'next', pkgext: '.tgz'}
+        
+        # 2023-08-23 fails, not getting Reca. Because it is not built yet for macos and next or 4.3.
+          #- {os: macOS-latest,   r: 'next', pkgext: '.tgz'}
+          #- {os: macOS-latest,   r: '4.3', pkgext: '.tgz'}
+          
           - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'}
           - {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'}
           - {os: macOS-latest,   r: '4.0',     pkgext: '.tgz'}
-          - {os: windows-latest, r: 'next', pkgext: '.zip'}
+
+          # 2023-08-23 fails, not getting Reca. Because it is not built yet for windows and next or 4.3.
+          - {os: windows-latest, r: 'next', pkgext: '.zip'} 
+          - {os: windows-latest, r: '4.3', pkgext: '.zip'}
+          
           - {os: windows-latest, r: '4.2', pkgext: '.zip'}
           - {os: windows-latest, r: '4.1',  pkgext: '.zip'}
           - {os: windows-latest, r: '4.0',     pkgext: '.zip',    rspm: "https://cloud.r-project.org"}
+
           - {os: ubuntu-latest,  r: 'next', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-22.04,   r: '4.2',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
-          # 4.1 is pushed to drat repo on mergre to master for ubunutu (except pre-release builds), update script if 4.1 is taken out
-          - {os: ubuntu-18.04,   r: '4.1',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
-          - {os: ubuntu-18.04,   r: '4.0',     pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
-          # checking 3.6 only on ubuntu as that builds all deps from source.
-          - {os: ubuntu-18.04,   r: '3.6',     pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          # 4.1 is pushed to drat repo on merge to master for ubunutu (except pre-release builds), update script if 4.1 is taken out
+          - {os: ubuntu-20.04,   r: '4.1',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          - {os: ubuntu-20.04,   r: '4.0',     pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -48,10 +55,14 @@ jobs:
       - name: Do autorelease increment, tagging, and environment setup
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
-          curl "https://raw.githubusercontent.com/StoXProject/repo/master/scripts/checktag-actions.sh" --output checktag.sh
-          curl "https://raw.githubusercontent.com/StoXProject/repo/master/scripts/deploy-actions.sh" --output deploy.sh
-          chmod +x ./checktag.sh ./deploy.sh
-          . checktag.sh
+          curl "https://raw.githubusercontent.com/StoXProject/testingRepo/main/scripts/checktag-actions.sh" --output testingRepo_checktag.sh
+          curl "https://raw.githubusercontent.com/StoXProject/testingRepo/main/scripts/deploy-actions.sh" --output testingRepo_deploy.sh
+          chmod +x ./testingRepo_checktag.sh ./testingRepo_deploy.sh
+          . testingRepo_checktag.sh
+          curl "https://raw.githubusercontent.com/StoXProject/repo/master/scripts/checktag-actions.sh" --output repo_checktag.sh
+          curl "https://raw.githubusercontent.com/StoXProject/repo/master/scripts/deploy-actions.sh" --output repo_deploy.sh
+          chmod +x ./repo_checktag.sh ./repo_deploy.sh
+          . repo_checktag.sh
           echo "PRERELEASE=${PRERELEASE}" >> $GITHUB_ENV
           echo "FINAL_TAG=${FINAL_TAG}" >> $GITHUB_ENV
           echo "PKG_FILE_PREFIX=${PKG_FILE_PREFIX}" >> $GITHUB_ENV
@@ -101,17 +112,22 @@ jobs:
           while read -r cmd
           do
             eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "18.04"))')
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
 
       - name: Install MacOS dependencies
         if: runner.os == 'macOS'
         run: |
-          rm '/usr/local/bin/gfortran'
-          rm '/usr/local/bin/2to3'
-          rm '/usr/local/bin/idle3'
-          rm '/usr/local/bin/pydoc3'
-          rm '/usr/local/bin/python3'
-          rm '/usr/local/bin/python3-config'
+          rm -f '/usr/local/bin/gfortran'
+          rm -f '/usr/local/bin/2to3'
+          rm -f '/usr/local/bin/2to3-3.11'
+          rm -f '/usr/local/bin/idle3'
+          rm -f '/usr/local/bin/idle3.11'
+          rm -f '/usr/local/bin/pydoc3'
+          rm -f '/usr/local/bin/pydoc3.11'
+          rm -f '/usr/local/bin/python3'
+          rm -f '/usr/local/bin/python3.11'
+          rm -f '/usr/local/bin/python3-config'
+          rm -f '/usr/local/bin/python3.11-config'
           export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=false # This prevents Homebrew from re-installing R, which will lead to .Platform$pkgType = "source".
           brew install gdal
         shell: bash
@@ -197,7 +213,15 @@ jobs:
         env:
           BUILD_NUMBER: ${{ github.sha  }}
           DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
-        run: . deploy.sh
+        run: . repo_deploy.sh
+        shell: bash
+
+      - name: Upload to DRAT testingRepo
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          BUILD_NUMBER: ${{ github.sha  }}
+          DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
+        run: . testingRepo_deploy.sh
         shell: bash
 
       - name: Create release and upload files

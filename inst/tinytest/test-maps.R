@@ -20,6 +20,20 @@ RstoxFDA::plotArea(title="Main area + NAFO",
          areaDef=rbind(RstoxFDA::mainareaFdir2018[,c("StratumName")],
                        RstoxFDA::NAFOareas[,c("StratumName")]))
 
+#plot without area
+RstoxFDA::plotArea(title="map w data",
+                   data = StoxBioticData$Station,
+                   latCol = "Latitude",
+                   lonCol = "Longitude")
+
+
+#plot without area or data
+RstoxFDA::plotArea(title="map",
+                   xlim = c(-14,14),
+                   ylim = c(52,62))
+
+#plot without anything
+expect_error(RstoxFDA::plotArea(title="map"))
 
 RstoxFDA::plotBubbleMap(RstoxFDA::landings, "Area", "LiveWeightKG",
       areaDef = RstoxFDA::ICESareas, areaNameCol = "Area_Full",
@@ -46,8 +60,10 @@ ib$StratumName <- paste(ib$Major_FA, ib$SubArea, sep=".")
 expect_error(RstoxFDA::mergePolygons(ib, "StratumName"), "All columns must have the same value for polygons that are to be merged")
 
 iasf <- sf::st_as_sf(ia)
+iasf <- sf::st_transform(iasf, "+proj=eqc")
 iasf <- sf::st_simplify(iasf, dTolerance=.4)
 iasf <- sf::st_buffer(iasf, dist = .03)
+iasf <- sf::st_transform(iasf, "+proj=latlon")
 ia <- sf::as_Spatial(iasf)
 
 ia$StratumName <- paste(ia$Major_FA, ia$SubArea, sep=".")

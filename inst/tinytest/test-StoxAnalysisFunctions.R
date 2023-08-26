@@ -11,6 +11,21 @@ expect_error(RstoxFDA:::PrepareRecaEstimate(StoxBioticDataWDupl, StoxLandingData
 
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
 
+#test wrong groupingvariables
+prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
+fpath <- RstoxFDA:::makeTempDirReca()
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=99)
+expect_error(pred <- RstoxFDA::RunRecaModels(paramOut, StoxLandingData,GroupingVariables = c("")), "All 'GroupingVariables' must be column in 'StoxLandingData', the following are not: ")
+RstoxFDA:::removeTempDirReca(fpath)
+
+#test non-linear setting
+prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
+fpath <- RstoxFDA:::makeTempDirReca()
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=99, Lgamodel = "log-linear")
+paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=99, Lgamodel = "non-linear")
+prednl <- RstoxFDA::RunRecaModels(paramOut, StoxLandingData)
+RstoxFDA:::removeTempDirReca(fpath)
+
 fpath <- RstoxFDA:::makeTempDirReca()
 # check that seed works
 paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=99)
@@ -148,7 +163,7 @@ StoxLandingData <- readRDS(StoxLandingFile)
 
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), UseAgingError = T, AgeErrorMatrix = ageerror, MinAge = 0, MaxAge = 14)
 expect_true(!is.null(prep$AgeLength$AgeErrorMatrix))
-expect_warning(est <- RstoxFDA::RunRecaEstimate(prep, 10, 50))
+expect_warning(est <- RstoxFDA::RunRecaEstimate(prep, 10, 50, Seed = 99))
 
 #context("PrepareRecaEstimate: configuration tests")
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
@@ -290,7 +305,7 @@ expect_equal(length(prep$CovariateMaps$CovariateMaps_randomEffects_AgeLength_cat
 prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c(), MinAge=1, MaxAge=30)
 
 #context("test-StoxAnalysisFunctions: RunRecaEstimate simple case")
-expect_warning(result <- RstoxFDA::RunRecaEstimate(prep, 10, 50, Thin=1))
+expect_warning(result <- RstoxFDA::RunRecaEstimate(prep, 10, 50, Thin=1, Seed = 42))
 expect_true(all(c("input", "fit", "prediction", "covariateMaps") %in% names(result)))
 expect_equal(dim(result$prediction$TotalCount)[3], 10)
 

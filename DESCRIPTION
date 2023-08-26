@@ -1,16 +1,16 @@
 Package: RstoxFDA
-Version: 1.2.0
-Date: 2023-01-24
+Version: 1.3.0-9001
+Date: 2023-08-24
 Title: Fisheries Dependent Analysis with RstoX
 Authors@R: c(
   person(given = "Arne Johannes", 
     family = "Holmin", 
-    role = "aut"), 
+    role = c("cre", "aut"), 
+    email = "arnejh@hi.no"), 
   person(given = "Edvin", 
     family = "Fuglebakk", 
-    role = c("cre", "aut"), 
-    email = "edvin.fuglebakk@hi.no"))
-Depends: R (>= 3.6)
+    role = "aut"))
+Depends: R (>= 4.0)
 Description: Fisheries dependent analysis, including running the Estimated Catch at Age
   model through the Reca package developed by the Norwegian Computing Center.
 URL: https://github.com/StoXProject/RstoxFDA
@@ -19,15 +19,15 @@ License: LGPL-3
 LazyData: true
 Encoding: UTF-8
 Imports: 
-    data.table (>= 1.14.2),
+    data.table (>= 1.12.6),
     ggplot2 (>= 3.2.1),
     gridExtra (>= 2.3),
     methods (>= 3.5.0),
     RColorBrewer (>= 1.1-2),
     rnaturalearth (>= 0.1.0),
     rnaturalearthdata (>= 0.1.0),
-    RstoxBase (>= 1.10.4),
-    RstoxData (>= 1.7.5),
+    RstoxBase (>= 1.11.3),
+    RstoxData (>= 1.10.1),
     sf (>= 1.0.0),
     sp (>= 1.3.2),
     stats (>= 3.5.0),
@@ -39,6 +39,5 @@ Suggests:
     tinytest
 Additional_repositories: 
 	https://stoxproject.github.io/repo
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
-LazyDataCompression: xz

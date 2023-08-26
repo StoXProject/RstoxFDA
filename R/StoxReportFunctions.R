@@ -1,4 +1,10 @@
-
+#' checks that intervalwidth is in the range <0,1>
+#' @noRd
+check_intervalWidth <- function(intervalwidth){
+  if (intervalwidth <= 0 || intervalwidth >= 1){
+    stop("'IntervalWidth' must be larger than 0 and smaller than 1.")
+  }
+}
 
 #' Report FDA sampling
 #' @description 
@@ -10,6 +16,10 @@
 #'  but unequal category-definitions. For instance area are coded in landings as dominant area for a fishing trip,
 #'  while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
 #'  with another area listed as dominant area.
+#'  
+#'  Note that the columns Catches and Vessels summarize the number of unique catches and vessels in each partition / cell.
+#'  So depending on which grouping variables are added, the sum of vessels does not have to correspond to the total sum of vessels in the fleet.
+#'  In principle the same applies to Catches, but in practice that situation does less commonly arise.
 #'  
 #'  In addition sampling may be reported partitioned on the provided 'SamplingVariables'. For instance the variable 'IndividualSex' may be provided
 #'  to see how many samples are collected for each sex. NAs will be treated as a separate category.
@@ -114,9 +124,9 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
     stop(paste("All 'GroupingVariables' must be present in 'StoxBioticData'. Missing:", paste(missing, sep=",")))
   }
 
-  samples <- flatbiotic[,c(GroupingVariables, SamplingVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "StationKey", "IndividualKey", "Sample"), with=F]
+  samples <- flatbiotic[,c(GroupingVariables, SamplingVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "Haul", "Sample"), with=F]
   
-  sampledTab <- samples[,list(Catches=length(unique(get("StationKey"))), 
+  sampledTab <- samples[,list(Catches=length(unique(get("Haul"))), 
                               Vessels=length(unique(get("CatchPlatform"))),
                               WeightMeasurements=sum(!is.na(get("IndividualRoundWeight"))),
                               LengthMeasurements=sum(!is.na(get("IndividualTotalLength"))),
@@ -376,7 +386,7 @@ setLengthGroup <- function(LengthReport, interval){
     }
     
     if (interval < max(diffs)){
-      stoxWarning("Length interval is specified lower than the available resolution.")
+      stoxWarning("Length interval is specified lower than the available resolution. Check if options 'LengthResolution' or 'CollapseLength' are set as intended.")
     }
     
     groups <- seq(0,max(LengthReport$Length)+interval,interval)
@@ -440,7 +450,8 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
   Decimals <- getDefault(Decimals, "Decimals", F, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtAge$functionParameterDefaults$Decimals)
   Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12)))
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtAge$functionParameterDefaults$IntervalWidth)
-
+  check_intervalWidth(IntervalWidth)
+  
   aggNames <- c("Iteration", "Age", RecaCatchAtAge$GroupingVariables$GroupingVariables)
   stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
   totalOverLength <- RecaCatchAtAge$CatchAtAge[,list(CatchAtAge=sum(get("CatchAtAge"))), by=aggNames]
@@ -581,7 +592,7 @@ ReportRecaCatchAtAgeCovariance <- function(RecaCatchAtAge, PlusGroup=integer(), 
 #' @param Decimals integer specifying the number of decimals to report for 'CatchAtLength', 'SD', 'Low' and 'High'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchAtLength$functionParameterDefaults$Decimals`.
 #' @param Unit unit for 'CatchAtLength', 'SD', 'Low' and 'High'
 #' @param LengthInterval width of length bins in cm. If not provided, the interval in 'RecaCatchAtAge' will be used.
-#' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
+#' @return \code{\link[RstoxFDA]{ReportFdaCatchAtLengthData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtAge}} for reporting age composition
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
@@ -606,6 +617,7 @@ ReportRecaCatchAtLength <- function(RecaCatchAtAge, IntervalWidth=numeric(), Dec
   Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12)))
   
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtLength$functionParameterDefaults$IntervalWidth)
+  check_intervalWidth(IntervalWidth)
   
   aggNames <- c("Iteration", "Length", RecaCatchAtAge$GroupingVariables$GroupingVariables)
   stopifnot(length(aggNames) == (ncol(RecaCatchAtAge$CatchAtAge)-2))
@@ -685,6 +697,7 @@ ReportRecaCatchAtLengthAndAge <- function(RecaCatchAtAge,
   
   Decimals <- getDefault(Decimals, "Decimals", F, stoxFunctionAttributes$ReportRecaCatchAtLengthAndAge$functionParameterDefaults$Decimals)
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, stoxFunctionAttributes$ReportRecaCatchAtLengthAndAge$functionParameterDefaults$IntervalWidth)
+  check_intervalWidth(IntervalWidth)
   
   if (!isGiven(LengthInterval)){
     LengthInterval <- NULL
@@ -822,6 +835,7 @@ ReportRecaWeightAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
   }
   Decimals <- getDefault(Decimals, "Decimals", F, stoxFunctionAttributes$ReportRecaWeightAtAge$functionParameterDefaults$Decimals)
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, stoxFunctionAttributes$ReportRecaWeightAtAge$functionParameterDefaults$IntervalWidth)
+  check_intervalWidth(IntervalWidth)
   Threshold <- getDefault(Threshold, "Threshold", F, stoxFunctionAttributes$ReportRecaWeightAtAge$functionParameterDefaults$Threshold)
   Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("mass", conversionRange=c(1e-4, 10)))
   
@@ -905,6 +919,7 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
   
   Decimals <- getDefault(Decimals, "Decimals", F, stoxFunctionAttributes$ReportRecaLengthAtAge$functionParameterDefaults$Decimals)
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, stoxFunctionAttributes$ReportRecaLengthAtAge$functionParameterDefaults$IntervalWidth)
+  check_intervalWidth(IntervalWidth)
   Threshold <- getDefault(Threshold, "Threshold", F, stoxFunctionAttributes$ReportRecaLengthAtAge$functionParameterDefaults$Threshold)
   Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("length", conversionRange=c(1e-7, 10)))
   
@@ -1007,6 +1022,7 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
   
   checkMandatory(RecaCatchAtAge, "RecaCatchAtAge")
   IntervalWidth <- getDefault(IntervalWidth, "IntervalWidth", F, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$IntervalWidth)
+  check_intervalWidth(IntervalWidth)
   DecimalTotalNumber <- getDefault(DecimalTotalNumber, "DecimalTotalNumber", UseDefaultDecimalOptions, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalTotalNumber)
   DecimalTotalWeight <- getDefault(DecimalTotalWeight, "DecimalTotalWeight", UseDefaultDecimalOptions, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalTotalWeight)
   DecimalMeanAge <- getDefault(DecimalMeanAge, "DecimalMeanAge", UseDefaultDecimalOptions, RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalMeanAge)

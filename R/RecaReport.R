@@ -302,12 +302,17 @@ plotAgeTraces <- function(prediction, unit="millions", plusGroup=NULL, nclust=4,
   for (i in seq(1,nclust)[order(clust$centers, decreasing = T)]){
     mcp <- m[m$age %in% ages[clust$cluster==i],]
     maxy <- max(mcp[[unit]]) + max(mcp[[unit]])*.1
+    
+    x_iteration <- "iteration"
+    y_unit <- unit
+    group_age <- "age"
+    
     if (sum(clust$cluster==i)<=catlimit){
       mcp$age <- as.factor(mcp$age)
-      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes_string(x="iteration", y=unit, group="age"))+ggplot2::geom_line(data=mcp, ggplot2::aes_(color=~age)) + ggplot2::geom_point(data=mcp[mcp[[unit]] > mcp$uq | mcp[[unit]] < mcp$lq,], ggplot2::aes_(color=~age)) + ggplot2::scale_color_manual(values = agecolors) + ggplot2::ylim(0,maxy)
+      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes(x=.data[[x_iteration]], y=.data[[y_unit]], group=.data[[group_age]]))+ggplot2::geom_line(data=mcp, ggplot2::aes_(color=~age)) + ggplot2::geom_point(data=mcp[mcp[[unit]] > mcp$uq | mcp[[unit]] < mcp$lq,], ggplot2::aes_(color=~age)) + ggplot2::scale_color_manual(values = agecolors) + ggplot2::ylim(0,maxy)
     }
     else{
-      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes_string(x="iteration", y=unit, group="age"))+ggplot2::geom_line(data=mcp, ggplot2::aes_(color=~age)) + ggplot2::geom_point(data=mcp[mcp[[unit]] > mcp$uq | mcp[[unit]] < mcp$lq,], ggplot2::aes_(color=~age)) + ggplot2::ylim(0,maxy)
+      plots[[plotnr]]<-ggplot2::ggplot(data=mcp, ggplot2::aes(x=.data[[x_iteration]], y=.data[[y_unit]], group=.data[[group_age]]))+ggplot2::geom_line(data=mcp, ggplot2::aes_(color=~age)) + ggplot2::geom_point(data=mcp[mcp[[unit]] > mcp$uq | mcp[[unit]] < mcp$lq,], ggplot2::aes_(color=~age)) + ggplot2::ylim(0,maxy)
     }
     plots[[plotnr]] <- plots[[plotnr]] + ggplot2::theme(axis.ticks.x=ggplot2::element_blank(), axis.text.x=ggplot2::element_blank())
     plotnr <- plotnr+1

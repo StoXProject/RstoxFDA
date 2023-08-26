@@ -24,7 +24,7 @@ ReportRecaCatchAtLength(
 \item{LengthInterval}{width of length bins in cm. If not provided, the interval in 'RecaCatchAtAge' will be used.}
 }
 \value{
-\code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
+\code{\link[RstoxFDA]{ReportFdaCatchAtLengthData}}
 }
 \description{
 Tabulates summary statistics for total catch (number) at length from MCMC simulations using Reca.

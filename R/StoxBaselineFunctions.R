@@ -760,7 +760,7 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=ch
   if (!(all(c(latColumn, lonColumn) %in% names(StoxLandingData$Landing)))){
     stop(paste("Could not find columns:", latColumn, "and", lonColumn, "that should be added to StoxLandingData"))
   }
-  StoxLandingData$Landing <- appendAreaCode(StoxLandingData$Landing, StratumPolygon, latColumn, lonColumn, cname)
+  StoxLandingData$Landing <- appendAreaCode(StoxLandingData$Landing, StratumPolygon, latColumn, lonColumn, cname, strict = F)
   StoxLandingData$Landing[[ColumnName]] <- StoxLandingData$Landing$cname
   StoxLandingData$Landing$cname <- NULL
   return(StoxLandingData)
@@ -1328,6 +1328,7 @@ loadCarNeighboursFile <- function(FileName, encoding){
 calculateCarNeighbours <- function(StratumPolygon){
   
   #force planar geometry for sf operations, for compability reasons
+  #consider transforming to equirectangular projection instead st_transform(sfpoly, "+proj=eqc")
   sphergeom <- sf::sf_use_s2()
   sf::sf_use_s2(FALSE)
   
@@ -1338,7 +1339,7 @@ calculateCarNeighbours <- function(StratumPolygon){
   carValues <- sfpoly$StratumName
   neighbours <- unlist(lapply(neighbourIndecies, function(x){paste(sfpoly$StratumName[x],collapse=",")}))
   
-  carTable <- data.table::data.table(CarValues=carValues, Neighbours=neighbours)
+  carTable <- data.table::data.table(CarValue=carValues, Neighbours=neighbours)
   
   sf::sf_use_s2(sphergeom)
   
@@ -1362,7 +1363,7 @@ calculateCarNeighbours <- function(StratumPolygon){
 #'  Definitions are read from a tab separated file with headers. Columns defined as:
 #'  \describe{
 #'  \item{Column 1: 'CarValue'}{Value for the CAR-variable (key)}
-#'  \item{Column 2: 'Neigbhours'}{Comma-separated list of neighbours (each should occur in Column 1)}
+#'  \item{Column 2: 'Neigbhour'}{Comma-separated list of neighbours (each should occur in Column 1)}
 #'  }
 #'  The neighbour definition must be symmetric
 #'  If a is among the neighbours of b, b must also be among the neighbours of a.

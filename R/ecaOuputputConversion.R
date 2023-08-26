@@ -586,6 +586,13 @@ convertStox2PrepReca <- function(stoxPrep){
   GlobalParameters$thin <- gb$GlobalParameters$thin
   GlobalParameters$delta.age <- gb$GlobalParameters$delta.age
   GlobalParameters$seed <- gb$GlobalParameters$seed
+  
+  # workaround to make non-linear option work with all Reca 3 variants.
+  # HR at NR has clarified that the flag old.version can safely be set to zero for all Reca variants.
+  # Future releases of Reca 3.x will remove all checks for the old.version flag.
+  # If this is not set, some variants of Reca 3 will alt if the lgamodel is set to non-linear.
+  # See https://github.com/StoXProject/RstoxFDA/issues/92
+  GlobalParameters$old.version <- 0
 
   stoxPrep$GlobalParameters <- GlobalParameters
   

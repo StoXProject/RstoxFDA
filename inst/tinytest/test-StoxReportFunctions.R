@@ -131,6 +131,10 @@ sb$Individual <-  sb$Individual[sb$Individual$SampleKey != sb$Sample$SampleKey[1
 RstoxFDA::ReportFdaSampling(sb, StoxLandingData, GroupingVariables = c("Gear"))
 expect_warning(RstoxFDA::ReportFdaSampling(sb, StoxLandingData, SamplingVariables = c("IndividualSex")), "StoX: There are some Samples with no individuals")
 
+gReport <- RstoxFDA::ReportFdaSampling(sb, StoxLandingData, GroupingVariables = c("Gear"))
+qgReport <- RstoxFDA::ReportFdaSampling(sb, StoxLandingData, GroupingVariables = c("Gear", "Quarter"))
+expect_true(sum(gReport$FisheriesSampling$Vessels, na.rm=T) <= sum(qgReport$FisheriesSampling$Vessels, na.rm=T))
+expect_true(sum(gReport$FisheriesSampling$Catches, na.rm=T) == sum(qgReport$FisheriesSampling$Catches, na.rm=T))
 
 SamplingReport <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"))
 expect_true(abs(sum(StoxBioticData$Sample$CatchFractionWeight, na.rm=T) - sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches)) / sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches) < .01)
@@ -205,8 +209,8 @@ catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.r
 catchAtAgeReportDecomp <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeDecomp)
 catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat)
 
-expect_true(RstoxFDA::is.ReportFdaByAgeData(catchAtAgeReportDecomp))
-expect_true(RstoxFDA::is.ReportFdaByAgeData(catchAtAgeReportFlat))
+expect_true(RstoxFDA::is.ReportFdaData(catchAtAgeReportDecomp))
+expect_true(RstoxFDA::is.ReportFdaData(catchAtAgeReportFlat))
 
 diff <- sum(catchAtAgeReportFlat$NbyAge$CatchAtAge) - sum(catchAtAgeReportDecomp$NbyAge$CatchAtAge)
 reldiff <- abs(diff/sum(catchAtAgeReportFlat$NbyAge$CatchAtAge))
@@ -290,7 +294,7 @@ expect_equal(catchAtAgeReportMi$NbyAge$SD[1:3]*1e6, catchAtAgeReportFlatPlusGr$N
 # Report Mean weight
 
 MeanWeightReportDecomp <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimals = 4, Unit = "kg")
-expect_true(RstoxFDA::is.ReportFdaByAgeData(MeanWeightReportDecomp))
+expect_true(RstoxFDA::is.ReportFdaData(MeanWeightReportDecomp))
 expect_equal(RstoxData::getUnit(MeanWeightReportDecomp$MeanWeightByAge$MeanIndividualWeight), "mass-kg")
 
 MeanWeightReportDecimal <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4)
@@ -329,7 +333,7 @@ expect_true(all(MeanWeightReportDecompPlusGr$MeanWeightByAge$MeanIndividualWeigh
 
 # Report Mean length
 MeanLengthReportDecomp <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Unit="cm", Decimals=1)
-expect_true(RstoxFDA::is.ReportFdaByAgeData(MeanLengthReportDecomp))
+expect_true(RstoxFDA::is.ReportFdaData(MeanLengthReportDecomp))
 expect_true(!all(nchar(as.character(MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength[MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength>0]))>5))
 expect_equal(RstoxData::getUnit(MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength), "length-cm")
 
@@ -343,6 +347,13 @@ expect_true(all(nchar(as.character(MeanLengthReportDecimals$MeanLengthByAge$Mean
 
 MeanLengthReportTk <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Decimals = 4, Threshold = 1000)
 expect_true(all(is.na(MeanLengthReportTk$MeanLengthByAge$MeanIndividualLength) == is.na(MeanWeightReportTk$MeanLengthByAge$MeanIndividualWeight)))
+
+# Report Mean length interval width
+expect_error(RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Unit="cm", Decimals=1, IntervalWidth = 0), "'IntervalWidth' must be larger than 0 and smaller than 1.")
+expect_error(RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Unit="cm", Decimals=1, IntervalWidth = 5), "'IntervalWidth' must be larger than 0 and smaller than 1.")
+MeanLengthReportInterv <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Unit="cm", Decimals=1, IntervalWidth = .1)
+expect_true(all(MeanLengthReportInterv$MeanLengthByAge$High <= MeanLengthReportDecomp$MeanLengthByAge$High))
+
 
 # Report Mean length Plus gr
 MeanLengthReportDecompPlusGr <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, PlusGroup=5)

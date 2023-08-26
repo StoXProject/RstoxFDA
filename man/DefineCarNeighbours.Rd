@@ -43,7 +43,7 @@ For DefinitionMethod 'ResourceFile':
 Definitions are read from a tab separated file with headers. Columns defined as:
 \describe{
 \item{Column 1: 'CarValue'}{Value for the CAR-variable (key)}
-\item{Column 2: 'Neigbhours'}{Comma-separated list of neighbours (each should occur in Column 1)}
+\item{Column 2: 'Neigbhour'}{Comma-separated list of neighbours (each should occur in Column 1)}
 }
 The neighbour definition must be symmetric
 If a is among the neighbours of b, b must also be among the neighbours of a.

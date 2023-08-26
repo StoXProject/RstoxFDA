@@ -58,8 +58,9 @@ Special considerations may have to be made for managed systems, as Reca needs to
 ## Maintainance policy
 We are still in the process of developing a policy for exactly which versions of R and operating systems we will strive to keep RstoxFDA working for, and how often to revise that policy. This page will be updated as those policies av finalized, but users should be prepared that it will be necessary to keep their environment up to date for continued used of RstoxFDA. We will also make public a policy on backwards compatibility, in order for us to manage deprecation of functions. 
 
-Currently RstoxFDA is being tested for the following R versions:
+Currently the latest release/pre-release of RstoxFDA is being tested for the following R versions:
 
-* R 4.0
-* R 4.1
-* R 4.2
+* R 4.0 (mac, linux, windows)
+* R 4.1 (mac, linux, windows)
+* R 4.2 (mac, linux, windows)
+* R 4.3 (windows)
