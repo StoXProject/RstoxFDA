@@ -10,7 +10,7 @@ Authors@R: c(
   person(given = "Edvin", 
     family = "Fuglebakk", 
     role = "aut"))
-Depends: R (>= 4.0)
+Depends: R (>= 3.6)
 Description: Fisheries dependent analysis, including running the Estimated Catch at Age
   model through the Reca package developed by the Norwegian Computing Center.
 URL: https://github.com/StoXProject/RstoxFDA
