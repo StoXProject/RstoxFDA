@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0-9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,7 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Runs estimation of parameters for Reca models. Invokes <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>.</p>
+    <p>Runs estimation of parameters for Reca models. Invokes <code>eca.estimate</code>.</p>
     </div>
 
     <div class="section level2">
@@ -79,31 +79,31 @@
 
 
 <dt>Nsamples</dt>
-<dd><p>number of MCMC samples that will be made available for <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code>. See documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>,</p></dd>
+<dd><p>number of MCMC samples that will be made available for <code>eca.predict</code>. See documentation for <code>eca.estimate</code>,</p></dd>
 
 
 <dt>Burnin</dt>
-<dd><p>number of MCMC samples run and discarded by <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> before any samples are saved. See documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>.</p></dd>
+<dd><p>number of MCMC samples run and discarded by <code>eca.estimate</code> before any samples are saved. See documentation for <code>eca.estimate</code>.</p></dd>
 
 
 <dt>Thin</dt>
-<dd><p>controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for <code>eca.estimate</code></p></dd>
 
 
 <dt>ResultDirectory</dt>
-<dd><p>a directory where Reca may store temp-files <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> and <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code>. See details.</p></dd>
+<dd><p>a directory where Reca may store temp-files <code>eca.estimate</code> and <code>eca.predict</code>. See details.</p></dd>
 
 
 <dt>Lgamodel</dt>
-<dd><p>The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>. Defaults to log-linear</p></dd>
+<dd><p>The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for <code>eca.estimate</code>. Defaults to log-linear</p></dd>
 
 
 <dt>Delta.age</dt>
-<dd><p>see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>. Defaults to 0.001.</p></dd>
+<dd><p>see documentation for <code>eca.estimate</code>. Defaults to 0.001.</p></dd>
 
 
 <dt>Seed</dt>
-<dd><p>see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>. Defaults to random seed.</p></dd>
+<dd><p>see documentation for <code>eca.estimate</code>. Defaults to random seed.</p></dd>
 
 
 <dt>UseCachedData</dt>
@@ -118,7 +118,7 @@
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
+    <p><code>eca.estimate</code> performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.
 This is computationally intensive and run time may be noticable. For a given model configuration running time is mainly determined by the parameters 'Nsample', 'Burnin' and 'Thin'.</p><div class="section">
 <h3 id="seed">Seed<a class="anchor" aria-label="anchor" href="#seed"></a></h3>
 
@@ -143,8 +143,8 @@ the seed is set to the value returned on the previous run (RecaParameterData$Glo
 <h3 id="resultdirectory-files-">ResultDirectory files:<a class="anchor" aria-label="anchor" href="#resultdirectory-files-"></a></h3>
 
 
-<p>Various report functions may use output of this function with the function <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code> which samples the posterior distributions of parameters.
-Communication between <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> and <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code> is managed by writing and reading files,
+<p>Various report functions may use output of this function with the function <code>eca.predict</code> which samples the posterior distributions of parameters.
+Communication between <code>eca.estimate</code> and <code>eca.predict</code> is managed by writing and reading files,
 and a directory for storing intermediate calculations must be provided with the parameter 'ResultDirectory'.
 For multi-chain analysis, a different directory should be provided for each chain.
 The result directory will be created if it does not exist.</p>

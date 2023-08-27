@@ -12,7 +12,7 @@ It is replaced by ParameterizeRecaModels and RunRecaModels"><!-- mathjax --><scr
     
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0-9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,35 +82,35 @@ It is replaced by <code><a href="ParameterizeRecaModels.html">ParameterizeRecaMo
 
 
 <dt>Nsamples</dt>
-<dd><p>number of MCMC samples that will be made available for <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code>. See documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>,</p></dd>
+<dd><p>number of MCMC samples that will be made available for <code>eca.predict</code>. See documentation for <code>eca.estimate</code>,</p></dd>
 
 
 <dt>Burnin</dt>
-<dd><p>number of MCMC samples run and discarded by <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> before any samples are saved. See documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>.</p></dd>
+<dd><p>number of MCMC samples run and discarded by <code>eca.estimate</code> before any samples are saved. See documentation for <code>eca.estimate</code>.</p></dd>
 
 
 <dt>Thin</dt>
-<dd><p>controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for <code>eca.estimate</code></p></dd>
 
 
 <dt>Lgamodel</dt>
-<dd><p>The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>.</p></dd>
+<dd><p>The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for <code>eca.estimate</code>.</p></dd>
 
 
 <dt>Resultdir</dt>
-<dd><p>a directory where Reca may store temp-files <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> and <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code>. . If not given a temporary directory will be created. See documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>.</p></dd>
+<dd><p>a directory where Reca may store temp-files <code>eca.estimate</code> and <code>eca.predict</code>. . If not given a temporary directory will be created. See documentation for <code>eca.estimate</code>.</p></dd>
 
 
 <dt>Delta.age</dt>
-<dd><p>see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>. Defaults to 0.001.</p></dd>
+<dd><p>see documentation for <code>eca.estimate</code>. Defaults to 0.001.</p></dd>
 
 
 <dt>Seed</dt>
-<dd><p>see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>. Defaults to random seed.</p></dd>
+<dd><p>see documentation for <code>eca.estimate</code>. Defaults to random seed.</p></dd>
 
 
 <dt>Caa.burnin</dt>
-<dd><p>see documentation for <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code>. Defaults to 0.</p></dd>
+<dd><p>see documentation for <code>eca.predict</code>. Defaults to 0.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -121,8 +121,8 @@ It is replaced by <code><a href="ParameterizeRecaModels.html">ParameterizeRecaMo
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.</p>
-<p><code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code> samples the posterior distributions of parameters estimated in <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>,
+    <p><code>eca.estimate</code> performs Markov-chain Monte Carlo (MCMC) simulations to determine maximum likelihood of parameters for the given samples.</p>
+<p><code>eca.predict</code> samples the posterior distributions of parameters estimated in <code>eca.estimate</code>,
 in order to obtain proportions of catches and fish parameters.
 Using these parameters and the given total landings, predictions of distribution of catch-parameter distributions will be calculated.</p>
 <p>If resultdir is NULL,  a temporary directory will be created for its purpose.

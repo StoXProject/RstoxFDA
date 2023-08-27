@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0-9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,8 +53,21 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.2.1-9001" id="rstoxfda-v121-9001">RstoxFDA v1.2.1-9001<a class="anchor" aria-label="anchor" href="#rstoxfda-v121-9001"></a></h2>
+<ul><li>Fixed issue where the DefineCarNeighbours would format column headers differently depending on the chosen DefinitionMethods. The column header ‘CarValue’ is now consistently written in the singular form, which means that output from the DefinitionMethod ‘StratumPolygon’ has changed, and the json schema for CarNeighbours has changed.</li>
+<li>Fixed the behavior of AddStratumStoxLanding so that it assigns area NA, rather than halting with error, when positions cannot be assigned to an area.</li>
+<li>Fixed the behaviour of ReportFdaSampling to count catches as unique hauls (column Haul on StoxBiotic$Haul), rather than stations. Improved documentation for the same function.</li>
+<li>Added checking on the validity of IntervalWidths in report functions that report Reca-credible intervals</li>
+<li>Clarified various warnings and error messages.</li>
+<li>Made provision of area definition optional in PlotArea, so that the function can be used to examine the spatial distribution of data without providing a spatial coding system, or to just make maps without providing either data or area definitions.</li>
+<li>Refactored to get rid of usages of ggplot::aes_string which is soft deprecated by ggplot.</li>
+<li>Added guidance to vignettes about how to deal with several hauls assigned the same station when the field ‘station’ is not correctly filled in NMDbiotic.</li>
+<li>Added workaround so that the non-linear option for lgamodel can be used with with all version of Reca.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.0" id="rstoxfda-v120-2023-01-24">RstoxFDA v1.2.0 (2023-01-24)<a class="anchor" aria-label="anchor" href="#rstoxfda-v120-2023-01-24"></a></h2>
-<ul><li>Bumped version number in order to get latest release in line with semantic versioning</li></ul></div>
+<ul><li>Bumped version number in order to get latest release in line with semantic versioning</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0-9001" id="rstoxfda-v110-9001-2022-12-16">RstoxFDA v1.1.0-9001 (2022-12-16)<a class="anchor" aria-label="anchor" href="#rstoxfda-v110-9001-2022-12-16"></a></h2>
 <ul><li>Fixed bug with secondary axis on Sampling plot (<a href="https://github.com/StoXProject/RstoxFDA/issues/77" class="external-link">#77</a>)</li>
@@ -65,7 +78,8 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="rstoxfda-v110-2022-11-26">RstoxFDA v1.1.0 (2022-11-26)<a class="anchor" aria-label="anchor" href="#rstoxfda-v110-2022-11-26"></a></h2>
-<ul><li>contrary to what version numbers indicate, this was released before v1.1.0-9001.</li></ul></div>
+<ul><li>contrary to what version numbers indicate, this was released before v1.1.0-9001.</li>
+</ul></div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

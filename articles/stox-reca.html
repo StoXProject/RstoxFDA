@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0-9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,8 @@
 
 
 
-<script src="stox-reca_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>StoX-Reca (analysis)</h1>
             
@@ -81,144 +82,615 @@
 
     
     
-<p>This vignette explains how to use RstoxFDA functions in the StoX user-interface to prepare and run catch-at-age estimates with Reca. Some data preparation may be necessary, and the vignette <a href="Stox-data-preparation.html">StoX FDA data preparation (baseline)</a> introduces some common data-preparation tasks for catch at age estimation, with formats commonly used at the Institute of Marine Research (IMR). In order to make informed decisions on data preparation and model configuration, it will be necessary to get an overview of the fisheries and how it is covered by the available samples, for instance using the functions introduced in <a href="Stox-FDA-overview.html">Stox Fisheries overview (report)</a>.</p>
-<p>This document introduces some problems and tasks, and how RstoxFDA-functions may be applied to solve them. The details of how to use the functions introduced here are provided as function documentation viewable in the StoX “function description”-tab, or in an R-console via ‘?’, e.g:</p>
+<p>This vignette explains how to use RstoxFDA functions in the StoX
+user-interface to prepare and run catch-at-age estimates with Reca. Some
+data preparation may be necessary, and the vignette <a href="Stox-data-preparation.html">StoX FDA data preparation
+(baseline)</a> introduces some common data-preparation tasks for catch
+at age estimation, with formats commonly used at the Institute of Marine
+Research (IMR). In order to make informed decisions on data preparation
+and model configuration, it will be necessary to get an overview of the
+fisheries and how it is covered by the available samples, for instance
+using the functions introduced in <a href="Stox-FDA-overview.html">Stox
+Fisheries overview (report)</a>.</p>
+<p>This document introduces some problems and tasks, and how
+RstoxFDA-functions may be applied to solve them. The details of how to
+use the functions introduced here are provided as function documentation
+viewable in the StoX “function description”-tab, or in an R-console via
+‘?’, e.g:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="fu">RstoxFDA</span><span class="fu">::</span><span class="va"><a href="../reference/RunRecaModels.html">RunRecaModels</a></span></span></code></pre></div>
-<p>Documentation for data formats are provided in the same way. E.g.:</p>
+<p>Documentation for data formats are provided in the same way.
+E.g.:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="fu">RstoxFDA</span><span class="fu">::</span><span class="va"><a href="../reference/RecaData.html">RecaData</a></span></span></code></pre></div>
-<p>StoX is composed of several R-packages. Functions will be referred to by their package name with the notation <em>package::function</em>. In the StoX user-interface, the package that functions belong to are not visible, so the function denoted here as <em>package::function</em>, will be available as just <em>function</em>. Any data formats are similarly denoted <strong>package::format</strong>.</p>
+<p>StoX is composed of several R-packages. Functions will be referred to
+by their package name with the notation <em>package::function</em>. In
+the StoX user-interface, the package that functions belong to are not
+visible, so the function denoted here as <em>package::function</em>,
+will be available as just <em>function</em>. Any data formats are
+similarly denoted <strong>package::format</strong>.</p>
 <div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>
-<p>RstoxFDA and Reca are optional packages in StoX. In order to use the functions introduced in this vignette in the StoX user-interface, make sure RstoxFDA and Reca is installed. See installation instructions on <a href="https://github.com/StoXProject/RstoxFDA" class="external-link">github: StoXProject/RstoxFDA</a>. To install the StoX user-interface, see instructions on <a href="https://github.com/StoXProject/StoX" class="external-link">github: StoXProject/StoX</a>.</p>
+<p>RstoxFDA and Reca are optional packages in StoX. In order to use the
+functions introduced in this vignette in the StoX user-interface, make
+sure RstoxFDA and Reca is installed. See installation instructions on <a href="https://github.com/StoXProject/RstoxFDA" class="external-link">github:
+StoXProject/RstoxFDA</a>. To install the StoX user-interface, see
+instructions on <a href="https://github.com/StoXProject/StoX" class="external-link">github:
+StoXProject/StoX</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="reca">Reca<a class="anchor" aria-label="anchor" href="#reca"></a>
 </h2>
-<p>ECA is a bayesian framework for estimating the total harvest of a stock by age. We refer to these estimates as just ‘catch-at-age’. The estimates are based on samples from the fisheries and a census (complete record) of landing-data (sales-notes). The framework is implemented by the Norwegian Computing Center (Norsk Regnesentral) in an R-package called ‘Reca’. The concepts and models employed are explained in three papers by Hirst et al. (2004, 2005, 2012). Not all concepts treated in these papers are implemented in the Reca-package, but a thorough technical description was provided for an earlier implementation of ECA, by Rognebakke et al. (2016). The Reca package follows closely the description by Rognebakke et al., but the model effects are made more configurable in Reca, so that not all the model effects described by Rognebakke et al. have to be included, and other effects may be included in addition or instead. The effects <em>season</em>, <em>gear</em>, <em>region</em>, and <em>boat</em>, as described by Rognebakke et al. should be considered examples of fixed effects (<em>season</em> and <em>gear</em>), random effects (<em>boat</em>), and a conditional autoregressive variable (<em>region</em>).</p>
-<p>This vignette introduces some concepts in the Reca-package in order to guide practitioners in configuring estimation using StoX. For a thorough introduction, please consult the references cited above and introductory texts on Bayesian statistics.</p>
-<p>While this tutorial covers the use of Reca via the StoX user-interface, it is also possible to use Reca directly in R, independent of both the StoX user-interface and the package RstoxFDA. For such use of Reca, consult the function documentation in Reca, particularly the functions: <em>Reca::eca.estimate</em> and <em>Reca::eca.predict</em>.</p>
+<p>ECA is a bayesian framework for estimating the total harvest of a
+stock by age. We refer to these estimates as just ‘catch-at-age’. The
+estimates are based on samples from the fisheries and a census (complete
+record) of landing-data (sales-notes). The framework is implemented by
+the Norwegian Computing Center (Norsk Regnesentral) in an R-package
+called ‘Reca’. The concepts and models employed are explained in three
+papers by Hirst et al. (2004, 2005, 2012). Not all concepts treated in
+these papers are implemented in the Reca-package, but a thorough
+technical description was provided for an earlier implementation of ECA,
+by Rognebakke et al. (2016). The Reca package follows closely the
+description by Rognebakke et al., but the model effects are made more
+configurable in Reca, so that not all the model effects described by
+Rognebakke et al. have to be included, and other effects may be included
+in addition or instead. The effects <em>season</em>, <em>gear</em>,
+<em>region</em>, and <em>boat</em>, as described by Rognebakke et
+al. should be considered examples of fixed effects (<em>season</em> and
+<em>gear</em>), random effects (<em>boat</em>), and a conditional
+autoregressive variable (<em>region</em>).</p>
+<p>This vignette introduces some concepts in the Reca-package in order
+to guide practitioners in configuring estimation using StoX. For a
+thorough introduction, please consult the references cited above and
+introductory texts on Bayesian statistics.</p>
+<p>While this tutorial covers the use of Reca via the StoX
+user-interface, it is also possible to use Reca directly in R,
+independent of both the StoX user-interface and the package RstoxFDA.
+For such use of Reca, consult the function documentation in Reca,
+particularly the functions: <em>Reca::eca.estimate</em> and
+<em>Reca::eca.predict</em>.</p>
 <div class="section level3">
 <h3 id="bayesian-estimation">Bayesian estimation<a class="anchor" aria-label="anchor" href="#bayesian-estimation"></a>
 </h3>
-<p>Bayesian inference assigns a probability to all possible values of a parameter of interest, such as the total number of fish caught in a certain age group, so that a statistical distribution (<em>posterior distribution</em>) is estimated for each parameter. If it is of interest to quantify the parameter as a single number, those can be deduced from that distribution. For instance the total number of fish caught in a certain age group is typically reported as the mean of the distribution. Similarly, an interval can be reported for the estimate which capture a range of values which the parameter is likely to be. So when StoX reports the total catch at age for age 8, its standard deviation, and an interval; that is actually the mean, standard deviation, and interval of the posterior distribution for the parameter ‘total catch at age for age 8’. This is different from many other ways of estimating, where an single value is estimated for the parameter and another single value for its variance, and a confidence interval or statistical distribution is constructed based on those. In bayesian statistics the distribution comes first, and the point estimates and intervals are deduced from that. This may sometimes lead to some confusing nomenclature, as the estimate for total catch-at-age may be referred to as a ‘mean’, not because it is some mean of the population of catches, but because it is the mean of the posterior distribution for total catch at age. The interpretation of point estimates and intervals from Bayesian models are also different from those of frequentist statistics, and are often referred to as ‘credible-intervals’, rather than ‘confidence-intervals’. Consult introductory text on bayesian statistics for a closer introduction to the differences in interpretation.</p>
-<p>These estimated distributions are contingent on the model formulation, including the notion of ‘prior probabilities’, which is typically interpreted as a quantification of the belief one has about the parameter before consulting data. In ECA most prior probabilities (or prior distributions) are so-called uninformed priors, which means they are configured to be close to agnostic about the parameters. Roughly speaking all parameter values are considered likely until the model sees some data. Even if you have a different prior notion of what some parameter-values may be, Reca does not offer any way to configure these prior beliefs. This means that if Reca is given very little data, it will give wrong answers, and they will be wrong in the sense that they will be reflecting the prior-distributions, which are purposefully un-informed. Likewise, if only a few iterations are run, Reca is not able to extract useful information from the data, and you will be looking at results much influenced by Recas prior distributions or by tentative parameter-values that are randomly assigned. You will therefore need some assurance of convergence of results in order to interpret Reca-estimates. See the section ‘Convergence’.</p>
-<p>The posterior distributions of parameters such as proportion-at-age or mean weight-at-age are found by randomly proposing tentative values in a simulation, and evaluating their likelihood. The likelihood reflects how probable the observed data (samples) is under the ECA-models, when using the randomly proposed set of values for each parameter. More likely parameter-values are assigned a higher probability in the posterior distributions, and less likely parameters are assigned a low probability. We refer to this process as <em>parameterisation</em>, and it is performed by the StoX-function <em>RstoxFDA::ParameterizeRecaModels</em>, covered in the section ‘Parameterisation’. It is actually three models that are being parameterised in this process. One model represents the proportion of each age-group in the catches, one model represent the relationship between age and length of fish in the catches, and one relates length and weight. This division into three models, allows the posterior distribution of total catch in different age-groups to utilize incomplete data. For instance catch-samples may have only length-observations, or some may have only length and weight observations. This allows supplementary samples without age-readings to be utilized, and it provides an approximately unbiased handling of length-stratified age-sampling. It is however not possible to run Reca without any age-observations, so the package cannot be used for length-structured stocks, even though Reca produces catch-at-length estimates for age-structured stocks.</p>
-<p>The posterior distribution of total catch at age of the age-groups is obtained after parameterisation, by a second simulation step. This estimation- or <em>prediction</em>- step draws values from converged posterior distributions for the parameters needed to calculate total catch-at-age, and performs a calculation for each iteration, producing a posterior distribution for the final estimate. So in this step, no likelihood-calculations are done, but the result is simply derived from converged simulations of other parameters. The calculation performed for each iteration is similar to a classical ratio-estimate, in essence total catch at age is derived from estimates of the proportion of catch in each age-group, the mean weight at age, and the total landed weight. The prediction-step is a separate simulation step, performed after the parameterisation, by the StoX-function <em>RstoxFDA::RunRecaModels</em>, covered in the section ‘Prediction’.</p>
-<p>Reca provides a framework for estimation, and the exact model configuration must be tailored to specific estimation tasks based on specifics of the fishery and of the sampling that covers it. These configurations are done in a <em>data preparation</em> step, performed by the StoX-function <em>RstoxFDA::PrepareRecaEstimate</em>, covered in the section ‘Data preparation’.</p>
+<p>Bayesian inference assigns a probability to all possible values of a
+parameter of interest, such as the total number of fish caught in a
+certain age group, so that a statistical distribution (<em>posterior
+distribution</em>) is estimated for each parameter. If it is of interest
+to quantify the parameter as a single number, those can be deduced from
+that distribution. For instance the total number of fish caught in a
+certain age group is typically reported as the mean of the distribution.
+Similarly, an interval can be reported for the estimate which capture a
+range of values which the parameter is likely to be. So when StoX
+reports the total catch at age for age 8, its standard deviation, and an
+interval; that is actually the mean, standard deviation, and interval of
+the posterior distribution for the parameter ‘total catch at age for age
+8’. This is different from many other ways of estimating, where an
+single value is estimated for the parameter and another single value for
+its variance, and a confidence interval or statistical distribution is
+constructed based on those. In bayesian statistics the distribution
+comes first, and the point estimates and intervals are deduced from
+that. This may sometimes lead to some confusing nomenclature, as the
+estimate for total catch-at-age may be referred to as a ‘mean’, not
+because it is some mean of the population of catches, but because it is
+the mean of the posterior distribution for total catch at age. The
+interpretation of point estimates and intervals from Bayesian models are
+also different from those of frequentist statistics, and are often
+referred to as ‘credible-intervals’, rather than ‘confidence-intervals’.
+Consult introductory text on bayesian statistics for a closer
+introduction to the differences in interpretation.</p>
+<p>These estimated distributions are contingent on the model
+formulation, including the notion of ‘prior probabilities’, which is
+typically interpreted as a quantification of the belief one has about
+the parameter before consulting data. In ECA most prior probabilities
+(or prior distributions) are so-called uninformed priors, which means
+they are configured to be close to agnostic about the parameters.
+Roughly speaking all parameter values are considered likely until the
+model sees some data. Even if you have a different prior notion of what
+some parameter-values may be, Reca does not offer any way to configure
+these prior beliefs. This means that if Reca is given very little data,
+it will give wrong answers, and they will be wrong in the sense that
+they will be reflecting the prior-distributions, which are purposefully
+un-informed. Likewise, if only a few iterations are run, Reca is not
+able to extract useful information from the data, and you will be
+looking at results much influenced by Recas prior distributions or by
+tentative parameter-values that are randomly assigned. You will
+therefore need some assurance of convergence of results in order to
+interpret Reca-estimates. See the section ‘Convergence’.</p>
+<p>The posterior distributions of parameters such as proportion-at-age
+or mean weight-at-age are found by randomly proposing tentative values
+in a simulation, and evaluating their likelihood. The likelihood
+reflects how probable the observed data (samples) is under the
+ECA-models, when using the randomly proposed set of values for each
+parameter. More likely parameter-values are assigned a higher
+probability in the posterior distributions, and less likely parameters
+are assigned a low probability. We refer to this process as
+<em>parameterisation</em>, and it is performed by the StoX-function
+<em>RstoxFDA::ParameterizeRecaModels</em>, covered in the section
+‘Parameterisation’. It is actually three models that are being
+parameterised in this process. One model represents the proportion of
+each age-group in the catches, one model represent the relationship
+between age and length of fish in the catches, and one relates length
+and weight. This division into three models, allows the posterior
+distribution of total catch in different age-groups to utilize
+incomplete data. For instance catch-samples may have only
+length-observations, or some may have only length and weight
+observations. This allows supplementary samples without age-readings to
+be utilized, and it provides an approximately unbiased handling of
+length-stratified age-sampling. It is however not possible to run Reca
+without any age-observations, so the package cannot be used for
+length-structured stocks, even though Reca produces catch-at-length
+estimates for age-structured stocks.</p>
+<p>The posterior distribution of total catch at age of the age-groups is
+obtained after parameterisation, by a second simulation step. This
+estimation- or <em>prediction</em>- step draws values from converged
+posterior distributions for the parameters needed to calculate total
+catch-at-age, and performs a calculation for each iteration, producing a
+posterior distribution for the final estimate. So in this step, no
+likelihood-calculations are done, but the result is simply derived from
+converged simulations of other parameters. The calculation performed for
+each iteration is similar to a classical ratio-estimate, in essence
+total catch at age is derived from estimates of the proportion of catch
+in each age-group, the mean weight at age, and the total landed weight.
+The prediction-step is a separate simulation step, performed after the
+parameterisation, by the StoX-function <em>RstoxFDA::RunRecaModels</em>,
+covered in the section ‘Prediction’.</p>
+<p>Reca provides a framework for estimation, and the exact model
+configuration must be tailored to specific estimation tasks based on
+specifics of the fishery and of the sampling that covers it. These
+configurations are done in a <em>data preparation</em> step, performed
+by the StoX-function <em>RstoxFDA::PrepareRecaEstimate</em>, covered in
+the section ‘Data preparation’.</p>
 </div>
 <div class="section level3">
 <h3 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
 </h3>
-<p>Data preparation is mainly done in the StoX-baseline, and is introduced in the vignette <a href="Stox-data-preparation.html">StoX FDA data preparation (baseline)</a>. The Stox-baseline prepares a set of samples and a set of landing-data (sale notes), which are converted to a format accepted by Reca with the function <em>RstoxFDA::PrepareRecaEstimate</em>. The parameters for this function also specifies the cells (explained below), age-groups, length-groups, and some other Reca-parameters that have data-formatting implications. The function <em>RstoxFDA::PrepareRecaEstimate</em> also performs extensive checking to make sure that Reca does not halt due to data-incompleteness or issues with codes used for categorical variables. The warnings and error-messages issued by this function can usually be amended by addressing data preparation in the StoX-baseline.</p>
-<p>Data preparation involves configuring covariates to the model. Covariates are typically variables categorizing the samples into categories which are expected to have distinct posterior distributions due to natural differences in fish or fisheries. We refer to the different variables that a covariate can have as <em>levels</em> of the covariate. For instance ‘gear’ may be configured as a covariate, and it may have different levels, like ‘gillnet’, ‘trawl’, and ‘seine’, or more detailed representation, such as FAO-gear codes. If ‘vessel’ is a covariate, the different levels will be some values identifying each vessel. Reca does not directly impose any restriction on how these are coded, and gears may be regrouped and renamed at will in the Stox-baseline, as long as they are consistently encoded between samples and landings. Reca only uses this information to adapt the parameterisation to the fact that catches may differ between different gears (or different levels of other covariates), and does not even need to know that the covariate represents gear. While some covariates are hard-coded into Reca (the haul-effect), any number of covariates can in principle be added, and all Reca need to know is whether to treat it as a ‘fixed’ effect, a ‘random’ effect or a ‘CAR’ effect. These terms will be explained later.</p>
+<p>Data preparation is mainly done in the StoX-baseline, and is
+introduced in the vignette <a href="Stox-data-preparation.html">StoX FDA
+data preparation (baseline)</a>. The Stox-baseline prepares a set of
+samples and a set of landing-data (sale notes), which are converted to a
+format accepted by Reca with the function
+<em>RstoxFDA::PrepareRecaEstimate</em>. The parameters for this function
+also specifies the cells (explained below), age-groups, length-groups,
+and some other Reca-parameters that have data-formatting implications.
+The function <em>RstoxFDA::PrepareRecaEstimate</em> also performs
+extensive checking to make sure that Reca does not halt due to
+data-incompleteness or issues with codes used for categorical variables.
+The warnings and error-messages issued by this function can usually be
+amended by addressing data preparation in the StoX-baseline.</p>
+<p>Data preparation involves configuring covariates to the model.
+Covariates are typically variables categorizing the samples into
+categories which are expected to have distinct posterior distributions
+due to natural differences in fish or fisheries. We refer to the
+different variables that a covariate can have as <em>levels</em> of the
+covariate. For instance ‘gear’ may be configured as a covariate, and it
+may have different levels, like ‘gillnet’, ‘trawl’, and ‘seine’, or more
+detailed representation, such as FAO-gear codes. If ‘vessel’ is a
+covariate, the different levels will be some values identifying each
+vessel. Reca does not directly impose any restriction on how these are
+coded, and gears may be regrouped and renamed at will in the
+Stox-baseline, as long as they are consistently encoded between samples
+and landings. Reca only uses this information to adapt the
+parameterisation to the fact that catches may differ between different
+gears (or different levels of other covariates), and does not even need
+to know that the covariate represents gear. While some covariates are
+hard-coded into Reca (the haul-effect), any number of covariates can in
+principle be added, and all Reca need to know is whether to treat it as
+a ‘fixed’ effect, a ‘random’ effect or a ‘CAR’ effect. These terms will
+be explained later.</p>
 <div class="section level4">
 <h4 id="supplementary-length-samples">Supplementary length samples<a class="anchor" aria-label="anchor" href="#supplementary-length-samples"></a>
 </h4>
-<p>The three-model structure of ECA allows information to be drawn from supplemental length-samples, that does not have accompanying age-information. This incurs some simulation of missing ages in the proportion-at-age model that take extra time, and depending on the quality of the sampling it may incur some extra convergence issues. Whether to include additional length data is solely controlled by the filtering in the StoX-baseline. Reca uses all available information. If it is desired to remove extra length-data, care has to be taken not to remove lengths from samples where length-stratified age-sampling has been done. For NMDbiotic data, that means one should filter on codes for sample-type, rather than the presence or absence of age-observations.</p>
+<p>The three-model structure of ECA allows information to be drawn from
+supplemental length-samples, that does not have accompanying
+age-information. This incurs some simulation of missing ages in the
+proportion-at-age model that take extra time, and depending on the
+quality of the sampling it may incur some extra convergence issues.
+Whether to include additional length data is solely controlled by the
+filtering in the StoX-baseline. Reca uses all available information. If
+it is desired to remove extra length-data, care has to be taken not to
+remove lengths from samples where length-stratified age-sampling has
+been done. For NMDbiotic data, that means one should filter on codes for
+sample-type, rather than the presence or absence of
+age-observations.</p>
 </div>
 <div class="section level4">
 <h4 id="definining-cells">Definining cells<a class="anchor" aria-label="anchor" href="#definining-cells"></a>
 </h4>
-<p>A ‘cell’ in the terminology of ECA, is a partition of the fishery (e.g. area, gear and period), and ECA applies the model to estimate total catch-at-age in each cell, and then adds these up for the grand total. In addition, ECA have some terms that are parameterised independently for each cell. The cell configuration should differentiate parts of the fishery that may have different proportion of the different age-groups landed, or different age-length relationships, or different length-weight relationships, or different variability in any of these. In particular it needs to account for such difference that follow from the sampling process (whether this is by design or not). The cells are defined simply by making the columns that define them (e.g. area, gear and period) occur in both landings (<strong>RstoxData::StoxLandingData</strong>) and samples (<strong>RstoxData::StoxBioticData</strong>) with the same name, and with the same coding system. Consistency in naming and coding systems must be ensured by the StoX-baseline.</p>
+<p>A ‘cell’ in the terminology of ECA, is a partition of the fishery
+(e.g. area, gear and period), and ECA applies the model to estimate
+total catch-at-age in each cell, and then adds these up for the grand
+total. In addition, ECA have some terms that are parameterised
+independently for each cell. The cell configuration should differentiate
+parts of the fishery that may have different proportion of the different
+age-groups landed, or different age-length relationships, or different
+length-weight relationships, or different variability in any of these.
+In particular it needs to account for such difference that follow from
+the sampling process (whether this is by design or not). The cells are
+defined simply by making the columns that define them (e.g. area, gear
+and period) occur in both landings
+(<strong>RstoxData::StoxLandingData</strong>) and samples
+(<strong>RstoxData::StoxBioticData</strong>) with the same name, and
+with the same coding system. Consistency in naming and coding systems
+must be ensured by the StoX-baseline.</p>
 <div class="section level5">
 <h5 id="cell-effect">Cell effect<a class="anchor" aria-label="anchor" href="#cell-effect"></a>
 </h5>
-<p>The main reason for defining a cell is to specify combinations of covariates so that the appropriate landed weight of fish is assigned for estimation with parameters specific to that segment of the fishery. In addition the model may be configured with a cell specific effect, modeled as an interaction term. This is a random-effect covariate whose levels are the combination of the levels of the covariates that define the cell. It can be configured in StoX with the option. ‘CellEffect’ in <em>RstoxFDA::PrepareRecaEstimate</em>.</p>
+<p>The main reason for defining a cell is to specify combinations of
+covariates so that the appropriate landed weight of fish is assigned for
+estimation with parameters specific to that segment of the fishery. In
+addition the model may be configured with a cell specific effect,
+modeled as an interaction term. This is a random-effect covariate whose
+levels are the combination of the levels of the covariates that define
+the cell. It can be configured in StoX with the option. ‘CellEffect’ in
+<em>RstoxFDA::PrepareRecaEstimate</em>.</p>
 </div>
 <div class="section level5">
 <h5 id="fixed-and-random-effects">Fixed and random effects<a class="anchor" aria-label="anchor" href="#fixed-and-random-effects"></a>
 </h5>
-<p>For each covariate that is added to the configuration, a term is added to each of the Reca-models, and it has to be decided whether these terms should be added as a ‘fixed effect’, as a ‘random effect’, or as a special kind of random effect, called a ‘CAR-effect’.</p>
-<p>For fixed effects, parameters are parameterised independently for each level of the covariate (e.g. ‘gillnet’, ‘trawl’ and ‘seine’ for the covariate ‘gear’). A prior-distribution is introduced for each level, and affected parameters each get a separate posterior distribution for each level of the covariate, and hence independent mean values. When calculating total catch at age, the terms in the ECA model are then sampled from a posterior distribution specific to the exact level of the covariate that is relevant for each cell. Only covariates that are part of the cell definition may be configured as fixed effects, so each cell correspond to one unique level of each of the fixed effect covariates.</p>
-<p>For random effects, the different levels (e.g. ‘gillnet’, ‘trawl’ and ‘seine’) are represented as terms drawn from the same distribution, but with variance / precision that is specific to each level. So the parameterisation determines the likely mean of this distribution, and the values for the specific precisions. This formulation only requires a representative sample of the different covariate-values to be observed, and thus allow for inference to segments of the fishery that also contain unobserved levels. This comes at the cost of representing the parameters for all covariate values with the same mean, so that samples of some levels of the covariate are allowed to influence the parameterisation of other levels. When the errors are different between different levels, and when only few of the levels are sampled, the implicit inference to unobserved values is dubious. Random-effect modelling for covariates with few possible values are best motivated when the sampling is efficient, that is when the values that are unsampled or poorly sampled, also are the ones corresponding to low fishing activity and low landing-volumes. Otherwise random-effect modelling is a good way to capture clustering (which may for instance be imposed by multi-stage sampling). In these cases there is a large number of possible values for the covariate, and they are sampled in a representative manner. For instance a vessel-effect can be modeled in that way. Gear is typically rather a candidate for a fixed effect, particularly if samples are stratified on gear.</p>
-<p>Typically, it is desirable to model gear, time, and area as fixed effects, to ensure that samples are only used where they belong, but in practice this can only be achieved when area, gear and time is represented at a coarse resolution. An important restriction is that in order to treat effects as fixed, all combinations of fixed effects must be sampled to a sufficient extent, and definitely to some extent at all. This combinatorics quickly becomes unfeasible when gears, areas and quarters are represented with fine resolution. A modest resolution with 4 gear types, 4 areas and 4 periods (quarters) results in 64 cells. Since total landed weight are usually very unevenly distributed between these cells, and since sampling capacity is limited, covering all cells with adequate sampling is in direct conflict with directing sampling effort to cells with high activity. Commonly, gears and areas are therefore grouped together into groups with presumably similar catch-composition (reducing resolution). This is achieved in the StoX-baseline. In addition, some of these covariates may be pragmatically configured as random effects.</p>
-<p>So, often covariates that one would like to model as fixed effects does not find sufficient data for such a model configuration. In these cases one must consider either reducing the number of values for some covariates (grouping gears, for instance), or reconfigure some covariate as a random effect. In general grouping is desirable when categories with similar catch-compositions can be merged. When unsampled or poorly sampled combinations of fixed effects are from fractions of the fisheries with a small volume of landings, reconfiguring as random effect can be done with minor sacrifices in accuracy and precision. For very inefficient sampling, where the parts of the fisheries with most landings are poorly sampled, one should be careful with random-effect configurations, and rather do the necessary grouping of variables to make sure that samples from a minor part of the fishery is not allowed to dominate estimation. In order to make informed decisions on effect-configurations it may be necessary to analyse the sampling. Some support for that is provided in StoX and described in the vignette <a href="Stox-FDA-overview.html">Stox Fisheries overview (report)</a>. Particularly, the function <em>RstoxFDA::ReportFdaSampling</em> is useful for comparing sampling coverage of possible cell-configurations. It can reveal if the sampling has succeeded in covering the cells with most landed catch well (wrp random-effect configuration), and it can reveal what fixed-effect configurations are possible, or which additional grouping of covariate levels can make them possible.</p>
+<p>For each covariate that is added to the configuration, a term is
+added to each of the Reca-models, and it has to be decided whether these
+terms should be added as a ‘fixed effect’, as a ‘random effect’, or as a
+special kind of random effect, called a ‘CAR-effect’.</p>
+<p>For fixed effects, parameters are parameterised independently for
+each level of the covariate (e.g. ‘gillnet’, ‘trawl’ and ‘seine’ for the
+covariate ‘gear’). A prior-distribution is introduced for each level,
+and affected parameters each get a separate posterior distribution for
+each level of the covariate, and hence independent mean values. When
+calculating total catch at age, the terms in the ECA model are then
+sampled from a posterior distribution specific to the exact level of the
+covariate that is relevant for each cell. Only covariates that are part
+of the cell definition may be configured as fixed effects, so each cell
+correspond to one unique level of each of the fixed effect
+covariates.</p>
+<p>For random effects, the different levels (e.g. ‘gillnet’, ‘trawl’ and
+‘seine’) are represented as terms drawn from the same distribution, but
+with variance / precision that is specific to each level. So the
+parameterisation determines the likely mean of this distribution, and
+the values for the specific precisions. This formulation only requires a
+representative sample of the different covariate-values to be observed,
+and thus allow for inference to segments of the fishery that also
+contain unobserved levels. This comes at the cost of representing the
+parameters for all covariate values with the same mean, so that samples
+of some levels of the covariate are allowed to influence the
+parameterisation of other levels. When the errors are different between
+different levels, and when only few of the levels are sampled, the
+implicit inference to unobserved values is dubious. Random-effect
+modelling for covariates with few possible values are best motivated
+when the sampling is efficient, that is when the values that are
+unsampled or poorly sampled, also are the ones corresponding to low
+fishing activity and low landing-volumes. Otherwise random-effect
+modelling is a good way to capture clustering (which may for instance be
+imposed by multi-stage sampling). In these cases there is a large number
+of possible values for the covariate, and they are sampled in a
+representative manner. For instance a vessel-effect can be modeled in
+that way. Gear is typically rather a candidate for a fixed effect,
+particularly if samples are stratified on gear.</p>
+<p>Typically, it is desirable to model gear, time, and area as fixed
+effects, to ensure that samples are only used where they belong, but in
+practice this can only be achieved when area, gear and time is
+represented at a coarse resolution. An important restriction is that in
+order to treat effects as fixed, all combinations of fixed effects must
+be sampled to a sufficient extent, and definitely to some extent at all.
+This combinatorics quickly becomes unfeasible when gears, areas and
+quarters are represented with fine resolution. A modest resolution with
+4 gear types, 4 areas and 4 periods (quarters) results in 64 cells.
+Since total landed weight are usually very unevenly distributed between
+these cells, and since sampling capacity is limited, covering all cells
+with adequate sampling is in direct conflict with directing sampling
+effort to cells with high activity. Commonly, gears and areas are
+therefore grouped together into groups with presumably similar
+catch-composition (reducing resolution). This is achieved in the
+StoX-baseline. In addition, some of these covariates may be
+pragmatically configured as random effects.</p>
+<p>So, often covariates that one would like to model as fixed effects
+does not find sufficient data for such a model configuration. In these
+cases one must consider either reducing the number of values for some
+covariates (grouping gears, for instance), or reconfigure some covariate
+as a random effect. In general grouping is desirable when categories
+with similar catch-compositions can be merged. When unsampled or poorly
+sampled combinations of fixed effects are from fractions of the
+fisheries with a small volume of landings, reconfiguring as random
+effect can be done with minor sacrifices in accuracy and precision. For
+very inefficient sampling, where the parts of the fisheries with most
+landings are poorly sampled, one should be careful with random-effect
+configurations, and rather do the necessary grouping of variables to
+make sure that samples from a minor part of the fishery is not allowed
+to dominate estimation. In order to make informed decisions on
+effect-configurations it may be necessary to analyse the sampling. Some
+support for that is provided in StoX and described in the vignette <a href="Stox-FDA-overview.html">Stox Fisheries overview (report)</a>.
+Particularly, the function <em>RstoxFDA::ReportFdaSampling</em> is
+useful for comparing sampling coverage of possible cell-configurations.
+It can reveal if the sampling has succeeded in covering the cells with
+most landed catch well (wrp random-effect configuration), and it can
+reveal what fixed-effect configurations are possible, or which
+additional grouping of covariate levels can make them possible.</p>
 </div>
 <div class="section level5">
 <h5 id="car-effect">CAR effect<a class="anchor" aria-label="anchor" href="#car-effect"></a>
 </h5>
-<p>Reca also allows for a CAR-effect to be configured (Conditional-autoregressive effect). This is a random effect, with a somewhat more complex representation of the distributions ‘shared’ between effect levels. The CAR-effect allows the user to configure which levels of a covariate should be allowed to influence each others corresponding terms in the ECA models. This is commonly used with a spatial covariate (area), to allow only neighboring areas to influence each other. In terms of data-requirements, each area (or one of its neighbours) must be sampled in combination with all fixed effects. The user can specify the neighbour-relation, and it does not have to reflect spatial adjacency. The neighbour-definition is set up in the StoX-baseline. Unlike fixed and regular random effects, Reca allows for only one CAR-effect to be configured.</p>
+<p>Reca also allows for a CAR-effect to be configured
+(Conditional-autoregressive effect). This is a random effect, with a
+somewhat more complex representation of the distributions ‘shared’
+between effect levels. The CAR-effect allows the user to configure which
+levels of a covariate should be allowed to influence each others
+corresponding terms in the ECA models. This is commonly used with a
+spatial covariate (area), to allow only neighboring areas to influence
+each other. In terms of data-requirements, each area (or one of its
+neighbours) must be sampled in combination with all fixed effects. The
+user can specify the neighbour-relation, and it does not have to reflect
+spatial adjacency. The neighbour-definition is set up in the
+StoX-baseline. Unlike fixed and regular random effects, Reca allows for
+only one CAR-effect to be configured.</p>
 </div>
 <div class="section level5">
 <h5 id="data-configuration">Data configuration<a class="anchor" aria-label="anchor" href="#data-configuration"></a>
 </h5>
-<p>The variables that should be treated as ‘fixed’, ‘random’ or ‘CAR’ are specified in the function <em>RstoxFDA::PrepareRecaEstimate</em>. In this function age groups are also specified (by max and min age), and length groups are specified (by max-length and length-resolution). If the length resolution is not specified, the models will use the modal minimum length-difference in catches as length resolution. The parameter ‘HatchDay’ indicates when the fish is assumed to hatch, and it is customarily set to 1, which is the 1st of January. <em>RstoxFDA::PrepareRecaEstimate</em> offers some special options ‘UseStockSplitting’ and ‘UseAgingError’, which will be treated in later sections. When <em>RstoxFDA::PrepareRecaEstimate</em> is run, extensive data checks are performed to check that minimal requirements for the configuration is met. Errors and warnings are issued at this stage to assist the user in excluding some model configurations that cannot be run with the provided data.</p>
+<p>The variables that should be treated as ‘fixed’, ‘random’ or ‘CAR’
+are specified in the function <em>RstoxFDA::PrepareRecaEstimate</em>. In
+this function age groups are also specified (by max and min age), and
+length groups are specified (by max-length and length-resolution). If
+the length resolution is not specified, the models will use the modal
+minimum length-difference in catches as length resolution. The parameter
+‘HatchDay’ indicates when the fish is assumed to hatch, and it is
+customarily set to 1, which is the 1st of January.
+<em>RstoxFDA::PrepareRecaEstimate</em> offers some special options
+‘UseStockSplitting’ and ‘UseAgingError’, which will be treated in later
+sections. When <em>RstoxFDA::PrepareRecaEstimate</em> is run, extensive
+data checks are performed to check that minimal requirements for the
+configuration is met. Errors and warnings are issued at this stage to
+assist the user in excluding some model configurations that cannot be
+run with the provided data.</p>
 </div>
 </div>
 <div class="section level4">
 <h4 id="sampling-desings-and-model-effects">Sampling desings and model effects<a class="anchor" aria-label="anchor" href="#sampling-desings-and-model-effects"></a>
 </h4>
-<p>Reca is very flexible, and can be configured to utilize observational or ad-hoc samples, if biases can be corrected for by appropriate configuration of covariates. Rigorous sampling designs may contain ‘biases’ by design, in the sense that they may deviate from simple random sampling. This happens for instance when common sampling techniques such as stratification or clustered-sampling are employed. In these cases, information will be available to correct for the sampling effects, and Reca can be informed about these through the correct configuration of model covariates.</p>
+<p>Reca is very flexible, and can be configured to utilize observational
+or ad-hoc samples, if biases can be corrected for by appropriate
+configuration of covariates. Rigorous sampling designs may contain
+‘biases’ by design, in the sense that they may deviate from simple
+random sampling. This happens for instance when common sampling
+techniques such as stratification or clustered-sampling are employed. In
+these cases, information will be available to correct for the sampling
+effects, and Reca can be informed about these through the correct
+configuration of model covariates.</p>
 <div class="section level5">
 <h5 id="stratification-and-fixed-effects">Stratification and fixed effects<a class="anchor" aria-label="anchor" href="#stratification-and-fixed-effects"></a>
 </h5>
-<p>In order for stratified selection of landings or fishing operations to be correctly handled, each strata should be a cell, so that correct assignment of total landings to each strata is assured. The variables defining the strata should be configured as fixed effects, as sampling effort are typically specified independently for each strata.</p>
+<p>In order for stratified selection of landings or fishing operations
+to be correctly handled, each strata should be a cell, so that correct
+assignment of total landings to each strata is assured. The variables
+defining the strata should be configured as fixed effects, as sampling
+effort are typically specified independently for each strata.</p>
 </div>
 <div class="section level5">
 <h5 id="clustering-and-random-effects">Clustering and random effects<a class="anchor" aria-label="anchor" href="#clustering-and-random-effects"></a>
 </h5>
-<p>Random effects on the other hand, are well suited to represent clustered sampling, when clusters are sampled with equal probability. Since all fish is sampled via some fishing operation, Reca has a non-configurable random effect representing ‘haul’. In practice ‘haul’ can be some approximation to a fishing operation, for instance a total-day catch. In multi-stage clustered sampling, there may be several stages of selection before haul-selection is performed. The sampling units selected in initial stages should be represented by random effects, unless there are good reasons to believe that they do not interfere with assumptions about independent selection of hauls. Such intermediate stages can be selection of vessel, indicating that a vessel-effect should be included as a random effect.</p>
-<p>Correct model-configuration affect both the variability and the bias of results, and it can be important to distinguish between these two. The Reca models assumes that the sampling is done in a simple random manner within a cell, and if that is not the case, the result will be biased simply due to sampling bias. It is therefore important that the cell-, and covariate- configuration correctly reflects or approximate any stratification in the sampling designs, or provide a reasonable post-stratification for ad-hoc or under-documented sampling. Apart from that, it is advantageous in terms of the precision of the estimate, if the cells are configured so that similar catches appear in similar cells. It may therefore be relevant to include in the cell-configuration other covariates than those dictated by sampling.</p>
-<p>The addition of covariates to the Reca models increases model complexity, and hence demands on sample sizes. Tradeoffs may be necessary, and it is most important in that respect to configure the model to exclude sources of bias in the sampling. This is easy when sampling is well controlled, and biases are introduced in a few places by design (stratification and clustered sampling). For less stringent sampling or complex sampling, one may have to make decisions about which covariates are more important to include.</p>
+<p>Random effects on the other hand, are well suited to represent
+clustered sampling, when clusters are sampled with equal probability.
+Since all fish is sampled via some fishing operation, Reca has a
+non-configurable random effect representing ‘haul’. In practice ‘haul’
+can be some approximation to a fishing operation, for instance a
+total-day catch. In multi-stage clustered sampling, there may be several
+stages of selection before haul-selection is performed. The sampling
+units selected in initial stages should be represented by random
+effects, unless there are good reasons to believe that they do not
+interfere with assumptions about independent selection of hauls. Such
+intermediate stages can be selection of vessel, indicating that a
+vessel-effect should be included as a random effect.</p>
+<p>Correct model-configuration affect both the variability and the bias
+of results, and it can be important to distinguish between these two.
+The Reca models assumes that the sampling is done in a simple random
+manner within a cell, and if that is not the case, the result will be
+biased simply due to sampling bias. It is therefore important that the
+cell-, and covariate- configuration correctly reflects or approximate
+any stratification in the sampling designs, or provide a reasonable
+post-stratification for ad-hoc or under-documented sampling. Apart from
+that, it is advantageous in terms of the precision of the estimate, if
+the cells are configured so that similar catches appear in similar
+cells. It may therefore be relevant to include in the cell-configuration
+other covariates than those dictated by sampling.</p>
+<p>The addition of covariates to the Reca models increases model
+complexity, and hence demands on sample sizes. Tradeoffs may be
+necessary, and it is most important in that respect to configure the
+model to exclude sources of bias in the sampling. This is easy when
+sampling is well controlled, and biases are introduced in a few places
+by design (stratification and clustered sampling). For less stringent
+sampling or complex sampling, one may have to make decisions about which
+covariates are more important to include.</p>
 </div>
 </div>
 </div>
 <div class="section level3">
 <h3 id="parameterisation">Parameterisation<a class="anchor" aria-label="anchor" href="#parameterisation"></a>
 </h3>
-<p>Once the data preparation steps are done, you may perform the parameterisation step, using the function <em>RstoxFDA::ParameterizeRecaModels</em>.</p>
+<p>Once the data preparation steps are done, you may perform the
+parameterisation step, using the function
+<em>RstoxFDA::ParameterizeRecaModels</em>.</p>
 <div class="section level4">
 <h4 id="growth-model">Growth model<a class="anchor" aria-label="anchor" href="#growth-model"></a>
 </h4>
-<p>There is only one model choice to make in this step, which is the type of growth-model to use. All other model choices are done in the data-configuration step. For most stocks ‘log-linear’ growth is assumed. For fish with a very flat asymptotic length, the ‘non-linear’ model may be considered. The ‘non-linear’ option specifies a Schnute-Richards growth model. It was added to ECA when the models where adapted to use with herring-stocks. Herring has a strong decline in growth after maturation, and the log-linear model was found to be a poor fit.</p>
+<p>There is only one model choice to make in this step, which is the
+type of growth-model to use. All other model choices are done in the
+data-configuration step. For most stocks ‘log-linear’ growth is assumed.
+For fish with a very flat asymptotic length, the ‘non-linear’ model may
+be considered. The ‘non-linear’ option specifies a Schnute-Richards
+growth model. It was added to ECA when the models where adapted to use
+with herring-stocks. Herring has a strong decline in growth after
+maturation, and the log-linear model was found to be a poor fit.</p>
 </div>
 <div class="section level4">
 <h4 id="simulation-parameters">Simulation parameters<a class="anchor" aria-label="anchor" href="#simulation-parameters"></a>
 </h4>
-<p>The other important parameters to decide upon when running the model are the number of iterations to run. That is, deciding how many are sufficient, since one in principle would like to run as many of these as possible. This is necessarily a pragmatic choice, which will be discussed more in the section ‘Convergence’. For now it will suffice to say that this is configured with the parameters ‘Nsamples’, ‘Burnin’ and ‘Thin’, and that running time increases with the number of iterations. It is common to run short exploratory runs, so that any remaining data issues can be detected early, and so that some preliminary output is available for configuring reports, and setting up convergence checks. ‘Nsamples’ determine the number of samples used to represent the posterior distributions of the final results, and is also the parameter that have implications for intermediate storage of results (see section Estimate). ‘Burnin’ is a number of iterations of the parameterisation routine that are run before the ‘Nsamples’ iteration. Those are not included in the posterior distributions. ‘Thin’ specifies a number of samples run between each of the ‘Nsamples’ iterations, these are also not included in the posterior distributions.</p>
+<p>The other important parameters to decide upon when running the model
+are the number of iterations to run. That is, deciding how many are
+sufficient, since one in principle would like to run as many of these as
+possible. This is necessarily a pragmatic choice, which will be
+discussed more in the section ‘Convergence’. For now it will suffice to
+say that this is configured with the parameters ‘Nsamples’, ‘Burnin’ and
+‘Thin’, and that running time increases with the number of iterations.
+It is common to run short exploratory runs, so that any remaining data
+issues can be detected early, and so that some preliminary output is
+available for configuring reports, and setting up convergence checks.
+‘Nsamples’ determine the number of samples used to represent the
+posterior distributions of the final results, and is also the parameter
+that have implications for intermediate storage of results (see section
+Estimate). ‘Burnin’ is a number of iterations of the parameterisation
+routine that are run before the ‘Nsamples’ iteration. Those are not
+included in the posterior distributions. ‘Thin’ specifies a number of
+samples run between each of the ‘Nsamples’ iterations, these are also
+not included in the posterior distributions.</p>
 </div>
 <div class="section level4">
 <h4 id="cached-data">Cached data<a class="anchor" aria-label="anchor" href="#cached-data"></a>
 </h4>
-<p>Since production runs are time-consuming, one may consider using the option ‘UseCachedData’. This allows previous runs of Reca to be restored, instead of running the models again. A check on input and parameters are performed, and the use of previous runs are only allowed if input and parameters are exactly as they where for the last run. This includes some implicitly set parameters, such as ‘Seed’. See the function documentation of <em>RstoxFDA::ParameterizeRecaModels</em> for more information.</p>
+<p>Since production runs are time-consuming, one may consider using the
+option ‘UseCachedData’. This allows previous runs of Reca to be
+restored, instead of running the models again. A check on input and
+parameters are performed, and the use of previous runs are only allowed
+if input and parameters are exactly as they where for the last run. This
+includes some implicitly set parameters, such as ‘Seed’. See the
+function documentation of <em>RstoxFDA::ParameterizeRecaModels</em> for
+more information.</p>
 </div>
 <div class="section level4">
 <h4 id="temporary-storage">Temporary storage<a class="anchor" aria-label="anchor" href="#temporary-storage"></a>
 </h4>
-<p>Reca requires some temporary storage for efficient communication between the different steps of the estimation. This storage space must be specified in the parameter ‘ResultDirectory’. This has some implications on the transferrability of StoX-projects between computers. When running a project that has been configured on a different computer, you should expect to have to change this parameter.</p>
+<p>Reca requires some temporary storage for efficient communication
+between the different steps of the estimation. This storage space must
+be specified in the parameter ‘ResultDirectory’. This has some
+implications on the transferrability of StoX-projects between computers.
+When running a project that has been configured on a different computer,
+you should expect to have to change this parameter.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="prediction">Prediction<a class="anchor" aria-label="anchor" href="#prediction"></a>
 </h3>
-<p>Once the model is parameterised, you may compute estimates, which is done in the prediction-step. This is done with the function <em>RstoxFDA::RunRecaModels</em>. This function performs estimation with the parameterised models with a provided set of landings. These landings may be different from those used in the data configuration step, under some restrictions detailed in the function documentation. In particular, any subset of the landings used in data-preparation is acceptable. Estimation may also be done for groups defined by columns in the landings, rather than the entire fishery. When defining such groups, any combination of categorical variables are acceptable. They may be the same as the ones defining the cells, they may differ, and they may even be different encodings of the same information. For instance the models may use one area definition as a covariate, and still the predictions may be done for a different area definition (e.g. ICES areas). The groups that estimations should be done for is provided with the argument ‘GroupingVariables’.</p>
-<p>The practice of reporting on different variables than what the ECA treats as covariates is convenient and often necessary to meet reporting demands. It should be kept in mind though, that this may misrepresent the quality of estimates to recipients of these reports. Reports on a fine spatial grid may implicitly suggest that the entire grid was sampled.</p>
-<p><em>RstoxFDA::RunRecaModels</em> report estimated numbers in age and length groups, for all the requested groups, for all iterations done in parameterisation (‘Nsamples’ in <em>RstoxFDA::ParameterizeRecaModels</em>). This may amount to a very large table, and may in fact exhaust the memory available for such tabulation in R. Since not all reports require these results by length-groups, <em>RstoxFDA::RunRecaModels</em> offers the option ‘CollapseLength’ which merges all length groups into one. It is possible to set up several estimations for the same parameterisation, and configure some of them with detailed groups and with collapsed lengths, and some of them with less detailed groups and without collapsed lengths. In practice that is usually sufficient to get necessary final reports, while avoiding memory-exhaustion problems.</p>
-<p>The option ‘TemporalResolution’ specifies the accuracy of fractional ages internally in Reca. The time of catch determines the time of death of the fish, so fish that are fished early in the year are considered younger at time of catch than fish of the same year-class that was fished late in the year. This has some implication for estimations via the age-length relationships, but is in practice of little concern. ‘TemporalResolution’ does not have to match any temporal covariate in the model. It may be specified as Quarter, even if other Periods are defined as covariates, and even if no temporal covariate is configured at all.</p>
+<p>Once the model is parameterised, you may compute estimates, which is
+done in the prediction-step. This is done with the function
+<em>RstoxFDA::RunRecaModels</em>. This function performs estimation with
+the parameterised models with a provided set of landings. These landings
+may be different from those used in the data configuration step, under
+some restrictions detailed in the function documentation. In particular,
+any subset of the landings used in data-preparation is acceptable.
+Estimation may also be done for groups defined by columns in the
+landings, rather than the entire fishery. When defining such groups, any
+combination of categorical variables are acceptable. They may be the
+same as the ones defining the cells, they may differ, and they may even
+be different encodings of the same information. For instance the models
+may use one area definition as a covariate, and still the predictions
+may be done for a different area definition (e.g. ICES areas). The
+groups that estimations should be done for is provided with the argument
+‘GroupingVariables’.</p>
+<p>The practice of reporting on different variables than what the ECA
+treats as covariates is convenient and often necessary to meet reporting
+demands. It should be kept in mind though, that this may misrepresent
+the quality of estimates to recipients of these reports. Reports on a
+fine spatial grid may implicitly suggest that the entire grid was
+sampled.</p>
+<p><em>RstoxFDA::RunRecaModels</em> report estimated numbers in age and
+length groups, for all the requested groups, for all iterations done in
+parameterisation (‘Nsamples’ in
+<em>RstoxFDA::ParameterizeRecaModels</em>). This may amount to a very
+large table, and may in fact exhaust the memory available for such
+tabulation in R. Since not all reports require these results by
+length-groups, <em>RstoxFDA::RunRecaModels</em> offers the option
+‘CollapseLength’ which merges all length groups into one. It is possible
+to set up several estimations for the same parameterisation, and
+configure some of them with detailed groups and with collapsed lengths,
+and some of them with less detailed groups and without collapsed
+lengths. In practice that is usually sufficient to get necessary final
+reports, while avoiding memory-exhaustion problems.</p>
+<p>The option ‘TemporalResolution’ specifies the accuracy of fractional
+ages internally in Reca. The time of catch determines the time of death
+of the fish, so fish that are fished early in the year are considered
+younger at time of catch than fish of the same year-class that was
+fished late in the year. This has some implication for estimations via
+the age-length relationships, but is in practice of little concern.
+‘TemporalResolution’ does not have to match any temporal covariate in
+the model. It may be specified as Quarter, even if other Periods are
+defined as covariates, and even if no temporal covariate is configured
+at all.</p>
 </div>
 <div class="section level3">
 <h3 id="convergence">Convergence<a class="anchor" aria-label="anchor" href="#convergence"></a>
 </h3>
-<p>The interpretation of the results computed by Reca is dependent on a converged representation of all posterior distributions. One cannot really prove convergence, but signs of lack of convergence can be detected, and simulations can be extended until such indications are either absent, or can be considered unlikely to be of practical consequence. There are also more formal convergence criteria, that can use convergence metrics to allow simulations to be compared with the standards of the field. In practice, parameters with many observations approximate their converged values much sooner than parameters with few observations. Unconverged remnants may therefore often be seen in rare age-groups, and (if the sampling is efficient) in fractions of the fisheries with little catch. This may be acceptable if these values are small, and if other information supports that they should be small, or justifies exclusion of these values from reports. For instance, it may for many stocks be expected from a biological point of view that the catch of the oldest sampled age groups should be small. If fish of certain age groups are a priori expected to be uncommon, they are also expected to be determined with low accuracy even for converged parameterisations, and some practitioners accept estimates, even when convergence criteria are not met for these age groups.</p>
+<p>The interpretation of the results computed by Reca is dependent on a
+converged representation of all posterior distributions. One cannot
+really prove convergence, but signs of lack of convergence can be
+detected, and simulations can be extended until such indications are
+either absent, or can be considered unlikely to be of practical
+consequence. There are also more formal convergence criteria, that can
+use convergence metrics to allow simulations to be compared with the
+standards of the field. In practice, parameters with many observations
+approximate their converged values much sooner than parameters with few
+observations. Unconverged remnants may therefore often be seen in rare
+age-groups, and (if the sampling is efficient) in fractions of the
+fisheries with little catch. This may be acceptable if these values are
+small, and if other information supports that they should be small, or
+justifies exclusion of these values from reports. For instance, it may
+for many stocks be expected from a biological point of view that the
+catch of the oldest sampled age groups should be small. If fish of
+certain age groups are a priori expected to be uncommon, they are also
+expected to be determined with low accuracy even for converged
+parameterisations, and some practitioners accept estimates, even when
+convergence criteria are not met for these age groups.</p>
 <div class="section level4">
 <h4 id="result-convergence">Result convergence<a class="anchor" aria-label="anchor" href="#result-convergence"></a>
 </h4>
-<p>One approach to inspecting convergence is to plot the entire posterior distribution of the results. When plotted in the order of the iterations, these are called traceplots. The ideal traceplot looks like random noice. Rare peculiarities of the iterations that impact the summary of the posterior distributions (mean, standard deviations, intervals) must be well sampled in order to consider the parameterisation to be converged. Isolated spikes in the traceplots are indications of non-convergence, and can usually be addressed by running more burnin-iterations. The reason for plotting traceplots in the order of the iterations is that a known artifact of the simulation algorithm used in Reca may cause sequential iterations to not be entirely independent of each other. This shows up in traceplots as autocorrelations. A pragmatic way to address this is to use the ‘Thin’ parameter in <em>RstoxFDA::ParameterizeRecaModels</em>.</p>
+<p>One approach to inspecting convergence is to plot the entire
+posterior distribution of the results. When plotted in the order of the
+iterations, these are called traceplots. The ideal traceplot looks like
+random noice. Rare peculiarities of the iterations that impact the
+summary of the posterior distributions (mean, standard deviations,
+intervals) must be well sampled in order to consider the
+parameterisation to be converged. Isolated spikes in the traceplots are
+indications of non-convergence, and can usually be addressed by running
+more burnin-iterations. The reason for plotting traceplots in the order
+of the iterations is that a known artifact of the simulation algorithm
+used in Reca may cause sequential iterations to not be entirely
+independent of each other. This shows up in traceplots as
+autocorrelations. A pragmatic way to address this is to use the ‘Thin’
+parameter in <em>RstoxFDA::ParameterizeRecaModels</em>.</p>
 </div>
 <div class="section level4">
 <h4 id="parameter-convergence">Parameter convergence<a class="anchor" aria-label="anchor" href="#parameter-convergence"></a>
 </h4>
-<p>A somewhat more rigorous approach to convergence checking is to carefully check that every parameter of the models are converged. One common criteria, with an accompanying rule-of-thumb is proposed by Gelman &amp; Rubin (1992). Gelman-Rubins R-statistic is computed from repeated Reca-runs (chains), and the simulations are considered converged when the independent runs are no longer distinguishable in the sense that the within-chain variation is the same as the between-chain variation. The R-statistic quantifies this divergence as a ratio that is interpretable between different models, and a common rule of thumb is to consider simulations converged when all parameters have a Gelman-Rubins R of less than 1.1. Like most rules of thumb, the threshold of 1.1 is not universally relevant, but experimenting with the sensitivity of results to such quantitative yardsticks of convergence can help build confidence in model configurations. Another useful aspect of having the convergence criteria calculated for each parameter, is that it makes it easy to sort out the parameters that are slow to converge. This allows for reasoning about what causes issues of convergence, and reasoning about the caveats involved in accepting unconverged results.</p>
-<p>In order to set up an analysis of Gelman-Rubins R-statistic in StoX, three or more separate parameterisations must be run (<em>RstoxFDA::ParameterizeRecaModels</em>) with the same number of iterations. The parameterisations can be summarised and accumulated in the report-tab of the StoX user-interface, using <em>RstoxFDA::ReportRecaParameterStatistics</em>, and the R-statistic can be computed with <em>RstoxFDA::ReportParameterConvergence</em>.</p>
+<p>A somewhat more rigorous approach to convergence checking is to
+carefully check that every parameter of the models are converged. One
+common criteria, with an accompanying rule-of-thumb is proposed by
+Gelman &amp; Rubin (1992). Gelman-Rubins R-statistic is computed from
+repeated Reca-runs (chains), and the simulations are considered
+converged when the independent runs are no longer distinguishable in the
+sense that the within-chain variation is the same as the between-chain
+variation. The R-statistic quantifies this divergence as a ratio that is
+interpretable between different models, and a common rule of thumb is to
+consider simulations converged when all parameters have a Gelman-Rubins
+R of less than 1.1. Like most rules of thumb, the threshold of 1.1 is
+not universally relevant, but experimenting with the sensitivity of
+results to such quantitative yardsticks of convergence can help build
+confidence in model configurations. Another useful aspect of having the
+convergence criteria calculated for each parameter, is that it makes it
+easy to sort out the parameters that are slow to converge. This allows
+for reasoning about what causes issues of convergence, and reasoning
+about the caveats involved in accepting unconverged results.</p>
+<p>In order to set up an analysis of Gelman-Rubins R-statistic in StoX,
+three or more separate parameterisations must be run
+(<em>RstoxFDA::ParameterizeRecaModels</em>) with the same number of
+iterations. The parameterisations can be summarised and accumulated in
+the report-tab of the StoX user-interface, using
+<em>RstoxFDA::ReportRecaParameterStatistics</em>, and the R-statistic
+can be computed with <em>RstoxFDA::ReportParameterConvergence</em>.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="stox-project">StoX project<a class="anchor" aria-label="anchor" href="#stox-project"></a>
 </h3>
-<p>In summary, Reca can be run through the StoX user-interface by configuring at least the tree functions exemplified by the table below, in the analysis-tab:</p>
+<p>In summary, Reca can be run through the StoX user-interface by
+configuring at least the tree functions exemplified by the table below,
+in the analysis-tab:</p>
 <table class="table">
 <colgroup>
 <col width="26%">
@@ -234,7 +706,8 @@
 <tr class="odd">
 <td>PrepareReca</td>
 <td>PrepareRecaEstimate</td>
-<td>Read samples and landings from processes in the StoX-baseline. Configure covariates and perform checks.</td>
+<td>Read samples and landings from processes in the StoX-baseline.
+Configure covariates and perform checks.</td>
 </tr>
 <tr class="even">
 <td>Parameterise</td>
@@ -252,7 +725,18 @@
 <div class="section level3">
 <h3 id="reports">Reports<a class="anchor" aria-label="anchor" href="#reports"></a>
 </h3>
-<p><em>RstoxFDA::RunRecaModels</em> provides the entire posterior distribution of each age and length groups, and usually some summarizing of results is necessary. Some useful report-functions for Reca-results are listed in the table below. They can be added to the report-tab in the StoX user-interface. These all summarize within the groups defined in <em>RstoxFDA::RunRecaModels</em>. So in general the aggregation of reporting (area, quarter, etc.) is defined by <em>RstoxFDA::RunRecaModels</em>, while other reporting options, such as PlusGroups, units, number of decimals or length-groups are configured in each report function. For reporting estimates with poorly converged age-groups, some of the reports provide a ‘Threshold’ option that allows exclusion of low-abundance age-groups from reports.</p>
+<p><em>RstoxFDA::RunRecaModels</em> provides the entire posterior
+distribution of each age and length groups, and usually some summarizing
+of results is necessary. Some useful report-functions for Reca-results
+are listed in the table below. They can be added to the report-tab in
+the StoX user-interface. These all summarize within the groups defined
+in <em>RstoxFDA::RunRecaModels</em>. So in general the aggregation of
+reporting (area, quarter, etc.) is defined by
+<em>RstoxFDA::RunRecaModels</em>, while other reporting options, such as
+PlusGroups, units, number of decimals or length-groups are configured in
+each report function. For reporting estimates with poorly converged
+age-groups, some of the reports provide a ‘Threshold’ option that allows
+exclusion of low-abundance age-groups from reports.</p>
 <table class="table">
 <colgroup>
 <col width="53%">
@@ -265,7 +749,8 @@
 <tbody>
 <tr class="odd">
 <td align="left">ReportRecaCatchStatistics</td>
-<td align="left">Estimated total catch, mean length, mean weight, and mean age</td>
+<td align="left">Estimated total catch, mean length, mean weight, and
+mean age</td>
 </tr>
 <tr class="even">
 <td align="left">ReportRecaCatchAtAge</td>
@@ -293,11 +778,13 @@
 </tr>
 <tr class="even">
 <td align="left">ReportRecaParameterStatistics</td>
-<td align="left">Summary statistics of model parameters. For convergence checks</td>
+<td align="left">Summary statistics of model parameters. For convergence
+checks</td>
 </tr>
 </tbody>
 </table>
-<p>In addition some functions are relevant in this context, that may also be used with other estimation approaches than Reca:</p>
+<p>In addition some functions are relevant in this context, that may
+also be used with other estimation approaches than Reca:</p>
 <table class="table">
 <colgroup>
 <col width="53%">
@@ -310,7 +797,9 @@
 <tbody>
 <tr class="odd">
 <td align="left">ReportFdaSampling</td>
-<td align="left">Produces overview of sampling coverage. Useful for exploring cell-configurations, and checking if desired fixed-effect configurations are possible.</td>
+<td align="left">Produces overview of sampling coverage. Useful for
+exploring cell-configurations, and checking if desired fixed-effect
+configurations are possible.</td>
 </tr>
 <tr class="even">
 <td align="left">ReportFdaLandings</td>
@@ -322,7 +811,9 @@
 </tr>
 <tr class="even">
 <td align="left">ReportFdaSOP</td>
-<td align="left">Performs Sum-Of-Products tests, checking that the products of mean weight at age and estimated catch at age sum to total landed weight.</td>
+<td align="left">Performs Sum-Of-Products tests, checking that the
+products of mean weight at age and estimated catch at age sum to total
+landed weight.</td>
 </tr>
 </tbody>
 </table>
@@ -330,13 +821,40 @@
 <div class="section level3">
 <h3 id="stock-splitting">Stock splitting<a class="anchor" aria-label="anchor" href="#stock-splitting"></a>
 </h3>
-<p>Some stocks are defined by parameters that are observed from individual fish, while they are only identified by species in landings. The total catch of the stocks must then be estimated from samples. Reca supports this kind of estimation as a cross-categorization of stock and age groups, with separate age-length relationsship for each stock. The specifics of the model formulation is tightly connected with the coding schemes used for cod, which is classified as coastal-cod or atlantic / North-east arctic cod, based on otolith-typing. In addition to typing as coastal, or NEA-cod, two codes are used to reflect classification with uncertainty. In principle, other domain estimates with a potential difference in age-length relationship can be estimated in the same framework, but adaptation to the cod coding-scheme will be necessary.</p>
-<p>In order to use Stock-splitting. The function <em>RstoxFDA::DefineStockSplittingParameters</em> must be added to the StoX baseline, and the function <em>RstoxFDA::PrepareRecaEstimate</em> must be configured with the appropriate options. When data-preparation is configured in this way, <em>RstoxFDA::RunRecaModels</em> produces all reports with the column ‘Stock’ as a grouping variable. This is in addition to any grouping variable specified for the report-function.</p>
+<p>Some stocks are defined by parameters that are observed from
+individual fish, while they are only identified by species in landings.
+The total catch of the stocks must then be estimated from samples. Reca
+supports this kind of estimation as a cross-categorization of stock and
+age groups, with separate age-length relationsship for each stock. The
+specifics of the model formulation is tightly connected with the coding
+schemes used for cod, which is classified as coastal-cod or atlantic /
+North-east arctic cod, based on otolith-typing. In addition to typing as
+coastal, or NEA-cod, two codes are used to reflect classification with
+uncertainty. In principle, other domain estimates with a potential
+difference in age-length relationship can be estimated in the same
+framework, but adaptation to the cod coding-scheme will be
+necessary.</p>
+<p>In order to use Stock-splitting. The function
+<em>RstoxFDA::DefineStockSplittingParameters</em> must be added to the
+StoX baseline, and the function <em>RstoxFDA::PrepareRecaEstimate</em>
+must be configured with the appropriate options. When data-preparation
+is configured in this way, <em>RstoxFDA::RunRecaModels</em> produces all
+reports with the column ‘Stock’ as a grouping variable. This is in
+addition to any grouping variable specified for the report-function.</p>
 </div>
 <div class="section level3">
 <h3 id="aging-error">Aging error<a class="anchor" aria-label="anchor" href="#aging-error"></a>
 </h3>
-<p>Reca allows for any quantification of bias or variability in age-readings to be represented in the models. This can be done by including an aging-error matrix in the StoX-baseline (<em>RstoxFDA::DefineAgeErrorMatrix</em>), and configuring <em>RstoxFDA::PrepareRecaEstimate</em> accordingly. Reliable sources for overall bias in age readings are rare, but some information about variability can be estimated from age-reading workshops. This functionality may also be used with hypothetical reading errors to explore the relative importance of reading-error and sampling error in determining the total catch at age.</p>
+<p>Reca allows for any quantification of bias or variability in
+age-readings to be represented in the models. This can be done by
+including an aging-error matrix in the StoX-baseline
+(<em>RstoxFDA::DefineAgeErrorMatrix</em>), and configuring
+<em>RstoxFDA::PrepareRecaEstimate</em> accordingly. Reliable sources for
+overall bias in age readings are rare, but some information about
+variability can be estimated from age-reading workshops. This
+functionality may also be used with hypothetical reading errors to
+explore the relative importance of reading-error and sampling error in
+determining the total catch at age.</p>
 </div>
 </div>
 <div class="section level2">
@@ -344,19 +862,35 @@
 </h2>
 <dl>
 <dt>Hirst et al. 2004</dt>
-<dd>Hirst, David, Sondre Aanes, Geir Storvik, Ragnar Bang Huseby, and Ingunn Fride Tvete. 2004. “Estimating Catch at Age from Market Sampling Data by Using a Bayesian Hierarchical Model.” Journal of the Royal Statistical Society: Series C (Applied Statistics) 53 (1): 1–14. <a href="https://doi.org/10.1111/j.1467-9876.2004.00422.x" class="external-link uri">https://doi.org/10.1111/j.1467-9876.2004.00422.x</a>.
+<dd>
+Hirst, David, Sondre Aanes, Geir Storvik, Ragnar Bang Huseby, and Ingunn
+Fride Tvete. 2004. “Estimating Catch at Age from Market Sampling Data by
+Using a Bayesian Hierarchical Model.” Journal of the Royal Statistical
+Society: Series C (Applied Statistics) 53 (1): 1–14. <a href="https://doi.org/10.1111/j.1467-9876.2004.00422.x" class="external-link uri">https://doi.org/10.1111/j.1467-9876.2004.00422.x</a>.
 </dd>
 <dt>Hirst et al. 2005</dt>
-<dd>Hirst, David, Geir Storvik, Magne Aldrin, Sondre Aanes, and Ragnar Bang Huseby. 2005. “Estimating Catch-at-Age by Combining Data from Different Sources” 62: 9.
+<dd>
+Hirst, David, Geir Storvik, Magne Aldrin, Sondre Aanes, and Ragnar Bang
+Huseby. 2005. “Estimating Catch-at-Age by Combining Data from Different
+Sources” 62: 9.
 </dd>
 <dt>Hirst et al. 2012</dt>
-<dd>Hirst, David, Geir Storvik, Hanne Rognebakke, Magne Aldrin, Sondre Aanes, and Jon Helge Vølstad. 2012. “A Bayesian Modelling Framework for the Estimation of Catch-at-Age of Commercially Harvested Fish Species.” Edited by Terrance Quinn. Canadian Journal of Fisheries and Aquatic Sciences 69 (12): 2064–76. <a href="https://doi.org/10.1139/cjfas-2012-0075" class="external-link uri">https://doi.org/10.1139/cjfas-2012-0075</a>.
+<dd>
+Hirst, David, Geir Storvik, Hanne Rognebakke, Magne Aldrin, Sondre
+Aanes, and Jon Helge Vølstad. 2012. “A Bayesian Modelling Framework for
+the Estimation of Catch-at-Age of Commercially Harvested Fish Species.”
+Edited by Terrance Quinn. Canadian Journal of Fisheries and Aquatic
+Sciences 69 (12): 2064–76. <a href="https://doi.org/10.1139/cjfas-2012-0075" class="external-link uri">https://doi.org/10.1139/cjfas-2012-0075</a>.
 </dd>
 <dt>Rognebakke et al. 2016</dt>
-<dd>Rognebakke, Hanne, David Hirst, Sondre Aanes, and Geir Storvik. n.d. “Catch-at-Age – Version 4.0: Technical Report,” SAMBA/54/16, <a href="https://nr.no/publikasjon/1416083/" class="external-link uri">https://nr.no/publikasjon/1416083/</a>
+<dd>
+Rognebakke, Hanne, David Hirst, Sondre Aanes, and Geir Storvik. n.d.
+“Catch-at-Age – Version 4.0: Technical Report,” SAMBA/54/16, <a href="https://nr.no/publikasjon/1416083/" class="external-link uri">https://nr.no/publikasjon/1416083/</a>
 </dd>
 <dt>Gelman &amp; Rubin 1992</dt>
-<dd>Gelman, Andrew, and Donald B. Rubin. 1992. “Inference from Iterative Simulation Using Multiple Sequences.” Statistical Science 7 (4). <a href="https://doi.org/10.1214/ss/1177011136" class="external-link uri">https://doi.org/10.1214/ss/1177011136</a>.
+<dd>
+Gelman, Andrew, and Donald B. Rubin. 1992. “Inference from Iterative
+Simulation Using Multiple Sequences.” Statistical Science 7 (4). <a href="https://doi.org/10.1214/ss/1177011136" class="external-link uri">https://doi.org/10.1214/ss/1177011136</a>.
 </dd>
 </dl>
 </div>

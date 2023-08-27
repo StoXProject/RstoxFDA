@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0-9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,8 @@
 
 
 
-<script src="Stox-FDA-overview_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>StoX Fisheries overview (report)</h1>
             
@@ -83,27 +84,71 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/StoXProject/RstoxFDA" class="external-link">RstoxFDA</a></span><span class="op">)</span></span></code></pre></div>
-<p>This vignette introduces how to use RstoxFDA functions in the StoX user interface to generate some common reports for overview of fishing activity and how its sampled. Some data preparation may be necessary, and the vignette <a href="Stox-data-preparation.html">StoX FDA data preparation (baseline)</a> introduces some common data-preparation tasks for Fisheries dependent analysis (FDA) with formats commonly used at the Institute of Marine Research (IMR). One you have created a StoX-baseline as introduced in that vignette, you will have landing-data (<strong>RstoxData::StoxLandingData</strong>) and sample-data (<strong>RstoxData::StoxBioticData</strong>) with complete records and with harmonized coding-systems, and the functions introduced here can be applied directly. The functions introduced here may be added to the “report”-tab in the StoX user inteface.</p>
-<p>This document introduces some problems and tasks, and how RstoxFDA-functions may be applied to solve them. The details of how to use the functions introduced here is provided as function documentation viewable in the StoX “function description”-tab, or in an R-console via ‘?’, e.g:</p>
+<p>This vignette introduces how to use RstoxFDA functions in the StoX
+user interface to generate some common reports for overview of fishing
+activity and how its sampled. Some data preparation may be necessary,
+and the vignette <a href="Stox-data-preparation.html">StoX FDA data
+preparation (baseline)</a> introduces some common data-preparation tasks
+for Fisheries dependent analysis (FDA) with formats commonly used at the
+Institute of Marine Research (IMR). One you have created a StoX-baseline
+as introduced in that vignette, you will have landing-data
+(<strong>RstoxData::StoxLandingData</strong>) and sample-data
+(<strong>RstoxData::StoxBioticData</strong>) with complete records and
+with harmonized coding-systems, and the functions introduced here can be
+applied directly. The functions introduced here may be added to the
+“report”-tab in the StoX user inteface.</p>
+<p>This document introduces some problems and tasks, and how
+RstoxFDA-functions may be applied to solve them. The details of how to
+use the functions introduced here is provided as function documentation
+viewable in the StoX “function description”-tab, or in an R-console via
+‘?’, e.g:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="fu">RstoxFDA</span><span class="fu">::</span><span class="va"><a href="../reference/ReportFdaLandings.html">ReportFdaLandings</a></span></span></code></pre></div>
-<p>Documentation for data formats are provided in the same way. E.g.:</p>
+<p>Documentation for data formats are provided in the same way.
+E.g.:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="fu">RstoxFDA</span><span class="fu">::</span><span class="va"><a href="../reference/ReportFdaLandingData.html">ReportFdaLandingData</a></span></span></code></pre></div>
-<p>As StoX is composed of several R-packages. Functions will be referred to by their package name with the notation <em>package::function</em>. In the StoX user interface, the package that functions belong to are not visible. Any data formats are similarly denoted <strong>package::format</strong>.</p>
+<p>As StoX is composed of several R-packages. Functions will be referred
+to by their package name with the notation <em>package::function</em>.
+In the StoX user interface, the package that functions belong to are not
+visible. Any data formats are similarly denoted
+<strong>package::format</strong>.</p>
 <div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>
-<p>RstoxFDA is an optional package in StoX. In order to use the functions introduced in this vignette in the StoX user interface, make sure RstoxFDA is installed. See installation instructions on <a href="https://github.com/StoXProject/RstoxFDA" class="external-link">github: StoXProject/RstoxFDA</a>. To install the StoX user interface, see instructions on <a href="https://github.com/StoXProject/StoX" class="external-link">github: StoXProject/StoX</a></p>
+<p>RstoxFDA is an optional package in StoX. In order to use the
+functions introduced in this vignette in the StoX user interface, make
+sure RstoxFDA is installed. See installation instructions on <a href="https://github.com/StoXProject/RstoxFDA" class="external-link">github:
+StoXProject/RstoxFDA</a>. To install the StoX user interface, see
+instructions on <a href="https://github.com/StoXProject/StoX" class="external-link">github:
+StoXProject/StoX</a></p>
 </div>
 <div class="section level2">
 <h2 id="reports">Reports<a class="anchor" aria-label="anchor" href="#reports"></a>
 </h2>
-<p>The report functions display reports in StoX. All reports are displayed in StoX, and in addition written into the StoX-project directory in a standardized format for tabular data. They may be imported into other software change how rows are sorted or to generate custom plots.</p>
+<p>The report functions display reports in StoX. All reports are
+displayed in StoX, and in addition written into the StoX-project
+directory in a standardized format for tabular data. They may be
+imported into other software change how rows are sorted or to generate
+custom plots.</p>
 <div class="section level3">
 <h3 id="landing-report">Landing report<a class="anchor" aria-label="anchor" href="#landing-report"></a>
 </h3>
-<p>The StoX-baseline functions allows for obtaining <strong>RstoxData::StoxLandingData</strong> in an aggregated, but still rather detailed format. Temporally the data is aggregated by date, and landing site, gear, and vessel length is included to the highest resolution available. More practical summaries of the landing statistics can be obtained with the function <em>RstoxFDA::ReportFdaLandings</em>. This function aggregates the total landed weight, by any combination of columns that exist in <strong>RstoxData::StoxLandingData</strong>, included any columns added in StoX-baseline. The unit for the reported weight and any rounding of the reported weight is configurable. Following R-convention, rounding to nearest 10th or 100th may be specified by providing negative numbers. Below is an example of a report in tons, aggregated by quarter and gear-group and rounded to the nearest 1000 tons. The variables ‘ReportPeriod’ (Quarter) and ‘GearGroup’ have been added in StoX-baseline.</p>
+<p>The StoX-baseline functions allows for obtaining
+<strong>RstoxData::StoxLandingData</strong> in an aggregated, but still
+rather detailed format. Temporally the data is aggregated by date, and
+landing site, gear, and vessel length is included to the highest
+resolution available. More practical summaries of the landing statistics
+can be obtained with the function <em>RstoxFDA::ReportFdaLandings</em>.
+This function aggregates the total landed weight, by any combination of
+columns that exist in <strong>RstoxData::StoxLandingData</strong>,
+included any columns added in StoX-baseline. The unit for the reported
+weight and any rounding of the reported weight is configurable.
+Following R-convention, rounding to nearest 10th or 100th may be
+specified by providing negative numbers. Below is an example of a report
+in tons, aggregated by quarter and gear-group and rounded to the nearest
+1000 tons. The variables ‘ReportPeriod’ (Quarter) and ‘GearGroup’ have
+been added in StoX-baseline.</p>
 <table class="table">
 <thead><tr class="header">
 <th align="center">ReportPeriod</th>
@@ -143,14 +188,46 @@
 </tr>
 </tbody>
 </table>
-<p>This table was produced by a process named “LandingsOverview” and was therefore also located in the StoX project directory under “output/report/LandingsOverview/FisheriesLandings.txt”.</p>
-<p>The input to this report function is set with explicit reference to the StoX-baseline process that data should be fetch from. This means that if it is desired to split a report into several reports according to the values in <strong>RstoxData::StoxLandingData</strong>, that may be achieved by adding instances of <em>RstoxData::FilterStoxLanding</em> to the StoX-baseline. The report above could for instance be made for several species, by configuring filters accordingly.</p>
+<p>This table was produced by a process named “LandingsOverview” and was
+therefore also located in the StoX project directory under
+“output/report/LandingsOverview/FisheriesLandings.txt”.</p>
+<p>The input to this report function is set with explicit reference to
+the StoX-baseline process that data should be fetch from. This means
+that if it is desired to split a report into several reports according
+to the values in <strong>RstoxData::StoxLandingData</strong>, that may
+be achieved by adding instances of <em>RstoxData::FilterStoxLanding</em>
+to the StoX-baseline. The report above could for instance be made for
+several species, by configuring filters accordingly.</p>
 </div>
 <div class="section level3">
 <h3 id="sampling-report">Sampling report<a class="anchor" aria-label="anchor" href="#sampling-report"></a>
 </h3>
-<p>It is often desired to inspect how sampling programs have covered the fishing activity. That can be done by defining partitions of the fisheries. For instance one might one to partition the fishery by gear, quarter and area, and tabulate how the sampling covered each partition. For this it is necessary that samples and landing data are coded in a harmonized fashion, using for instance the same gear-codes. If that is the case, <em>RstoxFDA::ReportFdaSampling</em> can be used to generate such tables for comparison. The variables that define the partition are provided as the function parameter ‘GroupingVariables’ (e.g. ‘GearGroup’, ‘Stratum’, and ‘Period’ for gear, area and quarter). Since FDA-data are typically sampled in highly clustered fashion, the effective sample sizes are not simply determined by the number of observations made (length measurements or age readings), but also by the number of catches or vessels that these measurements where obtained from. Some common clustering factors are therefore reported along with the count of observations. As for <em>RstoxFDA::ReportFdaLandings</em>, units and rounding are configurable.</p>
-<p>The example below depicts a comparison of samples and landings. Notice that the partitioning of the fishery occur as the leftmost columns, along with the total landed weight in that partition (The columns ‘GearGroup’, ‘Stratum’, ‘Period’ and ‘LandedRoundWeight’). Since the variables defining the partition need to be defined with the same coding system in both the sample data and the landing data, <em>RstoxFDA::ReportFdaSampling</em> requires them to have the same column name, and only provide those columns as option for the ‘GroupingVariables’.</p>
+<p>It is often desired to inspect how sampling programs have covered the
+fishing activity. That can be done by defining partitions of the
+fisheries. For instance one might one to partition the fishery by gear,
+quarter and area, and tabulate how the sampling covered each partition.
+For this it is necessary that samples and landing data are coded in a
+harmonized fashion, using for instance the same gear-codes. If that is
+the case, <em>RstoxFDA::ReportFdaSampling</em> can be used to generate
+such tables for comparison. The variables that define the partition are
+provided as the function parameter ‘GroupingVariables’
+(e.g. ‘GearGroup’, ‘Stratum’, and ‘Period’ for gear, area and quarter).
+Since FDA-data are typically sampled in highly clustered fashion, the
+effective sample sizes are not simply determined by the number of
+observations made (length measurements or age readings), but also by the
+number of catches or vessels that these measurements where obtained
+from. Some common clustering factors are therefore reported along with
+the count of observations. As for <em>RstoxFDA::ReportFdaLandings</em>,
+units and rounding are configurable.</p>
+<p>The example below depicts a comparison of samples and landings.
+Notice that the partitioning of the fishery occur as the leftmost
+columns, along with the total landed weight in that partition (The
+columns ‘GearGroup’, ‘Stratum’, ‘Period’ and ‘LandedRoundWeight’). Since
+the variables defining the partition need to be defined with the same
+coding system in both the sample data and the landing data,
+<em>RstoxFDA::ReportFdaSampling</em> requires them to have the same
+column name, and only provide those columns as option for the
+‘GroupingVariables’.</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="11%">
@@ -227,11 +304,41 @@
 </tr>
 </tbody>
 </table>
-<p>In this case the GearGroup, Stratum and Period has been obtained by adding and re-coding variables in the StoX-baseline for both <strong>RstoxData::StoxLandingData</strong> and <strong>RstoxData::StoxBioticData</strong>. We may note that Demershal Seine (D. Seine) in Stratum s500 was not sampled at all in quarter 2 (Q2). We may also note the somewhat peculiar fact that Trawl in Stratum s300-400 was sampled in quarter 1 (Q1), even if there are no recorded landings then. This occurs from time to time and need to be handled for many kinds of analysis, by changing gear-groups, periodicity or other kinds of data re-configuration. The main reason why this occurs is that samples are often provided with higher temporal and spatial resolution than the landings. Samples of catches from a known fishing operation will typically be assigned the temporal and spatial variables that describe that fishing operation, while a landing consist of many fishing operations and only the dominant spatio-temporal variables are reported for landings. The issue may also occasionally arise due to error in sample-records or sales-notes.</p>
+<p>In this case the GearGroup, Stratum and Period has been obtained by
+adding and re-coding variables in the StoX-baseline for both
+<strong>RstoxData::StoxLandingData</strong> and
+<strong>RstoxData::StoxBioticData</strong>. We may note that Demershal
+Seine (D. Seine) in Stratum s500 was not sampled at all in quarter 2
+(Q2). We may also note the somewhat peculiar fact that Trawl in Stratum
+s300-400 was sampled in quarter 1 (Q1), even if there are no recorded
+landings then. This occurs from time to time and need to be handled for
+many kinds of analysis, by changing gear-groups, periodicity or other
+kinds of data re-configuration. The main reason why this occurs is that
+samples are often provided with higher temporal and spatial resolution
+than the landings. Samples of catches from a known fishing operation
+will typically be assigned the temporal and spatial variables that
+describe that fishing operation, while a landing consist of many fishing
+operations and only the dominant spatio-temporal variables are reported
+for landings. The issue may also occasionally arise due to error in
+sample-records or sales-notes.</p>
 <div class="section level4">
 <h4 id="tabulating-multiple-sampling-programs">Tabulating multiple sampling programs<a class="anchor" aria-label="anchor" href="#tabulating-multiple-sampling-programs"></a>
 </h4>
-<p>When evaluating sampling coverage from several sampling programs, it may be of interest to inspect which sampling programs cover which parts of the fisheries. If the sampling program is identified by some variable in <strong>RstoxData::StoxBioticData</strong>, this variable can be provided as a ‘SamplingVariable’ to <em>RstoxFDA::ReportFdaSampling</em> in order to specify further partitioning of data. The example below illustrates this with the variable ‘missiontypename’ that identifies the sampling programs. Note that the leftmost columns that represent the partitioning of the fishery are repeated. In particular the ‘LandedRoundWeight’ is repeated, so that the sum of this column does no longer represent the total landings. Immediately to the right of ‘LandedRoundWeight’, the sampling variable ‘missiontypename’ is listed. This represent the different sampling programs that samples are collected from, and the sample summaries in the columns to the right of this is partitioned on each sampling program.</p>
+<p>When evaluating sampling coverage from several sampling programs, it
+may be of interest to inspect which sampling programs cover which parts
+of the fisheries. If the sampling program is identified by some variable
+in <strong>RstoxData::StoxBioticData</strong>, this variable can be
+provided as a ‘SamplingVariable’ to <em>RstoxFDA::ReportFdaSampling</em>
+in order to specify further partitioning of data. The example below
+illustrates this with the variable ‘missiontypename’ that identifies the
+sampling programs. Note that the leftmost columns that represent the
+partitioning of the fishery are repeated. In particular the
+‘LandedRoundWeight’ is repeated, so that the sum of this column does no
+longer represent the total landings. Immediately to the right of
+‘LandedRoundWeight’, the sampling variable ‘missiontypename’ is listed.
+This represent the different sampling programs that samples are
+collected from, and the sample summaries in the columns to the right of
+this is partitioned on each sampling program.</p>
 <table class="table">
 <colgroup>
 <col width="10%">
@@ -327,14 +434,22 @@
 </tr>
 </tbody>
 </table>
-<p>‘missiontypename’ is not a regular column in <strong>RstoxData::StoxBioticData</strong>, but and was added with the function <em>RstoxData::AddToStoxBiotic</em>, as this data was sourced from NMDbiotic.</p>
+<p>‘missiontypename’ is not a regular column in
+<strong>RstoxData::StoxBioticData</strong>, but and was added with the
+function <em>RstoxData::AddToStoxBiotic</em>, as this data was sourced
+from NMDbiotic.</p>
 </div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="analysis">Analysis<a class="anchor" aria-label="anchor" href="#analysis"></a>
 </h2>
-<p>The functions introduced in this vignette should enable you to use IMR samples and FDIR landings to obtain simple reports on fishing activity and how it is covered by sampling programs. Other analysis will be introduced in other vignettes. All analysis relies on proper data preparation described in the vignette <a href="Stox-data-preparation.html">StoX FDA data preparation (baseline)</a>.</p>
+<p>The functions introduced in this vignette should enable you to use
+IMR samples and FDIR landings to obtain simple reports on fishing
+activity and how it is covered by sampling programs. Other analysis will
+be introduced in other vignettes. All analysis relies on proper data
+preparation described in the vignette <a href="Stox-data-preparation.html">StoX FDA data preparation
+(baseline)</a>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

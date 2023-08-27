@@ -12,7 +12,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0-9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,7 +56,7 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Converts <code><a href="RecaData.html">RecaData</a></code> prepared for StoX-Reca to the input format accepted by <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>.
+    <p>Converts <code><a href="RecaData.html">RecaData</a></code> prepared for StoX-Reca to the input format accepted by <code>eca.estimate</code>.
  This facilitates preparing input data with a StoX-project for more cusomized programs directly interfacing Reca.</p>
     </div>
 
@@ -83,39 +83,39 @@
 
 
 <dt>nSamples</dt>
-<dd><p>nSamples as specified in <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>nSamples as specified in <code>eca.estimate</code></p></dd>
 
 
 <dt>burnin</dt>
-<dd><p>burnin as specified in <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>burnin as specified in <code>eca.estimate</code></p></dd>
 
 
 <dt>thin</dt>
-<dd><p>thin as specified in <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>thin as specified in <code>eca.estimate</code></p></dd>
 
 
 <dt>resultdir</dt>
-<dd><p>resultdir as specified in <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>resultdir as specified in <code>eca.estimate</code></p></dd>
 
 
 <dt>lgamodel</dt>
-<dd><p>lgamodel as specified in <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>lgamodel as specified in <code>eca.estimate</code></p></dd>
 
 
 <dt>delta.age</dt>
-<dd><p>delta.age as specified in <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>delta.age as specified in <code>eca.estimate</code></p></dd>
 
 
 <dt>seed</dt>
-<dd><p>seed as specified in <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>seed as specified in <code>eca.estimate</code></p></dd>
 
 
 <dt>fitfile</dt>
-<dd><p>fitfile as specified in <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>fitfile as specified in <code>eca.estimate</code></p></dd>
 
 
 <dt>predictfile</dt>
-<dd><p>predictfile as specified in <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>predictfile as specified in <code>eca.estimate</code></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -125,16 +125,16 @@
 <p>list with 5 members:</p>
 <p></p>
 <dl><dt>AgeLength</dt>
-<dd><p>Data prepared for the argument AgeLength to <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>Data prepared for the argument AgeLength to <code>eca.estimate</code></p></dd>
 
   <dt>WeightLength</dt>
-<dd><p>Data prepared for the argument WeightLength to <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>Data prepared for the argument WeightLength to <code>eca.estimate</code></p></dd>
 
   <dt>Landings</dt>
-<dd><p>Data prepared for the argument Landings to <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>Data prepared for the argument Landings to <code>eca.estimate</code></p></dd>
 
   <dt>GlobalParameters</dt>
-<dd><p>Data prepared for the argument GlobalParameters to <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>, Completeness of this data structure depend on whether optional parameters where provided.</p></dd>
+<dd><p>Data prepared for the argument GlobalParameters to <code>eca.estimate</code>, Completeness of this data structure depend on whether optional parameters where provided.</p></dd>
 
   <dt>CovariateMaps</dt>
 <dd><p>Not input to Reca. Nested list, providing mapping between integer encoding and character encoding of the levels of categorical variables.</p></dd>
@@ -144,7 +144,7 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The StoX-function interfacing Reca-parameterisation (<code><a href="RunRecaModels.html">RunRecaModels</a></code>) accepts a data format
- <code><a href="RecaData.html">RecaData</a></code> that is not exactly compatible with the format accepted by <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code>.
+ <code><a href="RecaData.html">RecaData</a></code> that is not exactly compatible with the format accepted by <code>eca.estimate</code>.
  This inconvenience is introduced to make sure that output from <code><a href="PrepareRecaEstimate.html">PrepareRecaEstimate</a></code> adheres to
  restrictions in the StoX-user interface, so that the results are inspectable there.</p> 
 <p>Reca-input include model parameters and options, but <code><a href="PrepareRecaEstimate.html">PrepareRecaEstimate</a></code> only sets parameters that have

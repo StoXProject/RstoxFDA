@@ -232,9 +232,6 @@
     <loc>/reference/RecaResult.html</loc>
   </url>
   <url>
-    <loc>/reference/ReportFdaByAgeData.html</loc>
-  </url>
-  <url>
     <loc>/reference/ReportFdaCatchAtAgeCovarianceData.html</loc>
   </url>
   <url>
@@ -245,6 +242,9 @@
   </url>
   <url>
     <loc>/reference/ReportFdaCatchAtLengthData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ReportFdaData.html</loc>
   </url>
   <url>
     <loc>/reference/ReportFdaLandingData.html</loc>
@@ -430,7 +430,7 @@
     <loc>/reference/is.RecaResult.html</loc>
   </url>
   <url>
-    <loc>/reference/is.ReportFdaByAgeData.html</loc>
+    <loc>/reference/is.ReportFdaData.html</loc>
   </url>
   <url>
     <loc>/reference/is.ReportFdaSOP.html</loc>

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0-9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,6 +113,9 @@ This may be due to recording errors or filtering errors, but it may also be due 
 but unequal category-definitions. For instance area are coded in landings as dominant area for a fishing trip,
 while at-sea sampling will record area of fishing operation, and the catch from that area by subsequently be landed
 with another area listed as dominant area.</p>
+<p>Note that the columns Catches and Vessels summarize the number of unique catches and vessels in each partition / cell.
+So depending on which grouping variables are added, the sum of vessels does not have to correspond to the total sum of vessels in the fleet.
+In principle the same applies to Catches, but in practice that situation does less commonly arise.</p>
 <p>In addition sampling may be reported partitioned on the provided 'SamplingVariables'. For instance the variable 'IndividualSex' may be provided
 to see how many samples are collected for each sex. NAs will be treated as a separate category.
 When 'SamplingVariables' are provided, each partition specified by 'GroupingVariables' will be reported several times,
@@ -129,10 +132,10 @@ so that negative numbers specify rounding to powers of ten, and rounding of the 
 <span class="r-in"><span>      <span class="fu">RstoxFDA</span><span class="fu">::</span><span class="va"><a href="StoxLandingDataExample.html">StoxLandingDataExample</a></span>, GroupingVariables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GearGroup"</span><span class="op">)</span>, Unit <span class="op">=</span> <span class="st">"ton"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">samplingreport</span><span class="op">$</span><span class="va">FisheriesSampling</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    GearGroup LandedRoundWeight Catches Vessels WeightMeasurements</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   D.Seine             35175      25      20                580</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   Gillnet             24135      25      30                528</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:       Jig              5418      16      22                520</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:    L.Line              1674       7       8                120</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   D.Seine             35175      29      20                580</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   Gillnet             24135      30      30                528</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:       Jig              5418      26      22                520</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:    L.Line              1674       8       8                120</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    LengthMeasurements AgeReadings WeightOfSampledCatches</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:                580         580                    343</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:                568         568                     24</span>

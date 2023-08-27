@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0-9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,19 +71,19 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>AgeLength</dt>
-<dd><p>list that is to be provided as the AgeLength argument to <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> or <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code></p></dd>
+<dd><p>list that is to be provided as the AgeLength argument to <code>eca.estimate</code> or <code>eca.predict</code></p></dd>
 
 
 <dt>WeightLength</dt>
-<dd><p>list that is to be provided as the AgeLength argument to <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> or <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code></p></dd>
+<dd><p>list that is to be provided as the AgeLength argument to <code>eca.estimate</code> or <code>eca.predict</code></p></dd>
 
 
 <dt>Landings</dt>
-<dd><p>list that is to be provided as the AgeLength argument to <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> or <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code></p></dd>
+<dd><p>list that is to be provided as the AgeLength argument to <code>eca.estimate</code> or <code>eca.predict</code></p></dd>
 
 
 <dt>GlobalParameters</dt>
-<dd><p>list that is to be provided as the AgeLength argument to <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> or <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code></p></dd>
+<dd><p>list that is to be provided as the AgeLength argument to <code>eca.estimate</code> or <code>eca.predict</code></p></dd>
 
 
 <dt>stage</dt>
@@ -92,20 +92,20 @@
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The main interfaces to the Reca-package is <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> and <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code>.
+    <p>The main interfaces to the Reca-package is <code>eca.estimate</code> and <code>eca.predict</code>.
  This have strict formatting requirements, well documented in the help pages for these functions,
  but they do not perform much input sanitation. 
  This function checks that data is formatted in accordance with the requirements.</p> 
-<p>The input formats are shared between the <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code> and <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code>
+<p>The input formats are shared between the <code>eca.estimate</code> and <code>eca.predict</code>
  and the formatting requirements are largely overlapping. Sanitation has therefore been conseptually divided into three stages,
  and which checks are to be performed is controlled by the argument 'stage'. The three stages are:</p><dl><dt>dataprep</dt>
 <dd><p>check that data is correctly and consistently formatted, and check that all global parameters that have implications for data formatting are provided.</p></dd>
 
   <dt>parameterize</dt>
-<dd><p>check that arguments are valid input to <code><a href="https://rdrr.io/pkg/Reca/man/eca.estimate.html" class="external-link">eca.estimate</a></code></p></dd>
+<dd><p>check that arguments are valid input to <code>eca.estimate</code></p></dd>
 
   <dt>predict</dt>
-<dd><p>check that arguments are valid input to <code><a href="https://rdrr.io/pkg/Reca/man/eca.predict.html" class="external-link">eca.predict</a></code></p></dd>
+<dd><p>check that arguments are valid input to <code>eca.predict</code></p></dd>
 
  
 </dl><p>Errors or warnings are raised on any issue, and this function does not have a meaningful return value.</p> 
