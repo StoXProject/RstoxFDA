@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - master
-      - fix_test_cov
   pull_request:
     branches:
       - develop
