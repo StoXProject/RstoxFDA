@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - master
+      - fix_test_cov
   pull_request:
     branches:
       - develop
@@ -31,7 +32,7 @@ jobs:
       - name: Install MacOS dependencies
         if: runner.os == 'macOS'
         run: |
-          rm '/usr/local/bin/gfortran'
+          rm -f '/usr/local/bin/gfortran'
           brew install udunits proj
         shell: bash
 
