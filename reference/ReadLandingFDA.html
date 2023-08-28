@@ -65,7 +65,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ReadLandingFDA</span><span class="op">(</span></span>
 <span>  <span class="va">FileNames</span>,</span>
 <span>  Format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"landingerv2"</span>, <span class="st">"lss"</span>, <span class="st">"FDIR.2021"</span><span class="op">)</span>,</span>
-<span>  FileEncoding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Default"</span>, <span class="st">"UTF-8"</span>, <span class="st">"Latin-1"</span><span class="op">)</span></span>
+<span>  FileEncoding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Default"</span>, <span class="st">"UTF-8"</span>, <span class="st">"Latin-1"</span><span class="op">)</span>,</span>
+<span>  ForceUnique <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -82,6 +83,10 @@
 <dt>FileEncoding</dt>
 <dd><p>encoding for the files that should be read. If not given the default encoding for each format is used.</p></dd>
 
+
+<dt>ForceUnique</dt>
+<dd><p>Manipulate the field 'Linjenummer' with arbitrary changes to ensure that key columns uniquely identify rows.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -90,7 +95,12 @@
  Some of these formats are also archived by the Norwegian Marine Datacenter (NMD) at IMR.</p> 
 <p>Some of the supported formats are missing columns supported by <code><a href="https://rdrr.io/pkg/RstoxData/man/LandingData.html" class="external-link">LandingData</a></code>,
  these columns are set to NA. Likewise some formats have additional columns, not supported by <code><a href="https://rdrr.io/pkg/RstoxData/man/LandingData.html" class="external-link">LandingData</a></code>,
- these are ignored.</p>
+ these are ignored.</p> 
+<p>Occasionally landing sets contain data that where rows are not uniquely identified by the key columns in that format.
+ In these cases a warning is issued, and it is important to handle those duplicates to avoid problems in later processing.
+ Uniqueness of keys are checked for in some typical downstream StoX processes, such as <code><a href="https://rdrr.io/pkg/RstoxData/man/StoxLanding.html" class="external-link">StoxLanding</a></code>,
+ so the problem may potentially disappear after filtering. Otherways, the parameter 'ForceUnique' may be considered, if
+ one is confident these records does in fact represent separate landings.</p>
 <p>Formats may be one of the following</p><dl><dt>landingerv2</dt>
 <dd><p>XML-files given in the namespace http://www.imr.no/formats/landinger/v2. Default encoding: UTF-8 (enforced by format)</p></dd>
 
