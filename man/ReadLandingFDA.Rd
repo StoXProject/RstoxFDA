@@ -7,7 +7,8 @@
 ReadLandingFDA(
   FileNames,
   Format = c("landingerv2", "lss", "FDIR.2021"),
-  FileEncoding = c("Default", "UTF-8", "Latin-1")
+  FileEncoding = c("Default", "UTF-8", "Latin-1"),
+  ForceUnique = FALSE
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ ReadLandingFDA(
 \item{Format}{The file format of the landing files.}
 
 \item{FileEncoding}{encoding for the files that should be read. If not given the default encoding for each format is used.}
+
+\item{ForceUnique}{Manipulate the field 'Linjenummer' with arbitrary changes to ensure that key columns uniquely identify rows.}
 }
 \description{
 This function reads multiple landing files (sales-notes) to a list with a list of tables for each file.
@@ -29,6 +32,12 @@ Norwegian sales-notes data are archived and curated by the Norwegian Directorate
  Some of the supported formats are missing columns supported by \code{\link[RstoxData]{LandingData}},
  these columns are set to NA. Likewise some formats have additional columns, not supported by \code{\link[RstoxData]{LandingData}},
  these are ignored.
+ 
+ Occasionally landing sets contain data that where rows are not uniquely identified by the key columns in that format.
+ In these cases a warning is issued, and it is important to handle those duplicates to avoid problems in later processing.
+ Uniqueness of keys are checked for in some typical downstream StoX processes, such as \code{\link[RstoxData]{StoxLanding}},
+ so the problem may potentially disappear after filtering. Otherways, the parameter 'ForceUnique' may be considered, if
+ one is confident these records does in fact represent separate landings.
 
  Formats may be one of the following
  \describe{

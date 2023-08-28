@@ -24,6 +24,37 @@ checkSymmetry <- function(tab){
   }
 }
 
+#' Handling duplicates. Copied from RstoxData and adapted.
+#' This is supposed to be called on data explicitly converted to landingerv2, so there is no need to restrain it to stuff with a valid xsdobj
+#' 
+#' I think we have reached agreement on which formats can be supported by RstoxData. So this repition can probably be avoided by adding lss and FDIR formats to RstoxData.
+#' @noRd
+check_landing_duplicates <- function(LandingData, warn=T, fix=F){
+  
+  for (f in names(LandingData)){
+        xsdobj <- RstoxData::xsdObjects[["landingerv2.xsd"]]
+        
+        ids<-apply(LandingData[[f]]$Seddellinje[,1:xsdobj$prefixLens[["Seddellinje"]]],1,paste, collapse=".")
+        duplicated <- ids[duplicated(ids)]
+        
+        if (length(duplicated)>0 && warn){
+          warning(paste("Landings in", f, "contain duplicate key records. Consider the option ForceUnique or correct this in some other way."))
+        }
+        
+        if (fix){
+          highestLinjeNummer <- max(LandingData[[f]]$Seddellinje$Linjenummer)
+          newLinjeNummerSeq <- (highestLinjeNummer+1):(highestLinjeNummer+sum(ids %in% duplicated))
+          
+          for (g in names(LandingData[[f]])){
+            if (g != "Landingsdata" && g %in% names(xsdobj$prefixLens)){
+              stopifnot(xsdobj$prefixLens[[g]]==xsdobj$prefixLens[["Seddellinje"]])
+              LandingData[[f]][[g]]$Linjenummer[ids %in% duplicated] <- newLinjeNummerSeq
+            }
+          }
+        }
+  }
+  return(LandingData)
+}
 
 #' Read landing files
 #' @description 
@@ -38,6 +69,12 @@ checkSymmetry <- function(tab){
 #'  Some of the supported formats are missing columns supported by \code{\link[RstoxData]{LandingData}},
 #'  these columns are set to NA. Likewise some formats have additional columns, not supported by \code{\link[RstoxData]{LandingData}},
 #'  these are ignored.
+#'  
+#'  Occasionally landing sets contain data that where rows are not uniquely identified by the key columns in that format.
+#'  In these cases a warning is issued, and it is important to handle those duplicates to avoid problems in later processing.
+#'  Uniqueness of keys are checked for in some typical downstream StoX processes, such as \code{\link[RstoxData]{StoxLanding}},
+#'  so the problem may potentially disappear after filtering. Otherways, the parameter 'ForceUnique' may be considered, if
+#'  one is confident these records does in fact represent separate landings.
 #' 
 #'  Formats may be one of the following
 #'  \describe{
@@ -53,11 +90,12 @@ checkSymmetry <- function(tab){
 #' @param FileNames The paths of the landing files.
 #' @param Format The file format of the landing files.
 #' @param FileEncoding encoding for the files that should be read. If not given the default encoding for each format is used.
+#' @param ForceUnique Manipulate the field 'Linjenummer' with arbitrary changes to ensure that key columns uniquely identify rows.
 #' @concept IO functions
 #' @concept landings functions
 #' @concept StoX-functions
 #' @export
-ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"), FileEncoding=c("Default", "UTF-8", "Latin-1")){
+ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"), FileEncoding=c("Default", "UTF-8", "Latin-1"), ForceUnique=FALSE){
   
   checkMandatory(FileNames, "FileNames")
   
@@ -75,7 +113,16 @@ ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"
       }
     }
     
-    return(RstoxData::ReadLanding(FileNames))
+    output <- RstoxData::ReadLanding(FileNames=FileNames)
+    #This will likely be built into RstoxData::convertToLandingData soon. May refactor later.
+    if (ForceUnique){
+      output <- check_landing_duplicates(output, warn = F, fix = T)  
+    }
+    else{
+      check_landing_duplicates(output, warn=T, fix=F)  
+    }
+    
+    return(output)
   }
   else if (Format == "lss"){
     if (FileEncoding == "Default"){
@@ -88,6 +135,15 @@ ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"
       suppressWarnings(conv <- RstoxData::convertToLandingData(RstoxData::readLssFile(filepath, encoding=FileEncoding, strict=T)))
       output[[bn]] <- conv$ConvertedData
     }
+    
+    #This will likely be built into RstoxData::convertToLandingData soon. May refactor later.
+    if (ForceUnique){
+      output <- check_landing_duplicates(output, warn = F, fix = T)  
+    }
+    else{
+      check_landing_duplicates(output, warn=T, fix=F)  
+    }
+    
     return(output)
   }
   else if (Format == "FDIR.2021"){
@@ -103,8 +159,16 @@ ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"
       conv <- RstoxData::convertToLandingData(lss)
       output[[bn]] <- conv$ConvertedData
     }
+    
+    if (ForceUnique){
+      output <- check_landing_duplicates(output, warn = F, fix = T)  
+    }
+    else{
+      check_landing_duplicates(output, warn=T, fix=F)  
+    }
+    
     return(output)
-        
+          
   }
   else{
     stop(paste("Format", Format, "not recognized."))

@@ -24,6 +24,41 @@ expect_true(RstoxData::is.LandingData(openFdirRead))
 sd <- RstoxData::StoxLanding(openFdirRead)
 expect_true(RstoxData::is.StoxLandingData(sd))
 
+example <- system.file("testresources","landing.xml", package="RstoxFDA")
+example_duplicates <- system.file("testresources", "landingsvariants", "landing_duplicates.xml", package="RstoxFDA")
+example_duplicates_several <- system.file("testresources", "landingsvariants", "landing_duplicates_several.xml", package="RstoxFDA")
+
+
+#check that duplicates give warning
+expect_warning(landDup <- RstoxFDA:::ReadLandingFDA(FileNames = example_duplicates), "Landings in landing_duplicates.xml contain duplicate key records. Consider the option ForceUnique or correct this in some other way.")
+totalWeigth <- sum(landDup$landing_duplicates.xml$Produkt$Rundvekt)
+
+#check that duplicate correction works
+expect_equal(nrow(merge(landDup$landing_duplicates.xml$Produkt, landDup$landing_duplicates.xml$Seddellinje, by=RstoxData::xsdObjects$landingerv2.xsd$tableHeaders$Seddellinje[1:13])), nrow(landDup$landing_duplicates.xml$Seddellinje)+2)
+land2 <- RstoxFDA:::ReadLandingFDA(example_duplicates, ForceUnique=T)
+expect_equal(nrow(merge(land2$landing_duplicates.xml$Produkt, land2$landing_duplicates.xml$Seddellinje, by=RstoxData::xsdObjects$landingerv2.xsd$tableHeaders$Seddellinje[1:13])), nrow(land2$landing_duplicates.xml$Seddellinje))
+expect_equal(sum(land2$landing_duplicates.xml$Produkt$Rundvekt), totalWeigth)
+
+#check that duplicate correction works with several duplicates, and triples as well as doubles.
+expect_warning(landDup <- RstoxFDA:::ReadLandingFDA(example_duplicates_several), "Landings in landing_duplicates_several.xml contain duplicate key records. Consider the option ForceUnique or correct this in some other way.")
+totalWeigth <- sum(landDup$landing_duplicates_several.xml$Produkt$Rundvekt)
+expect_equal(nrow(merge(landDup$landing_duplicates_several.xml$Produkt, landDup$landing_duplicates_several.xml$Seddellinje, by=RstoxData::xsdObjects$landingerv2.xsd$tableHeaders$Seddellinje[1:13])), nrow(landDup$landing_duplicates_several.xml$Seddellinje)+8)
+land2 <- RstoxFDA:::ReadLandingFDA(example_duplicates_several, ForceUnique=T)
+expect_equal(nrow(merge(land2$landing_duplicates_several.xml$Produkt, land2$landing_duplicates_several.xml$Seddellinje, by=RstoxData::xsdObjects$landingerv2.xsd$tableHeaders$Seddellinje[1:13])), nrow(land2$landing_duplicates_several.xml$Seddellinje))
+expect_equal(sum(land2$landing_duplicates_several.xml$Produkt$Rundvekt), totalWeigth)
+
+#check duplicates in lss
+example_duplicates_lss <- system.file("testresources", "landingsvariants", "lss_duplicates.psv", package="RstoxFDA")
+expect_warning(landDup <- RstoxFDA:::ReadLandingFDA(FileNames = example_duplicates_lss, Format="lss"), "Landings in lss_duplicates.psv contain duplicate key records. Consider the option ForceUnique or correct this in some other way.")
+totalWeigth <- sum(landDup$lss_duplicates.psv$Produkt$Rundvekt)
+
+#check that duplicate correction works
+expect_equal(nrow(merge(landDup$lss_duplicates.psv$Produkt, landDup$lss_duplicates.psv$Seddellinje, by=RstoxData::xsdObjects$landingerv2.xsd$tableHeaders$Seddellinje[1:13])), nrow(landDup$lss_duplicates.psv$Seddellinje)+2)
+land2 <- RstoxFDA:::ReadLandingFDA(example_duplicates_lss, ForceUnique=T, Format="lss")
+expect_equal(nrow(merge(land2$lss_duplicates.psv$Produkt, land2$lss_duplicates.psv$Seddellinje, by=RstoxData::xsdObjects$landingerv2.xsd$tableHeaders$Seddellinje[1:13])), nrow(land2$lss_duplicates.psv$Seddellinje))
+expect_equal(sum(land2$lss_duplicates.psv$Produkt$Rundvekt), totalWeigth)
+
+
 bioticfile <- system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA")
 nmdbiotic <- RstoxData::ReadBiotic(bioticfile)
 nmdbioticPost <- RstoxFDA::SetShortGearBiotic(nmdbiotic)
