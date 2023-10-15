@@ -157,6 +157,8 @@ jobs:
             message("Installing the following packages using default type:\n", paste0(missing, collapse = ", "))
             utils::install.packages(missing, dependencies = TRUE)
           }
+          #binary evaluate build seems to be broken for macOS-lates R 4.2
+          utils::install.packages("evaluate", dependencies = TRUE, type="source")
         shell: Rscript {0}
 
 
