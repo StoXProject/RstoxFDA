@@ -85,12 +85,6 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
 
-      - name: Anticipate Bintray shutdown
-        if: runner.os == 'macOS'
-        run: |
-          brew update
-        shell: bash
-
       - name: Query dependencies
         run: |
           install.packages('remotes')
