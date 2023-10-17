@@ -1,14 +1,59 @@
 #' Construct design parameters assuming FSWOR, non-finite, equal prob, potentially stratified
 #' @noRd
 assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, StratificationColumns=c(), OrderColumn=NULL){
-  stop("Not Implemented")
+  targetTable <- NULL
+  for (n in names(StoxBioticData)){
+    if (SamplingUnitId %in% names(StoxBioticData[[n]])){
+      targetTable=n
+    }
+  }
+  
+  if (is.null(targetTable)){
+    stop(paste("The SamplingUnitId", SamplingUnitId, "was not found in StoxBioticData"))
+  }
+  
+  flatStox <- StoxBioticData[[targetTable]]
+  if (isGiven(StratificationColumns) & length(StratificationColumns)>0 & !all(StratificationColumns %in% names(flatStox))){
+    stop("Not all stratification columns were found at", targetTable, ", where the SamplingUnitId", SamplingUnitId, "is found.")
+  }
+
+  if (any(is.na(flatStox[[SamplingUnitId]]))){
+    stop(paste("Cannot construct design parameters for missing SamplingUnitIds. Missing values (NA) found for", SamplingUnitId))
+  }
+  for (n in StratificationColumns){
+    if (any(is.na(flatStox[[n]]))){
+      stop(paste("Cannot construct design parameters with missing strata information. Missing values (NA) found for stratification column", n))
+    } 
+  }
+
+  flatStox$Stratum <- "All"
+  flatStox$Stratum <- apply(flatStox[,.SD, .SDcol=StratificationColumns], 1, paste, collapse="/")
+  flatStox$SamplingUnitId <- flatStox[[SamplingUnitId]]
+  flatStox$Order <- as.numeric(NA)
+  
+  CommonSelectionData <- flatStox[,list(InclusionProbability=as.numeric(NA), SelectionProbability=as.numeric(NA), RelativeSelectionProbability=1/length(unique(SamplingUnitId)), SelectionDescription=as.character(NA)), by=c("Stratum")]
+  selectionUnits <- flatStox[,.SD, .SDcol=c("Stratum", "Order", "SamplingUnitId")]
+  selectionUnits <- selectionUnits[!duplicated(selectionUnits$SamplingUnitId),]
+  selectionTable <- merge(flatStox[,.SD, .SDcol=c("Stratum", "Order", "SamplingUnitId")], CommonSelectionData)
+  sampleTable <- flatStox[,list(N=as.numeric(NA), n=length(unique(SamplingUnitId)), SelectionMethod="FSWR", FrameDescription=as.character(NA)), by=c("Stratum")]
+  sampleTable <- sampleTable[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
+  stratificationTable <- flatStox[,.SD,.SDcol=c("Stratum", StratificationColumns)]
+  stratificationTable <- stratificationTable[!duplicated(stratificationTable$Stratum),]
+  
+  designParameters <- list()
+  designParameters$sampleTable <- sampleTable
+  designParameters$selectionTable <- selectionTable
+  designParameters$stratificationVariables <- stratificationTable
+  
+  return(designParameters)
+  
 }
 
 #' parse design parameters from tab delimited file
 #' @noRd
 parseDesignParameters <- function(filename){
   
-  colClasses <- c(Stratum="character", N="numeric", n="numeric", SelectionMethod="character", Finite="logical", FrameDescription="character", Order="numeric", SamplingUnitId="character", InclusionProbability="numeric", SelectionProbability="numeric", SelectionDescription="character")
+  colClasses <- c(Stratum="character", N="numeric", n="numeric", SelectionMethod="character", FrameDescription="character", Order="numeric", SamplingUnitId="character", InclusionProbability="numeric", SelectionProbability="numeric", RelativeSelectionProbability="numeric", SelectionDescription="character")
   headers <- data.table::fread(filename, sep="\t", dec=".", header = T, nrows = 1)
   if (!all(names(colClasses) %in% names(headers))){
     missing <- names(colClasses)[!(names(colClasses) %in% names(headers)),]
@@ -26,15 +71,12 @@ parseDesignParameters <- function(filename){
   
   designParameters <- data.table::fread(filename, sep="\t", dec=".", header = T, colClasses = colClasses, na.strings = c(""))
 
-  selectionTable <- designParameters[,.SD,.SDcol=c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "SelectionDescription")]
-  sampleTable <- designParameters[,.SD,.SDcol=c("Stratum", names(designParameters)[!(names(designParameters) %in% names(selectionTable))])]
-  stratificationTable <- data.table::data.table(StratificationVariables=c(stratificationColumns))
+  selectionTable <- designParameters[,.SD,.SDcol=c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "RelativeSelectionProbability", "SelectionDescription")]
+  sampleTable <- designParameters[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
+  stratificationTable <- designParameters[,.SD,.SDcol=c("Stratum", names(designParameters)[!(names(designParameters) %in% names(selectionTable)) & !(names(designParameters) %in% names(sampleTable))])]
 
   if (any(is.na(sampleTable$Stratum)) | any(is.na(selectionTable$Stratum))){
     stop("Invalid design specification. The mandatory column 'Stratum' may not contain missing values (NA).")
-  }
-  if (any(is.na(sampleTable$Finite))){
-    stop("Invalid design specification. The mandatory column 'Finite' may not contain missing values (NA).")
   }
   if (any(is.na(sampleTable$SelectionMethod))){
     stop("Invalid design specification. The mandatory column 'SelectionMethod' may not contain missing values (NA).")
@@ -53,17 +95,21 @@ parseDesignParameters <- function(filename){
   if (length(duplicatedStrata)>0){
     stop(paste("Invalid design specification. The column stratum must uniquely identify all sample table variables. Duplicates found for:", paste(duplicatedStrata, collapse=",")))
   }
-  
+
   if (length(stratificationColumns) > 0){
-    stratificationVariableStrings <- apply(sampleTable[,.SD, .SDcol=stratificationColumns], 1, paste, collapse="/")
-    duplicatedStrata <- sampleTable$Stratum[duplicated(stratificationVariableStrings)]
+    stratificationVariableStrings <- apply(stratificationTable[,.SD, .SDcol=stratificationColumns], 1, paste, collapse="/")
+    duplicatedStrata <- stratificationTable$Stratum[duplicated(stratificationVariableStrings)]
     
     if (length(duplicatedStrata)>0){
-      stop(paste("Invalid design spesification. The stratification variables must uniquely identify a stratum. Duplicates found for:", paste(duplicatedStrata, collapse=",")))
+      stop(paste("Invalid design specification. The stratification variables must uniquely identify a stratum. Duplicates found for:", paste(duplicatedStrata, collapse=",")))
     }
   }
   
-  sampleTable <- sampleTable[!duplicated(sampleTable$Stratum),]
+  if (any(!is.na(selectionTable$SampleUnitId) & duplicated(paste(selectionTable$Stratum, selectionTable$SampleUnitId)))){
+    stop("Invalid design specification. Some strata contain duplicated SampleUnitIds.")
+  }
+  
+  stratificationTable <- stratificationTable[!duplicated(stratificationTable$Stratum),]
 
   validSelectionMethod <- c("Poisson", "FSWR", "FSWOR")
   if (!all(sampleTable$SelectionMethod %in% validSelectionMethod)){
@@ -90,21 +136,23 @@ parseDesignParameters <- function(filename){
 #'  execution halts with error if any are violated.
 #'  
 #'  The DefinitionMethod 'AdHocStoxBiotic' constructs Sampling Design Parameters from data, 
-#'  assuming equal probability non-finite sampling with fixed sample size, selection without replacement and complete response.
+#'  assuming equal probability sampling with fixed sample size, selection with replacement and complete response.
+#'  This is a reasonable approximation if within-strata sampling is approximately simple random selections, 
+#'  non-response is believed to be at random, and only a small fraction of the strata is sampled, 
+#'  so that with and without replacement sampling probabilities are approximately equal.
 #' @param processData \code{\link[RstoxFDA]{SamplingDesignParametersData}} as returned from this function.
 #' @param DefinitionMethod 'ResourceFile' or 'AdHocStoxBiotic'
 #' @param FileName path to resource file
-#' @param StoxBioticData
-#' @param SamplingUnitId
-#' @param StratificationColumns
-#' @param OrderColumn
+#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} Sample data to construct design parameters from
+#' @param SamplingUnitId name of column in 'StoxBioticData' that identifies the sampling unit the design is constructed for.
+#' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling.
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{SamplingDesignParametersData}}
 #' @export
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
-DefineSamplingDesignParameters <- function(processData, DefinitionMethod=c("ResourceFile", "AdHocStoxBiotic"), FileName=character(), StoxBioticData, SamplingUnitId, StratificationColumns, OrderColumn, UseProcessData=F){
+DefineSamplingDesignParameters <- function(processData, DefinitionMethod=c("ResourceFile", "AdHocStoxBiotic"), FileName=character(), StoxBioticData, SamplingUnitId, StratificationColumns, UseProcessData=F){
 
   if (UseProcessData){
     return(processData)
@@ -119,9 +167,6 @@ DefineSamplingDesignParameters <- function(processData, DefinitionMethod=c("Reso
     return(assumeDesignParametersStoxBiotic(StoxBioticData, SamplingUnitId, StratificationColumns, OrderColumn))
   }
 }
-
-
-
 
 #' @noRd
 AssignIndividualDesignParameters <- function(){}

@@ -75,13 +75,15 @@ prepDesignParamFile <- function(lotteryParams, StoxBiotic, platformCodes, maxDif
   
   stationTable$description <- paste(stationTable$lotteri, stationTable$HIF.stratum, stationTable$lotteryMessage, sep="/")
   stationTable$SelectionProbability <- stationTable$lotteri.kg/(stationTable$kvoteT*1000)  
-  selectionTable <- stationTable[,.SD, .SDcol=c("HIF.stratum", "HaulKey", "i.prob", "SelectionProbability", "kapasitet", "description")]
-  names(selectionTable) <- c("Stratum", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "n", "SelectionDescription")
+  stationTable$RelativeSelectionProbability <- stationTable$SelectionProbability
+  selectionTable <- stationTable[,.SD, .SDcol=c("HIF.stratum", "HaulKey", "i.prob", "SelectionProbability", "RelativeSelectionProbability", "kapasitet", "description")]
+  names(selectionTable) <- c("Stratum", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "RelativeSelectionProbability", "n", "SelectionDescription")
   if (length(unique(stationTable$kapasitet))!=1){
     selectionTable$SelectionProbability <- as.numeric(NA)  
+    stationTable$RelativeSelectionProbability <- as.numeric(NA)
   }
   selectionTable$Order <- as.numeric(NA)
-  selectionTable <- selectionTable[, .SD, .SDcol=c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "SelectionDescription")]
+  selectionTable <- selectionTable[, .SD, .SDcol=c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "RelativeSelectionProbability", "SelectionDescription")]
   selectionTable$SelectionDescription <- as.character(NA) #remove vessel identifying descriptions
   
   stopifnot(length(unique(stationTable$HIF.stratum))==1)  
@@ -91,7 +93,6 @@ prepDesignParamFile <- function(lotteryParams, StoxBiotic, platformCodes, maxDif
     sampleTable$n <- stationTable$kapasitet[[1]]
   }
   sampleTable$SelectionMethod <- "Poisson"
-  sampleTable$Finite <- TRUE
   stopifnot(length(unique(stationTable$lotteri))==1)
   sampleTable$FrameDescription <- stationTable$lotteri[[1]]
   

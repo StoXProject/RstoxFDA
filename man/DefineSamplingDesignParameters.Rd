@@ -11,7 +11,6 @@ DefineSamplingDesignParameters(
   StoxBioticData,
   SamplingUnitId,
   StratificationColumns,
-  OrderColumn,
   UseProcessData = F
 )
 }
@@ -21,6 +20,12 @@ DefineSamplingDesignParameters(
 \item{DefinitionMethod}{'ResourceFile' or 'AdHocStoxBiotic'}
 
 \item{FileName}{path to resource file}
+
+\item{StoxBioticData}{\code{\link[RstoxData]{StoxBioticData}} Sample data to construct design parameters from}
+
+\item{SamplingUnitId}{name of column in 'StoxBioticData' that identifies the sampling unit the design is constructed for.}
+
+\item{StratificationColumns}{name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling.}
 
 \item{UseProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
 }
@@ -38,7 +43,10 @@ The conditions listed for the variables in \code{\link[RstoxFDA]{SamplingDesignP
 execution halts with error if any are violated.
 
 The DefinitionMethod 'AdHocStoxBiotic' constructs Sampling Design Parameters from data,
-assuming equal probability non-finite sampling with fixed sample size, selection without replacement and complete response.
+assuming equal probability sampling with fixed sample size, selection with replacement and complete response.
+This is a reasonable approximation if within-strata sampling is approximately simple random selections,
+non-response is believed to be at random, and only a small fraction of the strata is sampled,
+so that with and without replacement sampling probabilities are approximately equal.
 }
 \concept{Analytical estimation}
 \concept{StoX-functions}

@@ -31,24 +31,24 @@ is.Date <- function(date){
 #'   \item{N}{Optional, num: The total number of selection units in Stratum}
 #'   \item{n}{Optional, num: The number of selection units selected from the Stratum}
 #'   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}
-#'   \item{Finite}{Mandatory, logical: Whether selection is from finite population. That is whether sampling probabilites describes relative or absolute statistical weights.}
 #'   \item{FrameDescription}{Optional, chr: Free text field describing the sampling frame.}
-#'   \item{...}{mandatory, chr: Additional columns are stratification variables. These are mandatory if present (NAs not allowed). They provided are for linking with other data. They must be specified in 'stratificationVariables' and their combination must uniquely identify the Stratum.}
 #'  }
 #'  
 #'  The selectionTable encodes information abut the selection of sampling units for sampling:
 #'  \describe{
-#'   \item{Stratum}{Mandatory: Identifies the stratum the sampling unit is taken from.}
-#'   \item{Order}{Optional: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
-#'   \item{SamplingUnitId}{Optional: Identifes sampling unit. NA encodes non-response}
-#'   \item{InclusionProbability}{Optional: The inclusion probability of the sampling unit}
-#'   \item{SelectionProbability}{Optional: The selection probability of the sampling unit}
-#'   \item{SelectionDescription}{Optional: Free text description of sampling unit.}
+#'   \item{Stratum}{Mandatory, chr: Identifies the stratum the sampling unit is taken from.}
+#'   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
+#'   \item{SamplingUnitId}{Optional, chr: Identifes sampling unit. NA encodes non-response}
+#'   \item{InclusionProbability}{Optional, num: The inclusion probability of the sampling unit}
+#'   \item{SelectionProbability}{Optional, num: The selection probability of the sampling unit}
+#'   \item{RelativeSelectionProbability}{Optional, num: The relative selection probability of the sampling unit}
+#'   \item{SelectionDescription}{Optional, chr: Free text description of sampling unit.}
 #'  }
 #'  
-#'  The stratificationVariables table encodes information about which columns in the sampleTable are stratification variables:
+#'  The stratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
 #'  \describe{
-#'   \item{stratificationVariables}{columns in the sampleTable that are stratification variables.}
+#'   \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
+#'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
 #'  }
 #' 
 #' Optional columns may be NA.
@@ -60,8 +60,9 @@ is.Date <- function(date){
 #'  \item{FSWOR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection should be specified in the 'selectionTable'}
 #' }
 #' 
-#' The selectionProbability is defined as: The probability of selecting the sampling unit in a random draw from the population.
-#' The inclusionProbability is defined as: The probability of the sampling unit being included in the sample.
+#' The SelectionProbability is defined as: The probability of selecting the sampling unit in a random draw from the population.
+#' The RelativeSelectionProbability: A value proportional to the SelectionProbability. Within a stratum, SelectionProbability=c*RelativeSelectionProbability, with c possibly unknown.
+#' The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
 #' 
 #' @name SamplingDesignParametersData
 #' @concept Data types
