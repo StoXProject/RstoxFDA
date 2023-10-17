@@ -37,7 +37,6 @@ parseLotteryFile <- function(filename){
 #' @param maxDiff the highest acceptable difference in time (hours) between StoxBiotic station time and lottery BD and BT time.
 #' @noRd
 prepDesignParamFile <- function(lotteryParams, StoxBiotic, platformCodes, maxDiff=2){
-
   #partition lottery messages into set where sample was requested and other set
   lotteryParamsFiltered <- lotteryParams
   lotteryParamsFiltered$lotteryMessage <- paste(lotteryParamsFiltered$RC, lotteryParamsFiltered$BD, lotteryParamsFiltered$BT)
@@ -81,7 +80,8 @@ prepDesignParamFile <- function(lotteryParams, StoxBiotic, platformCodes, maxDif
   if (length(unique(stationTable$kapasitet))!=1){
     selectionTable$SelectionProbability <- as.numeric(NA)  
   }
-  selectionTable <- selectionTable[, .SD, .SDcol=c("Stratum", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "SelectionDescription")]
+  selectionTable$Order <- as.numeric(NA)
+  selectionTable <- selectionTable[, .SD, .SDcol=c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "SelectionDescription")]
   selectionTable$SelectionDescription <- as.character(NA) #remove vessel identifying descriptions
   
   stopifnot(length(unique(stationTable$HIF.stratum))==1)  
@@ -90,7 +90,7 @@ prepDesignParamFile <- function(lotteryParams, StoxBiotic, platformCodes, maxDif
   if (length(unique(stationTable$kapasitet))==1){
     sampleTable$n <- stationTable$kapasitet[[1]]
   }
-  sampleTable$SelectionMethod <- "Poission"
+  sampleTable$SelectionMethod <- "Poisson"
   sampleTable$Finite <- TRUE
   stopifnot(length(unique(stationTable$lotteri))==1)
   sampleTable$FrameDescription <- stationTable$lotteri[[1]]
@@ -111,10 +111,7 @@ saveDesignTable <- function(filename, designTable){
 lotteryParams <- parseLotteryFile("~/hi_sync/fiskerisampling/fangstprøvelotteri/lotterifiler/example2022.txt")
 lotteryParams <- lotteryParams[lotteryParams$lotteri=="Sild2022" & lotteryParams$HIF.stratum=="Nordsjo",]
 bioData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic("~/bioticsets/lotterieksempel/biotic_cruiseNumber_19-2022-20_Silde-sampling_2023-07-06T22.00.19.567Z.xml"))
-filterexpression <- list()
-filterexpression$Station <- "DateTime < '2022-01-21 00:00:00 UTC'"
-bioFiltered <- RstoxData::FilterStoxBiotic(bioData, filterexpression, FilterUpwards = T)
 platformCodes <- readxl::read_excel("~/codelists/NMDeksempler/platform.xlsx", 2)
 
-designParams <- prepDesignParamFile(lotteryParams, bioFiltered, platformCodes)
+designParams <- prepDesignParamFile(lotteryParams, bioData, platformCodes)
 saveDesignTable("inst/testresources/lotteryParameters/lotteryDesignNSH.txt", designParams)
