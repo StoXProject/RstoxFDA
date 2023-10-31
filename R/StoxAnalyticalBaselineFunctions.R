@@ -1,6 +1,6 @@
 #' Construct design parameters assuming FSWOR, non-finite, equal prob, potentially stratified
 #' @noRd
-assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, StratificationColumns=c(), OrderColumn=NULL){
+assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, StratificationColumns=c()){
   targetTable <- NULL
   for (n in names(StoxBioticData)){
     if (SamplingUnitId %in% names(StoxBioticData[[n]])){
@@ -41,9 +41,9 @@ assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Str
   stratificationTable <- stratificationTable[!duplicated(stratificationTable$Stratum),]
   
   designParameters <- list()
-  designParameters$sampleTable <- sampleTable
-  designParameters$selectionTable <- selectionTable
-  designParameters$stratificationVariables <- stratificationTable
+  designParameters$SampleTable <- sampleTable
+  designParameters$SelectionTable <- selectionTable
+  designParameters$StratificationVariables <- stratificationTable
   
   return(designParameters)
   
@@ -118,21 +118,21 @@ parseDesignParameters <- function(filename){
   }
   
   designParameters <- list()
-  designParameters$sampleTable <- sampleTable
-  designParameters$selectionTable <- selectionTable
-  designParameters$stratificationVariables <- stratificationTable
+  designParameters$SampleTable <- sampleTable
+  designParameters$SelectionTable <- selectionTable
+  designParameters$StratificationVariables <- stratificationTable
   
   return(designParameters)
 }
 
 #' Define Sampling Design Parameters
 #' @description 
-#'  Define sampling design parameters for use in analytical estimation.
+#'  Define sampling design parameters for intermediate sampling units in multi-stage sampling.
 #' @details 
 #'  The DefintionMethod 'ResourceFile' reads design parameters from a tab delimited file with headers corresponding to those listed in 
-#'  \code{\link[RstoxFDA]{SamplingDesignParametersData}}. The data is provided as one table, so that the information in 'sampleTable' is repeated for each entry in 'selectionTable'.
-#'  Any columns not named in \code{\link[RstoxFDA]{SamplingDesignParametersData}} are assumed to be stratification variables.
-#'  The conditions listed for the variables in \code{\link[RstoxFDA]{SamplingDesignParametersData}} are checked upon reading the data, and
+#'  \code{\link[RstoxFDA]{MultiStageSamplingParametersData}}. The data is provided as one table, so that the information in 'sampleTable' is repeated for each entry in 'selectionTable'.
+#'  Any columns not named in \code{\link[RstoxFDA]{MultiStageSamplingParametersData}} are assumed to be stratification variables.
+#'  The conditions listed for the variables in \code{\link[RstoxFDA]{MultiStageSamplingParametersData}} are checked upon reading the data, and
 #'  execution halts with error if any are violated.
 #'  
 #'  The DefinitionMethod 'AdHocStoxBiotic' constructs Sampling Design Parameters from data, 
@@ -140,19 +140,19 @@ parseDesignParameters <- function(filename){
 #'  This is a reasonable approximation if within-strata sampling is approximately simple random selections, 
 #'  non-response is believed to be at random, and only a small fraction of the strata is sampled, 
 #'  so that with and without replacement sampling probabilities are approximately equal.
-#' @param processData \code{\link[RstoxFDA]{SamplingDesignParametersData}} as returned from this function.
+#' @param processData \code{\link[RstoxFDA]{MultiStageSamplingParametersData}} as returned from this function.
 #' @param DefinitionMethod 'ResourceFile' or 'AdHocStoxBiotic'
 #' @param FileName path to resource file
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} Sample data to construct design parameters from
 #' @param SamplingUnitId name of column in 'StoxBioticData' that identifies the sampling unit the design is constructed for.
 #' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling.
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
-#' @return \code{\link[RstoxFDA]{SamplingDesignParametersData}}
+#' @return \code{\link[RstoxFDA]{MultiStageSamplingParametersData}}
 #' @export
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
-DefineSamplingDesignParameters <- function(processData, DefinitionMethod=c("ResourceFile", "AdHocStoxBiotic"), FileName=character(), StoxBioticData, SamplingUnitId, StratificationColumns, UseProcessData=F){
+DefineMultiStageSamplingParameters <- function(processData, DefinitionMethod=c("ResourceFile", "AdHocStoxBiotic"), FileName=character(), StoxBioticData, SamplingUnitId, StratificationColumns, UseProcessData=F){
 
   if (UseProcessData){
     return(processData)
@@ -164,7 +164,7 @@ DefineSamplingDesignParameters <- function(processData, DefinitionMethod=c("Reso
     return(parseDesignParameters(FileName))
   }
   if (DefinitionMethod == "AdHocStoxBiotic"){
-    return(assumeDesignParametersStoxBiotic(StoxBioticData, SamplingUnitId, StratificationColumns, OrderColumn))
+    return(assumeDesignParametersStoxBiotic(StoxBioticData, SamplingUnitId, StratificationColumns))
   }
 }
 

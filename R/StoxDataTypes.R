@@ -16,16 +16,15 @@ is.Date <- function(date){
   return(FALSE)
 }
 
-#' Sampling Design Parameters
+#' Multi-stage Sampling Design Parameters
 #' 
-#' Sampling parameters for selection of a sampling unit
+#' Sampling parameters for selection of a sampling unit in a multi-stage sampling design
 #' 
 #' @details 
-#'  Encodes key information about the selection of a sampling unit, used in analytical design based estimation.
-#'  The selection encoded may be of a obesvered parameter from an individual, or of some intermediate selection in
-#'  hierarchical sampling (e.g. a haul, a vessel, etc.). Information is encoded in three tables.
+#'  Encodes information about the selection of an intermediate sampling unit in multi-stage sampling, used in analytical design based estimation.
+#'  Information is encoded in three tables.
 #'  
-#'  The sampleTable encodes information about the sample of sampling units:
+#'  The SampleTable encodes information about the sample of sampling units:
 #'  \describe{
 #'   \item{Stratum}{Mandatory, chr: Identifies the stratum the sample is taken from. Treat unstratified sample as single-stratum sampling (provide only one stratum.}
 #'   \item{N}{Optional, num: The total number of selection units in Stratum}
@@ -34,7 +33,7 @@ is.Date <- function(date){
 #'   \item{FrameDescription}{Optional, chr: Free text field describing the sampling frame.}
 #'  }
 #'  
-#'  The selectionTable encodes information abut the selection of sampling units for sampling:
+#'  The SelectionTable encodes information abut the selection of sampling units for sampling:
 #'  \describe{
 #'   \item{Stratum}{Mandatory, chr: Identifies the stratum the sampling unit is taken from.}
 #'   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
@@ -45,7 +44,7 @@ is.Date <- function(date){
 #'   \item{SelectionDescription}{Optional, chr: Free text description of sampling unit.}
 #'  }
 #'  
-#'  The stratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
+#'  The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
 #'  \describe{
 #'   \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
 #'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
@@ -64,11 +63,135 @@ is.Date <- function(date){
 #' The RelativeSelectionProbability: A value proportional to the SelectionProbability. Within a stratum, SelectionProbability=c*RelativeSelectionProbability, with c possibly unknown.
 #' The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
 #' 
-#' @name SamplingDesignParametersData
+#' @name MultiStageSamplingParametersData
 #' @concept Data types
 #' @concept Analytical estimation
 #'
 NULL
+
+#' Check if table is correctly formatted Multi Stage Sampling Parameters Data
+#' @param table \code{\link[RstoxFDA]{MultiStageSamplingParametersData}}
+#' @return validity
+#' @concept Data types
+#' @noRd
+is.MultiStageSamplingParametersData <- function(MultiStageSamplingParametersData){
+  if (!is.list(MultiStageSamplingParametersData)){
+    return(FALSE)
+  }
+  if (!all(sapply(MultiStageSamplingParametersData, data.table::is.data.table))){
+    return(FALSE)
+  }
+  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables") %in% names(MultiStageSamplingParametersData))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum", "N", "n", "SelectionMethod", "FrameDescription") %in% names(MultiStageSamplingParametersData$SampleTable))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "RelativeSelectionProbability", "SelectionDescription") %in% names(MultiStageSamplingParametersData$SelectionTable))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum") %in% names(MultiStageSamplingParametersData$StratificationVariables))){
+    return(FALSE)
+  }
+  if (any(duplicated(MultiStageSamplingParametersData$SampleTable$Stratum))){
+    return(FALSE)
+  }
+  #test that mandatory fields are not NA.
+  if (any(is.na(MultiStageSamplingParametersData$SampleTable$Stratum))){
+    return(FALSE)
+  }
+  if (any(is.na(MultiStageSamplingParametersData$SampleTable$SelectionMethod))){
+    return(FALSE)
+  }
+  if (any(is.na(MultiStageSamplingParametersData$SelectionTable$Stratum))){
+    return(FALSE)
+  }
+  if (any(is.na(MultiStageSamplingParametersData$StratificationVariables$Stratum))){
+    return(FALSE)
+  }
+  for (n in names(MultiStageSamplingParametersData$StratificationVariables)){
+    if (any(is.na(MultiStageSamplingParametersData$StratificationVariables[[n]]))){
+      return(FALSE)
+    }
+  }
+  
+  if (ncol(MultiStageSamplingParametersData$StratificationVariables) > 1){
+    stratificationVariableStrings <- apply(MultiStageSamplingParametersData$StratificationVariables[,.SD, .SDcol=names(MultiStageSamplingParametersData$StratificationVariables[names(MultiStageSamplingParametersData$StratificationVariables)!="Stratum"])], 1, paste, collapse="/")
+    duplicatedStrata <- MultiStageSamplingParametersData$StratificationVariables$Stratum[duplicated(stratificationVariableStrings)]
+    
+    if (length(duplicatedStrata)>0){
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+}
+
+#' Individual Sampling Design Parameters
+#' 
+#' Sampling parameters for selection of a sampling of individuals
+#' 
+#' @details 
+#'  Encodes information about the selection of a sample of observations from individuals, used in analytical design based estimation.
+#'  
+#'  The SampleTable encodes information about the sample of sampling units:
+#'  \describe{
+#'   \item{Stratum}{Mandatory, chr: Identifies the stratum the sample is taken from. Treat unstratified sample as single-stratum sampling (provide only one stratum.}
+#'   \item{N}{Optional, num: The total number of individuals in Stratum}
+#'   \item{n}{Optional, num: The number of individuals selected from the Stratum}
+#'   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}
+#'   \item{FrameDescription}{Optional, chr: Free text field describing the sampling frame.}
+#'  }
+#'  
+#'  The SelectionTable encodes information abut the selection of sampling units for sampling:
+#'  \describe{
+#'   \item{Stratum}{Mandatory, chr: Identifies the stratum the individual is taken from.}
+#'   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
+#'   \item{IndividualId}{Optional, chr: Identifes individual. NA encodes non-response / observation failure}
+#'   \item{InclusionProbability}{Optional, num: The inclusion probability of the individual with respect to observing the parameters in the 'observationVariables' table}
+#'   \item{SelectionProbability}{Optional, num: The selection probability of the individual with respect to observing the parameters in the 'observationVariables' table}
+#'   \item{RelativeSelectionProbability}{Optional, num: The relative selection probability of the individual with respect to observing the parameters in the 'observationVariables' table}
+#'   \item{SelectionDescription}{Optional, chr: Free text description of sampling unit.}
+#'  }
+#'  
+#'  The ObservationVariables table specifies which set of variables the design is specified for:
+#'  \describe{
+#'   \item{Parameter}{Mandatory, chr: Name of parameter selected for observation.}
+#'  }
+#'  
+#'  The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
+#'  \describe{
+#'   \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
+#'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
+#'  }
+#' 
+#' Optional columns may be NA.
+#' 
+#' The selection methods available for 'SelectionMethod' are explained here:
+#' \describe{
+#'  \item{Poission}{Poission sampling. Selection is performed randomly without replacement, and each selection is performed individually. Sample size is not fixed, and 'n' represents the expected sample size.}
+#'  \item{FSWR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen with replacement}
+#'  \item{FSWOR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection should be specified in the 'selectionTable'}
+#' }
+#' 
+#' The SelectionProbability is defined as: The probability of selecting the sampling unit in a random draw from the population.
+#' The RelativeSelectionProbability: A value proportional to the SelectionProbability. Within a stratum, SelectionProbability=c*RelativeSelectionProbability, with c possibly unknown.
+#' The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
+#' 
+#' @name IndividualSamplingParametersData
+#' @concept Data types
+#' @concept Analytical estimation
+#'
+NULL
+
+#' Check if table is correctly formatted Individual Sampling Parameters Data
+#' @param table \code{\link[RstoxFDA]{IndividualSamplingParametersData}}
+#' @return validity
+#' @concept Data types
+#' @noRd
+is.IndividualSamplingParametersData <- function(IndividualSamplingParametersData){
+ stop("Not Implemented") 
+}
+
 
 #' Trip Partition
 #'
