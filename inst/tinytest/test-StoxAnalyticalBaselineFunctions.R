@@ -20,3 +20,21 @@ expect_equal(nrow(designParamsSB$SelectionTable), 75)
 expect_equal(nrow(designParamsSB$SampleTable), 2)
 expect_equal(ncol(designParamsSB$StratificationVariables), 2)
 expect_equal(nrow(designParamsSB$StratificationVariables), 2)
+
+#Define Individual design, SRS
+expect_error(DefineIndividualSamplingParameters(NULL, RstoxFDA::StoxBioticDataExample, "SRS"))
+srs <- DefineIndividualSamplingParameters(NULL, RstoxFDA::StoxBioticDataExample, "SRS", c("IndividualAge", "IndividualTotalLength", "IndividualRoundWeight"))
+RstoxFDA:::is.IndividualSamplingParametersData(srs)
+#Define Individual design, Length stratified
+ls<-DefineIndividualSamplingParameters(NULL, RstoxFDA::StoxBioticDataExample, "LengthStratified", c("IndividualAge", "IndividualTotalLength", "IndividualRoundWeight"), LengthInterval = 5)
+RstoxFDA:::is.IndividualSamplingParametersData(ls)
+
+#Define Individual design, stratrifed, setting strata by length as in Length stratified
+bioStrat <- RstoxFDA::StoxBioticDataExample
+bioStrat$Individual$LStrat <- as.character(cut(bioStrat$Individual$IndividualTotalLength, seq(0,max(bioStrat$Individual$IndividualTotalLength)+5,5), right = F))
+ss<-DefineIndividualSamplingParameters(NULL, bioStrat, "Stratified", c("IndividualAge", "IndividualTotalLength", "IndividualRoundWeight"), StratificationColumns = c("LStrat"))
+RstoxFDA:::is.IndividualSamplingParametersData(ss)
+
+#check that length stratified and stratified is consistent.
+expect_equal(ss$SelectionTable$SelectionProbability[[1]], ls$SelectionTable$SelectionProbability[[1]])
+expect_equal(nrow(ss$SampleTable), nrow(ls$SampleTable))

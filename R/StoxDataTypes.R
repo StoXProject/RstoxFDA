@@ -126,25 +126,30 @@ is.MultiStageSamplingParametersData <- function(MultiStageSamplingParametersData
   return(TRUE)
 }
 
-#' Individual Sampling Design Parameters
+#' Individual Sub-Sampling Design Parameters
 #' 
-#' Sampling parameters for selection of a sampling of individuals
+#' Sampling parameters for selection of a sub-sample of individuals
 #' 
 #' @details 
-#'  Encodes information about the selection of a sample of observations from individuals, used in analytical design based estimation.
+#'  Encodes information about the selection of a sub-sample of observations from individuals, used in analytical design based estimation.
+#'  A sub-sample is simply a sample of a sample. This data type is intended to represent the final stage of sampling in multi-stage sampling,
+#'  and therefor has a reference to the Sample it was taken from ('SampleId'). Apart from that there is no principal difference from single
+#'  stage sampling. All stratification is specified within the sample identifed by 'SampleId', and all sampling probabilites are specified within strata.
 #'  
 #'  The SampleTable encodes information about the sample of sampling units:
 #'  \describe{
-#'   \item{Stratum}{Mandatory, chr: Identifies the stratum the sample is taken from. Treat unstratified sample as single-stratum sampling (provide only one stratum.}
-#'   \item{N}{Optional, num: The total number of individuals in Stratum}
+#'   \item{SampleId}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
+#'   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum the sub-sample is taken from.  Treat unstratified sample as single-stratum sampling (provide only one stratum.}
+#'   \item{N}{Optional, num: The total number of individuals in Stratum. For unstratified sampling, the total number of individuals in the sample the sub-sample is taken from.}
 #'   \item{n}{Optional, num: The number of individuals selected from the Stratum}
 #'   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}
-#'   \item{FrameDescription}{Optional, chr: Free text field describing the sampling frame.}
+#'   \item{SampleDescription}{Optional, chr: Free text field describing the sample that is subsampled.}
 #'  }
 #'  
 #'  The SelectionTable encodes information abut the selection of sampling units for sampling:
 #'  \describe{
-#'   \item{Stratum}{Mandatory, chr: Identifies the stratum the individual is taken from.}
+#'   \item{SampleId}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
+#'   \item{Stratum}{Mandatory, chr: Identifies the within sample-stratum the individual is taken from.}
 #'   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
 #'   \item{IndividualId}{Optional, chr: Identifes individual. NA encodes non-response / observation failure}
 #'   \item{InclusionProbability}{Optional, num: The inclusion probability of the individual with respect to observing the parameters in the 'observationVariables' table}
@@ -160,7 +165,8 @@ is.MultiStageSamplingParametersData <- function(MultiStageSamplingParametersData
 #'  
 #'  The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
 #'  \describe{
-#'   \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
+#'   \item{SampleId}{Mandatory, chr: Identifies the sample the stratification applies to}
+#'   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
 #'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
 #'  }
 #' 
@@ -189,7 +195,69 @@ NULL
 #' @concept Data types
 #' @noRd
 is.IndividualSamplingParametersData <- function(IndividualSamplingParametersData){
- stop("Not Implemented") 
+  
+  if (!is.list(IndividualSamplingParametersData)){
+    return(FALSE)
+  }
+  if (!all(sapply(IndividualSamplingParametersData, data.table::is.data.table))){
+    return(FALSE)
+  }
+  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables", "ObservationVariables") %in% names(IndividualSamplingParametersData))){
+    return(FALSE)
+  }
+  if (!all(c("SampleId", "Stratum", "N", "n", "SelectionMethod", "SampleDescription") %in% names(IndividualSamplingParametersData$SampleTable))){
+    return(FALSE)
+  }
+  if (!all(c("SampleId", "Stratum", "Order", "IndividualId", "InclusionProbability", "SelectionProbability", "RelativeSelectionProbability", "SelectionDescription") %in% names(IndividualSamplingParametersData$SelectionTable))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum") %in% names(IndividualSamplingParametersData$StratificationVariables))){
+    return(FALSE)
+  }
+  if (!all(c("Parameter") %in% names(IndividualSamplingParametersData$ObservationVariables))){
+    return(FALSE)
+  }
+  if (any(duplicated(paste(IndividualSamplingParametersData$SampleTable$Stratum, IndividualSamplingParametersData$SampleTable$SampleId)))){
+    return(FALSE)
+  }
+  #test that mandatory fields are not NA.
+  if (any(is.na(IndividualSamplingParametersData$SampleTable$Stratum))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$SampleTable$SampleId))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$SampleTable$SelectionMethod))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$SelectionTable$Stratum))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$SelectionTable$SampleId))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$StratificationVariables$Stratum))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$StratificationVariables$SampleId))){
+    return(FALSE)
+  }
+  for (n in names(IndividualSamplingParametersData$StratificationVariables)){
+    if (any(is.na(IndividualSamplingParametersData$StratificationVariables[[n]]))){
+      return(FALSE)
+    }
+  }
+  
+  if (ncol(IndividualSamplingParametersData$StratificationVariables) > 2){
+    stratificationVariableStrings <- apply(IndividualSamplingParametersData$StratificationVariables[,.SD, .SDcol=names(IndividualSamplingParametersData$StratificationVariables)[!(names(IndividualSamplingParametersData$StratificationVariables) %in% c("Stratum", "SampleId"))]], 1, paste, collapse="/")
+    duplicatedStrata <- IndividualSamplingParametersData$StratificationVariables$Stratum[duplicated(stratificationVariableStrings)]
+    
+    if (length(duplicatedStrata)>0){
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+
 }
 
 

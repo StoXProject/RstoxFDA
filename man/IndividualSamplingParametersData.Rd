@@ -7,11 +7,12 @@
 Sampling parameters for selection of a sampling of individuals
 }
 \details{
-Encodes information about the selection of a sample of observations from individuals, used in analytical design based estimation.
+Encodes information about the selection of a sub-sample of observations from individuals, used in analytical design based estimation.
  
  The SampleTable encodes information about the sample of sampling units:
  \describe{
-  \item{Stratum}{Mandatory, chr: Identifies the stratum the sample is taken from. Treat unstratified sample as single-stratum sampling (provide only one stratum.}
+  \item{Sample}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
+  \item{Stratum}{Mandatory, chr: Identifies the stratum of the sample, that the sub-sample is taken from. Treat unstratified sample as single-stratum sampling (provide only one stratum.}
   \item{N}{Optional, num: The total number of individuals in Stratum}
   \item{n}{Optional, num: The number of individuals selected from the Stratum}
   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}
@@ -20,7 +21,8 @@ Encodes information about the selection of a sample of observations from individ
  
  The SelectionTable encodes information abut the selection of sampling units for sampling:
  \describe{
-  \item{Stratum}{Mandatory, chr: Identifies the stratum the individual is taken from.}
+  \item{Sample}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
+  \item{Stratum}{Mandatory, chr: Identifies the stratum of the sample, that the the individual is taken from.}
   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
   \item{IndividualId}{Optional, chr: Identifes individual. NA encodes non-response / observation failure}
   \item{InclusionProbability}{Optional, num: The inclusion probability of the individual with respect to observing the parameters in the 'observationVariables' table}

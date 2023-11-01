@@ -2,7 +2,7 @@
 % Please edit documentation in R/StoxAnalyticalBaselineFunctions.R
 \name{DefineMultiStageSamplingParameters}
 \alias{DefineMultiStageSamplingParameters}
-\title{Define Sampling Design Parameters}
+\title{Define Multi-Stage Sampling Design Parameters}
 \usage{
 DefineMultiStageSamplingParameters(
   processData,

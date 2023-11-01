@@ -125,7 +125,7 @@ parseDesignParameters <- function(filename){
   return(designParameters)
 }
 
-#' Define Sampling Design Parameters
+#' Define Multi-Stage Sampling Design Parameters
 #' @description 
 #'  Define sampling design parameters for intermediate sampling units in multi-stage sampling.
 #' @details 
@@ -152,7 +152,7 @@ parseDesignParameters <- function(filename){
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
-DefineMultiStageSamplingParameters <- function(processData, DefinitionMethod=c("ResourceFile", "AdHocStoxBiotic"), FileName=character(), StoxBioticData, SamplingUnitId, StratificationColumns, UseProcessData=F){
+DefineMultiStageSamplingParameters <- function(processData, DefinitionMethod=c("ResourceFile", "AdHocStoxBiotic"), FileName=character(), StoxBioticData, SamplingUnitId=character(), StratificationColumns=character(), UseProcessData=F){
 
   if (UseProcessData){
     return(processData)
@@ -168,8 +168,157 @@ DefineMultiStageSamplingParameters <- function(processData, DefinitionMethod=c("
   }
 }
 
+#' make IndividualDesignParameters for stratified selection of Individuals
+#' if StratificationColumn contains only one column and this is called Stratum, do not add any stratification columns.
 #' @noRd
-AssignIndividualDesignParameters <- function(){}
+extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, StratificationColumns, Parameters){
+  
+  individuals <- RstoxData::mergeByIntersect(StoxBioticData$Individual, StoxBioticData$Sample)
+  
+  #check first, so no restrictions need to be put on names of Parameters.
+  hasParam <- rep(FALSE, nrow(individuals))
+  for (p in Parameters){
+    hasParam <- hasParam | !is.na(individuals[[p]])
+  }
+  
+  individuals$Stratum <- apply(individuals[,.SD, .SDcol=StratificationColumns], 1, paste, collapse="/")
+  StratificationColumns <- StratificationColumns[StratificationColumns!="Stratum"]
+  
+  individuals$SampleId <- individuals$Sample
+  
+  stratificationTable <- individuals[!duplicated(paste(individuals$SampleId, individuals$Stratum)), .SD,.SDcol=c("SampleId", "Stratum", StratificationColumns)]
+  observationTable <- data.table::data.table(Parameter=Parameters)
+  
+  individuals$Sampled <- hasParam
+  
+  stratumTotals <- individuals[,list(totalInStratum=.N, sampledInStratum=sum(Sampled)), by=c("Stratum", "SampleId")]
+  sampleTotals <- individuals[,list(totalInSample=.N), by=c("SampleId")]
+  stratumFraction <- merge(stratumTotals, sampleTotals, by="SampleId")
+  stratumFraction$StratumFraction <- stratumFraction$totalInStratum / stratumFraction$totalInSample
+  individuals <- merge(individuals, stratumFraction, by=c("SampleId", "Stratum"))
+  individuals$N <- individuals$CatchFractionNumber*individuals$StratumFraction
+  individuals$n <- individuals$sampledInStratum
+
+  sampleTable <- individuals[!duplicated(paste(individuals$Stratum, individuals$SampleId)), .SD, .SDcol=c("SampleId", "Stratum", "N", "n")]  
+  sampleTable$SelectionMethod <- "FSWOR"
+  sampleTable$SampleDescription <- as.character(NA)
+  
+  selectedIndividuals <- individuals[individuals$Sampled,]
+  selectedIndividuals$IndividualId <- selectedIndividuals$Individual
+  selectedIndividuals$Order <- as.numeric(NA)
+  selectedIndividuals$InclusionProbability <- as.numeric(NA) #Need order. Could possibly be obtained by convention from StoxBioticiIndividual$IndividualKey, would have to be user choice.
+  selectedIndividuals$SelectionProbability <- 1/selectedIndividuals$N
+  selectedIndividuals$RelativeSelectionProbability <- 1/selectedIndividuals$N
+  selectedIndividuals$SelectionDescription <- as.character(NA)
+  
+  selectionTable <- selectedIndividuals[,.SD,.SDcol=c("SampleId", "Stratum", "Order", "IndividualId", "InclusionProbability", "SelectionProbability", "RelativeSelectionProbability", "SelectionDescription")]
+  
+  designParams <- list()
+  designParams$SampleTable <- sampleTable
+  designParams$SelectionTable <- selectionTable
+  designParams$ObservationVariables <- observationTable
+  designParams$StratificationVariables <- stratificationTable
+  
+  return(designParams)
+}
+
+#' Define Sub-Sampling Parameters for Individuals
+#' @description 
+#'  Define approximate sampling design parameters for a sub-sample of individuals. Design parameters are inferred from data provided in ~\code{\link[RstoxData]{StoxBioticData}},
+#'  and specify how a set of individuals recorded on the Individual table were selected for observation/measurement from a sample recorded on the Sample table.
+#' @details 
+#'  Sampling parameters are approximate inferred, assuming that all selected individuals are recorded, and based on some user-controllable assumptions about the selection process,
+#'  specified by the appropriate 'DefinitionMethod'. Individuals with a non-missing value for any of the parameters in 'Parameters' are treated as selected for observation.
+#'  
+#'  The available DefinitionMethods are:
+#'  \describe{
+#'   \item{SRS}{Simple Random Selection. Individuals are selected for measurment by simple random selection without replacement}
+#'   \item{Stratified}{Stratified Selection. Individuals are selected for measurement by stratified random selection without replacement. Strata are specified as the combination of columns provided in 'StratificationColumns'. The number of fish in each stratum is estimated by the total in sample and the proportion of measured fish in each stratum.}
+#'   \item{LengthStratified}{Length stratified selection. Individuals are selected for measurement by stratified random selection without replacement. Strata are length groups, specified by the left closed intervals starting with [0,'LengthInterval'>.}
+#'  }
+#' @param processData \code{\link[RstoxFDA]{IndividualSamplingParametersData}} as returned from this function.
+#' @param StoxBioticData Data to define individual sampling parameters for
+#' @param DefinitionMethod Method to infer sampling parameters, 'SRS', 'Stratified' or 'LengthStratified'. See details.
+#' @param Parameters Measurements / observations of individuals included in the design specification. Must all be column on the Individual-table of StoxBioticData. 
+#' @param LengthInterval width of length strata in cm. Specifies left closed intervals used for Length Stratified selection (DefinitionMethod 'Stratified'). A value of 5 indicates that observation are selected stratified on length groups [0 cm,5 cm>, [5 cm, 10 cm>, and so on.
+#' @param StratificationColumns names of columns in the Individual table of StoxBioticData that identify strata for Stratified selection (DefinitionMethod 'Stratified').
+#' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
+#' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}}
+#' @export
+#' @concept StoX-functions
+#' @concept Analytical estimation
+#' @md
+DefineIndividualSamplingParameters <- function(processData, StoxBioticData, DefinitionMethod=c("SRS", "Stratified", "LengthStratified"), Parameters=c(), LengthInterval=numeric(), StratificationColumns=character(), UseProcessData=F){
+
+  if (UseProcessData){
+    return(processData)
+  }
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("SRS", "Stratified", "LengthStratified"))
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(Parameters, "Parameters")
+  
+  if (!all(Parameters %in% names(StoxBioticData$Individual))){
+    stop("All values for the argument 'Parameters' must be names columns of the Individual table in 'StoxBioticData'")
+  }
+  
+  #
+  # Perform checks and
+  # Set stratification columns in accordance with DefinitionMethod
+  #
+  
+  if (DefinitionMethod == "SRS"){
+    if (isGiven(LengthInterval) | isGiven(StratificationColumns)){
+      stop("The arguments 'LengthInterval' and 'StratificationColumns' should not be provided in combination with DefinitionMethod SRS.")
+    }
+    StoxBioticData$Individual$Stratum <- rep("All", nrow(StoxBioticData$Individual))
+    StratificationColumns <- c("Stratum")
+    return(extractIndividualDesignParametersStoxBiotic(StoxBioticData, StratificationColumns, Parameters))
+  }
+  
+  if (DefinitionMethod == "LengthStratified"){
+    if (isGiven(StratificationColumns)){
+      stop("The argument 'StratificationColumns' should not be provided in combination with DefinitionMethod 'LengthStratified'.")
+    }
+    if (!isGiven(LengthInterval)){
+      stop("The argument 'LengthInterval' must be provided when DefinitionMethod is 'LengthStratified")
+    }
+    if (LengthInterval <=0){
+      stop("LengthInterval must be a positive value.")
+    }
+    if (any(is.na(StoxBioticData$Individual$IndividualTotalLength))){
+      missing <- StoxBioticData$Individual$Individual[is.na(StoxBioticData$Individual$IndividualTotalLength)]
+      if (lengt(missing)>5){
+        missing <- c(missing[1:5], "...")
+      }
+      stop(paste("Cannot specify length stratified selection when some individuals are not measured. Missing IndividualTotalLength for:", paste(missing, collapse=",")))
+    }
+    
+    lengthGroups <- seq(0,max(StoxBioticData$Individual$IndividualTotalLength)+LengthInterval,LengthInterval)
+    StoxBioticData$Individual$LengthStratum <- paste(as.character(cut(StoxBioticData$Individual$IndividualTotalLength, lengthGroups, right=F)), "cm")
+    StratificationColumns <- c("LengthStratum")
+    return(extractIndividualDesignParametersStoxBiotic(StoxBioticData, StratificationColumns, Parameters))
+  }
+  
+  if (DefinitionMethod == "Stratified"){
+    if (!isGiven(StratificationColumns)){
+      stop("The argument 'StratificationColumns' must be provided when DefinitionMethod is 'Stratified")
+    }
+    if (!all(StratificationColumns %in% names(StoxBioticData$Individual))){
+      stop("All values for the argument 'StratificationColumns' must be names of columns of the Individual table in 'StoxBioticData'")
+    }
+    for (st in StratificationColumns){
+      if (any(is.na(StoxBioticData$Individual[[st]]))){
+        stop("Cannot specify stratified selection when some individuals are not assigned a stratum. Missing values for:", st)
+      }
+    }
+    reserved_names <- c("Stratum", "SampleId")
+    if (any(reserved_names %in% StratificationColumns)){
+      stop(paste(paste(reserved_names, collapse=","), "are reserved names in IndividualSamplingParametersData and cannot be specified as StratificationColumns"))
+    }
+    return(extractIndividualDesignParametersStoxBiotic(StoxBioticData, StratificationColumns, Parameters))
+  }
+  
+}
 
 #' @noRd
 AssignPSUDesignParameters <- function(){}
