@@ -2,16 +2,16 @@
 % Please edit documentation in R/StoxAnalyticalBaselineFunctions.R
 \name{DefineIndividualSamplingParameters}
 \alias{DefineIndividualSamplingParameters}
-\title{Define Individual Sampling Parameters}
+\title{Define Sub-Sampling Parameters for Individuals}
 \usage{
 DefineIndividualSamplingParameters(
   processData,
   StoxBioticData,
   DefinitionMethod = c("SRS", "Stratified", "LengthStratified"),
   Parameters = c(),
-  LengthInterval,
-  StratificationColumns,
-  UseProcessData = F
+  LengthInterval = numeric(),
+  StratificationColumns = character(),
+  UseProcessData = FALSE
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ DefineIndividualSamplingParameters(
 \code{\link[RstoxFDA]{IndividualSamplingParametersData}}
 }
 \description{
-Define approximate sampling design parameters for a measured sub-sample of individuals. Design parameters are inferred from data provided in ~\code{\link[RstoxData]{StoxBioticData}},
+Define approximate sampling design parameters for a sub-sample of individuals. Design parameters are inferred from data provided in ~\code{\link[RstoxData]{StoxBioticData}},
 and specify how a set of individuals recorded on the Individual table were selected for observation/measurement from a sample recorded on the Sample table.
 }
 \details{
@@ -44,7 +44,7 @@ The available DefinitionMethods are:
 \describe{
 \item{SRS}{Simple Random Selection. Individuals are selected for measurment by simple random selection without replacement}
 \item{Stratified}{Stratified Selection. Individuals are selected for measurement by stratified random selection without replacement. Strata are specified as the combination of columns provided in 'StratificationColumns'. The number of fish in each stratum is estimated by the total in sample and the proportion of measured fish in each stratum.}
-\item{LengthStratified}{Length stratified selection. Individuals are selected for measurement by stratified random selection without replacement. Strata are length groups, specified by the left closed intervals starting with [0,'LengthInterval'>. In addition to the parameters in 'Parameters', IndividualTotalLength is included in the design specification. }
+\item{LengthStratified}{Length stratified selection. Individuals are selected for measurement by stratified random selection without replacement. Strata are length groups, specified by the left closed intervals starting with [0,'LengthInterval'>.}
 }
 }
 \concept{Analytical estimation}

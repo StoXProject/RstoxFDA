@@ -168,6 +168,27 @@ DefineMultiStageSamplingParameters <- function(processData, DefinitionMethod=c("
   }
 }
 
+#' @noRd
+collapseStrataIndividualDesignParamaters <- function(designParam){
+  
+  Nstrata <- designParam$StratificationVariables[,list(Nstrata=.N), by="SampleId"]
+  if (all(Nstrata$Nstrata==1)){
+    return(designParam)
+  }
+  
+  NselectionMethods <- designParam$SampleTable[,list(NselMet=length(unique(SelectionMethod))), by="SampleId"]
+  if (any(NselectionMethods$NselMet>1)){
+    stop("Cannot collapse strate with heterogenous selection methods")
+  }
+  
+  designParam$SelectionTable$Stratum <- "All"
+  designParam$SampleTable <- designParam$SampleTable[,list(Stratum="All", N=sum(N), n=sum(n), SelectionMethod=SelectionMethod[1], SampleDescription=as.character(NA)), by=c("SampleId")]
+  designParam$StratificationVariables$Stratum <- "All"
+  designParam$StratificationVariables <- designParam$StratificationVariables[,.SD,.SDcol=c("SampleId", "Stratum")]
+  
+  return(designParam)
+}
+
 #' make IndividualDesignParameters for stratified selection of Individuals
 #' if StratificationColumn contains only one column and this is called Stratum, do not add any stratification columns.
 #' @noRd
@@ -183,14 +204,13 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
   
   individuals$Stratum <- apply(individuals[,.SD, .SDcol=StratificationColumns], 1, paste, collapse="/")
   StratificationColumns <- StratificationColumns[StratificationColumns!="Stratum"]
-  
+
   individuals$SampleId <- individuals$Sample
   
   stratificationTable <- individuals[!duplicated(paste(individuals$SampleId, individuals$Stratum)), .SD,.SDcol=c("SampleId", "Stratum", StratificationColumns)]
   observationTable <- data.table::data.table(Parameter=Parameters)
   
   individuals$Sampled <- hasParam
-  
   stratumTotals <- individuals[,list(totalInStratum=.N, sampledInStratum=sum(Sampled)), by=c("Stratum", "SampleId")]
   sampleTotals <- individuals[,list(totalInSample=.N), by=c("SampleId")]
   stratumFraction <- merge(stratumTotals, sampleTotals, by="SampleId")
@@ -236,6 +256,8 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
 #'   \item{Stratified}{Stratified Selection. Individuals are selected for measurement by stratified random selection without replacement. Strata are specified as the combination of columns provided in 'StratificationColumns'. The number of fish in each stratum is estimated by the total in sample and the proportion of measured fish in each stratum.}
 #'   \item{LengthStratified}{Length stratified selection. Individuals are selected for measurement by stratified random selection without replacement. Strata are length groups, specified by the left closed intervals starting with [0,'LengthInterval'>.}
 #'  }
+#'  
+#'  
 #' @param processData \code{\link[RstoxFDA]{IndividualSamplingParametersData}} as returned from this function.
 #' @param StoxBioticData Data to define individual sampling parameters for
 #' @param DefinitionMethod Method to infer sampling parameters, 'SRS', 'Stratified' or 'LengthStratified'. See details.
@@ -248,8 +270,11 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
-DefineIndividualSamplingParameters <- function(processData, StoxBioticData, DefinitionMethod=c("SRS", "Stratified", "LengthStratified"), Parameters=c(), LengthInterval=numeric(), StratificationColumns=character(), UseProcessData=F){
+DefineIndividualSamplingParameters <- function(processData, StoxBioticData, DefinitionMethod=c("SRS", "Stratified", "LengthStratified"), Parameters=c(), LengthInterval=numeric(), StratificationColumns=character(), UseProcessData=FALSE){
 
+  #May want to expose this option if DefinitionMethods are added that only provides relative selection probabilities.
+  CollapseStrata=TRUE
+  
   if (UseProcessData){
     return(processData)
   }
@@ -272,7 +297,6 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
     }
     StoxBioticData$Individual$Stratum <- rep("All", nrow(StoxBioticData$Individual))
     StratificationColumns <- c("Stratum")
-    return(extractIndividualDesignParametersStoxBiotic(StoxBioticData, StratificationColumns, Parameters))
   }
   
   if (DefinitionMethod == "LengthStratified"){
@@ -287,7 +311,7 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
     }
     if (any(is.na(StoxBioticData$Individual$IndividualTotalLength))){
       missing <- StoxBioticData$Individual$Individual[is.na(StoxBioticData$Individual$IndividualTotalLength)]
-      if (lengt(missing)>5){
+      if (length(missing)>5){
         missing <- c(missing[1:5], "...")
       }
       stop(paste("Cannot specify length stratified selection when some individuals are not measured. Missing IndividualTotalLength for:", paste(missing, collapse=",")))
@@ -296,7 +320,6 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
     lengthGroups <- seq(0,max(StoxBioticData$Individual$IndividualTotalLength)+LengthInterval,LengthInterval)
     StoxBioticData$Individual$LengthStratum <- paste(as.character(cut(StoxBioticData$Individual$IndividualTotalLength, lengthGroups, right=F)), "cm")
     StratificationColumns <- c("LengthStratum")
-    return(extractIndividualDesignParametersStoxBiotic(StoxBioticData, StratificationColumns, Parameters))
   }
   
   if (DefinitionMethod == "Stratified"){
@@ -315,13 +338,27 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
     if (any(reserved_names %in% StratificationColumns)){
       stop(paste(paste(reserved_names, collapse=","), "are reserved names in IndividualSamplingParametersData and cannot be specified as StratificationColumns"))
     }
-    return(extractIndividualDesignParametersStoxBiotic(StoxBioticData, StratificationColumns, Parameters))
   }
+  
+  params <- extractIndividualDesignParametersStoxBiotic(StoxBioticData, StratificationColumns, Parameters)
+  if (CollapseStrata){
+    params <- collapseStrataIndividualDesignParamaters(params)
+  }
+  return(params)
   
 }
 
 #' @noRd
-AssignPSUDesignParameters <- function(){}
+CollapseSamplingHierarchy <- function(IndividualSamplingParametersData, MultiStageSamplingParametersData, CollapseStrata=T){
+  
+}
+
+#' Put some options for handling non-response here.
+#' If all responded, this function does nothing but returning the input
+#' @noRd
+AssignPSUDesignParameters <- function(MultiStageSamplingParametersData){
+  
+}
 
 #' @noRd
 DefinePSUCoInclusionProbabilities <- function(){}

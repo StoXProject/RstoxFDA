@@ -9,8 +9,8 @@ DefineMultiStageSamplingParameters(
   DefinitionMethod = c("ResourceFile", "AdHocStoxBiotic"),
   FileName = character(),
   StoxBioticData,
-  SamplingUnitId,
-  StratificationColumns,
+  SamplingUnitId = character(),
+  StratificationColumns = character(),
   UseProcessData = F
 )
 }

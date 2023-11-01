@@ -2,27 +2,30 @@
 % Please edit documentation in R/StoxDataTypes.R
 \name{IndividualSamplingParametersData}
 \alias{IndividualSamplingParametersData}
-\title{Individual Sampling Design Parameters}
+\title{Individual Sub-Sampling Design Parameters}
 \description{
-Sampling parameters for selection of a sampling of individuals
+Sampling parameters for selection of a sub-sample of individuals
 }
 \details{
 Encodes information about the selection of a sub-sample of observations from individuals, used in analytical design based estimation.
+ A sub-sample is simply a sample of a sample. This data type is intended to represent the final stage of sampling in multi-stage sampling,
+ and therefor has a reference to the Sample it was taken from ('SampleId'). Apart from that there is no principal difference from single
+ stage sampling. All stratification is specified within the sample identifed by 'SampleId', and all sampling probabilites are specified within strata.
  
  The SampleTable encodes information about the sample of sampling units:
  \describe{
-  \item{Sample}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
-  \item{Stratum}{Mandatory, chr: Identifies the stratum of the sample, that the sub-sample is taken from. Treat unstratified sample as single-stratum sampling (provide only one stratum.}
-  \item{N}{Optional, num: The total number of individuals in Stratum}
+  \item{SampleId}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
+  \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum the sub-sample is taken from.  Treat unstratified sample as single-stratum sampling (provide only one stratum.}
+  \item{N}{Optional, num: The total number of individuals in Stratum. For unstratified sampling, the total number of individuals in the sample the sub-sample is taken from.}
   \item{n}{Optional, num: The number of individuals selected from the Stratum}
   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}
-  \item{FrameDescription}{Optional, chr: Free text field describing the sampling frame.}
+  \item{SampleDescription}{Optional, chr: Free text field describing the sample that is subsampled.}
  }
  
  The SelectionTable encodes information abut the selection of sampling units for sampling:
  \describe{
-  \item{Sample}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
-  \item{Stratum}{Mandatory, chr: Identifies the stratum of the sample, that the the individual is taken from.}
+  \item{SampleId}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
+  \item{Stratum}{Mandatory, chr: Identifies the within sample-stratum the individual is taken from.}
   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
   \item{IndividualId}{Optional, chr: Identifes individual. NA encodes non-response / observation failure}
   \item{InclusionProbability}{Optional, num: The inclusion probability of the individual with respect to observing the parameters in the 'observationVariables' table}
@@ -38,7 +41,8 @@ Encodes information about the selection of a sub-sample of observations from ind
  
  The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
  \describe{
-  \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
+  \item{SampleId}{Mandatory, chr: Identifies the sample the stratification applies to}
+  \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
  }
 
@@ -52,7 +56,7 @@ The selection methods available for 'SelectionMethod' are explained here:
 }
 
 The SelectionProbability is defined as: The probability of selecting the sampling unit in a random draw from the population.
-The RelativeSelectionProbability: A value proportional to the SelectionProbability. Within a stratum, SelectionProbability=c*RelativeSelectionProbability, with c possibly unknown.
+The RelativeSelectionProbability: A value proportional to the SelectionProbability. SelectionProbability=c*RelativeSelectionProbability, with c constant within a stratum, but possibly unknown.
 The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
 }
 \concept{Analytical estimation}

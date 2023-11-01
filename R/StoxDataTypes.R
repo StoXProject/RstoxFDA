@@ -60,7 +60,7 @@ is.Date <- function(date){
 #' }
 #' 
 #' The SelectionProbability is defined as: The probability of selecting the sampling unit in a random draw from the population.
-#' The RelativeSelectionProbability: A value proportional to the SelectionProbability. Within a stratum, SelectionProbability=c*RelativeSelectionProbability, with c possibly unknown.
+#' The RelativeSelectionProbability: A value proportional to the SelectionProbability. SelectionProbability=c*RelativeSelectionProbability, with c constant within a stratum, but possibly unknown.
 #' The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
 #' 
 #' @name MultiStageSamplingParametersData
@@ -180,7 +180,7 @@ is.MultiStageSamplingParametersData <- function(MultiStageSamplingParametersData
 #' }
 #' 
 #' The SelectionProbability is defined as: The probability of selecting the sampling unit in a random draw from the population.
-#' The RelativeSelectionProbability: A value proportional to the SelectionProbability. Within a stratum, SelectionProbability=c*RelativeSelectionProbability, with c possibly unknown.
+#' The RelativeSelectionProbability: A value proportional to the SelectionProbability. SelectionProbability=c*RelativeSelectionProbability, with c constant within a stratum, but possibly unknown.
 #' The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
 #' 
 #' @name IndividualSamplingParametersData

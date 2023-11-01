@@ -37,4 +37,5 @@ RstoxFDA:::is.IndividualSamplingParametersData(ss)
 
 #check that length stratified and stratified is consistent.
 expect_equal(ss$SelectionTable$SelectionProbability[[1]], ls$SelectionTable$SelectionProbability[[1]])
+expect_true(srs$SelectionTable$SelectionProbability[[1]] != ls$SelectionTable$SelectionProbability[[1]])
 expect_equal(nrow(ss$SampleTable), nrow(ls$SampleTable))
