@@ -28,15 +28,11 @@ Encodes information about the selection of a sub-sample of observations from ind
   \item{Stratum}{Mandatory, chr: Identifies the within sample-stratum the individual is taken from.}
   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
   \item{IndividualId}{Optional, chr: Identifes individual. NA encodes non-response / observation failure}
-  \item{InclusionProbability}{Optional, num: The inclusion probability of the individual with respect to observing the parameters in the 'observationVariables' table}
-  \item{SelectionProbability}{Optional, num: The selection probability of the individual with respect to observing the parameters in the 'observationVariables' table}
-  \item{RelativeSelectionProbability}{Optional, num: The relative selection probability of the individual with respect to observing the parameters in the 'observationVariables' table}
+  \item{HTsamplingWeight}{Optional, num: The relative inclusion probability of the individual}
+  \item{InclusionProbability}{Optional, num: The inclusion probability of the individual}
+  \item{SelectionProbability}{Optional, num: The selection probability of the individual}
+  \item{HHsamplingWeight}{Optional, num: The relative selection probability of the individual}
   \item{SelectionDescription}{Optional, chr: Free text description of sampling unit.}
- }
- 
- The ObservationVariables table specifies which set of variables the design is specified for:
- \describe{
-  \item{Parameter}{Mandatory, chr: Name of parameter selected for observation.}
  }
  
  The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
@@ -55,9 +51,10 @@ The selection methods available for 'SelectionMethod' are explained here:
  \item{FSWOR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection should be specified in the 'selectionTable'}
 }
 
-The SelectionProbability is defined as: The probability of selecting the sampling unit in a random draw from the population.
-The RelativeSelectionProbability: A value proportional to the SelectionProbability. SelectionProbability=c*RelativeSelectionProbability, with c constant within a stratum, but possibly unknown.
+The SelectionProbability is defined as: The probability of selecting the sampling unit when it was selected from the population.
+The HHsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sampled unit when estimating with the Hansen-Hurwitz strategy: 1 / (SelectionProbability*Q) , where Q is the sum of the reciprocal of the SelectionProbabilites for the sampled units. For equal probability sampling with replacement, this is simply 1/n, where n i sample size.
 The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
+The HTsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sample when estimating with the Horvitz-Thompson strategy: 1 / (InclusionProbability*P), where P is the sum of the reciprocal of the InclusionProbabilites for the sampled units. For equal probability sampling without replacement, this is simply 1/n, where n is sample size.
 }
 \concept{Analytical estimation}
 \concept{Data types}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/StoxAnalyticalBaselineFunctions.R
 \name{DefineIndividualSamplingParameters}
 \alias{DefineIndividualSamplingParameters}
-\title{Define Sub-Sampling Parameters for Individuals}
+\title{Define Sampling Parameters for Individuals}
 \usage{
 DefineIndividualSamplingParameters(
   processData,
@@ -21,7 +21,7 @@ DefineIndividualSamplingParameters(
 
 \item{DefinitionMethod}{Method to infer sampling parameters, 'SRS', 'Stratified' or 'LengthStratified'. See details.}
 
-\item{Parameters}{Measurements / observations of individuals included in the design specification. Must all be column on the Individual-table of StoxBioticData.}
+\item{Parameters}{Measurements / observations of individuals included in the design specification. Must all be columns on the Individual-table of StoxBioticData.}
 
 \item{LengthInterval}{width of length strata in cm. Specifies left closed intervals used for Length Stratified selection (DefinitionMethod 'Stratified'). A value of 5 indicates that observation are selected stratified on length groups [0 cm,5 cm>, [5 cm, 10 cm>, and so on.}
 
@@ -30,21 +30,30 @@ DefineIndividualSamplingParameters(
 \item{UseProcessData}{If TRUE, bypasses execution of function and returns existing 'processData'}
 }
 \value{
-\code{\link[RstoxFDA]{IndividualSamplingParametersData}}
+\code{\link[RstoxFDA]{IndividualSamplingParametersData}} where SampleId refers to the variable 'Haul' on the 'Haul' table in StoxBioticData, and IndividualId refers to the variable 'Individual' on the 'Individual' table of StoxBioticData.
 }
 \description{
-Define approximate sampling design parameters for a sub-sample of individuals. Design parameters are inferred from data provided in ~\code{\link[RstoxData]{StoxBioticData}},
-and specify how a set of individuals recorded on the Individual table were selected for observation/measurement from a sample recorded on the Sample table.
+Define approximate sampling parameters for the selection of individuals from a haul. Design parameters are inferred from data provided in ~\code{\link[RstoxData]{StoxBioticData}},
+and specify how a set of individuals recorded on the Individual table were selected for observation/measurement from a Haul (the table Haul in StoxBioticData).
 }
 \details{
-Sampling parameters are approximate inferred, assuming that all selected individuals are recorded, and based on some user-controllable assumptions about the selection process,
-specified by the appropriate 'DefinitionMethod'. Individuals with a non-missing value for any of the parameters in 'Parameters' are treated as selected for observation.
+StoxBioticData represents sorting of species as a separate level in the hierarchy (SpeciesCategory) and Samples are selected in Stratified from the species categories.
+This represent sampling stratified on taxons in addition to some additional stratification criteria in the cases where more than one sample is present for
+a species-category in a Haul. The exact criteria for stratification is not important for the calculation of sampling parameters, but only clearly encoded criteria can be used
+in subsequent analysis, so sampling parameters are reported stratified only on SpeciesCategory. Any other stratification has been incorporated into selection or inclusion probabilities.
 
-The available DefinitionMethods are:
+Sampling parameters are approximately inferred, assuming that all selected individuals are recorded, and based on some user-controllable assumptions about the selection process,
+specified by the appropriate 'DefinitionMethod'.
+
+Individuals with a non-missing value for any of the parameters in 'Parameters' are treated as selected for observation.
+In this way selection of individuals may be specified differently for different parameters.
+For instance one may define one design for length-measurements and another for length-stratified age, weight and sex observations.
+
+The available DefinitionMethods specifies how Individuals are selected from a Sample, and are:
 \describe{
-\item{SRS}{Simple Random Selection. Individuals are selected for measurment by simple random selection without replacement}
-\item{Stratified}{Stratified Selection. Individuals are selected for measurement by stratified random selection without replacement. Strata are specified as the combination of columns provided in 'StratificationColumns'. The number of fish in each stratum is estimated by the total in sample and the proportion of measured fish in each stratum.}
-\item{LengthStratified}{Length stratified selection. Individuals are selected for measurement by stratified random selection without replacement. Strata are length groups, specified by the left closed intervals starting with [0,'LengthInterval'>.}
+\item{SRS}{Simple Random Selection. Individuals are selected for measurment by simple random selection without replacement from each Sample.}
+\item{Stratified}{Stratified Selection. Individuals are selected for measurement by stratified random selection without replacement from each Sample. Strata are specified as the combination of columns provided in 'StratificationColumns'. The number of fish in each stratum is estimated by the total in sample and the proportion of measured fish in each stratum.}
+\item{LengthStratified}{Length stratified selection. Individuals are selected for measurement by stratified random selection without replacement from each Sample. Strata are length groups, specified by the left closed intervals starting with [0,'LengthInterval'>.}
 }
 }
 \concept{Analytical estimation}
