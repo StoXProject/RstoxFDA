@@ -16,33 +16,33 @@ is.Date <- function(date){
   return(FALSE)
 }
 
-#' Multi-stage Sampling Design Parameters
+#' PSU Sampling Design Parameters
 #' 
-#' Sampling parameters for selection of a sampling unit in a multi-stage sampling design
+#' Sampling parameters for selection of a Primary Sampling Unit
 #' 
 #' @details 
-#'  Encodes information about the selection of an intermediate sampling unit in multi-stage sampling, used in analytical design based estimation.
+#'  Encodes information about the selection of Primary Sampling Units in multi-stage sampling, used in analytical design based estimation.
 #'  Information is encoded in three tables.
 #'  
 #'  The SampleTable encodes information about the sample of sampling units:
 #'  \describe{
 #'   \item{Stratum}{Mandatory, chr: Identifies the stratum the sample is taken from. Treat unstratified sample as single-stratum sampling (provide only one stratum.}
-#'   \item{N}{Optional, num: The total number of selection units in Stratum}
-#'   \item{n}{Optional, num: The number of selection units selected from the Stratum}
+#'   \item{N}{Optional, num: The total number of PSUs in Stratum (total available for selection, not total selected)}
+#'   \item{n}{Optional, num: The number of PSUs selected from the Stratum}
 #'   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}
 #'   \item{FrameDescription}{Optional, chr: Free text field describing the sampling frame.}
 #'  }
 #'  
 #'  The SelectionTable encodes information abut the selection of sampling units for sampling:
 #'  \describe{
-#'   \item{Stratum}{Mandatory, chr: Identifies the stratum the sampling unit is taken from.}
+#'   \item{Stratum}{Mandatory, chr: Identifies the stratum the PSU is taken from.}
 #'   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
-#'   \item{SamplingUnitId}{Optional, chr: Identifes sampling unit. NA encodes non-response}
-#'   \item{InclusionProbability}{Optional, num: The inclusion probability of the sampling unit}
-#'   \item{HTsamplingWeight}{Optional, num: The relative inclusion probability of the sampling unit}
-#'   \item{SelectionProbability}{Optional, num: The selection probability of the sampling unit}
-#'   \item{HHsamplingWeight}{Optional, num: The relative selection probability of the sampling unit}
-#'   \item{SelectionDescription}{Optional, chr: Free text description of sampling unit.}
+#'   \item{SamplingUnitId}{Optional, chr: Identifes PSU. NA encodes non-response}
+#'   \item{InclusionProbability}{Optional, num: The inclusion probability of the PSU}
+#'   \item{HTsamplingWeight}{Optional, num: The normalized Horvitz-Thompson sampling weight of the PSU}
+#'   \item{SelectionProbability}{Optional, num: The selection probability of the PSU}
+#'   \item{HHsamplingWeight}{Optional, num: The normalized Hansen-Hurwitz sampling weight of the PSU}
+#'   \item{SelectionDescription}{Optional, chr: Free text description of the PSU.}
 #'  }
 #'  
 #'  The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
@@ -65,61 +65,61 @@ is.Date <- function(date){
 #' The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
 #' The HTsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sample when estimating with the Horvitz-Thompson strategy: 1 / (InclusionProbability*P), where P is the sum of the reciprocal of the InclusionProbabilites for the sampled units. For equal probability sampling without replacement, this is simply 1/n, where n is sample size.
 #' 
-#' @name MultiStageSamplingParametersData
+#' @name PSUSamplingParametersData
 #' @concept Data types
 #' @concept Analytical estimation
 #'
 NULL
 
-#' Check if table is correctly formatted Multi Stage Sampling Parameters Data
-#' @param table \code{\link[RstoxFDA]{MultiStageSamplingParametersData}}
+#' Check if table is correctly formatted PSU Sampling Parameters Data
+#' @param table \code{\link[RstoxFDA]{PSUSamplingParametersData}}
 #' @return validity
 #' @concept Data types
 #' @noRd
-is.MultiStageSamplingParametersData <- function(MultiStageSamplingParametersData){
-  if (!is.list(MultiStageSamplingParametersData)){
+is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
+  if (!is.list(PSUSamplingParametersData)){
     return(FALSE)
   }
-  if (!all(sapply(MultiStageSamplingParametersData, data.table::is.data.table))){
+  if (!all(sapply(PSUSamplingParametersData, data.table::is.data.table))){
     return(FALSE)
   }
-  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables") %in% names(MultiStageSamplingParametersData))){
+  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables") %in% names(PSUSamplingParametersData))){
     return(FALSE)
   }
-  if (!all(c("Stratum", "N", "n", "SelectionMethod", "FrameDescription") %in% names(MultiStageSamplingParametersData$SampleTable))){
+  if (!all(c("Stratum", "N", "n", "SelectionMethod", "FrameDescription") %in% names(PSUSamplingParametersData$SampleTable))){
     return(FALSE)
   }
-  if (!all(c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "HHsamplingWeight", "SelectionDescription") %in% names(MultiStageSamplingParametersData$SelectionTable))){
+  if (!all(c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "HHsamplingWeight", "SelectionDescription") %in% names(PSUSamplingParametersData$SelectionTable))){
     return(FALSE)
   }
-  if (!all(c("Stratum") %in% names(MultiStageSamplingParametersData$StratificationVariables))){
+  if (!all(c("Stratum") %in% names(PSUSamplingParametersData$StratificationVariables))){
     return(FALSE)
   }
-  if (any(duplicated(MultiStageSamplingParametersData$SampleTable$Stratum))){
+  if (any(duplicated(PSUSamplingParametersData$SampleTable$Stratum))){
     return(FALSE)
   }
   #test that mandatory fields are not NA.
-  if (any(is.na(MultiStageSamplingParametersData$SampleTable$Stratum))){
+  if (any(is.na(PSUSamplingParametersData$SampleTable$Stratum))){
     return(FALSE)
   }
-  if (any(is.na(MultiStageSamplingParametersData$SampleTable$SelectionMethod))){
+  if (any(is.na(PSUSamplingParametersData$SampleTable$SelectionMethod))){
     return(FALSE)
   }
-  if (any(is.na(MultiStageSamplingParametersData$SelectionTable$Stratum))){
+  if (any(is.na(PSUSamplingParametersData$SelectionTable$Stratum))){
     return(FALSE)
   }
-  if (any(is.na(MultiStageSamplingParametersData$StratificationVariables$Stratum))){
+  if (any(is.na(PSUSamplingParametersData$StratificationVariables$Stratum))){
     return(FALSE)
   }
-  for (n in names(MultiStageSamplingParametersData$StratificationVariables)){
-    if (any(is.na(MultiStageSamplingParametersData$StratificationVariables[[n]]))){
+  for (n in names(PSUSamplingParametersData$StratificationVariables)){
+    if (any(is.na(PSUSamplingParametersData$StratificationVariables[[n]]))){
       return(FALSE)
     }
   }
   
-  if (ncol(MultiStageSamplingParametersData$StratificationVariables) > 1){
-    stratificationVariableStrings <- apply(MultiStageSamplingParametersData$StratificationVariables[,.SD, .SDcol=names(MultiStageSamplingParametersData$StratificationVariables[names(MultiStageSamplingParametersData$StratificationVariables)!="Stratum"])], 1, paste, collapse="/")
-    duplicatedStrata <- MultiStageSamplingParametersData$StratificationVariables$Stratum[duplicated(stratificationVariableStrings)]
+  if (ncol(PSUSamplingParametersData$StratificationVariables) > 1){
+    stratificationVariableStrings <- apply(PSUSamplingParametersData$StratificationVariables[,.SD, .SDcol=names(PSUSamplingParametersData$StratificationVariables[names(PSUSamplingParametersData$StratificationVariables)!="Stratum"])], 1, paste, collapse="/")
+    duplicatedStrata <- PSUSamplingParametersData$StratificationVariables$Stratum[duplicated(stratificationVariableStrings)]
     
     if (length(duplicatedStrata)>0){
       return(FALSE)
@@ -154,10 +154,10 @@ is.MultiStageSamplingParametersData <- function(MultiStageSamplingParametersData
 #'   \item{Stratum}{Mandatory, chr: Identifies the within sample-stratum the individual is taken from.}
 #'   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
 #'   \item{IndividualId}{Optional, chr: Identifes individual. NA encodes non-response / observation failure}
-#'   \item{HTsamplingWeight}{Optional, num: The relative inclusion probability of the individual}
 #'   \item{InclusionProbability}{Optional, num: The inclusion probability of the individual}
+#'   \item{HTsamplingWeight}{Optional, num: The normalized Horvitz-Thompson sampling weight of the individual}
 #'   \item{SelectionProbability}{Optional, num: The selection probability of the individual}
-#'   \item{HHsamplingWeight}{Optional, num: The relative selection probability of the individual}
+#'   \item{HHsamplingWeight}{Optional, num: The normalized Hansen-Hurwitz sampling weight of the individual}
 #'   \item{SelectionDescription}{Optional, chr: Free text description of sampling unit.}
 #'  }
 #'  

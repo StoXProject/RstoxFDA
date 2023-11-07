@@ -127,33 +127,33 @@ parseDesignParameters <- function(filename){
   return(designParameters)
 }
 
-#' Define Multi-Stage Sampling Design Parameters
+#' Define PSU Sampling Design Parameters
 #' @description 
-#'  Define sampling design parameters for intermediate sampling units in multi-stage sampling.
+#'  Define sampling parameters for Primary Sampling Units in multi-stage sampling.
 #' @details 
-#'  The DefintionMethod 'ResourceFile' reads design parameters from a tab delimited file with headers corresponding to those listed in 
-#'  \code{\link[RstoxFDA]{MultiStageSamplingParametersData}}. The data is provided as one table, so that the information in 'sampleTable' is repeated for each entry in 'selectionTable'.
-#'  Any columns not named in \code{\link[RstoxFDA]{MultiStageSamplingParametersData}} are assumed to be stratification variables.
-#'  The conditions listed for the variables in \code{\link[RstoxFDA]{MultiStageSamplingParametersData}} are checked upon reading the data, and
+#'  The DefintionMethod 'ResourceFile' reads sampling parameters from a tab delimited file with headers corresponding to those listed in 
+#'  \code{\link[RstoxFDA]{PSUSamplingParametersData}}. The data is provided as one table, so that the information in 'sampleTable' is repeated for each entry in 'selectionTable'.
+#'  Any columns not named in \code{\link[RstoxFDA]{PSUSamplingParametersData}} are assumed to be stratification variables.
+#'  The conditions listed for the variables in \code{\link[RstoxFDA]{PSUSamplingParametersData}} are checked upon reading the data, and
 #'  execution halts with error if any are violated.
 #'  
 #'  The DefinitionMethod 'AdHocStoxBiotic' constructs Sampling Design Parameters from data, 
 #'  assuming equal probability sampling with fixed sample size, selection without replacement and complete response.
 #'  This is a reasonable approximation if within-strata sampling is approximately simple random selections, 
-#'  non-response is believed to be at random.
-#' @param processData \code{\link[RstoxFDA]{MultiStageSamplingParametersData}} as returned from this function.
+#'  and non-response is believed to be at random.
+#' @param processData \code{\link[RstoxFDA]{PSUSamplingParametersData}} as returned from this function.
 #' @param DefinitionMethod 'ResourceFile' or 'AdHocStoxBiotic'
 #' @param FileName path to resource file
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} Sample data to construct design parameters from
-#' @param SamplingUnitId name of column in 'StoxBioticData' that identifies the sampling unit the design is constructed for.
+#' @param SamplingUnitId name of column in 'StoxBioticData' that identifies the Primary Sampling Unit the design is constructed for.
 #' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling.
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
-#' @return \code{\link[RstoxFDA]{MultiStageSamplingParametersData}}
+#' @return \code{\link[RstoxFDA]{PSUSamplingParametersData}}
 #' @export
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
-DefineMultiStageSamplingParameters <- function(processData, DefinitionMethod=c("ResourceFile", "AdHocStoxBiotic"), FileName=character(), StoxBioticData, SamplingUnitId=character(), StratificationColumns=character(), UseProcessData=F){
+DefinePSUSamplingParameters <- function(processData, DefinitionMethod=c("ResourceFile", "AdHocStoxBiotic"), FileName=character(), StoxBioticData, SamplingUnitId=character(), StratificationColumns=character(), UseProcessData=F){
 
   if (UseProcessData){
     return(processData)
@@ -229,10 +229,7 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
     
   if (any(is.na(individuals$CatchFractionNumber))){
     missing <- unique(individuals$Sample[is.na(individuals$CatchFractionNumber)])
-    if (length(missing)>5){
-      missing <- c(missing[1:5], "...")
-    }
-    stop(paste("Cannot infer sampling parameters for individuals from Samples with missing total number. CatchFractionNumber missing for Sample:", paste(missing, collapse=",")))
+    stop(paste("Cannot infer sampling parameters for individuals from Samples with missing total number. CatchFractionNumber missing for Sample:", paste(truncateStringVector(missing), collapse=",")))
   }
   
   #check first, so no restrictions need to be put on names of Parameters.
@@ -366,10 +363,7 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
     }
     if (any(is.na(StoxBioticData$Individual$IndividualTotalLength))){
       missing <- StoxBioticData$Individual$Individual[is.na(StoxBioticData$Individual$IndividualTotalLength)]
-      if (length(missing)>5){
-        missing <- c(missing[1:5], "...")
-      }
-      stop(paste("Cannot specify length stratified selection when some individuals are not measured. Missing IndividualTotalLength for:", paste(missing, collapse=",")))
+      stop(paste("Cannot specify length stratified selection when some individuals are not measured. Missing IndividualTotalLength for:", paste(truncateStringVector(missing), collapse=",")))
     }
     
     lengthGroups <- seq(0,max(StoxBioticData$Individual$IndividualTotalLength)+LengthInterval,LengthInterval)
@@ -404,15 +398,86 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
   
 }
 
+#' Extend IndividualSamplingParametersData to reflect selection from PSU by specifying intermediate selection.
+#' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}}
 #' @noRd
-CollapseSamplingHierarchy <- function(IndividualSamplingParametersData, MultiStageSamplingParametersData, CollapseStrata=T){
+DefineSamplingHierarchy <- function(IndividualSamplingParametersData, Hierarchy=character(), Stratification=character(), StrataSizes=character(), SelectionMetod=character(), CollapseStrata=character()){
   
 }
 
-#' Put some options for handling non-response here.
-#' If all responded, this function does nothing but returning the input
-#' @noRd
-AssignPSUDesignParameters <- function(MultiStageSamplingParametersData){
+#' Assign PSU Sampling Parameters
+#' @description 
+#'  Assigns data records to PSU Sampling Parameters and provides non-response adjustments for
+#'  selected PSUs that was not sampled.
+#' @details 
+#'  Some sampling parameters provided in ~\code{\link[RstoxFDA]{PSUSamplingParametersData}} are only
+#'  interpretable for sampling with complete response. This function adjusts these parameters, removes non-respondents from the 
+#'  ~\code{\link[RstoxFDA]{PSUSamplingParametersData}}, and checks that all responding PSUs are present in data records.
+#'  
+#'  If any respondants (rows of the SelectionTable of PSUSamplingParametersData that does not have NA for SamplingUnitId) are not
+#'  found in 'SamplingUnitId', execution halts with an error.
+#'  
+#'  Response after selection can generally be considered a process that modifies the sampling parameters that are set by design.
+#'  Typically sample size, InclusionProbabilities and normalized SamplingWeights need to be adjusted as non-respondents are removed, 
+#'  since these are depend of the entire sample, not just the sampling unit they are assigned to. 
+#'  SelectionProbabilites are by definition set for a single draw of a single sampling unit from the population and are valid even
+#'  when response is not complete.
+#'  
+#'  Treatment of non-response requires some assumption about systematic differences between respondents and non-respondents. 
+#'  These assumptions are specified via the argument 'DefinitionMethod' and the following options are available:
+#'  \describe{
+#'   \item{MissingAtRandom}{A response propensity is estimated for each stratum as the fraction of the sample resonding, and sample size (n) and InclusionProbability are adjusted by multiplying with this propensity. Sampling weights are adjusted by dividing them with their sum over repsondents in a stratum.}
+#'  }
+#'  
+#' @param PSUSamplingParametersData ~\code{\link[RstoxFDA]{PSUSamplingParametersData}} with sampling parameters for PSU selection
+#' @param StoxBioticData ~\code{\link[RstoxData]{StoxBioticData}} with data records for responding PSUs.
+#' @param SamplingUnitId name of Variable in ~\code{\link[RstoxData]{StoxBioticData}} that represent records of sampled PSUs
+#' @param DefinitionMethod The method for dealing with non-response, e.g. 'MissingAtRandon'
+#' @return ~\code{\link[RstoxFDA]{PSUSamplingParametersData}}
+#' @concept StoX-functions
+#' @concept Analytical estimation
+#' @md
+#' @export
+AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticData, SamplingUnitId, DefinitionMethod=c("MissingAtRandom")){
+  checkMandatory(PSUSamplingParametersData, "PSUSamplingParametersData")
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(SamplingUnitId, "SamplingUnitId")
+  checkOptions(DefinitionMethod, "DefinitionMethod", c("MissingAtRandom"))
+  
+  level <- NULL
+  for (l in names(StoxBioticData)){
+    if (SamplingUnitId %in% names(StoxBioticData[[l]])){
+      level <- l
+    }
+  }
+  if (is.null(level)){
+    stop(paste("The variable provided for SamplingUnitId (", SamplingUnitId,") is not a variable in 'StoxBioticData'"), sep="")
+  }
+  
+  records <- PSUSamplingParametersData$SelectionTable$SamplingUnitId[!is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId)]
+  if (!all(records %in% StoxBioticData[[l]][[SamplingUnitId]])){
+    missing <- records[!(records %in% StoxBioticData[[l]][[SamplingUnitId]])]
+    stop(paste("Records are not found for all sampled PSUs. Missing for the following SamplingUnitIds (", SamplingUnitId,"): ", paste(truncateStringVector(missing), collapse=","), sep=""))
+  }
+  
+  if (DefinitionMethod == "MissingAtRandom"){
+    responsePropensity <- PSUSamplingParametersData$SelectionTable[,list(ResponsePropensity=sum(!is.na(SamplingUnitId))/.N), by=c("Stratum")]
+    
+    PSUSamplingParametersData$SampleTable$n <- PSUSamplingParametersData$SampleTable$n * responsePropensity$ResponsePropensity[match(PSUSamplingParametersData$SampleTable$Stratum, responsePropensity$Stratum)]
+    
+    # correct sampling probabilities
+    PSUSamplingParametersData$SelectionTable$InclusionProbability <- PSUSamplingParametersData$SelectionTable$InclusionProbability * responsePropensity$ResponsePropensity[match(PSUSamplingParametersData$SelectionTable$Stratum, responsePropensity$Stratum)]
+    
+    #remove non respondants
+    PSUSamplingParametersData$SelectionTable <- PSUSamplingParametersData$SelectionTable[!is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId)]
+    
+    #correct normalized sampling weights
+    weights <- PSUSamplingParametersData$SelectionTable[,list(HHsum=sum(HHsamplingWeight), HTsum=sum(HTsamplingWeight)), by=c("Stratum")]
+    PSUSamplingParametersData$SelectionTable$HTsamplingWeight <- PSUSamplingParametersData$SelectionTable$HTsamplingWeight / weights$HTsum[match(PSUSamplingParametersData$SelectionTable$Stratum, weights$Stratum)]
+    PSUSamplingParametersData$SelectionTable$HHsamplingWeight <- PSUSamplingParametersData$SelectionTable$HHsamplingWeight / weights$HHsum[match(PSUSamplingParametersData$SelectionTable$Stratum, weights$Stratum)]
+    
+    return(PSUSamplingParametersData)
+  }
   
 }
 
@@ -420,4 +485,6 @@ AssignPSUDesignParameters <- function(MultiStageSamplingParametersData){
 DefinePSUCoInclusionProbabilities <- function(){}
 
 #' @noRd
-ProbabilisticSuperIndividuals <- function(){}
+ProbabilisticSuperIndividuals <- function(StoxBioticData, PSUSamplingParametersData, IndividualSamplingParametersData){
+  
+}

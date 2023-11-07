@@ -17,7 +17,7 @@
 #'  \item{lotteri}{Identifier for lottery, sampling frame, all inclusion probabilities are conditioned only on catch being in lottery}
 #'  \item{HIF.stratum}{Any stratification used in setting sampling parameters. Stratification is already factored into inclusion probabilities, some other column that goes into inclusion prob calculation depends on HIF.stratum (e.g. kapasitet)}
 #'  \item{kvote}{quota / expected total catch, used in calculation of inclusion probabilities}
-#'  \item{kapasitet}{sampling capasity / expected number of samples, used in calculation of inclusion probabilities}
+#'  \item{kapasitet}{sampling capacity / expected number of samples, used in calculation of inclusion probabilities}
 #'  \item{lotteri.kg}{reported catch in kg that was used in calculation of inclusion probability}
 #'  
 #'  The fields RC, SQ, TM, BC and BT are defined in the ERS regulation (https://lovdata.no/dokument/SF/forskrift/2009-12-21-1743).
@@ -88,11 +88,8 @@ prepDesignParamFile <- function(lotteryParams, StoxBiotic, platformCodes, maxDif
   selectionTable$SelectionDescription <- as.character(NA) #remove vessel identifying descriptions
   
   stopifnot(length(unique(stationTable$HIF.stratum))==1)  
-  sampleTable <- data.table::data.table(Stratum = stationTable$HIF.stratum[[1]], N = sum(!is.na(lotteryParams$i.prob)))
-  sampleTable$n <- as.numeric(NA)
-  if (length(unique(stationTable$kapasitet))==1){
-    sampleTable$n <- stationTable$kapasitet[[1]]
-  }
+  sampleTable <- data.table::data.table(Stratum = stationTable$HIF.stratum[[1]], N = sum(!is.na(lotteryParams$i.prob) & lotteryParams$i.prob>0))
+  sampleTable$n <- sum(lotteryParams$Svar=="641")
   sampleTable$SelectionMethod <- "Poisson"
   stopifnot(length(unique(stationTable$lotteri))==1)
   sampleTable$FrameDescription <- stationTable$lotteri[[1]]
@@ -112,8 +109,14 @@ saveDesignTable <- function(filename, designTable){
 
 lotteryParams <- parseLotteryFile("~/hi_sync/fiskerisampling/fangstprøvelotteri/lotterifiler/example2022.txt")
 lotteryParams <- lotteryParams[lotteryParams$lotteri=="Sild2022" & lotteryParams$HIF.stratum=="Nordsjo",]
+
 bioData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic("~/bioticsets/lotterieksempel/biotic_cruiseNumber_19-2022-20_Silde-sampling_2023-07-06T22.00.19.567Z.xml"))
 platformCodes <- readxl::read_excel("~/codelists/NMDeksempler/platform.xlsx", 2)
 
 designParams <- prepDesignParamFile(lotteryParams, bioData, platformCodes)
 saveDesignTable("inst/testresources/lotteryParameters/lotteryDesignNSH.txt", designParams)
+
+#remove potential vessel identifying information
+bioData$Station$CatchPlatform <- as.character(NA)
+CatchLotteryExample <- bioData
+usethis::use_data(CatchLotteryExample, overwrite = T)

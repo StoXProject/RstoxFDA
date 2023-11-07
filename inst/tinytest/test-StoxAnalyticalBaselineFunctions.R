@@ -1,8 +1,8 @@
 designParamsFile <- system.file("testresources", "lotteryParameters", "lotteryDesignNSH.txt", package="RstoxFDA")
 
 #regular read:
-designParams <- RstoxFDA::DefineMultiStageSamplingParameters(NULL, "ResourceFile", designParamsFile)
-expect_true(RstoxFDA:::is.MultiStageSamplingParametersData(designParams))
+designParams <- RstoxFDA::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFile)
+expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParams))
 expect_equal(nrow(designParams$SelectionTable), 64)
 expect_equal(nrow(designParams$SampleTable), 1)
 expect_equal(ncol(designParams$StratificationVariables), 1)
@@ -10,10 +10,21 @@ expect_equal(nrow(designParams$StratificationVariables), 1)
 expect_equal(sum(designParams$SelectionTable$HTsamplingWeight), 1)
 expect_equal(sum(designParams$SelectionTable$HHsamplingWeight), 1)
 
+# test assignment to data
+expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "MissingAtRandom"))
+designParamsCorrected <- RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "HaulKey", "MissingAtRandom")
+expect_equal(sum(designParamsCorrected$SelectionTable$HTsamplingWeight),1)
+expect_equal(sum(designParamsCorrected$SelectionTable$HHsamplingWeight),1)
+#HT should be approximately the same after non-response correction
+expect_true(abs((sum(1/designParamsCorrected$SelectionTable$InclusionProbability)-sum(1/designParams$SelectionTable$InclusionProbability))/sum(1/designParamsCorrected$SelectionTable$InclusionProbability))<0.1)
+#HH should be apprxoimately the same after non-response correction
+expect_true(abs((mean(1/designParamsCorrected$SelectionTable$InclusionProbability)-mean(1/designParams$SelectionTable$InclusionProbability))/sum(1/designParamsCorrected$SelectionTable$InclusionProbability))<0.1)
+
+
 #define from data
 suppressWarnings(StoxBioticData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic(system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA"))))
-designParamsSB <- RstoxFDA::DefineMultiStageSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
-expect_true(RstoxFDA:::is.MultiStageSamplingParametersData(designParamsSB))
+designParamsSB <- RstoxFDA::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
+expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsSB))
 #compare names of output with stratification variables to output without
 
 expect_true(all(names(designParamsSB$SampleTable) == names(designParams$SampleTable)))

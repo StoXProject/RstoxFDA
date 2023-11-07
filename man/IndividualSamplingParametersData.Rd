@@ -28,10 +28,10 @@ Encodes information about the selection of a sub-sample of observations from ind
   \item{Stratum}{Mandatory, chr: Identifies the within sample-stratum the individual is taken from.}
   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
   \item{IndividualId}{Optional, chr: Identifes individual. NA encodes non-response / observation failure}
-  \item{HTsamplingWeight}{Optional, num: The relative inclusion probability of the individual}
   \item{InclusionProbability}{Optional, num: The inclusion probability of the individual}
+  \item{HTsamplingWeight}{Optional, num: The normalized Horvitz-Thompson sampling weight of the individual}
   \item{SelectionProbability}{Optional, num: The selection probability of the individual}
-  \item{HHsamplingWeight}{Optional, num: The relative selection probability of the individual}
+  \item{HHsamplingWeight}{Optional, num: The normalized Hansen-Hurwitz sampling weight of the individual}
   \item{SelectionDescription}{Optional, chr: Free text description of sampling unit.}
  }
  
