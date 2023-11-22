@@ -481,8 +481,80 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
   
 }
 
+#' Define PSU Co-Inclusion Probabilities
+#' @description 
+#'  Computes co-inclusion probabilites for a selection of Primary Selection Units
+#' @details 
+#'  The method for calculating co-inclusion probabilites depend on the method of selection, which is encded
+#'  in \code{\link[RstoxFDA]{PSUSamplingParametersData}}. Only selection methods 'Possion' and 'FSWR' are currently supported.
+#' @param PSUSamplingParametersData \code{\link[RstoxFDA]{PSUSamplingParametersData}}
+#' @return \code{\link[RstoxFDA]{PSUCoInclusionProbabilities}}
+#' @md
+DefinePSUCoInclusionProbabilities <- function(PSUSamplingParametersData){
+  
+  if (!is.PSUSamplingParametersData(PSUSamplingParametersData)){
+    stop("Invalid PSUSamplingParametersData")
+  }
+  
+  coinc <- NULL
+  for (i in 1:nrow(PSUSamplingParametersData$SampleTable)){
+    
+    selectionMethod <- PSUSamplingParametersData$SampleTable$SelectionMethod[[i]]
+    stratum <- PSUSamplingParametersData$StratificationVariables$Stratum[i]
+    n <- PSUSamplingParametersData$SampleTable$n[i]
+    
+    if (any(is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId))){
+      stop("Cannot calculate co-inclusion probabilities under non-response. Missing values for 'SamplingUnitId'.")
+    }
+    if (any(is.na(PSUSamplingParametersData$SelectionTable$InclusionProbability))){
+      stop("Cannot calculate co-inclusion probabilities when inclusion probabilities are not known. Missing values for 'InclusionProbability'.")
+    }
+    
+    if (selectionMethod=="Poisson"){
+      tab <- PSUSamplingParametersData$SelectionTable[Stratum==stratum,.SD,.SDcol=c("SamplingUnitId", "InclusionProbability")]    
+      tab2 <- PSUSamplingParametersData$SelectionTable[Stratum==stratum,list(SamplingUnitId2=SamplingUnitId, InclusionProbability2=InclusionProbability)]    
+      cross <- tab2[, as.list(tab), by = names(tab2)]
+      cross$CoInclusionProbability <- cross$InclusionProbability*cross$InclusionProbability2
+      cross$Stratum <- stratum
+      cross <- cross[,.SD,.SDcol=c("Stratum", "SamplingUnitId", "SamplingUnitId2", "CoInclusionProbability")]
+      
+      coinc <- rbind(coinc, cross)
+    }
+    else if (selectionMethod=="FSWR"){
+      
+      if (any(is.na(PSUSamplingParametersData$SelectionTable$SelectionProbability))){
+        stop("For selection method FSWR, selection probabilities are needed in order to calculate co-inclusion probabilities. Missing values for 'SelectionProbability'.")
+      }
+      if (is.na(n)){
+        stop("For selection method FSWR, the sample size must be known in order to calculate co-inclusion probabilities. Missing values for 'n'.")
+      }
+      
+      stratum <- PSUSamplingParametersData$StratificationVariables$Stratum[i]
+      tab <- PSUSamplingParametersData$SelectionTable[Stratum==stratum,.SD,.SDcol=c("SamplingUnitId", "InclusionProbability", "SelectionProbability")]    
+      tab2 <- PSUSamplingParametersData$SelectionTable[Stratum==stratum,list(SamplingUnitId2=SamplingUnitId, InclusionProbability2=InclusionProbability, SelectionProbability2=SelectionProbability)]    
+      cross <- tab2[, as.list(tab), by = names(tab2)]
+      cross$CoInclusionProbability <- cross$InclusionProbability+cross$InclusionProbability2 - (1 - (1-cross$SelectionProbability-cross$SelectionProbability2)**n)
+      cross$Stratum <- stratum
+      cross <- cross[,.SD,.SDcol=c("Stratum", "SamplingUnitId", "SamplingUnitId2", "CoInclusionProbability")]
+      
+      coinc <- rbind(coinc, cross)
+    }
+    else{
+      stop(paste("Calculation of Co-inclusion probabilities not supported for selection method '", selectionMethod, "'.", sep=""))
+    }
+  }
+  
+  #remove diagonal, which is undefined
+  coinc <- coinc[SamplingUnitId!=SamplingUnitId2,]
+  
+  PSUSamplingParametersData$CoSelectionTable <- coinc
+  PSUSamplingParametersData$SelectionTable <- NULL
+  
+  return(PSUSamplingParametersData)
+}
+
 #' @noRd
-DefinePSUCoInclusionProbabilities <- function(){}
+HorvitzThompsonDomainEstimate <- function(){}
 
 #' @noRd
 ProbabilisticSuperIndividuals <- function(StoxBioticData, PSUSamplingParametersData, IndividualSamplingParametersData){

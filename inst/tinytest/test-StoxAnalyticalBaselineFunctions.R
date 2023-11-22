@@ -20,6 +20,34 @@ expect_true(abs((sum(1/designParamsCorrected$SelectionTable$InclusionProbability
 #HH should be apprxoimately the same after non-response correction
 expect_true(abs((mean(1/designParamsCorrected$SelectionTable$InclusionProbability)-mean(1/designParams$SelectionTable$InclusionProbability))/sum(1/designParamsCorrected$SelectionTable$InclusionProbability))<0.1)
 
+# test co-inclusion probabilities
+expect_error(RstoxFDA:::DefinePSUCoInclusionProbabilities(designParams), "Cannot calculate co-inclusion probabilities under non-response. Missing values for 'SamplingUnitId'.")
+coincl <- RstoxFDA:::DefinePSUCoInclusionProbabilities(designParamsCorrected)
+expect_equal(nrow(coincl$CoSelectionTable), nrow(designParamsCorrected$SelectionTable)*nrow(designParamsCorrected$SelectionTable)-nrow(designParamsCorrected$SelectionTable))
+
+#test Poisson
+paramMod <- designParamsCorrected
+coincPoission <- RstoxFDA:::DefinePSUCoInclusionProbabilities(paramMod)
+expect_true(RstoxFDA:::is.PSUCoInclusionProbabilities(coincPoission))
+value <- coincPoission$CoSelectionTable[1,]
+ref<-paramMod$SelectionTable$InclusionProbability[paramMod$SelectionTable$SamplingUnitId==value$SamplingUnitId]*paramMod$SelectionTable$InclusionProbability[paramMod$SelectionTable$SamplingUnitId==value$SamplingUnitId2]
+expect_equal(value$CoInclusionProbability, ref)
+
+#test FSWOR
+paramMod <- designParamsCorrected
+paramMod$SampleTable$SelectionMethod<-"FSWR"
+coincFSWr <- RstoxFDA:::DefinePSUCoInclusionProbabilities(paramMod)
+expect_true(RstoxFDA:::is.PSUCoInclusionProbabilities(coincFSWr))
+value <- coincFSWr$CoSelectionTable[1,]
+ref<-paramMod$SelectionTable$InclusionProbability[paramMod$SelectionTable$SamplingUnitId==value$SamplingUnitId]+paramMod$SelectionTable$InclusionProbability[paramMod$SelectionTable$SamplingUnitId==value$SamplingUnitId2] - (1-(1-paramMod$SelectionTable$SelectionProbability[paramMod$SelectionTable$SamplingUnitId==value$SamplingUnitId]-paramMod$SelectionTable$SelectionProbability[paramMod$SelectionTable$SamplingUnitId==value$SamplingUnitId2])**paramMod$SampleTable$n)
+expect_equal(value$CoInclusionProbability, ref)
+
+#test missing selectionProbabiliteis
+paramMod$SelectionTable$SelectionProbability[1]<-NA
+expect_error(RstoxFDA:::DefinePSUCoInclusionProbabilities(paramMod), "For selection method FSWR, selection probabilities are needed in order to calculate co-inclusion probabilities. Missing values for 'SelectionProbability'.")
+paramMod <- designParamsCorrected
+paramMod$SampleTable$SelectionMethod<-"FSWOR"
+expect_error(RstoxFDA:::DefinePSUCoInclusionProbabilities(paramMod), "Calculation of Co-inclusion probabilities not supported for selection method 'FSWOR'.")
 
 #define from data
 suppressWarnings(StoxBioticData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic(system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA"))))
@@ -67,3 +95,6 @@ expect_true(all(abs(weights$meanN-1) < 1e-6))
 expect_equal(ss$SelectionTable$InclusionProbability[[4]], ls$SelectionTable$InclusionProbability[[4]])
 expect_true(srs$SelectionTable$InclusionProbability[[4]] != ls$SelectionTable$InclusionProbability[[4]])
 expect_equal(nrow(ss$SampleTable), nrow(ls$SampleTable))
+
+#test estimate with HorvitzThompsonDomainEstimate
+#browser()
