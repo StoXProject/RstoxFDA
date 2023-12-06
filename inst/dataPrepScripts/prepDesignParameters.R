@@ -114,9 +114,16 @@ bioData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic("~/bioticsets/lotteriekse
 platformCodes <- readxl::read_excel("~/codelists/NMDeksempler/platform.xlsx", 2)
 
 designParams <- prepDesignParamFile(lotteryParams, bioData, platformCodes)
-saveDesignTable("inst/testresources/lotteryParameters/lotteryDesignNSH.txt", designParams)
+designParamsFile <- "inst/testresources/lotteryParameters/lotteryDesignNSH.txt"
+saveDesignTable(designParamsFile, designParams)
 
 #remove potential vessel identifying information
 bioData$Station$CatchPlatform <- as.character(NA)
 CatchLotteryExample <- bioData
+#fix missing catchfractionnumber
+filter <- is.na(CatchLotteryExample$Sample$CatchFractionNumber)
+CatchLotteryExample$Sample$CatchFractionNumber[filter] <- CatchLotteryExample$Sample$CatchFractionWeight[filter]*CatchLotteryExample$Sample$SampleNumber[filter] / CatchLotteryExample$Sample$SampleWeight[filter]
 usethis::use_data(CatchLotteryExample, overwrite = T)
+
+CatchLotterySamplingExample <- RstoxFDA::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFile)
+usethis::use_data(CatchLotterySamplingExample, overwrite = T)

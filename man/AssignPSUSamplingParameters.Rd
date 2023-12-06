@@ -7,7 +7,7 @@
 AssignPSUSamplingParameters(
   PSUSamplingParametersData,
   StoxBioticData,
-  SamplingUnitId,
+  DataRecordsId,
   DefinitionMethod = c("MissingAtRandom")
 )
 }
@@ -16,7 +16,7 @@ AssignPSUSamplingParameters(
 
 \item{StoxBioticData}{~\code{\link[RstoxData]{StoxBioticData}} with data records for responding PSUs.}
 
-\item{SamplingUnitId}{name of Variable in ~\code{\link[RstoxData]{StoxBioticData}} that represent records of sampled PSUs}
+\item{DataRecordsId}{name of Variable in ~\code{\link[RstoxData]{StoxBioticData}} that represent records of sampled PSUs}
 
 \item{DefinitionMethod}{The method for dealing with non-response, e.g. 'MissingAtRandon'}
 }

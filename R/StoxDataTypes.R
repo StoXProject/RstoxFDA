@@ -50,6 +50,12 @@ is.Date <- function(date){
 #'   \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
 #'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
 #'  }
+#'  
+#'  The Assignment encodes which identifier in sample records (e.g. \code{\link[RstoxData]{StoxBioticData}}) correspond to the SamplingUnitId
+#'  \describe{
+#'   \item{DataRecordsId}{Optional, character. The identifier in data records that correspond to SamplingUnitId}
+#'  }
+#'  This field is optional, since SamplingParameters may be subject to processing before they are assigned to data records.
 #' 
 #' Optional columns may be NA.
 #' 
@@ -57,7 +63,7 @@ is.Date <- function(date){
 #' \describe{
 #'  \item{Poission}{Poission sampling. Selection is performed randomly without replacement, and each selection is performed individually. Sample size is not fixed, and 'n' represents the expected sample size.}
 #'  \item{FSWR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen with replacement}
-#'  \item{FSWOR}{Fixed sample size without replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection should be specified in the 'selectionTable'}
+#'  \item{FSWOR}{Fixed sample size without replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection could be specified in the 'selectionTable'}
 #' }
 #' 
 #' The SelectionProbability is defined as: The probability of selecting the sampling unit when it was selected from the population.
@@ -83,7 +89,13 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
   if (!all(sapply(PSUSamplingParametersData, data.table::is.data.table))){
     return(FALSE)
   }
-  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables") %in% names(PSUSamplingParametersData))){
+  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables", "Assignment") %in% names(PSUSamplingParametersData))){
+    return(FALSE)
+  }
+  if (nrow(PSUSamplingParametersData$Assignment)>1){
+    return(FALSE)
+  }
+  if (!("DataRecordsId" %in% names(PSUSamplingParametersData$Assignment))){
     return(FALSE)
   }
   if (!all(c("Stratum", "N", "n", "SelectionMethod", "FrameDescription") %in% names(PSUSamplingParametersData$SampleTable))){
@@ -120,110 +132,6 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
   if (ncol(PSUSamplingParametersData$StratificationVariables) > 1){
     stratificationVariableStrings <- apply(PSUSamplingParametersData$StratificationVariables[,.SD, .SDcol=names(PSUSamplingParametersData$StratificationVariables[names(PSUSamplingParametersData$StratificationVariables)!="Stratum"])], 1, paste, collapse="/")
     duplicatedStrata <- PSUSamplingParametersData$StratificationVariables$Stratum[duplicated(stratificationVariableStrings)]
-    
-    if (length(duplicatedStrata)>0){
-      return(FALSE)
-    }
-  }
-  return(TRUE)
-}
-
-#' PSU Co-Inclusion probabilities
-#' 
-#' Co-Inclusion probabilites for selection of Primary Sampling Units
-#' 
-#' @details 
-#'  Encodes the co-inclusion probabilities for the selection of Primary Sampling Units in multi-stage sampling, used in analytical design based estimation.
-#'  Information is encoded in three tables.
-#'  
-#'  The SampleTable encodes information about the sample of sampling units:
-#'  \describe{
-#'   \item{Stratum}{Mandatory, chr: Identifies the stratum the sample is taken from. Treat unstratified sample as single-stratum sampling (provide only one stratum.}
-#'   \item{N}{Optional, num: The total number of PSUs in Stratum (total available for selection, not total selected)}
-#'   \item{n}{Optional, num: The number of PSUs selected from the Stratum}
-#'   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}
-#'   \item{FrameDescription}{Optional, chr: Free text field describing the sampling frame.}
-#'  }
-#'  
-#'  The CoSelectionTable encodes information abut the co-inclusion of sampling units for sampling:
-#'  \describe{
-#'   \item{Stratum}{Mandatory, chr: Identifies the stratum the PSU is taken from.}
-#'   \item{SamplingUnitId}{Mandatoryl, chr: Identifes co-selected PSU.}
-#'   \item{SamplingUnitId2}{Mandatory, chr: Identifes co-selected PSU.}
-#'   \item{CoInclusionProbability}{Mandatory, num: The co-inclusion probability of the PSU}
-#'  }
-#'  
-#'  The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
-#'  \describe{
-#'   \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
-#'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
-#'  }
-#' 
-#' Optional columns may be NA.
-#' 
-#' The selection methods available for 'SelectionMethod' are explained here:
-#' \describe{
-#'  \item{Poission}{Poission sampling. Selection is performed randomly without replacement, and each selection is performed individually. Sample size is not fixed, and 'n' represents the expected sample size.}
-#'  \item{FSWR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen with replacement}
-#'  \item{FSWOR}{Fixed sample size without replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection should be specified in the 'selectionTable'}
-#' }
-#' 
-#' @name PSUCoInclusionProbabilities
-#' @concept Data types
-#' @concept Analytical estimation
-#'
-NULL
-
-#' Check if table is correctly formatted Individual PSU Co-Inclusion Probability Data
-#' @param table \code{\link[RstoxFDA]{PSUCoInclusionProbabilities}}
-#' @return validity
-#' @concept Data types
-#' @noRd
-is.PSUCoInclusionProbabilities <- function(PSUCoInclusionProbabilities){
-  
-  if (!is.list(PSUCoInclusionProbabilities)){
-    return(FALSE)
-  }
-  if (!all(sapply(PSUCoInclusionProbabilities, data.table::is.data.table))){
-    return(FALSE)
-  }
-  if (!all(c("SampleTable", "CoSelectionTable", "StratificationVariables") %in% names(PSUCoInclusionProbabilities))){
-    return(FALSE)
-  }
-  if (!all(c("Stratum", "N", "n", "SelectionMethod", "FrameDescription") %in% names(PSUCoInclusionProbabilities$SampleTable))){
-    return(FALSE)
-  }
-  if (!all(c("Stratum", "SamplingUnitId", "SamplingUnitId2", "CoInclusionProbability") %in% names(PSUCoInclusionProbabilities$CoSelectionTable))){
-    return(FALSE)
-  }
-  if (!all(c("Stratum") %in% names(PSUCoInclusionProbabilities$StratificationVariables))){
-    return(FALSE)
-  }
-  if (any(duplicated(PSUCoInclusionProbabilities$SampleTable$Stratum))){
-    return(FALSE)
-  }
-  #test that mandatory fields are not NA.
-  if (any(is.na(PSUCoInclusionProbabilities$SampleTable$Stratum))){
-    return(FALSE)
-  }
-  if (any(is.na(PSUCoInclusionProbabilities$SampleTable$SelectionMethod))){
-    return(FALSE)
-  }
-  if (any(is.na(PSUCoInclusionProbabilities$SelectionTable$Stratum))){
-    return(FALSE)
-  }
-  if (any(is.na(PSUCoInclusionProbabilities$StratificationVariables$Stratum))){
-    return(FALSE)
-  }
-  for (n in names(PSUCoInclusionProbabilities$StratificationVariables)){
-    if (any(is.na(PSUCoInclusionProbabilities$StratificationVariables[[n]]))){
-      return(FALSE)
-    }
-  }
-  
-  if (ncol(PSUCoInclusionProbabilities$StratificationVariables) > 1){
-    stratificationVariableStrings <- apply(PSUCoInclusionProbabilities$StratificationVariables[,.SD, .SDcol=names(PSUCoInclusionProbabilities$StratificationVariables[names(PSUSamplingParametersData$StratificationVariables)!="Stratum"])], 1, paste, collapse="/")
-    duplicatedStrata <- PSUCoInclusionProbabilities$StratificationVariables$Stratum[duplicated(stratificationVariableStrings)]
     
     if (length(duplicatedStrata)>0){
       return(FALSE)

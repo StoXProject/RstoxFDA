@@ -41,11 +41,13 @@ assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Str
   sampleTable <- sampleTable[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
   stratificationTable <- flatStox[,.SD,.SDcol=c("Stratum", StratificationColumns)]
   stratificationTable <- stratificationTable[!duplicated(stratificationTable$Stratum),]
+  assignmentTable <- data.table::data.table(DataRecordsId=character())
   
   designParameters <- list()
   designParameters$SampleTable <- sampleTable
   designParameters$SelectionTable <- selectionTable
   designParameters$StratificationVariables <- stratificationTable
+  designParameters$Assignment <- assignmentTable
   
   return(designParameters)
   
@@ -76,7 +78,8 @@ parseDesignParameters <- function(filename){
   selectionTable <- designParameters[,.SD,.SDcol=c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "HTsamplingWeight", "SelectionProbability", "HHsamplingWeight", "SelectionDescription")]
   sampleTable <- designParameters[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
   stratificationTable <- designParameters[,.SD,.SDcol=c("Stratum", names(designParameters)[!(names(designParameters) %in% names(selectionTable)) & !(names(designParameters) %in% names(sampleTable))])]
-
+  assignmentTable <- data.table::data.table(DataRecordsId=character())
+  
   if (any(is.na(sampleTable$Stratum)) | any(is.na(selectionTable$Stratum))){
     stop("Invalid design specification. The mandatory column 'Stratum' may not contain missing values (NA).")
   }
@@ -123,6 +126,7 @@ parseDesignParameters <- function(filename){
   designParameters$SampleTable <- sampleTable
   designParameters$SelectionTable <- selectionTable
   designParameters$StratificationVariables <- stratificationTable
+  designParameters$Assignment <- assignmentTable
   
   return(designParameters)
 }
@@ -431,33 +435,33 @@ DefineSamplingHierarchy <- function(IndividualSamplingParametersData, Hierarchy=
 #'  
 #' @param PSUSamplingParametersData ~\code{\link[RstoxFDA]{PSUSamplingParametersData}} with sampling parameters for PSU selection
 #' @param StoxBioticData ~\code{\link[RstoxData]{StoxBioticData}} with data records for responding PSUs.
-#' @param SamplingUnitId name of Variable in ~\code{\link[RstoxData]{StoxBioticData}} that represent records of sampled PSUs
+#' @param DataRecordsId name of Variable in ~\code{\link[RstoxData]{StoxBioticData}} that represent records of sampled PSUs
 #' @param DefinitionMethod The method for dealing with non-response, e.g. 'MissingAtRandon'
 #' @return ~\code{\link[RstoxFDA]{PSUSamplingParametersData}}
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
 #' @export
-AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticData, SamplingUnitId, DefinitionMethod=c("MissingAtRandom")){
+AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticData, DataRecordsId, DefinitionMethod=c("MissingAtRandom")){
   checkMandatory(PSUSamplingParametersData, "PSUSamplingParametersData")
   checkMandatory(StoxBioticData, "StoxBioticData")
-  checkMandatory(SamplingUnitId, "SamplingUnitId")
+  checkMandatory(DataRecordsId, "DataRecordsId")
   checkOptions(DefinitionMethod, "DefinitionMethod", c("MissingAtRandom"))
   
   level <- NULL
   for (l in names(StoxBioticData)){
-    if (SamplingUnitId %in% names(StoxBioticData[[l]])){
+    if (DataRecordsId %in% names(StoxBioticData[[l]])){
       level <- l
     }
   }
   if (is.null(level)){
-    stop(paste("The variable provided for SamplingUnitId (", SamplingUnitId,") is not a variable in 'StoxBioticData'"), sep="")
+    stop(paste("The variable provided for DataRecordsId (", DataRecordsId,") is not a variable in 'StoxBioticData'"), sep="")
   }
   
   records <- PSUSamplingParametersData$SelectionTable$SamplingUnitId[!is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId)]
-  if (!all(records %in% StoxBioticData[[l]][[SamplingUnitId]])){
-    missing <- records[!(records %in% StoxBioticData[[l]][[SamplingUnitId]])]
-    stop(paste("Records are not found for all sampled PSUs. Missing for the following SamplingUnitIds (", SamplingUnitId,"): ", paste(truncateStringVector(missing), collapse=","), sep=""))
+  if (!all(records %in% StoxBioticData[[l]][[DataRecordsId]])){
+    missing <- records[!(records %in% StoxBioticData[[l]][[DataRecordsId]])]
+    stop(paste("Records are not found for all sampled PSUs. Missing for the following SamplingUnitIds (", DataRecordsId,"): ", paste(truncateStringVector(missing), collapse=","), sep=""))
   }
   
   if (DefinitionMethod == "MissingAtRandom"){
@@ -476,85 +480,32 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
     PSUSamplingParametersData$SelectionTable$HTsamplingWeight <- PSUSamplingParametersData$SelectionTable$HTsamplingWeight / weights$HTsum[match(PSUSamplingParametersData$SelectionTable$Stratum, weights$Stratum)]
     PSUSamplingParametersData$SelectionTable$HHsamplingWeight <- PSUSamplingParametersData$SelectionTable$HHsamplingWeight / weights$HHsum[match(PSUSamplingParametersData$SelectionTable$Stratum, weights$Stratum)]
     
-    return(PSUSamplingParametersData)
   }
   
-}
-
-#' Define PSU Co-Inclusion Probabilities
-#' @description 
-#'  Computes co-inclusion probabilites for a selection of Primary Selection Units
-#' @details 
-#'  The method for calculating co-inclusion probabilites depend on the method of selection, which is encded
-#'  in \code{\link[RstoxFDA]{PSUSamplingParametersData}}. Only selection methods 'Possion' and 'FSWR' are currently supported.
-#' @param PSUSamplingParametersData \code{\link[RstoxFDA]{PSUSamplingParametersData}}
-#' @return \code{\link[RstoxFDA]{PSUCoInclusionProbabilities}}
-#' @md
-DefinePSUCoInclusionProbabilities <- function(PSUSamplingParametersData){
-  
-  if (!is.PSUSamplingParametersData(PSUSamplingParametersData)){
-    stop("Invalid PSUSamplingParametersData")
-  }
-  
-  coinc <- NULL
-  for (i in 1:nrow(PSUSamplingParametersData$SampleTable)){
-    
-    selectionMethod <- PSUSamplingParametersData$SampleTable$SelectionMethod[[i]]
-    stratum <- PSUSamplingParametersData$StratificationVariables$Stratum[i]
-    n <- PSUSamplingParametersData$SampleTable$n[i]
-    
-    if (any(is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId))){
-      stop("Cannot calculate co-inclusion probabilities under non-response. Missing values for 'SamplingUnitId'.")
-    }
-    if (any(is.na(PSUSamplingParametersData$SelectionTable$InclusionProbability))){
-      stop("Cannot calculate co-inclusion probabilities when inclusion probabilities are not known. Missing values for 'InclusionProbability'.")
-    }
-    
-    if (selectionMethod=="Poisson"){
-      tab <- PSUSamplingParametersData$SelectionTable[Stratum==stratum,.SD,.SDcol=c("SamplingUnitId", "InclusionProbability")]    
-      tab2 <- PSUSamplingParametersData$SelectionTable[Stratum==stratum,list(SamplingUnitId2=SamplingUnitId, InclusionProbability2=InclusionProbability)]    
-      cross <- tab2[, as.list(tab), by = names(tab2)]
-      cross$CoInclusionProbability <- cross$InclusionProbability*cross$InclusionProbability2
-      cross$Stratum <- stratum
-      cross <- cross[,.SD,.SDcol=c("Stratum", "SamplingUnitId", "SamplingUnitId2", "CoInclusionProbability")]
-      
-      coinc <- rbind(coinc, cross)
-    }
-    else if (selectionMethod=="FSWR"){
-      
-      if (any(is.na(PSUSamplingParametersData$SelectionTable$SelectionProbability))){
-        stop("For selection method FSWR, selection probabilities are needed in order to calculate co-inclusion probabilities. Missing values for 'SelectionProbability'.")
-      }
-      if (is.na(n)){
-        stop("For selection method FSWR, the sample size must be known in order to calculate co-inclusion probabilities. Missing values for 'n'.")
-      }
-      
-      stratum <- PSUSamplingParametersData$StratificationVariables$Stratum[i]
-      tab <- PSUSamplingParametersData$SelectionTable[Stratum==stratum,.SD,.SDcol=c("SamplingUnitId", "InclusionProbability", "SelectionProbability")]    
-      tab2 <- PSUSamplingParametersData$SelectionTable[Stratum==stratum,list(SamplingUnitId2=SamplingUnitId, InclusionProbability2=InclusionProbability, SelectionProbability2=SelectionProbability)]    
-      cross <- tab2[, as.list(tab), by = names(tab2)]
-      cross$CoInclusionProbability <- cross$InclusionProbability+cross$InclusionProbability2 - (1 - (1-cross$SelectionProbability-cross$SelectionProbability2)**n)
-      cross$Stratum <- stratum
-      cross <- cross[,.SD,.SDcol=c("Stratum", "SamplingUnitId", "SamplingUnitId2", "CoInclusionProbability")]
-      
-      coinc <- rbind(coinc, cross)
-    }
-    else{
-      stop(paste("Calculation of Co-inclusion probabilities not supported for selection method '", selectionMethod, "'.", sep=""))
-    }
-  }
-  
-  #remove diagonal, which is undefined
-  coinc <- coinc[SamplingUnitId!=SamplingUnitId2,]
-  
-  PSUSamplingParametersData$CoSelectionTable <- coinc
-  PSUSamplingParametersData$SelectionTable <- NULL
-  
+  PSUSamplingParametersData$Assignment$DataRecordsId <- DataRecordsId
   return(PSUSamplingParametersData)
 }
 
+AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, variables, DomainVariables=character(), IncludeStratumInDomain=FALSE){
+  # Estimate totals and means of all variables, and total and mean number in domain, depending on sampling parameters available (only means if only sample weights present)
+}
+
 #' @noRd
-HorvitzThompsonDomainEstimate <- function(){}
+AnalyticalPopulationEstimate <- function(StoxBioticData, PSUSamplingParametersData, AnalyticalPSUEstimateData, DomainVariables=character(), MeanOfMeans=F, IncludeStratumInDomain=FALSE){
+
+  #calculate total and means for all counts and totalvariables in AnalyticalPSUEstimateData. If MeanOfMeans, calculate mean of Means in stead.
+    
+  #estimate by stratum
+  
+  #add over strata if not stratum is included in domain
+  
+}
+
+AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, DomainVariables){
+  
+  #ratio estimate for total number in domain. Domain variables not in landings are taken to be estimated domain of interest. Additional domain variables are specified in DomainVariables
+  
+}
 
 #' @noRd
 ProbabilisticSuperIndividuals <- function(StoxBioticData, PSUSamplingParametersData, IndividualSamplingParametersData){

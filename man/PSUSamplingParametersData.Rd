@@ -36,6 +36,12 @@ Encodes information about the selection of Primary Sampling Units in multi-stage
   \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
  }
+ 
+ The Assignment encodes which identifier in sample records (e.g. \code{\link[RstoxData]{StoxBioticData}}) correspond to the SamplingUnitId
+ \describe{
+  \item{DataRecordsId}{Optional, character. The identifier in data records that correspond to SamplingUnitId}
+ }
+ This field is optional, since SamplingParameters may be subject to processing before they are assigned to data records.
 
 Optional columns may be NA.
 
@@ -43,7 +49,7 @@ The selection methods available for 'SelectionMethod' are explained here:
 \describe{
  \item{Poission}{Poission sampling. Selection is performed randomly without replacement, and each selection is performed individually. Sample size is not fixed, and 'n' represents the expected sample size.}
  \item{FSWR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen with replacement}
- \item{FSWOR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection should be specified in the 'selectionTable'}
+ \item{FSWOR}{Fixed sample size without replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection could be specified in the 'selectionTable'}
 }
 
 The SelectionProbability is defined as: The probability of selecting the sampling unit when it was selected from the population.

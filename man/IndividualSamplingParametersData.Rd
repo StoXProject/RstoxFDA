@@ -48,7 +48,7 @@ The selection methods available for 'SelectionMethod' are explained here:
 \describe{
  \item{Poission}{Poission sampling. Selection is performed randomly without replacement, and each selection is performed individually. Sample size is not fixed, and 'n' represents the expected sample size.}
  \item{FSWR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen with replacement}
- \item{FSWOR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection should be specified in the 'selectionTable'}
+ \item{FSWOR}{Fixed sample size without replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection should be specified in the 'selectionTable'}
 }
 
 The SelectionProbability is defined as: The probability of selecting the sampling unit when it was selected from the population.

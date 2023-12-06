@@ -46,7 +46,7 @@ est_total <- function(lotteryParams, lottery, stratum){
   HTtot <- sum(sample$lotteri.kg/sample$i.prob)
   HHtot <- mean(sample$lotteri.kg/(sample$lotteri.kg/kvote))*(sum(lott$lotteri.kg, na.rm=T)/kvote)
   
-  result <- data.table::data.table(lotteri=lottery, stratum=stratum, totalFrame=totalFrame, kvote=kvote, HTtot=HTtot, n=nrow(sample), RelErrHTFrame=(HTtot-totalFrame)/totalFrame)
+  result <- data.table::data.table(lotteri=lottery, stratum=stratum, totalFrame=totalFrame, kvote=kvote, HTtot=HTtot, kapasitet=kapasitet, n=nrow(sample), RelErrHTFrame=(HTtot-totalFrame)/totalFrame)
   return(result)
 }
 
