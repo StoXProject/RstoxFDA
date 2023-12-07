@@ -1,3 +1,6 @@
+# RstoxFDA v1.3-9002
+* Fixed issue with PlotMeanWeightAtAge and PlotMeanLengthAtAge that would not plot mean values for configurations with no grouping variables
+
 # RstoxFDA v1.2.1-9001
 * Fixed issue where the DefineCarNeighbours would format column headers differently depending on the chosen DefinitionMethods. The column header 'CarValue' is now consistently written in the singular form, which means that output from the DefinitionMethod 'StratumPolygon' has changed, and the json schema for CarNeighbours has changed.
 * Fixed the behavior of AddStratumStoxLanding so that it assigns area NA, rather than halting with error, when positions cannot be assigned to an area.
