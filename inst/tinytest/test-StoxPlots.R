@@ -16,6 +16,9 @@ MeanLengthReport <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeFlat, Decimals = 4
 RstoxFDA:::PlotMeanLengthAtAge(MeanLengthReport)
 expect_error(RstoxFDA:::PlotMeanLengthAtAge(catchAtAgeFlat), "Malformed argument: 'ReportFdaLengthAtAgeData'")
 
+# test based on reported bug
+mwal <- readRDS(system.file("testresources", "meanWeightReportIssue.rds", package = "RstoxFDA"))
+RstoxFDA:::PlotMeanWeightAtAge(mwal)
 
 #
 # test traceplot
