@@ -1,7 +1,7 @@
 designParamsFile <- system.file("testresources", "lotteryParameters", "lotteryDesignNSH.txt", package="RstoxFDA")
 
 #regular read:
-designParams <- RstoxFDA::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFile)
+designParams <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFile)
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParams))
 expect_equal(nrow(designParams$SelectionTable), 64)
 expect_equal(nrow(designParams$SampleTable), 1)
@@ -11,8 +11,8 @@ expect_equal(sum(designParams$SelectionTable$HTsamplingWeight), 1)
 expect_equal(sum(designParams$SelectionTable$HHsamplingWeight), 1)
 
 # test assignment to data
-expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "MissingAtRandom"))
-designParamsCorrected <- RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "HaulKey", "MissingAtRandom")
+expect_error(RstoxFDA:::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "MissingAtRandom"))
+designParamsCorrected <- RstoxFDA:::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "HaulKey", "MissingAtRandom")
 expect_equal(sum(designParamsCorrected$SelectionTable$HTsamplingWeight),1)
 expect_equal(sum(designParamsCorrected$SelectionTable$HHsamplingWeight),1)
 #HT should be approximately the same after non-response correction
@@ -22,7 +22,7 @@ expect_true(abs((mean(1/designParamsCorrected$SelectionTable$InclusionProbabilit
 
 #define from data
 suppressWarnings(StoxBioticData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic(system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA"))))
-designParamsSB <- RstoxFDA::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
+designParamsSB <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsSB))
 #compare names of output with stratification variables to output without
 
@@ -42,14 +42,14 @@ ds$Individual$IndividualRoundWeight[rep(c(TRUE,FALSE), nrow(ds$Individual)/2)] <
 ds$Sample$CatchFractionNumber[is.na(ds$Sample$CatchFractionNumber)] <- 1000
 
 #Define Individual design, SRS
-expect_error(DefineIndividualSamplingParameters(NULL, ds, "SRS"))
-srs <- DefineIndividualSamplingParameters(NULL, ds, "SRS", c("IndividualAge", "IndividualTotalLength", "IndividualRoundWeight"))
+expect_error(RstoxFDA:::DefineIndividualSamplingParameters(NULL, ds, "SRS"))
+srs <- RstoxFDA:::DefineIndividualSamplingParameters(NULL, ds, "SRS", c("IndividualAge", "IndividualTotalLength", "IndividualRoundWeight"))
 expect_true(RstoxFDA:::is.IndividualSamplingParametersData(srs))
 weights <- srs$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
 expect_true(all(abs(weights$meanN-1) < 1e-6))
 #Define Individual design, Length stratified
-expect_error(DefineIndividualSamplingParameters(NULL, ds, "LengthStratified", c("IndividualAge", "IndividualTotalLength", "IndividualRoundWeight"), LengthInterval = 5), "'IndividualTotalLength' may not be among the variables in 'Parameters' for length-stratified sampling.")
-ls<-DefineIndividualSamplingParameters(NULL, ds, "LengthStratified", c("IndividualAge", "IndividualRoundWeight"), LengthInterval = 5)
+expect_error(RstoxFDA:::DefineIndividualSamplingParameters(NULL, ds, "LengthStratified", c("IndividualAge", "IndividualTotalLength", "IndividualRoundWeight"), LengthInterval = 5), "'IndividualTotalLength' may not be among the variables in 'Parameters' for length-stratified sampling.")
+ls<-RstoxFDA:::DefineIndividualSamplingParameters(NULL, ds, "LengthStratified", c("IndividualAge", "IndividualRoundWeight"), LengthInterval = 5)
 expect_true(RstoxFDA:::is.IndividualSamplingParametersData(ls))
 weights <- ls$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
 expect_true(all(abs(weights$meanN-1) < 1e-6))
@@ -57,7 +57,7 @@ expect_true(all(abs(weights$meanN-1) < 1e-6))
 #Define Individual design, stratified, setting strata by length as in Length stratified
 bioStrat <- ds
 bioStrat$Individual$LStrat <- as.character(cut(bioStrat$Individual$IndividualTotalLength, seq(0,max(bioStrat$Individual$IndividualTotalLength)+5,5), right = F))
-ss<-DefineIndividualSamplingParameters(NULL, bioStrat, "Stratified", c("IndividualAge", "IndividualRoundWeight"), StratificationColumns = c("LStrat"))
+ss<-RstoxFDA:::DefineIndividualSamplingParameters(NULL, bioStrat, "Stratified", c("IndividualAge", "IndividualRoundWeight"), StratificationColumns = c("LStrat"))
 expect_true(RstoxFDA:::is.IndividualSamplingParametersData(ss))
 weights <- ss$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
 expect_true(all(abs(weights$meanN-1) < 1e-6))
@@ -69,5 +69,5 @@ expect_equal(nrow(ss$SampleTable), nrow(ls$SampleTable))
 
 #test estimate with HansenHurwitzDomainEstimate
 data <- RstoxFDA::CatchLotteryExample
-indSampling <- RstoxFDA::DefineIndividualSamplingParameters(NULL, data, "SRS", c("IndividualAge"))
+indSampling <- RstoxFDA:::DefineIndividualSamplingParameters(NULL, data, "SRS", c("IndividualAge"))
 #domainEst <- HansenHurwitzDomainEstimate()

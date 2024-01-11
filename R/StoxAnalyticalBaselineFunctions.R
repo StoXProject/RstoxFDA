@@ -153,7 +153,7 @@ parseDesignParameters <- function(filename){
 #' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling.
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{PSUSamplingParametersData}}
-#' @export
+#' @noRd
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
@@ -318,7 +318,7 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
 #' @param StratificationColumns names of columns in the Individual table of StoxBioticData that identify strata for Stratified selection (DefinitionMethod 'Stratified').
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}} where SampleId refers to the variable 'Haul' on the 'Haul' table in StoxBioticData, and IndividualId refers to the variable 'Individual' on the 'Individual' table of StoxBioticData.
-#' @export
+#' @noRd
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
@@ -441,7 +441,7 @@ DefineSamplingHierarchy <- function(IndividualSamplingParametersData, Hierarchy=
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticData, DataRecordsId, DefinitionMethod=c("MissingAtRandom")){
   checkMandatory(PSUSamplingParametersData, "PSUSamplingParametersData")
   checkMandatory(StoxBioticData, "StoxBioticData")
