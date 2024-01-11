@@ -1,3 +1,7 @@
+# ECA tests are not run for platforms where Reca is not available from StoX repositories.
+env<-Sys.getenv()
+if (!("_R_CHECK_FORCE_SUGGESTS_" %in% names(env)) || as.logical(env[["_R_CHECK_FORCE_SUGGESTS_"]])){
+
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
 StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
@@ -145,4 +149,4 @@ errorPrep$GlobalParameters$delta.age <- .01
 errorPrep$GlobalParameters$lgamodel <- "non-linear"
 expect_error(RstoxFDA:::sanitizeRecaInput(GlobalParameters=errorPrep$GlobalParameters, AgeLength=errorPrep$AgeLength, WeightLength=errorPrep$WeightLength, stage="parameterize"), "Some required global parameters are NA: thin")
 
-
+}

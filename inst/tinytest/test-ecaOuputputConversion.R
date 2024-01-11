@@ -1,3 +1,8 @@
+
+# ECA tests are not run for platforms where Reca is not available from StoX repositories.
+env<-Sys.getenv()
+if (!("_R_CHECK_FORCE_SUGGESTS_" %in% names(env)) || as.logical(env[["_R_CHECK_FORCE_SUGGESTS_"]])){
+
 #context("test-StoxAnalysisFunctions: tests RecaResult conversion")
 ecaResult <- readRDS(system.file("testresources","ecaResult.rds", package="RstoxFDA"))
 
@@ -69,4 +74,5 @@ RecaData <- RstoxFDA::convertRecaData(prep, nSamples = 10, burnin = 50, thin=1, 
 sanitizeRecaInput(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters, stage="parameterize")
 est<-Reca::eca.estimate(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters)
 RstoxFDA:::removeTempDirReca(fpath)
+}
 
