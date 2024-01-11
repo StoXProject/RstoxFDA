@@ -1,8 +1,7 @@
 # Tests StoX analysis functions that interfaces Reca.
-# ECA tests are not run for platforms where Reca is not available from StoX repositories.
+# ECA tests are only run if Reca is installed.
 
-env<-Sys.getenv()
-if (!("_R_CHECK_FORCE_SUGGESTS_" %in% names(env)) || as.logical(env[["_R_CHECK_FORCE_SUGGESTS_"]])){
+if (length(system.file(package="Reca"))>0){
   #context("Test ParameterizeRecaModels cache")
   StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
   StoxBioticData <- readRDS(StoxBioticFile)

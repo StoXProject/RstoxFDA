@@ -1,6 +1,7 @@
 # ECA tests are not run for platforms where Reca is not available from StoX repositories.
-env<-Sys.getenv()
-if (!("_R_CHECK_FORCE_SUGGESTS_" %in% names(env)) || as.logical(env[["_R_CHECK_FORCE_SUGGESTS_"]])){
+# ECA tests are only run if Reca is installed.
+
+if (length(system.file(package="Reca"))>0){
   
 fishdata <- data.table::as.data.table(readRDS(system.file(package = "RstoxFDA", "testresources", "fishdata.rda")))
 landings <- data.table::as.data.table(readRDS(system.file(package = "RstoxFDA", "testresources", "landings.rda")))
