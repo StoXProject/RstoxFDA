@@ -4,6 +4,7 @@ on:
       - master
   pull_request:
     branches:
+      - testing
       - develop
 
 name: test-coverage
