@@ -71,7 +71,7 @@ prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEff
 
 fpath <- RstoxFDA:::makeTempDirReca()
 RecaData <- RstoxFDA::convertRecaData(prep, nSamples = 10, burnin = 50, thin=1, resultdir = fpath, delta.age = .001, fitfile = "fit", seed = 42, lgamodel = "log-linear")
-sanitizeRecaInput(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters, stage="parameterize")
+RstoxFDA::sanitizeRecaInput(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters, stage="parameterize")
 
 est<-RstoxFDA:::eca.estimate(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters)
 RstoxFDA:::removeTempDirReca(fpath)
