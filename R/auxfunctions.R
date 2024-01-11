@@ -131,3 +131,13 @@ deprecationWarning <- function(functionName, deprecationTime, message=NULL){
   }
   stoxWarning(warningstring)
 }
+
+#' Construct truncated vector of strings with aal elements more than maxsize replaced by a single character  "..."
+#' @noRd
+truncateStringVector <- function(missing, maxsize=5){
+  
+  if (length(missing)>maxsize){
+    missing <- c(missing[1:maxsize], "...")
+  }
+  return(missing)
+}
