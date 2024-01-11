@@ -724,7 +724,7 @@ PlotMeanVariableAtAge <- function(ReportFdaVariableAtAgeData, tableName="MeanWei
   if (nrow(ReportFdaVariableAtAgeData$GroupingVariables) == 0){
 
     pl <- ggplot2::ggplot(ReportFdaVariableAtAgeData[[tableName]], ggplot2::aes(group=1)) + 
-      ggplot2::geom_line(ggplot2::aes(x=.data[["AgeGroup"]], y=variable), linetype="solid") +
+      ggplot2::geom_line(ggplot2::aes(x=.data[["AgeGroup"]], y=.data[[variable]]), linetype="solid") +
       ggplot2::geom_line(ggplot2::aes(x=.data[["AgeGroup"]], y=.data[["High"]]), linetype="dashed") +
       ggplot2::geom_line(ggplot2::aes(x=.data[["AgeGroup"]], y=.data[["Low"]]), linetype="dashed")
   }
