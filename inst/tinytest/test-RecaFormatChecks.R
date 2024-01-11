@@ -1,7 +1,7 @@
 # ECA tests are not run for platforms where Reca is not available from StoX repositories.
 # ECA tests are only run if Reca is installed.
 
-if (length(system.file(package="Reca"))>0){
+if (nchar(system.file(package="Reca"))>0){
 
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)

@@ -1108,3 +1108,9 @@ rEcaDataReport <- function(samples, landings, covariates){
   out <- data.table::as.data.table(out)
   return(out)
 }
+
+#' Runs Reca::eca.estimate. Provided so that tinytest unittest can be implemented in a way that is dependent on Reca being available
+#' @noRd
+eca.estimate <- function(AgeLength, WeightLength, Landings, GlobalParameters){
+  return(Reca::eca.estimate(AgeLength, WeightLength, Landings, GlobalParameters))
+}
