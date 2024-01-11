@@ -33,11 +33,11 @@ assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Str
   flatStox$SamplingUnitId <- flatStox[[SamplingUnitId]]
   flatStox$Order <- as.numeric(NA)
   
-  CommonSelectionData <- flatStox[,list(InclusionProbability=as.numeric(NA), HTsamplingWeight=1/length(unique(SamplingUnitId)), SelectionProbability=as.numeric(NA), HHsamplingWeight=as.numeric(NA), SelectionDescription=as.character(NA)), by=c("Stratum")]
+  CommonSelectionData <- flatStox[,list(InclusionProbability=as.numeric(NA), HTsamplingWeight=1/length(unique(get("SamplingUnitId"))), SelectionProbability=as.numeric(NA), HHsamplingWeight=as.numeric(NA), SelectionDescription=as.character(NA)), by=c("Stratum")]
   selectionUnits <- flatStox[,.SD, .SDcol=c("Stratum", "Order", "SamplingUnitId")]
   selectionUnits <- selectionUnits[!duplicated(selectionUnits$SamplingUnitId),]
   selectionTable <- merge(flatStox[,.SD, .SDcol=c("Stratum", "Order", "SamplingUnitId")], CommonSelectionData)
-  sampleTable <- flatStox[,list(N=as.numeric(NA), n=length(unique(SamplingUnitId)), SelectionMethod="FSWR", FrameDescription=as.character(NA)), by=c("Stratum")]
+  sampleTable <- flatStox[,list(N=as.numeric(NA), n=length(unique(get("SamplingUnitId"))), SelectionMethod="FSWR", FrameDescription=as.character(NA)), by=c("Stratum")]
   sampleTable <- sampleTable[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
   stratificationTable <- flatStox[,.SD,.SDcol=c("Stratum", StratificationColumns)]
   stratificationTable <- stratificationTable[!duplicated(stratificationTable$Stratum),]
@@ -184,7 +184,7 @@ collapseStrataIndividualDesignParamaters <- function(designParam, collapseVariab
     stop("The following are specified as strata to collapse, but are not StratificationVariables:", paste(missing, collapse=","))
   }
   
-  Nstrata <- designParam$StratificationVariables[,list(Nstrata=.N), by="SampleId"]
+  Nstrata <- designParam$StratificationVariables[,list(Nstrata=get(".N")), by="SampleId"]
   if (all(Nstrata$Nstrata==1)){
     return(designParam)
   }
@@ -203,19 +203,19 @@ collapseStrataIndividualDesignParamaters <- function(designParam, collapseVariab
   designParam$SampleTable$Stratum <- designParam$StratificationVariables$Stratum[sampleStratumIndex]
   designParam$SelectionTable$Stratum <- designParam$StratificationVariables$Stratum[selectionStratumIndex]
   
-  NselectionMethods <- designParam$SampleTable[,list(NselMet=length(unique(SelectionMethod))), by=c("SampleId", "Stratum")]
+  NselectionMethods <- designParam$SampleTable[,list(NselMet=length(unique(get("SelectionMethod")))), by=c("SampleId", "Stratum")]
   if (any(NselectionMethods$NselMet>1)){
     stop("Cannot collapse strate with heterogenous selection methods")
   }
   
-  weights <- designParam$SelectionTable[,list(HTsum=sum(1/InclusionProbability), HHsum=sum(1/SelectionProbability)),by=c("SampleId", "Stratum")]
+  weights <- designParam$SelectionTable[,list(HTsum=sum(1/get("InclusionProbability")), HHsum=sum(1/get("SelectionProbability"))),by=c("SampleId", "Stratum")]
   designParam$SelectionTable <- merge(designParam$SelectionTable, weights, by=c("SampleId", "Stratum"))
   designParam$SelectionTable$HTsamplingWeight <- 1/(designParam$SelectionTable$InclusionProbability * designParam$SelectionTable$HTsum)
   designParam$SelectionTable$HHsamplingWeight <- 1/(designParam$SelectionTable$SelectionProbability * designParam$SelectionTable$HHsum)
   designParam$SelectionTable$HHsum <- NULL
   designParam$SelectionTable$HTsum <- NULL
   
-  designParam$SampleTable <- designParam$SampleTable[,list(N=sum(N), n=sum(n), SelectionMethod=SelectionMethod[1], SampleDescription=as.character(NA)), by=c("SampleId", "Stratum")]
+  designParam$SampleTable <- designParam$SampleTable[,list(N=sum(get("N")), n=sum(get("n")), SelectionMethod=get("SelectionMethod")[1], SampleDescription=as.character(NA)), by=c("SampleId", "Stratum")]
   designParam$StratificationVariables <- designParam$StratificationVariables[!duplicated(paste(designParam$StratificationVariables$SampleId, designParam$StratificationVariables$Stratum)),.SD, .SDcol=c("SampleId", "Stratum", retain)]
   
   return(designParam)
@@ -254,8 +254,8 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
   stratificationTable <- individuals[!duplicated(paste(individuals$SampleId, individuals$Stratum)), .SD,.SDcol=c("SampleId", "Stratum", StratificationColumns)]
   
   individuals$Sampled <- hasParam
-  stratumTotals <- individuals[,list(totalInStratum=.N, sampledInStratum=sum(Sampled)), by=c("Stratum", "SampleId")]
-  sampleTotals <- individuals[,list(totalInSample=.N), by=c("SampleId")]
+  stratumTotals <- individuals[,list(totalInStratum=get(".N"), sampledInStratum=sum(get("Sampled"))), by=c("Stratum", "SampleId")]
+  sampleTotals <- individuals[,list(totalInSample=get(".N")), by=c("SampleId")]
   stratumFraction <- merge(stratumTotals, sampleTotals, by="SampleId")
   stratumFraction$StratumFraction <- stratumFraction$totalInStratum / stratumFraction$totalInSample
   individuals <- merge(individuals, stratumFraction, by=c("SampleId", "Stratum"))
@@ -465,7 +465,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
   }
   
   if (DefinitionMethod == "MissingAtRandom"){
-    responsePropensity <- PSUSamplingParametersData$SelectionTable[,list(ResponsePropensity=sum(!is.na(SamplingUnitId))/.N), by=c("Stratum")]
+    responsePropensity <- PSUSamplingParametersData$SelectionTable[,list(ResponsePropensity=sum(!is.na(get("SamplingUnitId")))/get(".N")), by=c("Stratum")]
     
     PSUSamplingParametersData$SampleTable$n <- PSUSamplingParametersData$SampleTable$n * responsePropensity$ResponsePropensity[match(PSUSamplingParametersData$SampleTable$Stratum, responsePropensity$Stratum)]
     
@@ -476,7 +476,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
     PSUSamplingParametersData$SelectionTable <- PSUSamplingParametersData$SelectionTable[!is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId)]
     
     #correct normalized sampling weights
-    weights <- PSUSamplingParametersData$SelectionTable[,list(HHsum=sum(HHsamplingWeight), HTsum=sum(HTsamplingWeight)), by=c("Stratum")]
+    weights <- PSUSamplingParametersData$SelectionTable[,list(HHsum=sum(get("HHsamplingWeight")), HTsum=sum(get("HTsamplingWeight"))), by=c("Stratum")]
     PSUSamplingParametersData$SelectionTable$HTsamplingWeight <- PSUSamplingParametersData$SelectionTable$HTsamplingWeight / weights$HTsum[match(PSUSamplingParametersData$SelectionTable$Stratum, weights$Stratum)]
     PSUSamplingParametersData$SelectionTable$HHsamplingWeight <- PSUSamplingParametersData$SelectionTable$HHsamplingWeight / weights$HHsum[match(PSUSamplingParametersData$SelectionTable$Stratum, weights$Stratum)]
     
