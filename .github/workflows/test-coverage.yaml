@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - master
+      - testing
   pull_request:
     branches:
       - testing

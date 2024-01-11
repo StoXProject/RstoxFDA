@@ -1,7 +1,7 @@
 
 # ECA tests are only run if Reca is installed.
 
-if (length(system.file(package="Reca"))>0){
+if (nchar(system.file(package="Reca"))>0){
 
 #context("test-StoxAnalysisFunctions: tests RecaResult conversion")
 ecaResult <- readRDS(system.file("testresources","ecaResult.rds", package="RstoxFDA"))
@@ -72,7 +72,8 @@ prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEff
 fpath <- RstoxFDA:::makeTempDirReca()
 RecaData <- RstoxFDA::convertRecaData(prep, nSamples = 10, burnin = 50, thin=1, resultdir = fpath, delta.age = .001, fitfile = "fit", seed = 42, lgamodel = "log-linear")
 sanitizeRecaInput(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters, stage="parameterize")
-est<-Reca::eca.estimate(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters)
+
+est<-RstoxFDA:::eca.estimate(RecaData$AgeLength, RecaData$WeightLength, RecaData$Landings, RecaData$GlobalParameters)
 RstoxFDA:::removeTempDirReca(fpath)
 }
 

@@ -7,7 +7,7 @@ library(data.table)
 
 # ECA tests are only run if Reca is installed.
 
-if (length(system.file(package="Reca"))>0){
+if (nchar(system.file(package="Reca"))>0){
   
 
 stoxRobj <- readRDS(system.file(package = "RstoxFDA", "testresources", "oldstoxprepreca"))

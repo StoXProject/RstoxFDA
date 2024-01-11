@@ -182,7 +182,7 @@ jobs:
         shell: Rscript {0}
 
       # turn off testing of suggestions for configurations where Reca is not provided in StoX package repositories
-      - name: Check without suggested dependencies
+      - name: Check without suggest-dependencies
         if: runner.os == 'macOS' && (matrix.config.r== 'next' || matrix.config.r== '4.3')
         env:
           _R_CHECK_CRAN_INCOMING_: false
@@ -190,7 +190,7 @@ jobs:
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
         shell: Rscript {0}
 
-      - name: Check with suggested dependencies
+      - name: Check with suggest-dependencies
         if: runner.os != 'macOS' || (matrix.config.r!= 'next' && matrix.config.r!= '4.3')
         env:
           _R_CHECK_CRAN_INCOMING_: false
