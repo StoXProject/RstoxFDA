@@ -16,6 +16,257 @@ is.Date <- function(date){
   return(FALSE)
 }
 
+#' PSU Sampling Design Parameters
+#' 
+#' Sampling parameters for selection of Primary Sampling Units
+#' 
+#' @details 
+#'  Encodes information about the selection of Primary Sampling Units in multi-stage sampling, used in analytical design based estimation.
+#'  Information is encoded in three tables.
+#'  
+#'  The SampleTable encodes information about the sample of sampling units:
+#'  \describe{
+#'   \item{Stratum}{Mandatory, chr: Identifies the stratum the sample is taken from. Treat unstratified sample as single-stratum sampling (provide only one stratum.}
+#'   \item{N}{Optional, num: The total number of PSUs in Stratum (total available for selection, not total selected)}
+#'   \item{n}{Optional, num: The number of PSUs selected from the Stratum}
+#'   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}
+#'   \item{FrameDescription}{Optional, chr: Free text field describing the sampling frame.}
+#'  }
+#'  
+#'  The SelectionTable encodes information abut the selection of sampling units for sampling:
+#'  \describe{
+#'   \item{Stratum}{Mandatory, chr: Identifies the stratum the PSU is taken from.}
+#'   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
+#'   \item{SamplingUnitId}{Optional, chr: Identifes PSU. NA encodes non-response}
+#'   \item{InclusionProbability}{Optional, num: The inclusion probability of the PSU}
+#'   \item{HTsamplingWeight}{Optional, num: The normalized Horvitz-Thompson sampling weight of the PSU}
+#'   \item{SelectionProbability}{Optional, num: The selection probability of the PSU}
+#'   \item{HHsamplingWeight}{Optional, num: The normalized Hansen-Hurwitz sampling weight of the PSU}
+#'   \item{SelectionDescription}{Optional, chr: Free text description of the PSU.}
+#'  }
+#'  
+#'  The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
+#'  \describe{
+#'   \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
+#'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
+#'  }
+#'  
+#'  The Assignment encodes which identifier in sample records (e.g. \code{\link[RstoxData]{StoxBioticData}}) correspond to the SamplingUnitId
+#'  \describe{
+#'   \item{DataRecordsId}{Optional, character. The identifier in data records that correspond to SamplingUnitId}
+#'  }
+#'  This field is optional, since SamplingParameters may be subject to processing before they are assigned to data records.
+#' 
+#' Optional columns may be NA.
+#' 
+#' The selection methods available for 'SelectionMethod' are explained here:
+#' \describe{
+#'  \item{Poission}{Poission sampling. Selection is performed randomly without replacement, and each selection is performed individually. Sample size is not fixed, and 'n' represents the expected sample size.}
+#'  \item{FSWR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen with replacement}
+#'  \item{FSWOR}{Fixed sample size without replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection could be specified in the 'selectionTable'}
+#' }
+#' 
+#' The SelectionProbability is defined as: The probability of selecting the sampling unit when it was selected from the population.
+#' The HHsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sampled unit when estimating with the Hansen-Hurwitz strategy: 1 / (SelectionProbability*Q) , where Q is the sum of the reciprocal of the SelectionProbabilites for the sampled units. For equal probability sampling with replacement, this is simply 1/n, where n i sample size.
+#' The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
+#' The HTsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sample when estimating with the Horvitz-Thompson strategy: 1 / (InclusionProbability*P), where P is the sum of the reciprocal of the InclusionProbabilites for the sampled units. For equal probability sampling without replacement, this is simply 1/n, where n is sample size.
+#' 
+#' @name PSUSamplingParametersData
+#' @concept Data types
+#' @concept Analytical estimation
+#'
+NULL
+
+#' Check if table is correctly formatted PSU Sampling Parameters Data
+#' @param table \code{\link[RstoxFDA]{PSUSamplingParametersData}}
+#' @return validity
+#' @concept Data types
+#' @noRd
+is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
+  if (!is.list(PSUSamplingParametersData)){
+    return(FALSE)
+  }
+  if (!all(sapply(PSUSamplingParametersData, data.table::is.data.table))){
+    return(FALSE)
+  }
+  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables", "Assignment") %in% names(PSUSamplingParametersData))){
+    return(FALSE)
+  }
+  if (nrow(PSUSamplingParametersData$Assignment)>1){
+    return(FALSE)
+  }
+  if (!("DataRecordsId" %in% names(PSUSamplingParametersData$Assignment))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum", "N", "n", "SelectionMethod", "FrameDescription") %in% names(PSUSamplingParametersData$SampleTable))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "HHsamplingWeight", "SelectionDescription") %in% names(PSUSamplingParametersData$SelectionTable))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum") %in% names(PSUSamplingParametersData$StratificationVariables))){
+    return(FALSE)
+  }
+  if (any(duplicated(PSUSamplingParametersData$SampleTable$Stratum))){
+    return(FALSE)
+  }
+  #test that mandatory fields are not NA.
+  if (any(is.na(PSUSamplingParametersData$SampleTable$Stratum))){
+    return(FALSE)
+  }
+  if (any(is.na(PSUSamplingParametersData$SampleTable$SelectionMethod))){
+    return(FALSE)
+  }
+  if (any(is.na(PSUSamplingParametersData$SelectionTable$Stratum))){
+    return(FALSE)
+  }
+  if (any(is.na(PSUSamplingParametersData$StratificationVariables$Stratum))){
+    return(FALSE)
+  }
+  for (n in names(PSUSamplingParametersData$StratificationVariables)){
+    if (any(is.na(PSUSamplingParametersData$StratificationVariables[[n]]))){
+      return(FALSE)
+    }
+  }
+  
+  if (ncol(PSUSamplingParametersData$StratificationVariables) > 1){
+    stratificationVariableStrings <- apply(PSUSamplingParametersData$StratificationVariables[,.SD, .SDcol=names(PSUSamplingParametersData$StratificationVariables[names(PSUSamplingParametersData$StratificationVariables)!="Stratum"])], 1, paste, collapse="/")
+    duplicatedStrata <- PSUSamplingParametersData$StratificationVariables$Stratum[duplicated(stratificationVariableStrings)]
+    
+    if (length(duplicatedStrata)>0){
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+}
+
+#' Individual Sub-Sampling Design Parameters
+#' 
+#' Sampling parameters for selection of a sub-sample of individuals
+#' 
+#' @details 
+#'  Encodes information about the selection of a sub-sample of observations from individuals, used in analytical design based estimation.
+#'  A sub-sample is simply a sample of a sample. This data type is intended to represent the final stage of sampling in multi-stage sampling,
+#'  and therefor has a reference to the Sample it was taken from ('SampleId'). Apart from that there is no principal difference from single
+#'  stage sampling. All stratification is specified within the sample identifed by 'SampleId', and all sampling probabilites are specified within strata.
+#'  
+#'  The SampleTable encodes information about the sample of sampling units:
+#'  \describe{
+#'   \item{SampleId}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
+#'   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum the sub-sample is taken from.  Treat unstratified sample as single-stratum sampling (provide only one stratum.}
+#'   \item{N}{Optional, num: The total number of individuals in Stratum. For unstratified sampling, the total number of individuals in the sample the sub-sample is taken from.}
+#'   \item{n}{Optional, num: The number of individuals selected from the Stratum}
+#'   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}
+#'   \item{SampleDescription}{Optional, chr: Free text field describing the sample that is subsampled.}
+#'  }
+#'  
+#'  The SelectionTable encodes information abut the selection of sampling units for sampling:
+#'  \describe{
+#'   \item{SampleId}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
+#'   \item{Stratum}{Mandatory, chr: Identifies the within sample-stratum the individual is taken from.}
+#'   \item{Order}{Optional, num: Identifes the order of seleciton. May be necessary for inference when selections are not independent (e.g. FSWOR)}
+#'   \item{IndividualId}{Optional, chr: Identifes individual. NA encodes non-response / observation failure}
+#'   \item{InclusionProbability}{Optional, num: The inclusion probability of the individual}
+#'   \item{HTsamplingWeight}{Optional, num: The normalized Horvitz-Thompson sampling weight of the individual}
+#'   \item{SelectionProbability}{Optional, num: The selection probability of the individual}
+#'   \item{HHsamplingWeight}{Optional, num: The normalized Hansen-Hurwitz sampling weight of the individual}
+#'   \item{SelectionDescription}{Optional, chr: Free text description of sampling unit.}
+#'  }
+#'  
+#'  The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
+#'  \describe{
+#'   \item{SampleId}{Mandatory, chr: Identifies the sample the stratification applies to}
+#'   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
+#'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
+#'  }
+#' 
+#' Optional columns may be NA.
+#' 
+#' The selection methods available for 'SelectionMethod' are explained here:
+#' \describe{
+#'  \item{Poission}{Poission sampling. Selection is performed randomly without replacement, and each selection is performed individually. Sample size is not fixed, and 'n' represents the expected sample size.}
+#'  \item{FSWR}{Fixed sample size with replacement. A random selection of a fixed sample size 'n' is chosen with replacement}
+#'  \item{FSWOR}{Fixed sample size without replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection should be specified in the 'selectionTable'}
+#' }
+#' 
+#' The SelectionProbability is defined as: The probability of selecting the sampling unit when it was selected from the population.
+#' The HHsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sampled unit when estimating with the Hansen-Hurwitz strategy: 1 / (SelectionProbability*Q) , where Q is the sum of the reciprocal of the SelectionProbabilites for the sampled units. For equal probability sampling with replacement, this is simply 1/n, where n i sample size.
+#' The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
+#' The HTsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sample when estimating with the Horvitz-Thompson strategy: 1 / (InclusionProbability*P), where P is the sum of the reciprocal of the InclusionProbabilites for the sampled units. For equal probability sampling without replacement, this is simply 1/n, where n is sample size.
+#' 
+#' @name IndividualSamplingParametersData
+#' @concept Data types
+#' @concept Analytical estimation
+#'
+NULL
+
+#' Check if table is correctly formatted Individual Sampling Parameters Data
+#' @param table \code{\link[RstoxFDA]{IndividualSamplingParametersData}}
+#' @return validity
+#' @concept Data types
+#' @noRd
+is.IndividualSamplingParametersData <- function(IndividualSamplingParametersData){
+  if (!is.list(IndividualSamplingParametersData)){
+    return(FALSE)
+  }
+  if (!all(sapply(IndividualSamplingParametersData, data.table::is.data.table))){
+    return(FALSE)
+  }
+  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables") %in% names(IndividualSamplingParametersData))){
+    return(FALSE)
+  }
+  if (!all(c("SampleId", "Stratum", "N", "n", "SelectionMethod", "SampleDescription") %in% names(IndividualSamplingParametersData$SampleTable))){
+    return(FALSE)
+  }
+  if (!all(c("SampleId", "Stratum", "Order", "IndividualId", "InclusionProbability", "HTsamplingWeight", "SelectionProbability", "HHsamplingWeight", "SelectionDescription") %in% names(IndividualSamplingParametersData$SelectionTable))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum") %in% names(IndividualSamplingParametersData$StratificationVariables))){
+    return(FALSE)
+  }
+  if (any(duplicated(paste(IndividualSamplingParametersData$SampleTable$Stratum, IndividualSamplingParametersData$SampleTable$SampleId)))){
+    return(FALSE)
+  }
+  #test that mandatory fields are not NA.
+  if (any(is.na(IndividualSamplingParametersData$SampleTable$Stratum))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$SampleTable$SampleId))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$SampleTable$SelectionMethod))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$SelectionTable$Stratum))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$SelectionTable$SampleId))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$StratificationVariables$Stratum))){
+    return(FALSE)
+  }
+  if (any(is.na(IndividualSamplingParametersData$StratificationVariables$SampleId))){
+    return(FALSE)
+  }
+  for (n in names(IndividualSamplingParametersData$StratificationVariables)){
+    if (any(is.na(IndividualSamplingParametersData$StratificationVariables[[n]]))){
+      return(FALSE)
+    }
+  }
+  
+  if (ncol(IndividualSamplingParametersData$StratificationVariables) > 2){
+    stratificationVariableStrings <- apply(IndividualSamplingParametersData$StratificationVariables[,.SD, .SDcol=names(IndividualSamplingParametersData$StratificationVariables)[!(names(IndividualSamplingParametersData$StratificationVariables) %in% c("Stratum"))]], 1, paste, collapse="/")
+    duplicatedStrata <- IndividualSamplingParametersData$StratificationVariables$Stratum[duplicated(stratificationVariableStrings)]
+    
+    if (length(duplicatedStrata)>0){
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+
+}
+
 
 #' Trip Partition
 #'

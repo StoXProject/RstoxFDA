@@ -26,8 +26,8 @@ jobs:
         # for windows and mac all builds are pushed to drat repo on merge to master (except pre-release builds), except 'next'
         
         # 2023-08-23 fails, not getting Reca. Because it is not built yet for macos and next or 4.3.
-          #- {os: macOS-latest,   r: 'next', pkgext: '.tgz'}
-          #- {os: macOS-latest,   r: '4.3', pkgext: '.tgz'}
+          - {os: macOS-latest,   r: 'next', pkgext: '.tgz'} #tested without Reca
+          - {os: macOS-latest,   r: '4.3', pkgext: '.tgz'} #tested without Reca
           - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'}
           - {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'}
           - {os: macOS-latest,   r: '4.0',     pkgext: '.tgz'}
@@ -181,15 +181,26 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      - name: Check
+      # turn off testing of suggestions for configurations where Reca is not provided in StoX package repositories
+      - name: Check without suggest-dependencies
+        if: runner.os == 'macOS' && (matrix.config.r== 'next' || matrix.config.r== '4.3')
         env:
           _R_CHECK_CRAN_INCOMING_: false
+          _R_CHECK_FORCE_SUGGESTS_ : false
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
         shell: Rscript {0}
 
-      - name: Show testthat output
+      - name: Check with suggest-dependencies
+        if: runner.os != 'macOS' || (matrix.config.r!= 'next' && matrix.config.r!= '4.3')
+        env:
+          _R_CHECK_CRAN_INCOMING_: false
+          _R_CHECK_FORCE_SUGGESTS_ : true
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
+        shell: Rscript {0}
+
+      - name: Show unit test output
         if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+        run: find check -name 'tinytest.Rout*' -exec cat '{}' \; || true
         shell: bash
 
       - name: Upload check results

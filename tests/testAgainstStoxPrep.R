@@ -5,6 +5,11 @@ library(data.table)
 # Prepare data based on StoXexport in "old" prepECA and compare results
 #
 
+# ECA tests are only run if Reca is installed.
+
+if (nchar(system.file(package="Reca"))>0){
+  
+
 stoxRobj <- readRDS(system.file(package = "RstoxFDA", "testresources", "oldstoxprepreca"))
 
 samples <- data.table(catchId = as.character(stoxRobj$StoxExport$biotic$serialnumber),
@@ -38,3 +43,4 @@ tabStox <- RstoxFDA::makeResultTableRECA(stoxRecaResults$prediction)
 
 #RstoxFDA::plotCatchAtAge(prepRecaResults$prediction, title="RecaPrep results")
 #RstoxFDA::plotCatchAtAge(stoxRecaResults$prediction, title="StoxPrep results")
+}
