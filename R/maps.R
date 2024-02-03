@@ -338,8 +338,8 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="Stra
 
 #' Writes shape files as WKT files
 #' @description
-#'  Writes \code{\link[sp]{SpatialPolygonsDataFrame}}, such as \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)
-#' @param shape \code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert
+#'  Writes \code{\link[sp]{SpatialPolygonsDataFrame}} or \code{\link[sf]{sf}} data.frames, such as \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)
+#' @param shape \code{\link[sp]{SpatialPolygonsDataFrame}} or \code{\link[sf]{sf}} data.frame stratadefinition to convert
 #' @param output filename to save output to
 #' @param namecol name of column in 'shape' that are to be used as strata names. Defaults to 'StratumName' pr the definition of \code{\link[RstoxBase]{StratumPolygon}}
 #' @concept spatial coding functions
@@ -351,7 +351,7 @@ writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
   }
   
   obj <- sf::st_as_sf(shape)
-  trans <- sf::st_transform(obj, sp::CRS("EPSG:4326"))
+  trans <- sf::st_transform(obj, sf::st_crs(4326))
   
   f<-file(output, open="w")
   
