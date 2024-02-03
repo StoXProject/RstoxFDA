@@ -1301,7 +1301,7 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
 #'  Defines an association between area codes and positions that represent that area code.
 #'  For example an area code could be associated with the centre of mass of the area, or
 #'  some other point within the area. This may be useful for providing approximate
-#'  coordinates when locations are identified by area codes. The soruce of the
+#'  coordinates when locations are identified by area codes. The soruces of the
 #'  area-position association may be a table or a appropriately formatted
 #'  polygon-definition (\code{\link[RstoxBase]{StratumPolygon}}). 
 #' 
@@ -1318,7 +1318,7 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
 #'  Definitions are extracted from a \code{\link[RstoxBase]{StratumPolygon}}:
 #'  'Area' in \code{\link[RstoxFDA]{AreaPosition}} is derived from the column 'StratumName' in \code{\link[RstoxBase]{StratumPolygon}}.
 #'  'Location' in \code{\link[RstoxFDA]{AreaPosition}} is encoded as missing.
-#'  'Latitude' and 'Longitude' in \code{\link[RstoxFDA]{AreaPosition}} are the coordinates set for each polygon in \code{\link[RstoxBase]{StratumPolygon}}.
+#'  'Latitude' and 'Longitude' in \code{\link[RstoxFDA]{AreaPosition}} are the centroids set for each polygon in \code{\link[RstoxBase]{StratumPolygon}}. Note that for oddly shaped polygons (concave polygons) the centroid may lay outside the area.
 #'  
 #' @param processData \code{\link[RstoxFDA]{AreaPosition}} as returned from this function.
 #' @param DefinitionMethod 'ResourceFile' or 'StratumPolygon', see details.
@@ -1357,7 +1357,9 @@ DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "
     if (!("StratumName" %in% names(StratumPolygon))){
       stop("'StratumPolygon' must be an RstoxBase::StratumPolygon object.")
     }
-    pos <- data.table::data.table(sp::coordinates(StratumPolygon))
+    StratumPolygon <- sf::st_as_sf(StratumPolygon)
+    #area codes are constant over geometries, so suppressing warning
+    suppressWarnings(pos <- data.table::data.table(sf::st_coordinates(sf::st_centroid(StratumPolygon))))
     names(pos) <- c("Longitude", "Latitude")
     
     stopifnot(nrow(pos)==nrow(StratumPolygon))
@@ -1388,24 +1390,23 @@ loadCarNeighboursFile <- function(FileName, encoding){
 }
 
 #' Calculate CAR neighbours from stratum polygon
+#' tolerance distance in meters in mercator projection (3395)
 #' @noRd
-calculateCarNeighbours <- function(StratumPolygon){
+calculateCarNeighbours <- function(StratumPolygon, tolerance=1){
   
   #force planar geometry for sf operations, for compability reasons
-  #consider transforming to equirectangular projection instead st_transform(sfpoly, "+proj=eqc")
-  sphergeom <- sf::sf_use_s2()
-  sf::sf_use_s2(FALSE)
   
   sfpoly <- sf::st_as_sf(StratumPolygon)
-  neighbourIndecies <- sf::st_touches(sfpoly, sfpoly)
-  
-
+  sfpoly <- sf::st_transform(sfpoly, sf::st_crs(3395))
+  neighbourIndecies <- sf::st_is_within_distance(sfpoly, sfpoly, dist=tolerance)
+  #remove self from list of neighbours
+  for (i in 1:length(neighbourIndecies)){
+    neighbourIndecies[[i]] <- neighbourIndecies[[i]][neighbourIndecies[[i]]!=i]
+  }
   carValues <- sfpoly$StratumName
   neighbours <- unlist(lapply(neighbourIndecies, function(x){paste(sfpoly$StratumName[x],collapse=",")}))
   
   carTable <- data.table::data.table(CarValue=carValues, Neighbours=neighbours)
-  
-  sf::sf_use_s2(sphergeom)
   
   return(carTable)
 }
