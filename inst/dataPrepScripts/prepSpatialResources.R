@@ -73,43 +73,30 @@ usethis::use_data(ICESareas, overwrite = T, compress = "xz")
 #
 # copied in here to introduce the dependency to nngeo
 #
+
 mergePolygonsR <- function(shape, mergeCol){
   require(nngeo)
-  if (nrow(unique(shape@data)) != length(unique(shape@data[[mergeCol]]))){
+  shape <- sf::st_as_sf(shape)
+  if (nrow(unique(sf::st_drop_geometry(shape))) != length(unique(shape[[mergeCol]]))){
     stop("All columns must have the same value for polygons that are to be merged")
   }
   
-  dd<-sf::st_as_sf(shape)
+  
   newPolygons <- NULL
-  for (newName in unique(shape@data[[mergeCol]])){
-    ff <- sf::st_union(dd[dd[[mergeCol]]==newName,])
+  for (newName in unique(shape[[mergeCol]])){
+    ff <- sf::st_union(shape[shape[[mergeCol]]==newName,])
     ff <- nngeo::st_remove_holes(ff)
-    
-    if (!any(is.na(sf::st_dimension(ff)))){
-      spat <- sf::as_Spatial(ff)
-      stopifnot(length(spat@polygons)==1)
-      spat@polygons[[1]]@ID <- newName
-      
-      if (is.null(newPolygons)){
-        newPolygons <- spat
-      }
-      else{
-        newPolygons <- rbind(newPolygons, spat)      
-      }      
-    }
-    else{
-      if (!all(is.na(sf::st_dimension(ff)))){
-        browser()
-      }
-    }
-    
+    cols <- sf::st_drop_geometry(shape[shape[[mergeCol]]==newName,])[1,]
+    ff <- cbind(cols, ff)
+    newPolygons <- rbind(newPolygons, ff)
   }
   
-  newPolygons <- sp::SpatialPolygonsDataFrame(newPolygons, shape[!duplicated(shape[[mergeCol]]),]@data, match.ID = mergeCol)
+  newPolygons <- sf::st_as_sf(newPolygons)
   
   return(newPolygons)
   
 }
+
 
 #
 # prep ICES SubArea

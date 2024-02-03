@@ -366,40 +366,30 @@ writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
 
 #' Merges polygons
 #' @description
-#'  Merge \code{\link[sp]{SpatialPolygonsDataFrame}}, such as \code{\link[RstoxBase]{StratumPolygon}}
+#'  Merge \code{\link[sf]{sf}} data table, such as \code{\link[RstoxBase]{StratumPolygon}}
 #' @details 
 #'  All columns must have the same value for all polygons that are to be merged. If columns are not consistent in this regard, an error is raised.
-#' @param shape \code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert
+#' @param shape \code{\link[sf]{sf}} data.table with stratadefinition to convert
 #' @param mergeCol name of column that should be used for merging, all polygons with the same value in this column will be merged into one.
-#' @return \code{\link[sp]{SpatialPolygonsDataFrame}} with polygons merged
+#' @return \code{\link[sf]{sf}} with polygons merged
 #' @concept spatial coding functions
 #' @export
 mergePolygons <- function(shape, mergeCol){
-  
-  if (nrow(unique(shape@data)) != length(unique(shape@data[[mergeCol]]))){
+  shape <- sf::st_as_sf(shape)
+  if (nrow(unique(sf::st_drop_geometry(shape))) != length(unique(shape[[mergeCol]]))){
     stop("All columns must have the same value for polygons that are to be merged")
   }
   
-  dd<-sf::st_as_sf(shape)
-  newPolygons <- NULL
-  for (newName in unique(shape@data[[mergeCol]])){
-    ff <- sf::st_union(dd[dd[[mergeCol]]==newName,])
-    if (!any(is.na(sf::st_dimension(ff)))){
-      spat <- sf::as_Spatial(ff)
-      stopifnot(length(spat@polygons)==1)
-      spat@polygons[[1]]@ID <- newName
-      
-      if (is.null(newPolygons)){
-        newPolygons <- spat
-      }
-      else{
-        newPolygons <- rbind(newPolygons, spat)      
-      }      
-    }
 
+  newPolygons <- NULL
+  for (newName in unique(shape[[mergeCol]])){
+    ff <- sf::st_union(shape[shape[[mergeCol]]==newName,])
+    cols <- sf::st_drop_geometry(shape[shape[[mergeCol]]==newName,])[1,]
+    ff <- cbind(cols, ff)
+    newPolygons <- rbind(newPolygons, ff)
   }
   
-  newPolygons <- sp::SpatialPolygonsDataFrame(newPolygons, shape[!duplicated(shape[[mergeCol]]),]@data, match.ID = mergeCol)
+  newPolygons <- sf::st_as_sf(newPolygons)
   
   return(newPolygons)
   

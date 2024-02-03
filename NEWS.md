@@ -1,3 +1,8 @@
+# RstoxFDA v2.0-9001
+* Converted area code resources from sp SpatialPolygons to sf data.frames, reflecting changes in RstoxBase v 2
+* Made definition of coordinates used for appendAreaCodes stricter (now always centroids)
+* Changed the signature of mergePolygons to work with sf data.frames rather than sp SpatialPolygons.
+
 # RstoxFDA v1.3-9002
 * Fixed issue with PlotMeanWeightAtAge and PlotMeanLengthAtAge that would not plot mean values for configurations with no grouping variables
 
