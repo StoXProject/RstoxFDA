@@ -178,8 +178,8 @@ convertCodes <- function(code, conversionTable, strict=T){
 #'  the centroid may not always be a good representation.
 #'  
 #'  Areas in areaDef1 that has no corresponding area in areaDef2 will be omitted from results.
-#' @param areaDef1 \code{\link[sp]{SpatialPolygonsDataFrame}} defining area codes
-#' @param areaDef2 \code{\link[sp]{SpatialPolygonsDataFrame}} defining area codes
+#' @param areaDef1 \code{\link[sf]{sf}} data.frame defining area codes
+#' @param areaDef2 \code{\link[sf]{sf}} data frame defining area codes
 #' @param areaName1 column in areaDef1 identifying the name of areas
 #' @param areaName2 column in areaDef2 identifying the name of areas
 #' @param method method for mapping area codes. See details.
@@ -212,7 +212,9 @@ areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName",
   areaDef2$areaDef2Name <- areaDef2[[areaName2]]
 
   areaDef1 <- sf::st_as_sf(areaDef1)
+  areaDef1 <- sf::st_transform(areaDef1, sf::st_crs(3395))
   areaDef2 <- sf::st_as_sf(areaDef2)
+  areaDef2 <- sf::st_transform(areaDef2, sf::st_crs(3395))
   
   if (meth == "centroids"){
     sf::st_agr(areaDef1) = "constant"
@@ -307,8 +309,10 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
     return(table)
   }
   
-  pos <- sf::st_as_sf(table, coords=c(lonName, latName), crs = sp::CRS("EPSG:4326"))
-  poly <- sf::st_make_valid(sf::st_transform(sf::st_as_sf(areaPolygons), crs = sp::CRS("EPSG:4326")))
+  pos <- sf::st_as_sf(table, coords=c(lonName, latName), crs = sf::st_crs(4326))
+  pos <- sf::st_transform(pos, crs = sf::st_crs(3395))
+  poly <- sf::st_make_valid(sf::st_transform(sf::st_as_sf(areaPolygons), crs = sf::st_crs(3395)))
+  
   
   intersects <- sf::st_intersects(pos, poly)
   

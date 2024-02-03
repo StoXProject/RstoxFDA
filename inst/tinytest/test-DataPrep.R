@@ -142,7 +142,7 @@ ICES.fdir.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::ICESareas, RstoxFDA
 expect_equal(ICES.fdir.map$'27.4.a', "42")
 
 # map fdir locations to ICES statistical rectangles, by centroids
-loc.rectangles.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::locationsFdir2018, RstoxFDA::ICESrectangles, method="centroids")
+expect_warning(loc.rectangles.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::locationsFdir2018, RstoxFDA::ICESrectangles, method="centroids"), "StoX: Overlapping polygons: Some centroids are in several polygons, area code is arbitrarily chosen.")
 expect_equal(loc.rectangles.map$'00-54', "63G5")
 expect_equal(loc.rectangles.map$'48-08', "34D9")
 expect_equal(loc.rectangles.map$'43-69', "47E0")
