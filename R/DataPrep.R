@@ -270,7 +270,7 @@ areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName",
 #'  or if some positions are missing (NA). Turning of strict-mode accepts
 #'  both these cases and the area code will be NA for these positions.
 #' @param table data.table to be annotated.
-#' @param areaPolygons \code{\link[sp]{SpatialPolygonsDataFrame}}
+#' @param areaPolygons \code{\link[sf]{sf}} data.frame
 #' @param latName name of WGS84 lat column in 'table'
 #' @param lonName name of WGS84 lon column in 'table
 #' @param colName name of column to be appended to 'table'

@@ -14,9 +14,9 @@ areaCodeConversionTable(
 )
 }
 \arguments{
-\item{areaDef1}{\code{\link[sp]{SpatialPolygonsDataFrame}} defining area codes}
+\item{areaDef1}{\code{\link[sf]{sf}} data.frame defining area codes}
 
-\item{areaDef2}{\code{\link[sp]{SpatialPolygonsDataFrame}} defining area codes}
+\item{areaDef2}{\code{\link[sf]{sf}} data frame defining area codes}
 
 \item{areaName1}{column in areaDef1 identifying the name of areas}
 

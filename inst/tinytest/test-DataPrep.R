@@ -104,7 +104,7 @@ expect_true(is.na(areaPosPost$AreaAppended[4]))
 
 #context("test-StoxBaselineFunctions: appendAreaCode wrong projection")
 
-strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("EPSG:4269"))
+strp <- RstoxFDA:::transformSpatialPolygons(strp, sf::st_crs(4269))
 RstoxFDA::appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended")
 
 #context("test-StoxBaselineFunctions: appendAreaCode non-numeric lat")
@@ -122,7 +122,7 @@ areaTabReAppended <- RstoxFDA::appendAreaCode(areaTabAppended, RstoxFDA::mainare
 expect_true(all(areaTabReAppended$Area == areaTabReAppended$Area2))
 
 #context("test-StoxBaselineFunctions: appendPosition correcting projection")
-strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("+proj=merc"))
+strp <- RstoxFDA:::transformSpatialPolygons(strp, sf::st_crs(3395))
 areaTabAppended <- RstoxFDA::appendPosition(areaTab, strp, "Area", "lat", "lon")
 areaTabReAppended <- RstoxFDA::appendAreaCode(areaTabAppended, RstoxFDA::mainareaFdir2018, "lat", "lon", "Area2")
 expect_true(all(areaTabReAppended$Area == areaTabReAppended$Area2))

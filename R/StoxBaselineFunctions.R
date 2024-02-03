@@ -113,14 +113,7 @@ ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"
       }
     }
     
-    output <- RstoxData::ReadLanding(FileNames=FileNames)
-    #This will likely be built into RstoxData::convertToLandingData soon. May refactor later.
-    if (ForceUnique){
-      output <- check_landing_duplicates(output, warn = F, fix = T)  
-    }
-    else{
-      check_landing_duplicates(output, warn=T, fix=F)  
-    }
+    output <- RstoxData::ReadLanding(FileNames=FileNames, ForceUnique = ForceUnique)
     
     return(output)
   }

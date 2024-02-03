@@ -17,7 +17,7 @@
 #' @param latCol character() identifing column in 'data' that specify latitudes (WGS84)
 #' @param lonCol character() identifing column in 'data' that specify longitudes (WGS84)
 #' @param groupCol character() identifying column in 'daat' that specify grouping of points
-#' @param areaDef \code{\link[sp]{SpatialPolygonsDataFrame}}
+#' @param areaDef \code{\link[sf]{sf}} data.frame
 #' @param areaNameCol identifies column in 'areaDef' with label names for the areas
 #' @param areaLabels logical whether to plot area labels
 #' @param xlim x axis limits in degrees longitude
@@ -145,8 +145,8 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 #'  Colors can be specified as understood by ggplot2. E.g. one of those listed by \code{\link[grDevices]{colors}}.
 #'  Linetypes can be specified as understood by ggplot2. E.g: "solid", "dashed", "dotted", "dotdash", "longdash", or "twodash".
 #'  
-#' @param areaDef1 A \code{\link[sp]{SpatialPolygonsDataFrame}}. The area definition to be plotted first ("behind" the other one)
-#' @param areaDef2 A \code{\link[sp]{SpatialPolygonsDataFrame}}. The area definition to be plotted second ("on top of" the other one)
+#' @param areaDef1 A \code{\link[sf]{sf}} data.frame. The area definition to be plotted first ("behind" the other one)
+#' @param areaDef2 A \code{\link[sf]{sf}} data.frame. The area definition to be plotted second ("on top of" the other one)
 #' @param areaNameCol1 The column in areaDef1 that provides the names to be used for any labeling of areas
 #' @param areaNameCol2 The column in areaDef2 that provides the names to be used for any labeling of areas
 #' @param areaLabels1 logical, specifying whether labels should be plotted for areaDef1. These are plotted first ("behind" any labels plotted for areaDef2)
@@ -233,7 +233,7 @@ plotAreaComparison <- function(areaDef1, areaDef2, areaNameCol1="StratumName", a
 #' @param data data.frame with quantities to be plotted
 #' @param areaCol character() identifing column in 'data' that specify area codes, must correspond to 'areaNameCol'
 #' @param quantityCol character() identifing column in 'data' that specify quantities to be plotted
-#' @param areaDef \code{\link[sp]{SpatialPolygonsDataFrame}}
+#' @param areaDef \code{\link[sf]{sf}} data.frame
 #' @param areaNameCol identifies column in 'areaDef' with label names for the areas, must correspond to 'areaCol'
 #' @param legendTitle title for the legend (explains what the quantities are)
 #' @param areaLabels logical whether to plot area labels
