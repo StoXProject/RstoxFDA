@@ -1,10 +1,11 @@
-#' replacement for sp::transform, not using rgdal
+#' replacement for sp::transform, not using rgdal,
+#' no longer returning spatial polygons.
 #' 
 #' @noRd
 transformSpatialPolygons <- function(x, CRSobj){
   obj <- sf::st_as_sf(x)
   trans <- sf::st_transform(obj, CRSobj)
-  return(sf::as_Spatial(trans))
+  return(trans)
 }
 
 #' read tab separated file
@@ -277,6 +278,7 @@ areaCodeConversionTable <- function(areaDef1, areaDef2, areaName1="StratumName",
 #' @concept spatial coding functions
 #' @export
 appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, StratumName="StratumName", strict=T){
+
   if (!data.table::is.data.table(table)){
     stop("Parameter 'table' must be a data.table")
   }
@@ -324,28 +326,24 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
   
   missingIndecies <- sapply(intersects, length) == 0
   
+  table[[colName]] <- as.character(NA)
   if (sum(!missingIndecies) > 0){
     indecies <- sapply(intersects[!missingIndecies], utils::head, n=1)
     table[[colName]][!missingIndecies] <- areaPolygons[[StratumName]][indecies]
   }
   
-  table[[colName]][missingIndecies] <- as.character(NA)
-
   return(table)
 }
 
 #' Append positions
 #' @description
 #'  Appends columns with positions to a data table, based on an area code.
-#'
-#'  Coordinates are retrieved from a \code{\link[sp]{SpatialPolygonsDataFrame}} and not calculated
-#'  the exact defintion of the coordinates depend on how the polygons were constructed.
-#'
-#'  Datum and projection is not enforced, but a warning is issued if 'areaPolygons' does not pass some
-#'  checks to verify that it is not a planar projection.
+#'  
+#'  Positions are centroids of areas. For oddly shaped (concave) areas, this can have unintended effects. 
+#'  The centroid may for instance lie outside the area.
 #'
 #' @param table data.table to be annotated.
-#' @param areaPolygons \code{\link[sp]{SpatialPolygonsDataFrame}}
+#' @param areaPolygons \code{\link[sf]{sf}} data.frames with area names identified in the column 'StratumName'
 #' @param areaName name of column that identifies the area in 'table'
 #' @param latColName name of the latitdue column to be appended to 'table'
 #' @param lonColName name of the longitude column to be appended to 'table'
@@ -354,6 +352,10 @@ appendAreaCode <- function(table, areaPolygons, latName, lonName, colName, Strat
 #' @concept spatial coding functions
 #' @export
 appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName, StratumName="StratumName"){
+
+  areaPolygons <- sf::st_as_sf(areaPolygons)
+  areaPolygons <- sf::st_transform(areaPolygons, crs=4326)
+  
   if (latColName %in% names(table)){
     stop(paste("Column name", latColName, "already exists."))
   }
@@ -364,14 +366,12 @@ appendPosition <- function(table, areaPolygons, areaName, latColName, lonColName
     stop(paste("Column name", areaName, "not found in 'table'."))
   }
 
-  if (!startsWith(sf::st_crs(sf::st_as_sf(areaPolygons))$wkt, "GEOGCRS")){
-    warning("could not verify projection of 'areaPolygons'")
-  }
+  #area names are constant across geometries, so suppress the warning
+  suppressWarnings(mapping <- data.table::data.table(mapping <- sf::st_coordinates(sf::st_centroid(areaPolygons))))
+  names(mapping) <- c(lonColName, latColName)
+  mapping[[areaName]] <- areaPolygons[[StratumName]]
   
-  mapping <- cbind(data.table::as.data.table(sp::coordinates(areaPolygons)), areaPolygons[[StratumName]])
-  names(mapping) <- c(lonColName, latColName, areaName)
-
   newTab <- merge(table, mapping, by=areaName, all.x=T)
-
+  
   return(newTab)
 }

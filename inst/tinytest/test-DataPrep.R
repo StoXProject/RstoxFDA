@@ -121,9 +121,11 @@ areaTabAppended <- RstoxFDA::appendPosition(areaTab, RstoxFDA::mainareaFdir2018,
 areaTabReAppended <- RstoxFDA::appendAreaCode(areaTabAppended, RstoxFDA::mainareaFdir2018, "lat", "lon", "Area2")
 expect_true(all(areaTabReAppended$Area == areaTabReAppended$Area2))
 
-#context("test-StoxBaselineFunctions: appendPosition wrong projection")
+#context("test-StoxBaselineFunctions: appendPosition correcting projection")
 strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("+proj=merc"))
-expect_warning(RstoxFDA::appendPosition(areaTab, strp, "Area", "lat", "lon"))
+areaTabAppended <- RstoxFDA::appendPosition(areaTab, strp, "Area", "lat", "lon")
+areaTabReAppended <- RstoxFDA::appendAreaCode(areaTabAppended, RstoxFDA::mainareaFdir2018, "lat", "lon", "Area2")
+expect_true(all(areaTabReAppended$Area == areaTabReAppended$Area2))
 
 
 # map fdir areas to ICES areas by overlap
@@ -144,7 +146,6 @@ loc.rectangles.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::locationsFdir2
 expect_equal(loc.rectangles.map$'00-54', "63G5")
 expect_equal(loc.rectangles.map$'48-08', "34D9")
 expect_equal(loc.rectangles.map$'43-69', "47E0")
-
 
 selectedRects <- RstoxFDA::ICESrectangles[
             RstoxFDA::ICESrectangles$StratumName %in% RstoxFDA::catchsamples$LEstatRect,]

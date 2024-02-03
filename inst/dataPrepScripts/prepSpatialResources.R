@@ -2,12 +2,11 @@
 # prep main areas (Fdir) as of 2018
 #
 
-mainareaFdir2018 <- sf::read_sf("~/shapefiles/fdir/hovedomraader_2018/", as_tibble = F, stringsAsFactors = F)
-mainareaFdir2018$StratumName <- sprintf("%02d", mainareaFdir2018$FID)
-mainareaFdir2018$FID <- NULL
+mainareaFdir2018 <- sf::read_sf("~/shapefiles/fdir/fdir_annotated/Hovedområder_fom_2018/", as_tibble = F, stringsAsFactors = F)
+mainareaFdir2018$StratumName <- mainareaFdir2018$HAVOMR
+mainareaFdir2018$HAVOMR <- NULL
 mainareaFdir2018 <- mainareaFdir2018[,c("StratumName", "geometry")]
-mainareaFdir2018 <- sf::st_transform(mainareaFdir2018, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
-
+mainareaFdir2018 <- sf::st_transform(mainareaFdir2018, sf::st_crs(RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat")))
 usethis::use_data(mainareaFdir2018, overwrite = T, compress = "xz")
 
 #
@@ -15,8 +14,8 @@ usethis::use_data(mainareaFdir2018, overwrite = T, compress = "xz")
 #
 
 
-mainareaFdir2017 <- sf::read_sf("~/shapefiles/fdir/hovedomraader_2017/", as_tibble = F, stringsAsFactors = F)
-mainareaFdir2017$StratumName <- sprintf("%02d", mainareaFdir2017$FID)
+mainareaFdir2017 <- sf::read_sf("~/shapefiles/fdir/fdir_annotated/Hovedområder_tom_2017/", as_tibble = F, stringsAsFactors = F)
+mainareaFdir2017$StratumName <- mainareaFdir2017$HAVOMR
 mainareaFdir2017$FID <- NULL
 mainareaFdir2017 <- mainareaFdir2017[,c("StratumName", "geometry")]
 mainareaFdir2017 <- sf::st_transform(mainareaFdir2017, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
