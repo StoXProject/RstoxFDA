@@ -134,17 +134,16 @@ usethis::use_data(ICESunit, overwrite = T, compress = "xz")
 #
 # prep ICES rectangles
 #
-ICESrectangles <- rgdal::readOGR("~/shapefiles/ICES_StatRec_mapto_ICES_Areas/", stringsAsFactors = F)
-for (i in 1:nrow(ICESrectangles)){
-  slot(slot(ICESrectangles, "polygons")[[i]], "ID") <- ICESrectangles$ICESNAME[i]
-}
+
+ICESrectangles <- sf::read_sf("~/shapefiles/ICES_StatRec_mapto_ICES_Areas/", as_tibble = F, stringsAsFactors = F)
+ICESrectangles <- sf::st_transform(ICESrectangles, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
 # some potentially useful attributes are removed, pending quality checks.
 # other versions of this file have had areas and percentages calculated from planarized coordinates.
 ICESrectangles$StratumName <- ICESrectangles$ICESNAME
 ICESrectangles$ICESNAME <- NULL
-ICESrectangles@data$ID <- NULL
-ICESrectangles@data$OBJECTID <- NULL
-ICESrectangles@data$AREA_KM2 <- NULL
+ICESrectangles$ID <- NULL
+ICESrectangles$OBJECTID <- NULL
+ICESrectangles$AREA_KM2 <- NULL
 ICESrectangles$stat_x <- NULL
 ICESrectangles$stat_y <- NULL
 ICESrectangles$Perc <- NULL
@@ -160,28 +159,27 @@ ICESrectangles$Unit <- unlist(lapply(strsplit(ICESrectangles$Area_27, ".", fixed
 ICESrectangles$Major_FA <- "27"
 ICESrectangles$Area_Full <- paste("27", ICESrectangles$Area_27, sep=".")
 ICESrectangles <- ICESrectangles[!is.na(ICESrectangles$Area_27),]
-ICESrectangles <- sp::spTransform(ICESrectangles, commonCRS)
+ICESrectangles <- ICESrectangles[,c("SOUTH", "WEST", "NORTH", "EAST", "Area_27", "StratumName", "SubArea", "Division", "SubDivision", "Unit", "Major_FA", "Area_Full", "geometry")]
 usethis::use_data(ICESrectangles, overwrite = T, compress = "xz")
 
-
-
 #prep GSA subarea
-GSAsubArea <- rgdal::readOGR("~/shapefiles/FAOsubAreas/GSAs_simplified/", stringsAsFactors = F)
-GSAsubArea <- sp::spTransform(GSAsubArea, commonCRS)
+GSAsubArea <- sf::read_sf("~/shapefiles/FAOsubAreas/GSAs_simplified/", as_tibble = F, stringsAsFactors = F)
+GSAsubArea <- sf::st_transform(GSAsubArea, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
 GSAsubArea$StratumName <- GSAsubArea$F_DIVISION
-GSAsubArea <-GSAsubArea[, c("StratumName", "F_AREA", "F_SUBAREA", "F_DIVISION")]
+GSAsubArea <-GSAsubArea[, c("StratumName", "F_AREA", "F_SUBAREA", "F_DIVISION", "geometry")]
 GSAsubArea <- RstoxFDA::mergePolygons(GSAsubArea, "F_DIVISION")
 usethis::use_data(GSAsubArea, overwrite=T, compress="xz")
 
 
 #prep kommune
-ss<-sf::st_read("~/shapefiles/geonorge/kommuner_2022/Basisdata_0000_Norge_25833_Kommuner_GML.gml", "Kommune")
+ss <- sf::read_sf("~/shapefiles/geonorge/kommuner_2022/Basisdata_0000_Norge_25833_Kommuner_GML.gml", "Kommune", as_tibble = F, stringsAsFactors = F)
 dd <- sf::st_simplify(ss, preserveTopology = T, dTolerance = 100)
-dp <- sf::as_Spatial(sf::st_transform(dd, sp::CRS(sp::wkt(RstoxFDA::mainareaFdir2018))))
-kommuner2022 <- dp[,c("kommunenummer", "navn")]
+dp <- sf::st_transform(dd, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
+kommuner2022 <- dp[,c("kommunenummer", "navn", "geometry")]
 kommuner2022$navn <- unlist(lapply(kommuner2022$navn, FUN=function(x){x[[1]]}))
 kommuner2022$StratumName <- as.character(kommuner2022$kommunenummer)
-names(kommuner2022) <- c("id", "name", "StratumName")
+kommuner2022 <- kommuner2022[,c("kommunenummer", "navn", "StratumName", "geometry")]
+names(kommuner2022) <- c("id", "name", "StratumName", "geometry")
 Encoding(kommuner2022$name) <- "latin1"
 kommuner2022$name <- iconv(
   kommuner2022$name, 
