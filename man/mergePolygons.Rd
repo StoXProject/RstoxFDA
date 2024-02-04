@@ -7,15 +7,15 @@
 mergePolygons(shape, mergeCol)
 }
 \arguments{
-\item{shape}{\code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert}
+\item{shape}{\code{\link[sf]{sf}} data.table with stratadefinition to convert}
 
 \item{mergeCol}{name of column that should be used for merging, all polygons with the same value in this column will be merged into one.}
 }
 \value{
-\code{\link[sp]{SpatialPolygonsDataFrame}} with polygons merged
+\code{\link[sf]{sf}} with polygons merged
 }
 \description{
-Merge \code{\link[sp]{SpatialPolygonsDataFrame}}, such as \code{\link[RstoxBase]{StratumPolygon}}
+Merge \code{\link[sf]{sf}} data table, such as \code{\link[RstoxBase]{StratumPolygon}}
 }
 \details{
 All columns must have the same value for all polygons that are to be merged. If columns are not consistent in this regard, an error is raised.

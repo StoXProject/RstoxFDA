@@ -5,7 +5,7 @@
 \alias{kommuner2022}
 \title{Norwegian municipalities (kommune)}
 \format{
-\code{\link[RstoxFDA]{KommunePolygons}}, which is a \code{\link[sp]{SpatialPolygonsDataFrame}}.
+\code{\link[sf]{sf}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}} (v.2).
 }
 \usage{
 data(kommuner2022)

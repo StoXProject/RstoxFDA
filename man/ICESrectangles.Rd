@@ -5,7 +5,7 @@
 \alias{ICESrectangles}
 \title{ICES rectangles}
 \format{
-\code{\link[sp]{SpatialPolygonsDataFrame}} with rectange names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+\code{\link[sf]{sf}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}} (v.2).
 }
 \usage{
 data(ICESrectangles)

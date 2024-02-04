@@ -135,13 +135,12 @@ jobs:
           rm -f '/usr/local/bin/python3-config'
           rm -f '/usr/local/bin/python3.11-config'
           export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=false # This prevents Homebrew from re-installing R, which will lead to .Platform$pkgType = "source".
-          brew install gdal
         shell: bash
 
       - name: Prepare for dependencies on Linux
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
+          sudo apt-get install libproj-dev libgeos-dev libudunits2-dev
         shell: bash
       
       - name: Install dependencies on Linux

@@ -378,7 +378,7 @@ addLogbookColumns <- function(landings, logbooks, logbookColumns, tripIdCol="tri
 #' @param valueColLand character() vector that identifies the columns in 'landings' that contain values that are to be redistributed over imputed landings (weight and value columns)
 #' @param addColumns character() vector that identifies columns in 'logbooks' that should be added to 'landings'
 #' @param activityTypes character() vector with the activity types that should be utilized from logbook records ('AKTIVITET_KODE')
-#' @param polygons \code{\link[sp]{SpatialPolygonsDataFrame}} with area names in the column 'StratumName'. If provided, area ("Hovedområde kode") will be calculated from position, rather than fetched from logbook records.
+#' @param polygons \code{\link[sf]{sf}} data.frame with area names in the column 'StratumName'. If provided, area ("Hovedområde kode") will be calculated from position, rather than fetched from logbook records.
 #' @param lineIdCol character() that identifies the column in 'landings' that contain the identifier for each line on a sales note.
 #' @return 'landings' with catches redistributed over more sales-note lines corresponding to logbook-catch records / fishing operations.
 #' @concept logbook functions

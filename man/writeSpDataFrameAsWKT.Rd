@@ -7,13 +7,13 @@
 writeSpDataFrameAsWKT(shape, output, namecol = "StratumName")
 }
 \arguments{
-\item{shape}{\code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert}
+\item{shape}{\code{\link[sp]{SpatialPolygonsDataFrame}} or \code{\link[sf]{sf}} data.frame stratadefinition to convert}
 
 \item{output}{filename to save output to}
 
 \item{namecol}{name of column in 'shape' that are to be used as strata names. Defaults to 'StratumName' pr the definition of \code{\link[RstoxBase]{StratumPolygon}}}
 }
 \description{
-Writes \code{\link[sp]{SpatialPolygonsDataFrame}}, such as \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)
+Writes \code{\link[sp]{SpatialPolygonsDataFrame}} or \code{\link[sf]{sf}} data.frames, such as \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)
 }
 \concept{spatial coding functions}

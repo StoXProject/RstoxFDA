@@ -14,7 +14,7 @@
 #'
 #' @usage data(kommuner2022)
 #'
-#' @format \code{\link[RstoxFDA]{KommunePolygons}}, which is a \code{\link[sp]{SpatialPolygonsDataFrame}}.
+#' @format \code{\link[sf]{sf}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}} (v.2).
 #'
 #' @concept area code polygons
 #' @keywords datasets

@@ -5,7 +5,7 @@
 \alias{GSAsubArea}
 \title{GFCM sub areas (mixed area codes)}
 \format{
-\code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+\code{\link[sf]{sf}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}} (v.2).
 }
 \usage{
 data(GSAsubArea)

@@ -37,7 +37,7 @@ logbookAdjustment(
 
 \item{activityTypes}{character() vector with the activity types that should be utilized from logbook records ('AKTIVITET_KODE')}
 
-\item{polygons}{\code{\link[sp]{SpatialPolygonsDataFrame}} with area names in the column 'StratumName'. If provided, area ("Hovedområde kode") will be calculated from position, rather than fetched from logbook records.}
+\item{polygons}{\code{\link[sf]{sf}} data.frame with area names in the column 'StratumName'. If provided, area ("Hovedområde kode") will be calculated from position, rather than fetched from logbook records.}
 
 \item{lineIdCol}{character() that identifies the column in 'landings' that contain the identifier for each line on a sales note.}
 }

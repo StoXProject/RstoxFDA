@@ -16,7 +16,7 @@ appendPosition(
 \arguments{
 \item{table}{data.table to be annotated.}
 
-\item{areaPolygons}{\code{\link[sp]{SpatialPolygonsDataFrame}}}
+\item{areaPolygons}{\code{\link[sf]{sf}} data.frames with area names identified in the column 'StratumName'}
 
 \item{areaName}{name of column that identifies the area in 'table'}
 
@@ -31,11 +31,8 @@ appendPosition(
 }
 \description{
 Appends columns with positions to a data table, based on an area code.
-
- Coordinates are retrieved from a \code{\link[sp]{SpatialPolygonsDataFrame}} and not calculated
- the exact defintion of the coordinates depend on how the polygons were constructed.
-
- Datum and projection is not enforced, but a warning is issued if 'areaPolygons' does not pass some
- checks to verify that it is not a planar projection.
+ 
+ Positions are centroids of areas. For oddly shaped (concave) areas, this can have unintended effects. 
+ The centroid may for instance lie outside the area.
 }
 \concept{spatial coding functions}

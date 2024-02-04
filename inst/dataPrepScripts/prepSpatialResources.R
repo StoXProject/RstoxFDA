@@ -1,13 +1,12 @@
-library(rgdal)
-
-
 #
 # prep main areas (Fdir) as of 2018
 #
 
-mainareaFdir2018 <- RstoxBase::DefineStratumPolygon(NULL, F, "ResourceFile", system.file("dataPrepScripts", "mainarea2018.txt", package="RstoxFDA"))
-commonCRS <- sp::CRS(sp::wkt(mainareaFdir2018))
-
+mainareaFdir2018 <- sf::read_sf("~/shapefiles/fdir/fdir_annotated/Hovedområder_fom_2018/", as_tibble = F, stringsAsFactors = F)
+mainareaFdir2018$StratumName <- mainareaFdir2018$HAVOMR
+mainareaFdir2018$HAVOMR <- NULL
+mainareaFdir2018 <- mainareaFdir2018[,c("StratumName", "geometry")]
+mainareaFdir2018 <- sf::st_transform(mainareaFdir2018, sf::st_crs(RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat")))
 usethis::use_data(mainareaFdir2018, overwrite = T, compress = "xz")
 
 #
@@ -15,43 +14,32 @@ usethis::use_data(mainareaFdir2018, overwrite = T, compress = "xz")
 #
 
 
-mainareaFdir2017 <- RstoxBase::DefineStratumPolygon(NULL, F, "ResourceFile", system.file("dataPrepScripts", "mainarea2017.txt", package="RstoxFDA"))
-mainareaFdir2017 <- sp::spTransform(mainareaFdir2017, commonCRS)
-slot(slot(mainareaFdir2017, "polygons")[[1]], "ID") <- "00"
-slot(slot(mainareaFdir2017, "polygons")[[2]], "ID") <- "01"
-slot(slot(mainareaFdir2017, "polygons")[[3]], "ID") <- "02"
-slot(slot(mainareaFdir2017, "polygons")[[4]], "ID") <- "03"
-slot(slot(mainareaFdir2017, "polygons")[[5]], "ID") <- "04"
-slot(slot(mainareaFdir2017, "polygons")[[6]], "ID") <- "05"
-slot(slot(mainareaFdir2017, "polygons")[[7]], "ID") <- "06"
-slot(slot(mainareaFdir2017, "polygons")[[8]], "ID") <- "07"
-slot(slot(mainareaFdir2017, "polygons")[[9]], "ID") <- "08"
-slot(slot(mainareaFdir2017, "polygons")[[10]], "ID") <- "09"
+mainareaFdir2017 <- sf::read_sf("~/shapefiles/fdir/fdir_annotated/Hovedområder_tom_2017/", as_tibble = F, stringsAsFactors = F)
+mainareaFdir2017$StratumName <- mainareaFdir2017$HAVOMR
+mainareaFdir2017$FID <- NULL
+mainareaFdir2017 <- mainareaFdir2017[,c("StratumName", "geometry")]
+mainareaFdir2017 <- sf::st_transform(mainareaFdir2017, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
+
 usethis::use_data(mainareaFdir2017, overwrite = T, compress = "xz")
 
 #
 # prep locations (Fdir) as of 2018
 #
 
-
-locationsFdir2018 <- rgdal::readOGR("~/shapefiles/fdir/fdir_annotated/Lokasjoner_fom_2018/", stringsAsFactors = F)
-for (i in 1:nrow(locationsFdir2018)){
-  slot(slot(locationsFdir2018, "polygons")[[i]], "ID") <- locationsFdir2018$LOKREF[i]
-}
+locationsFdir2018 <- sf::read_sf("~/shapefiles/fdir/fdir_annotated/Lokasjoner_fom_2018/", as_tibble = F, stringsAsFactors = F)
 locationsFdir2018$StratumName <- locationsFdir2018$LOKREF
-locationsFdir2018 <- sp::spTransform(locationsFdir2018, commonCRS)
+locationsFdir2018 <- locationsFdir2018[,c("lok", "HAVOMR", "Lokasjon", "StratumName", "geometry")]
+locationsFdir2018 <- sf::st_transform(locationsFdir2018, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
 usethis::use_data(locationsFdir2018, overwrite = T, compress = "xz")
 
 #
 # prep locations (Fdir) before 2018
 #
 
-locationsFdir2017 <- rgdal::readOGR("~/shapefiles/fdir/fdir_annotated/Lokasjoner_tom_2017/", stringsAsFactors = F)
-for (i in 1:nrow(locationsFdir2017)){
-  slot(slot(locationsFdir2017, "polygons")[[i]], "ID") <- locationsFdir2017$LOKREF[i]
-}
+locationsFdir2017 <- sf::read_sf("~/shapefiles/fdir/fdir_annotated/Lokasjoner_tom_2017/", as_tibble = F, stringsAsFactors = F)
 locationsFdir2017$StratumName <- locationsFdir2017$LOKREF
-locationsFdir2017 <- sp::spTransform(locationsFdir2017, commonCRS)
+locationsFdir2017 <- locationsFdir2017[,c("lok", "HAVOMR", "Lokasjon", "StratumName", "geometry")]
+locationsFdir2017 <- sf::st_transform(locationsFdir2017, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
 usethis::use_data(locationsFdir2017, overwrite = T, compress = "xz")
 
 
@@ -59,15 +47,13 @@ usethis::use_data(locationsFdir2017, overwrite = T, compress = "xz")
 # prep NAFO areas
 #
 
-NAFOareas <- rgdal::readOGR("~/shapefiles/NAFO_hovedomr_2017_WGS84/", stringsAsFactors = F)
-for (i in 1:nrow(NAFOareas)){
-  slot(slot(NAFOareas, "polygons")[[i]], "ID") <- NAFOareas$homr[i]
-}
+NAFOareas <- sf::read_sf("~/shapefiles/NAFO_hovedomr_2017_WGS84/", as_tibble = F, stringsAsFactors = F)
 NAFOareas$StratumName <- NAFOareas$homr
 NAFOareas$nafo_names <- NAFOareas$nafo_norsk
 NAFOareas$first_nafo <- NULL
 NAFOareas$nafo_norsk <- NULL
-NAFOareas <- sp::spTransform(NAFOareas, commonCRS)
+NAFOareas <- NAFOareas[,c("homr", "StratumName", "nafo_names", "geometry")]
+NAFOareas <- sf::st_transform(NAFOareas, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
 usethis::use_data(NAFOareas, overwrite = T, compress = "xz")
 
 #
@@ -76,58 +62,41 @@ usethis::use_data(NAFOareas, overwrite = T, compress = "xz")
 
 # reduced detail with https://mapshaper.org
 
-ICESareas <- rgdal::readOGR("~/shapefiles/forenkelt_ICES_fra_haakon/ICES_areas_forenklet/", stringsAsFactors = F)
-ICESareas <- sp::spTransform(ICESareas, sp::CRS("+proj=longlat +datum=WGS84"))
-for (i in 1:nrow(ICESareas)){
-  slot(slot(ICESareas, "polygons")[[i]], "ID") <- ICESareas$Area_Full[i]
-}
+ICESareas <- sf::read_sf("~/shapefiles/forenkelt_ICES_fra_haakon/ICES_areas_forenklet/", as_tibble = F, stringsAsFactors = F)
+ICESareas <- sf::st_transform(ICESareas, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
 ICESareas$StratumName <- ICESareas$Area_Full
 ICESareas$OBJECTID_1 <- NULL
 ICESareas$OBJECTID <- NULL
 names(ICESareas)[names(ICESareas) == "SubDivisio"] <- "SubDivision"
-ICESareas <- sp::spTransform(ICESareas, commonCRS)
 usethis::use_data(ICESareas, overwrite = T, compress = "xz")
 
 #
 # copied in here to introduce the dependency to nngeo
 #
+
 mergePolygonsR <- function(shape, mergeCol){
   require(nngeo)
-  if (nrow(unique(shape@data)) != length(unique(shape@data[[mergeCol]]))){
+  shape <- sf::st_as_sf(shape)
+  if (nrow(unique(sf::st_drop_geometry(shape))) != length(unique(shape[[mergeCol]]))){
     stop("All columns must have the same value for polygons that are to be merged")
   }
   
-  dd<-sf::st_as_sf(shape)
+  
   newPolygons <- NULL
-  for (newName in unique(shape@data[[mergeCol]])){
-    ff <- sf::st_union(dd[dd[[mergeCol]]==newName,])
+  for (newName in unique(shape[[mergeCol]])){
+    ff <- sf::st_union(shape[shape[[mergeCol]]==newName,])
     ff <- nngeo::st_remove_holes(ff)
-    
-    if (!any(is.na(sf::st_dimension(ff)))){
-      spat <- sf::as_Spatial(ff)
-      stopifnot(length(spat@polygons)==1)
-      spat@polygons[[1]]@ID <- newName
-      
-      if (is.null(newPolygons)){
-        newPolygons <- spat
-      }
-      else{
-        newPolygons <- rbind(newPolygons, spat)      
-      }      
-    }
-    else{
-      if (!all(is.na(sf::st_dimension(ff)))){
-        browser()
-      }
-    }
-    
+    cols <- sf::st_drop_geometry(shape[shape[[mergeCol]]==newName,])[1,]
+    ff <- cbind(cols, ff)
+    newPolygons <- rbind(newPolygons, ff)
   }
   
-  newPolygons <- sp::SpatialPolygonsDataFrame(newPolygons, shape[!duplicated(shape[[mergeCol]]),]@data, match.ID = mergeCol)
+  newPolygons <- sf::st_as_sf(newPolygons)
   
   return(newPolygons)
   
 }
+
 
 #
 # prep ICES SubArea
@@ -165,17 +134,16 @@ usethis::use_data(ICESunit, overwrite = T, compress = "xz")
 #
 # prep ICES rectangles
 #
-ICESrectangles <- rgdal::readOGR("~/shapefiles/ICES_StatRec_mapto_ICES_Areas/", stringsAsFactors = F)
-for (i in 1:nrow(ICESrectangles)){
-  slot(slot(ICESrectangles, "polygons")[[i]], "ID") <- ICESrectangles$ICESNAME[i]
-}
+
+ICESrectangles <- sf::read_sf("~/shapefiles/ICES_StatRec_mapto_ICES_Areas/", as_tibble = F, stringsAsFactors = F)
+ICESrectangles <- sf::st_transform(ICESrectangles, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
 # some potentially useful attributes are removed, pending quality checks.
 # other versions of this file have had areas and percentages calculated from planarized coordinates.
 ICESrectangles$StratumName <- ICESrectangles$ICESNAME
 ICESrectangles$ICESNAME <- NULL
-ICESrectangles@data$ID <- NULL
-ICESrectangles@data$OBJECTID <- NULL
-ICESrectangles@data$AREA_KM2 <- NULL
+ICESrectangles$ID <- NULL
+ICESrectangles$OBJECTID <- NULL
+ICESrectangles$AREA_KM2 <- NULL
 ICESrectangles$stat_x <- NULL
 ICESrectangles$stat_y <- NULL
 ICESrectangles$Perc <- NULL
@@ -191,28 +159,27 @@ ICESrectangles$Unit <- unlist(lapply(strsplit(ICESrectangles$Area_27, ".", fixed
 ICESrectangles$Major_FA <- "27"
 ICESrectangles$Area_Full <- paste("27", ICESrectangles$Area_27, sep=".")
 ICESrectangles <- ICESrectangles[!is.na(ICESrectangles$Area_27),]
-ICESrectangles <- sp::spTransform(ICESrectangles, commonCRS)
+ICESrectangles <- ICESrectangles[,c("SOUTH", "WEST", "NORTH", "EAST", "Area_27", "StratumName", "SubArea", "Division", "SubDivision", "Unit", "Major_FA", "Area_Full", "geometry")]
 usethis::use_data(ICESrectangles, overwrite = T, compress = "xz")
 
-
-
 #prep GSA subarea
-GSAsubArea <- rgdal::readOGR("~/shapefiles/FAOsubAreas/GSAs_simplified/", stringsAsFactors = F)
-GSAsubArea <- sp::spTransform(GSAsubArea, commonCRS)
+GSAsubArea <- sf::read_sf("~/shapefiles/FAOsubAreas/GSAs_simplified/", as_tibble = F, stringsAsFactors = F)
+GSAsubArea <- sf::st_transform(GSAsubArea, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
 GSAsubArea$StratumName <- GSAsubArea$F_DIVISION
-GSAsubArea <-GSAsubArea[, c("StratumName", "F_AREA", "F_SUBAREA", "F_DIVISION")]
+GSAsubArea <-GSAsubArea[, c("StratumName", "F_AREA", "F_SUBAREA", "F_DIVISION", "geometry")]
 GSAsubArea <- RstoxFDA::mergePolygons(GSAsubArea, "F_DIVISION")
 usethis::use_data(GSAsubArea, overwrite=T, compress="xz")
 
 
 #prep kommune
-ss<-sf::st_read("~/shapefiles/geonorge/kommuner_2022/Basisdata_0000_Norge_25833_Kommuner_GML.gml", "Kommune")
+ss <- sf::read_sf("~/shapefiles/geonorge/kommuner_2022/Basisdata_0000_Norge_25833_Kommuner_GML.gml", "Kommune", as_tibble = F, stringsAsFactors = F)
 dd <- sf::st_simplify(ss, preserveTopology = T, dTolerance = 100)
-dp <- sf::as_Spatial(sf::st_transform(dd, sp::CRS(sp::wkt(RstoxFDA::mainareaFdir2018))))
-kommuner2022 <- dp[,c("kommunenummer", "navn")]
+dp <- sf::st_transform(dd, crs = RstoxBase:::getRstoxBaseDefinitions("proj4string_longlat"))
+kommuner2022 <- dp[,c("kommunenummer", "navn", "geometry")]
 kommuner2022$navn <- unlist(lapply(kommuner2022$navn, FUN=function(x){x[[1]]}))
 kommuner2022$StratumName <- as.character(kommuner2022$kommunenummer)
-names(kommuner2022) <- c("id", "name", "StratumName")
+kommuner2022 <- kommuner2022[,c("kommunenummer", "navn", "StratumName", "geometry")]
+names(kommuner2022) <- c("id", "name", "StratumName", "geometry")
 Encoding(kommuner2022$name) <- "latin1"
 kommuner2022$name <- iconv(
   kommuner2022$name, 

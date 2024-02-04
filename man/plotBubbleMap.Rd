@@ -29,7 +29,7 @@ plotBubbleMap(
 
 \item{quantityCol}{character() identifing column in 'data' that specify quantities to be plotted}
 
-\item{areaDef}{\code{\link[sp]{SpatialPolygonsDataFrame}}}
+\item{areaDef}{\code{\link[sf]{sf}} data.frame}
 
 \item{areaNameCol}{identifies column in 'areaDef' with label names for the areas, must correspond to 'areaCol'}
 
