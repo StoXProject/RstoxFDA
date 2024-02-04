@@ -37,6 +37,6 @@ Suggests:
     rmarkdown,
     tinytest
 Additional_repositories: 
-	https://stoxproject.github.io/repo
+	https://stoxproject.github.io/unstableRepo
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
