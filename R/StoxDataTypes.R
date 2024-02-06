@@ -16,6 +16,96 @@ is.Date <- function(date){
   return(FALSE)
 }
 
+#' Analytical PSU Estimate Data
+#' 
+#' @description
+#'  Analytical estimates for each PSU
+#'  
+#'  Abundance
+#'  \describe{
+#'    \item{Stratum}{Identifier for stratification of individuals}
+#'    \item{Domain}{Identifier of domains for individuals}
+#'    \item{SampleId}{Identgier for Primary sampling unit}
+#'    \item{Abundance}{Total number in Stratum and domain}
+#'    \item{Frequency}{Frequency in Domain within Stratum}
+#'  }
+#'  
+#'  Variables
+#'  \describe{
+#'    \item{SampleId}{}
+#'    \item{Stratum}{}
+#'    \item{Domain}{}
+#'    \item{Variable}{}
+#'    \item{Total}{}
+#'    \item{Mean}{}
+#'  }
+#'  
+#'  DomainVariables
+#'  \describe{
+#'   \item{Domain}{}
+#'   \item{<DomainVariables>}{}
+#'  }
+#'  
+#'  StratificationVariables
+#'  \describe{
+#'   \item{Stratum}{}
+#'   \item{<StratificationVariables>}{}
+#'  }
+#' 
+#' @name AnalyticalPSUEstimateData
+#' @concept Data types
+#' @concept Analytical estimation
+#' 
+NULL
+
+#' Analytical Population Estimate Data
+#' 
+#' @description
+#'  Analytical estimates for each PSU
+#'  
+#'  Abundance
+#'  \describe{
+#'    \item{Stratum}{}
+#'    \item{Domain}{}
+#'    \item{PSU}{}
+#'    \item{Total}{}
+#'    \item{TotalVar}{}
+#'    \item{Frequency}{}
+#'    \item{FrequencyVar}{}
+#'  }
+#'  
+#'  Variables
+#'  \describe{
+#'    \item{Stratum}{}
+#'    \item{Domain}{}
+#'    \item{PSU}{}
+#'    \item{Variable}{}
+#'    \item{Total}{}
+#'    \item{TotalVar}{}
+#'    \item{Mean}{}
+#'    \item{MeanVar}{}
+#'  }
+#'  
+#'  StratificationVariables
+#'  \describe{
+#'   \item{Stratum}{}
+#'   \item{StratificationVariables}{}
+#'  }
+#'  
+#'  DomainVariables
+#'  \describe{
+#'   \item{Stratum}{}
+#'   \item{Domain}{}
+#'   \item{DomainVariables}{}
+#'  }
+#' 
+#' @name AnalyticalPopulationEstimateData
+#' @concept Data types
+#' @concept Analytical estimation
+#' 
+NULL
+
+
 #' PSU Sampling Design Parameters
 #' 
 #' Sampling parameters for selection of Primary Sampling Units
@@ -147,7 +237,7 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
 #' @details 
 #'  Encodes information about the selection of a sub-sample of observations from individuals, used in analytical design based estimation.
 #'  A sub-sample is simply a sample of a sample. This data type is intended to represent the final stage of sampling in multi-stage sampling,
-#'  and therefor has a reference to the Sample it was taken from ('SampleId'). Apart from that there is no principal difference from single
+#'  and therefore has a reference to the Sample it was taken from ('SampleId'). Apart from that there is no principal difference from single
 #'  stage sampling. All stratification is specified within the sample identifed by 'SampleId', and all sampling probabilites are specified within strata.
 #'  
 #'  The SampleTable encodes information about the sample of sampling units:

@@ -70,4 +70,12 @@ expect_equal(nrow(ss$SampleTable), nrow(ls$SampleTable))
 #test estimate with HansenHurwitzDomainEstimate
 data <- RstoxFDA::CatchLotteryExample
 indSampling <- RstoxFDA::DefineIndividualSamplingParameters(NULL, data, "SRS", c("IndividualAge"))
-#domainEst <- HansenHurwitzDomainEstimate()
+psuSampling <- RstoxFDA::CatchLotterySamplingExample
+
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(data, indSampling, "IndividualRoundWeight")
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(data, indSampling, "IndividualRoundWeight", c("IndividualAge", "IndividualSex"))
+
+browser()
+stop("Implement test for AnalyticalPSUEstimate and document.")
+stop("Expose collapseStrata and test")
+stop("Implement AnalyticalPopulationEstimate")

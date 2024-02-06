@@ -183,13 +183,18 @@ collapseStrataIndividualDesignParamaters <- function(designParam, collapseVariab
     missing <- collapseVariables[!(collapseVariables %in% sv)]
     stop("The following are specified as strata to collapse, but are not StratificationVariables:", paste(missing, collapse=","))
   }
-  
+
+  retain <- sv[!(sv %in% collapseVariables)]
+    
   Nstrata <- designParam$StratificationVariables[,list(Nstrata=.N), by="SampleId"]
   if (all(Nstrata$Nstrata==1)){
+    if (length(retain)==0){
+      designParam$StratificationVariables$Stratum <- "All" 
+    }
+    designParam$StratificationVariables <- designParam$StratificationVariables[,.SD, .SDcol=c("SampleId", "Stratum", retain)]
     return(designParam)
   }
 
-  retain <- sv[!(sv %in% collapseVariables)]
   selectionStratumIndex <- match(paste(designParam$SelectionTable$Stratum, designParam$SelectionTable$SampleId), paste(designParam$StratificationVariables$Stratum, designParam$StratificationVariables$SampleId))
   sampleStratumIndex <- match(paste(designParam$SampleTable$Stratum, designParam$SampleTable$SampleId), paste(designParam$StratificationVariables$Stratum, designParam$StratificationVariables$SampleId))
   
@@ -486,8 +491,60 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
   return(PSUSamplingParametersData)
 }
 
-AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, variables, DomainVariables=character(), IncludeStratumInDomain=FALSE){
-  # Estimate totals and means of all variables, and total and mean number in domain, depending on sampling parameters available (only means if only sample weights present)
+#'
+AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, Variables=character(), DomainVariables=character()){
+  
+  
+  ind <- RstoxData::MergeStoxBiotic(StoxBioticData, "Individual")
+  
+  reservedNames <- c("Stratum", "Domain", "SampleId")
+  namingConflicts <- DomainVariables[DomainVariables %in% reservedNames]
+  if (length(namingConflicts)>0){
+    stop("The domain variables", paste(paste(namingConflicts, collapse=","), " are specified. The following variable names cannot be used for variables  in domain definitions:", paste(reservedNames, collapse=",")))
+  }
+  
+  reservedNames <- c(names(IndividualSamplingParametersData$SelectionTable), "Domain")
+  namingConflicts <- names(ind)[names(ind) %in% reservedNames]
+  if (length(namingConflicts)>0){
+    stop("The variables", paste(paste(namingConflicts, collapse=","), " are specified. The following variable names cannot be used for variables that estimates should be provided for:", paste(reservedNames, collapse=",")))
+  }
+  
+  missingDomainIds <- DomainVariables[!(DomainVariables %in% names(ind))]
+  if (length(missingDomainIds)>0){
+    stop(paste("Invalid speficiation of domain variables. The following variables does not exist in StoxBioticData:", paste(missingDomainIds, collapse=",")))
+  }
+  
+  missingvariables <- Variables[!(Variables %in% names(ind))]
+  if (length(missingvariables)>0){
+    stop(paste("Invalid speficiation of variables. The following variables does not exist in StoxBioticData:", paste(missingvariables, collapse=",")))
+  }
+
+  #put Domain in ind
+  ind$Domain <- "All"
+  if (length(DomainVariables)>0){
+    ind$Domain <- apply(ind[,.SD, .SDcol=DomainVariables], FUN=paste, 1, collapse="/")
+  }
+  domaintable <- unique(ind[,c("Domain", DomainVariables)])
+    
+  ind <- ind[,.SD,.SDcol=c("Individual", "Domain", Variables)]
+  
+  ind <- merge(ind, IndividualSamplingParametersData$SelectionTable, by.x=c("Individual"), by.y=c("IndividualId"))
+  
+  abundance <- ind[,list(Abundance=sum(1/InclusionProbability), Frequency=sum(HTsamplingWeight)), by=c("SampleId", "Stratum", "Domain")]
+  
+  estimates <- NULL
+  for (v in Variables){
+    est <- ind[,list(Variable=v, Total=sum(get(v)/InclusionProbability), Mean=sum(get(v)*HTsamplingWeight)), by=c("SampleId", "Stratum", "Domain")]
+    estimates <- rbind(estimates, est)
+  }
+  
+  output <- list()
+  output$Abundance <- abundance
+  output$Variables <- estimates
+  output$DomainVariables <- domaintable
+  output$StratificationVariables <- IndividualSamplingParametersData$StratificationVariables
+
+  return(output)
 }
 
 #' @noRd
