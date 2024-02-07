@@ -296,6 +296,7 @@ NULL
 #' @concept Data types
 #' @noRd
 is.IndividualSamplingParametersData <- function(IndividualSamplingParametersData){
+  
   if (!is.list(IndividualSamplingParametersData)){
     return(FALSE)
   }

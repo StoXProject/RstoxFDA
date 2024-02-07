@@ -177,7 +177,7 @@ DefinePSUSamplingParameters <- function(processData, DefinitionMethod=c("Resourc
 #' For strata with unknown inclusion and selection probability, sampling weights will be NA.
 #' @noRd
 collapseStrataIndividualDesignParamaters <- function(designParam, collapseVariables=c()){
-  
+
   sv <- names(designParam$StratificationVariables)[!names(designParam$StratificationVariables) %in% c("SampleId", "Stratum")]
   if (!all(collapseVariables %in% sv)){
     missing <- collapseVariables[!(collapseVariables %in% sv)]
@@ -186,43 +186,59 @@ collapseStrataIndividualDesignParamaters <- function(designParam, collapseVariab
 
   retain <- sv[!(sv %in% collapseVariables)]
     
-  Nstrata <- designParam$StratificationVariables[,list(Nstrata=.N), by="SampleId"]
-  if (all(Nstrata$Nstrata==1)){
-    if (length(retain)==0){
-      designParam$StratificationVariables$Stratum <- "All" 
-    }
-    designParam$StratificationVariables <- designParam$StratificationVariables[,.SD, .SDcol=c("SampleId", "Stratum", retain)]
-    return(designParam)
-  }
-
-  selectionStratumIndex <- match(paste(designParam$SelectionTable$Stratum, designParam$SelectionTable$SampleId), paste(designParam$StratificationVariables$Stratum, designParam$StratificationVariables$SampleId))
-  sampleStratumIndex <- match(paste(designParam$SampleTable$Stratum, designParam$SampleTable$SampleId), paste(designParam$StratificationVariables$Stratum, designParam$StratificationVariables$SampleId))
-  
+  #change strata definition
   if (length(retain)==0){
-    designParam$StratificationVariables$Stratum <- "All"
+      designParam$StratificationVariables$newStratum <- "All" 
   }
   else{
-    designParam$StratificationVariables$Stratum <- apply(designParam$StratificationVariables[,.SD, .SDcol=retain], 1, paste, collapse="/")
+      designParam$StratificationVariables$newStratum <- apply(designParam$StratificationVariables[,.SD,.SDcol=c(retain)], FUN=paste, 1, collapse="/")
   }
+  designParam$StratificationVariables <- designParam$StratificationVariables[,.SD, .SDcol=c("SampleId", "Stratum", retain, "newStratum")]
+
+  designParam$SelectionTable <- merge(designParam$SelectionTable, designParam$StratificationVariables[,.SD, .SDcol=c("SampleId", "Stratum", "newStratum")], by=c("SampleId", "Stratum"))
+  designParam$SampleTable <- merge(designParam$SampleTable, designParam$StratificationVariables[,.SD, .SDcol=c("SampleId", "Stratum", "newStratum")], by=c("SampleId", "Stratum"))
   
-  designParam$SampleTable$Stratum <- designParam$StratificationVariables$Stratum[sampleStratumIndex]
-  designParam$SelectionTable$Stratum <- designParam$StratificationVariables$Stratum[selectionStratumIndex]
-  
-  NselectionMethods <- designParam$SampleTable[,list(NselMet=length(unique(SelectionMethod))), by=c("SampleId", "Stratum")]
+  NselectionMethods <- designParam$SampleTable[,list(NselMet=length(unique(SelectionMethod))), by=c("SampleId", "newStratum")]
   if (any(NselectionMethods$NselMet>1)){
-    stop("Cannot collapse strate with heterogenous selection methods")
+    stop("Cannot collapse strata with heterogenous selection methods.")
   }
+
+  totalN <- designParam$SampleTable[,list(totalN=sum(N), allSampled=all(n>0), totalStrata=length(unique(Stratum))), by=c("SampleId", "newStratum")]
+  weights <- merge(designParam$SampleTable, totalN, by=c("SampleId", "newStratum"), all.x=T)
+  weights$strataweight <- 1
   
-  weights <- designParam$SelectionTable[,list(HTsum=sum(1/InclusionProbability), HHsum=sum(1/SelectionProbability)),by=c("SampleId", "Stratum")]
-  designParam$SelectionTable <- merge(designParam$SelectionTable, weights, by=c("SampleId", "Stratum"))
-  designParam$SelectionTable$HTsamplingWeight <- 1/(designParam$SelectionTable$InclusionProbability * designParam$SelectionTable$HTsum)
-  designParam$SelectionTable$HHsamplingWeight <- 1/(designParam$SelectionTable$SelectionProbability * designParam$SelectionTable$HHsum)
-  designParam$SelectionTable$HHsum <- NULL
-  designParam$SelectionTable$HTsum <- NULL
+  unSampled <- weights$SampleId[weights$totalStrata>1 & !weights$allSampled]
+  if (length(unSampled)>0){
+    stop("Cannot collapse unsampled strata. Unsampled strata exists for samples: ", truncateStringVector(unSampled))
+  }
+  if (any(weights$totalStrata>1)){
+    weights$strataweight[weights$totalStrata>1] <- weights$N[weights$totalStrata>1] / weights$totalN[weights$totalStrata>1]    
+  }
+
+  missing <- weights[is.na(weights$totalN) & weights$totalStrata>1,]
+  if (nrow(missing)>0){
+    samples <- unique(missing$SampleId)
+    stop("Cannot collapse strata with unkown strata sizes. Sample size missing for some strata in the samples:", truncateStringVector(samples))
+  }
+
+  weights <- weights[,.SD, .SDcol=c("SampleId", "Stratum", "newStratum", "strataweight")]
+
+  designParam$SelectionTable <- merge(designParam$SelectionTable, weights, by=c("SampleId", "Stratum", "newStratum"))
+  designParam$SelectionTable$HTsamplingWeight <- designParam$SelectionTable$HTsamplingWeight * designParam$SelectionTable$strataweight
+  designParam$SelectionTable$HHsamplingWeight <- designParam$SelectionTable$HHsamplingWeight * designParam$SelectionTable$strataweight
+  designParam$SelectionTable$strataweight <- NULL
+  
+  designParam$SelectionTable$Stratum <- designParam$SelectionTable$newStratum
+  designParam$SelectionTable$newStratum <- NULL
+  
+  designParam$SampleTable$Stratum <- designParam$SampleTable$newStratum
+  designParam$SampleTable$newStratum <- NULL
+  
+  designParam$StratificationVariables$Stratum <- designParam$StratificationVariables$newStratum
+  designParam$StratificationVariables$newStratum <- NULL
   
   designParam$SampleTable <- designParam$SampleTable[,list(N=sum(N), n=sum(n), SelectionMethod=SelectionMethod[1], SampleDescription=as.character(NA)), by=c("SampleId", "Stratum")]
   designParam$StratificationVariables <- designParam$StratificationVariables[!duplicated(paste(designParam$StratificationVariables$SampleId, designParam$StratificationVariables$Stratum)),.SD, .SDcol=c("SampleId", "Stratum", retain)]
-  
   return(designParam)
 }
 
@@ -330,7 +346,7 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
 DefineIndividualSamplingParameters <- function(processData, StoxBioticData, DefinitionMethod=c("SRS", "Stratified", "LengthStratified"), Parameters=c(), LengthInterval=numeric(), StratificationColumns=character(), UseProcessData=FALSE){
 
   #May want to expose this option if DefinitionMethods are added that only provides relative selection probabilities.
-  CollapseStrata=TRUE
+  CollapseStrata=FALSE
   
   if (UseProcessData){
     return(processData)
@@ -494,6 +510,8 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #'
 AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, Variables=character(), DomainVariables=character()){
   
+  
+  stop("Handle unsampled strata. Produce NAs")
   
   ind <- RstoxData::MergeStoxBiotic(StoxBioticData, "Individual")
   

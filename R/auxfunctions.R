@@ -137,7 +137,7 @@ deprecationWarning <- function(functionName, deprecationTime, message=NULL){
 truncateStringVector <- function(missing, maxsize=5){
   
   if (length(missing)>maxsize){
-    missing <- c(missing[1:maxsize], "...")
+    missing <- c(paste(missing[1:maxsize], collapse=", "), "...")
   }
   return(missing)
 }

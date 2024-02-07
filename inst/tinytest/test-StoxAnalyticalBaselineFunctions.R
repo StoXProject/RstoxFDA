@@ -42,17 +42,21 @@ ds$Individual$IndividualRoundWeight[rep(c(TRUE,FALSE), nrow(ds$Individual)/2)] <
 ds$Sample$CatchFractionNumber[is.na(ds$Sample$CatchFractionNumber)] <- 1000
 
 #Define Individual design, SRS
-expect_error(DefineIndividualSamplingParameters(NULL, ds, "SRS"))
-srs <- DefineIndividualSamplingParameters(NULL, ds, "SRS", c("IndividualAge", "IndividualTotalLength", "IndividualRoundWeight"))
+expect_error(RstoxFDA:::DefineIndividualSamplingParameters(NULL, ds, "SRS"))
+srs <- RstoxFDA:::DefineIndividualSamplingParameters(NULL, ds, "SRS", c("IndividualAge", "IndividualTotalLength", "IndividualRoundWeight"))
 expect_true(RstoxFDA:::is.IndividualSamplingParametersData(srs))
 weights <- srs$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
 expect_true(all(abs(weights$meanN-1) < 1e-6))
+
 #Define Individual design, Length stratified
-expect_error(DefineIndividualSamplingParameters(NULL, ds, "LengthStratified", c("IndividualAge", "IndividualTotalLength", "IndividualRoundWeight"), LengthInterval = 5), "'IndividualTotalLength' may not be among the variables in 'Parameters' for length-stratified sampling.")
-ls<-DefineIndividualSamplingParameters(NULL, ds, "LengthStratified", c("IndividualAge", "IndividualRoundWeight"), LengthInterval = 5)
+expect_error(RstoxFDA:::DefineIndividualSamplingParameters(NULL, ds, "LengthStratified", c("IndividualAge", "IndividualTotalLength", "IndividualRoundWeight"), LengthInterval = 5), "'IndividualTotalLength' may not be among the variables in 'Parameters' for length-stratified sampling.")
+ls<-RstoxFDA:::DefineIndividualSamplingParameters(NULL, ds, "LengthStratified", c("IndividualAge", "IndividualRoundWeight"), LengthInterval = 5)
+
 expect_true(RstoxFDA:::is.IndividualSamplingParametersData(ls))
 weights <- ls$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
 expect_true(all(abs(weights$meanN-1) < 1e-6))
+
+expect_error(RstoxFDA:::collapseStrataIndividualDesignParamaters(ls, "LengthStratum"), "Cannot")
 
 #Define Individual design, stratified, setting strata by length as in Length stratified
 bioStrat <- ds
@@ -67,6 +71,28 @@ expect_equal(ss$SelectionTable$InclusionProbability[[4]], ls$SelectionTable$Incl
 expect_true(srs$SelectionTable$InclusionProbability[[4]] != ls$SelectionTable$InclusionProbability[[4]])
 expect_equal(nrow(ss$SampleTable), nrow(ls$SampleTable))
 
+#
+# Test collapse strata
+#
+
+ss <- ds
+ss$Individual$IndividualSex[is.na(ss$Individual$IndividualSex)] <- "Unkown"
+ls <- RstoxFDA:::DefineIndividualSamplingParameters(NULL, ss, "Stratified", c("IndividualTotalLength"), StratificationColumns = "IndividualSex")
+weights <- ls$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
+expect_true(all(abs(weights$meanN-1) < 1e-6))
+
+
+lsCol <- RstoxFDA:::collapseStrataIndividualDesignParamaters(ls, c("SpeciesCategory", "IndividualSex"))
+expect_true(nrow(lsCol$SampleTable)<nrow(ls$SampleTable))
+expect_true(nrow(lsCol$SelectionTable)==nrow(ls$SelectionTable))
+weights <- lsCol$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
+expect_true(all(abs(weights$meanN-1) < 1e-6))
+
+lsCol <- RstoxFDA:::collapseStrataIndividualDesignParamaters(ls, c("IndividualSex"))
+weights <- lsCol$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
+expect_true(all(abs(weights$meanN-1) < 1e-6))
+
+
 #test estimate with HansenHurwitzDomainEstimate
 data <- RstoxFDA::CatchLotteryExample
 indSampling <- RstoxFDA::DefineIndividualSamplingParameters(NULL, data, "SRS", c("IndividualAge"))
@@ -75,7 +101,8 @@ psuSampling <- RstoxFDA::CatchLotterySamplingExample
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(data, indSampling, "IndividualRoundWeight")
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(data, indSampling, "IndividualRoundWeight", c("IndividualAge", "IndividualSex"))
 
-browser()
+#browser()
 stop("Implement test for AnalyticalPSUEstimate and document.")
 stop("Expose collapseStrata and test")
+stop("Test collapseStrata with HH")
 stop("Implement AnalyticalPopulationEstimate")
