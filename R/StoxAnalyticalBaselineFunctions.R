@@ -510,9 +510,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #'
 AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, Variables=character(), DomainVariables=character()){
   
-  
-  stop("Handle unsampled strata. Produce NAs")
-  
+
   ind <- RstoxData::MergeStoxBiotic(StoxBioticData, "Individual")
   
   reservedNames <- c("Stratum", "Domain", "SampleId")
@@ -522,9 +520,9 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
   }
   
   reservedNames <- c(names(IndividualSamplingParametersData$SelectionTable), "Domain")
-  namingConflicts <- names(ind)[names(ind) %in% reservedNames]
+  namingConflicts <- Variables[Variables %in% reservedNames]
   if (length(namingConflicts)>0){
-    stop("The variables", paste(paste(namingConflicts, collapse=","), " are specified. The following variable names cannot be used for variables that estimates should be provided for:", paste(reservedNames, collapse=",")))
+    stop("The variables ", paste(paste(namingConflicts, collapse=","), " are specified. The following variable names cannot be used for variables that estimates should be provided for:", paste(reservedNames, collapse=",")))
   }
   
   missingDomainIds <- DomainVariables[!(DomainVariables %in% names(ind))]
@@ -542,17 +540,23 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
   if (length(DomainVariables)>0){
     ind$Domain <- apply(ind[,.SD, .SDcol=DomainVariables], FUN=paste, 1, collapse="/")
   }
-  domaintable <- unique(ind[,c("Domain", DomainVariables)])
+  domaintable <- ind[,.SD,.SDcol=c("Domain", DomainVariables)]
+  domaintable <- domaintable[!duplicated(ind$Domain),]
     
   ind <- ind[,.SD,.SDcol=c("Individual", "Domain", Variables)]
   
   ind <- merge(ind, IndividualSamplingParametersData$SelectionTable, by.x=c("Individual"), by.y=c("IndividualId"))
   
   abundance <- ind[,list(Abundance=sum(1/InclusionProbability), Frequency=sum(HTsamplingWeight)), by=c("SampleId", "Stratum", "Domain")]
+  #get NAs for non-sampled strata
+  abundance <- merge(abundance, IndividualSamplingParametersData$SampleTable[,c("SampleId", "Stratum")], by=c("SampleId", "Stratum"), all.y=T)
   
   estimates <- NULL
   for (v in Variables){
     est <- ind[,list(Variable=v, Total=sum(get(v)/InclusionProbability), Mean=sum(get(v)*HTsamplingWeight)), by=c("SampleId", "Stratum", "Domain")]
+    #get NAs for non-sampled strata
+    est <- merge(est, IndividualSamplingParametersData$SampleTable[,c("SampleId", "Stratum")], by=c("SampleId", "Stratum"), all.y=T)
+    est$Variable <- v
     estimates <- rbind(estimates, est)
   }
   

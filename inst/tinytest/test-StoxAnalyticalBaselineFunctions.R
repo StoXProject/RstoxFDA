@@ -56,7 +56,7 @@ expect_true(RstoxFDA:::is.IndividualSamplingParametersData(ls))
 weights <- ls$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
 expect_true(all(abs(weights$meanN-1) < 1e-6))
 
-expect_error(RstoxFDA:::collapseStrataIndividualDesignParamaters(ls, "LengthStratum"), "Cannot")
+expect_error(RstoxFDA:::collapseStrataIndividualDesignParamaters(ls, "LengthStratum"), "Cannot collapse unsampled strata. Unsampled strata exists for samples:")
 
 #Define Individual design, stratified, setting strata by length as in Length stratified
 bioStrat <- ds
@@ -99,10 +99,72 @@ indSampling <- RstoxFDA::DefineIndividualSamplingParameters(NULL, data, "SRS", c
 psuSampling <- RstoxFDA::CatchLotterySamplingExample
 
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(data, indSampling, "IndividualRoundWeight")
+expect_true(all(psuEst$Abundance$Abundance*psuEst$Variables$Mean - psuEst$Variables$Total < 1e-6))
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(data, indSampling, "IndividualRoundWeight", c("IndividualAge", "IndividualSex"))
+expect_true(all(psuEst$Abundance$Abundance*psuEst$Variables$Mean - psuEst$Variables$Total < 1e-6))
 
-#browser()
-stop("Implement test for AnalyticalPSUEstimate and document.")
-stop("Expose collapseStrata and test")
-stop("Test collapseStrata with HH")
-stop("Implement AnalyticalPopulationEstimate")
+#
+# Test domain estimates
+#
+
+ss <- ds
+ss$Individual$IndividualSex[is.na(ss$Individual$IndividualSex)] <- "Unkown"
+ls <- RstoxFDA:::DefineIndividualSamplingParameters(NULL, ss, "SRS", c("IndividualTotalLength"))
+
+psuEstDom <- RstoxFDA:::AnalyticalPSUEstimate(ss, ls, "IndividualTotalLength", c("IndividualSex", "IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, ls, "IndividualTotalLength")
+expect_true(nrow(psuEstDom$Abundance)>nrow(psuEst$Abundance))
+expect_true(nrow(psuEstDom$Variables)>nrow(psuEst$Variables))
+expect_true(ncol(psuEstDom$DomainVariables)==3)
+
+expect_true(all(psuEst$Abundance$Frequency-1<1e-6))
+expect_true(mean(psuEstDom$Abundance$Frequency)>1-2)
+
+totalBySampleDom <- psuEstDom$Abundance[,list(total=sum(Abundance)), by="SampleId"]
+totalBySampleTot <- psuEst$Abundance[,list(total=sum(Abundance)), by="SampleId"]
+tot <- merge(totalBySampleDom, totalBySampleTot, by="SampleId")
+expect_true(all(abs(tot$total.x-tot$total.y)/tot$total.x<1e-6))
+
+totalLengthBySampleDom <- psuEstDom$Variables[Variable=="IndividualTotalLength",list(total=sum(Total)), by="SampleId"]
+totalLengthBySampleTot <- psuEst$Variables[Variable=="IndividualTotalLength",list(total=sum(Total)), by="SampleId"]
+tot <- merge(totalLengthBySampleDom, totalLengthBySampleTot, by="SampleId")
+expect_true(all(abs(tot$total.x-tot$total.y)/tot$total.x<1e-6))
+
+#
+# Test stratified estimates
+#
+
+ls <- RstoxFDA:::DefineIndividualSamplingParameters(NULL, ss, "Stratified", c("IndividualTotalLength"), StratificationColumns = "IndividualSex")
+lsCol <- RstoxFDA:::collapseStrataIndividualDesignParamaters(ls, c("SpeciesCategory", "IndividualSex"))
+
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, lsCol, "IndividualTotalLength", c("IndividualSex"))
+expect_true(nrow(psuEst$DomainVariables)==3)
+expect_true(ncol(psuEst$DomainVariables)==2)
+expect_true(sum(is.na(psuEst$Abundance$Abundance))==0)
+expect_true(sum(!is.na(psuEst$Abundance$Abundance))>0)
+expect_true(sum(is.na(psuEst$Abundance$Frequency))==0)
+expect_true(sum(!is.na(psuEst$Abundance$Frequency))>0)
+expect_true(sum(is.na(psuEst$Variables$Total))==0)
+expect_true(sum(!is.na(psuEst$Variables$Mean))>0)
+
+#check that unsampled strata gives NAs
+lengthStratMissingStrata <-  RstoxFDA::DefineIndividualSamplingParameters(NULL, ss, "LengthStratified", c("IndividualAge"), LengthInterval = 5)
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, lengthStratMissingStrata, "IndividualRoundWeight", c("IndividualAge"))
+
+expect_true(nrow(psuEst$DomainVariables)==length(unique(ss$Individual$IndividualAge)))
+expect_true("NA" %in% psuEst$DomainVariables$Domain)
+expect_true(sum(is.na(psuEst$DomainVariables$IndividualAge))==1)
+expect_true(ncol(psuEst$DomainVariables)==2)
+
+expect_true(sum(is.na(psuEst$Abundance$Abundance))>0)
+expect_true(sum(!is.na(psuEst$Abundance$Abundance))>0)
+expect_true(sum(is.na(psuEst$Abundance$Frequency))>0)
+expect_true(sum(!is.na(psuEst$Abundance$Frequency))>0)
+expect_true(sum(is.na(psuEst$Variables$Total))>0)
+expect_true(sum(!is.na(psuEst$Variables$Mean))>0)
+
+browser()
+#stop("Document AnalyticalPSUEstimate.")
+#stop("Expose collapseStrata and test")
+#stop("Test collapseStrata with HH")
+#stop("Implement AnalyticalPopulationEstimate")
