@@ -24,7 +24,10 @@ expect_true(abs((mean(1/designParamsCorrected$SelectionTable$InclusionProbabilit
 suppressWarnings(StoxBioticData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic(system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA"))))
 designParamsSB <- RstoxFDA::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsSB))
-#compare names of output with stratification variables to output without
+#compare names of output with stratification variables to output withoutsss
+
+browser()
+#some check that method and incprob is reasonable.
 
 expect_true(all(names(designParamsSB$SampleTable) == names(designParams$SampleTable)))
 expect_true(all(names(designParamsSB$SelectionTable) == names(designParams$SelectionTable)))
@@ -163,8 +166,48 @@ expect_true(sum(!is.na(psuEst$Abundance$Frequency))>0)
 expect_true(sum(is.na(psuEst$Variables$Total))>0)
 expect_true(sum(!is.na(psuEst$Variables$Mean))>0)
 
+#
+# Test AnalyticalPopulationEstimate
+#
+
+stationDesign <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData = ss, SamplingUnitId = "Haul", StratificationColumns = "Gear")
+sexStrat <-  RstoxFDA::DefineIndividualSamplingParameters(NULL, ss, "Stratified", c("IndividualAge"), StratificationColumns = "IndividualSex")
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex"))
+
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
+
+#Test that Abundance and Frequency are NA for unsampled strata (Domain Sex is Unsampled for strata unkown sex)
+expect_true(nrow(popEst$Abundance[is.na(Domain)])>0)
+expect_true(all(is.na(popEst$Abundance[is.na(Domain)]$Abundance)))
+expect_true(all(is.na(popEst$Abundance[is.na(Domain)]$Frequency)))
+
+#Test that Mean and Total NA for unsampled strata
+expect_true(nrow(popEst$Variables[is.na(Domain)])>0)
+expect_true(all(is.na(popEst$Variables[is.na(Domain)]$Total)))
+expect_true(all(is.na(popEst$Variables[is.na(Domain)]$Mean)))
+
+#Test that Mean is NaN and Total is 0 for zero-abundance domains
+zeroAbund <- popEstMeanOfMeans$Abundance[popEstMeanOfMeans$Abundance$Frequency==0]
+NaNMeans <- popEstMeanOfMeans$Variables[is.nan(popEstMeanOfMeans$Variables$Mean)]
+zeroTotals <- popEstMeanOfMeans$Variables[popEstMeanOfMeans$Variables$Total==0]
+expect_true(nrow(zeroAbund)>0)
+expect_true(nrow(zeroAbund)==nrow(NaNMeans))
+
+
+# Add Correctness test for minimal example
+# Add variances
+
+#build herring example here. Need to connect SampleUnitId (Haul) to SampleId (Sample)
+stationDesign <- RstoxFDA::CatchLotterySamplingExample
+srs <-  RstoxFDA::DefineIndividualSamplingParameters(NULL, RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
+
 browser()
+#stop("Fix HH in PSU designs")
 #stop("Document AnalyticalPSUEstimate.")
 #stop("Expose collapseStrata and test")
-#stop("Test collapseStrata with HH")
-#stop("Implement AnalyticalPopulationEstimate")
+#stop("Test collapseStrata with both HH and HT")
+#stop("Document AnalyticalPopulationEstimate")

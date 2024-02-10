@@ -26,8 +26,8 @@ is.Date <- function(date){
 #'    \item{Stratum}{Identifier for stratification of individuals}
 #'    \item{Domain}{Identifier of domains for individuals}
 #'    \item{SampleId}{Identgier for Primary sampling unit}
-#'    \item{Abundance}{Total number in Stratum and domain}
-#'    \item{Frequency}{Frequency in Domain within Stratum}
+#'    \item{Abundance}{Total number in Stratum and domain. Unsampled strata is reported as NA}
+#'    \item{Frequency}{Frequency in Domain within Stratum. Unsampled strata is reported as NA}
 #'  }
 #'  
 #'  Variables
@@ -36,8 +36,8 @@ is.Date <- function(date){
 #'    \item{Stratum}{}
 #'    \item{Domain}{}
 #'    \item{Variable}{}
-#'    \item{Total}{}
-#'    \item{Mean}{}
+#'    \item{Total}{. Unsampled strata is reported as NA}
+#'    \item{Mean}{. Unsampled strata is reported as NA}
 #'  }
 #'  
 #'  DomainVariables
@@ -243,7 +243,7 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
 #'  The SampleTable encodes information about the sample of sampling units:
 #'  \describe{
 #'   \item{SampleId}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
-#'   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum the sub-sample is taken from.  Treat unstratified sample as single-stratum sampling (provide only one stratum.}
+#'   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum the sub-sample is taken from.  Treat unstratified sample as single-stratum sampling (provide only one stratum. All strata with strata size > 0 must be reported for each SampleId.}
 #'   \item{N}{Optional, num: The total number of individuals in Stratum. For unstratified sampling, the total number of individuals in the sample the sub-sample is taken from.}
 #'   \item{n}{Optional, num: The number of individuals selected from the Stratum}
 #'   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}
