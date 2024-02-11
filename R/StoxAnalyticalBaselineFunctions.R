@@ -41,14 +41,12 @@ assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Str
   sampleTable <- sampleTable[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
   stratificationTable <- flatStox[,.SD,.SDcol=c("Stratum", StratificationColumns)]
   stratificationTable <- stratificationTable[!duplicated(stratificationTable$Stratum),]
-  assignmentTable <- data.table::data.table(DataRecordId=character())
-  
+
   designParameters <- list()
   designParameters$SampleTable <- sampleTable
   designParameters$SelectionTable <- selectionTable
   designParameters$StratificationVariables <- stratificationTable
-  designParameters$Assignment <- assignmentTable
-  
+
   return(designParameters)
   
 }
@@ -78,7 +76,6 @@ parseDesignParameters <- function(filename){
   selectionTable <- designParameters[,.SD,.SDcol=c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "HTsamplingWeight", "SelectionProbability", "HHsamplingWeight", "SelectionDescription")]
   sampleTable <- designParameters[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
   stratificationTable <- designParameters[,.SD,.SDcol=c("Stratum", names(designParameters)[!(names(designParameters) %in% names(selectionTable)) & !(names(designParameters) %in% names(sampleTable))])]
-  assignmentTable <- data.table::data.table(DataRecordId=character())
   
   if (any(is.na(sampleTable$Stratum)) | any(is.na(selectionTable$Stratum))){
     stop("Invalid design specification. The mandatory column 'Stratum' may not contain missing values (NA).")
@@ -126,8 +123,7 @@ parseDesignParameters <- function(filename){
   designParameters$SampleTable <- sampleTable
   designParameters$SelectionTable <- selectionTable
   designParameters$StratificationVariables <- stratificationTable
-  designParameters$Assignment <- assignmentTable
-  
+
   return(designParameters)
 }
 
@@ -664,7 +660,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   selVariables <- merge(PSUSamplingParametersData$SelectionTable, AnalyticalPSUEstimateData$Variables, by.x="SamplingUnitId", by.y="SampleId", suffixes = c(".PSU", ".lower"))
   selVariables$Stratum <- paste("PSU-stratum:", selVariables$Stratum.PSU, " Lower-stratum:", selVariables$Stratum.lower, sep="")
   selVariables <- addZeroesVariables(selVariables, CombinedStrata, AnalyticalPSUEstimateData$DomainVariables)
-  VariablesTable <- selVariables[,list(Total=mean(Total/SelectionProbability), Mean=sum(Mean*HHsamplingWeight)/sum(HHsamplingWeight)), by=c("Stratum", "Domain", "Variable")]
+  VariablesTable <- selVariables[,list(Total=mean(Total/SelectionProbability)*sum(HHsamplingWeight), Mean=sum(Mean*HHsamplingWeight)/sum(HHsamplingWeight)), by=c("Stratum", "Domain", "Variable")]
   
   if (!MeanOfMeans){
     VariablesTable$Mean <- VariablesTable$Total / AbundanceTable$Abundance[match(paste(VariablesTable$Stratum, VariablesTable$Domain), paste(AbundanceTable$Stratum, AbundanceTable$Domain))]

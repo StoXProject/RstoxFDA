@@ -200,22 +200,59 @@ expect_true(nrow(zeroAbund)>0)
 expect_true(nrow(zeroAbund)==nrow(NaNMeans))
 
 
-# Add Correctness test for minimal example
-# Add variances
-
-stop()
-#build herring example here. Need to connect SampleUnitId (Haul) to SampleId (Sample)
+#build herring example here. 
 stationDesign <- RstoxFDA::CatchLotterySamplingExample
 ex <- RstoxFDA::CatchLotteryExample
 ex$Haul$serialnumber <- ex$Haul$HaulKey
 stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
 srs <-  RstoxFDA::DefineIndividualSamplingParameters(NULL, ex, "SRS", c("IndividualAge"))
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
-popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+popEstAgeDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
 
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+#
+# Correctness test for a minimal example
+# Constructed from the example at example at: https://online.stat.psu.edu/stat506/node/15/
+#
+miniEx <- stationDesign
+miniEx$SampleTable$N <- 15650
+miniEx$SampleTable$n <- 3
+miniEx$SampleTable$SelectionMethod <- "FSWR"
+
+miniEx$SelectionTable <- miniEx$SelectionTable[1:3]
+miniEx$SelectionTable$InclusionProbability <- as.numeric(NA)
+miniEx$SelectionTable$HTsamplingWeight <- as.numeric(NA)
+miniEx$SelectionTable$SelectionProbability[1] <- 650/15650
+miniEx$SelectionTable$SelectionProbability[2] <- 2840/15650
+miniEx$SelectionTable$SelectionProbability[3] <- 3200/15650
+miniEx$SelectionTable$HHsamplingWeight <- 1/(miniEx$SelectionTable$SelectionProbability*sum(1/miniEx$SelectionTable$SelectionProbability))
+
+miniExInd <- srs
+miniExInd$SampleTable$N[miniExInd$SampleTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[1]] <- 420
+miniExInd$SampleTable$N[miniExInd$SampleTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[2]] <- 1785
+miniExInd$SampleTable$N[miniExInd$SampleTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[3]] <- 2198
+miniExInd$SampleTable <- miniExInd$SampleTable[SampleId %in% miniEx$SelectionTable$SamplingUnitId,]
+miniExInd$SelectionTable <- miniExInd$SelectionTable[SampleId %in% miniEx$SelectionTable$SamplingUnitId,]
+miniExInd$StratificationVariables <- miniExInd$StratificationVariables[SampleId %in% miniEx$StratificationVariables$SamplingUnitId,]
+
+miniExInd$SelectionTable$InclusionProbability[miniExInd$SelectionTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[1]] <- 38/420
+miniExInd$SelectionTable$InclusionProbability[miniExInd$SelectionTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[2]] <- 60/1785
+miniExInd$SelectionTable$InclusionProbability[miniExInd$SelectionTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[3]] <- 25/2198
+
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(miniEx, psuEst)
+
+expect_true(abs(popEst$Abundance$Abundance - 10232.75)<1e-2)
+
+#add for variance as well
+#expect_lte((hhCovar[1] - 73125.74) / 73125.74, 0.001)
+
 browser()
-#stop("Fix HH in PSU designs")
+# Remove assignemtn from exampledata
+# Add variances
 #stop("Document AnalyticalPSUEstimate.")
 #stop("Expose collapseStrata and test")
 #stop("Test collapseStrata with both HH and HT")
