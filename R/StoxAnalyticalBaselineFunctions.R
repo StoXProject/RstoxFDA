@@ -645,7 +645,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   if (any(names(LowerLevelStrata) %in% names(PSUSamplingParametersData$StratificationVariables))){
     stop("Strata naming conflict. The same column names are used for PSU stratification and lower level stratification")
   }
-  
+
   CombinedStrata <- data.table::CJ(Stratum=PSUSamplingParametersData$StratificationVariables$Stratum, LowerStratum=LowerLevelStrata$LowerStratum)
   CombinedStrata <- merge(CombinedStrata, PSUSamplingParametersData$StratificationVariables, by="Stratum")
   CombinedStrata <- merge(CombinedStrata, LowerLevelStrata, by="LowerStratum")

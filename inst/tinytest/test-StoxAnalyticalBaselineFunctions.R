@@ -236,7 +236,7 @@ miniExInd$SampleTable$N[miniExInd$SampleTable$SampleId %in% miniEx$SelectionTabl
 miniExInd$SampleTable$N[miniExInd$SampleTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[3]] <- 2198
 miniExInd$SampleTable <- miniExInd$SampleTable[SampleId %in% miniEx$SelectionTable$SamplingUnitId,]
 miniExInd$SelectionTable <- miniExInd$SelectionTable[SampleId %in% miniEx$SelectionTable$SamplingUnitId,]
-miniExInd$StratificationVariables <- miniExInd$StratificationVariables[SampleId %in% miniEx$StratificationVariables$SamplingUnitId,]
+miniExInd$StratificationVariables <- miniExInd$StratificationVariables[SampleId %in% miniEx$SelectionTable$SamplingUnitId,]
 
 miniExInd$SelectionTable$InclusionProbability[miniExInd$SelectionTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[1]] <- 38/420
 miniExInd$SelectionTable$InclusionProbability[miniExInd$SelectionTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[2]] <- 60/1785
@@ -246,6 +246,7 @@ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeig
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(miniEx, psuEst)
 
 expect_true(abs(popEst$Abundance$Abundance - 10232.75)<1e-2)
+expect_true(abs(popEst$Abundance$Abundance * popEst$Variables$Mean[popEst$Variables$Variable=="IndividualRoundWeight"] - popEst$Variables$Total[popEst$Variables$Variable=="IndividualRoundWeight"]) < 1e-6)
 
 #add for variance as well
 #expect_lte((hhCovar[1] - 73125.74) / 73125.74, 0.001)
