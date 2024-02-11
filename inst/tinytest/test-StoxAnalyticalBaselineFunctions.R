@@ -157,7 +157,7 @@ expect_true(sum(!is.na(psuEst$Variables$Mean))>0)
 
 #check that unsampled strata gives NAs
 lengthStratMissingStrata <-  RstoxFDA::DefineIndividualSamplingParameters(NULL, ss, "LengthStratified", c("IndividualAge"), LengthInterval = 5)
-psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, lengthStratMissingStrata, "IndividualRoundWeight", c("IndividualAge"))
+expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, lengthStratMissingStrata, "IndividualRoundWeight", c("IndividualAge")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
 
 expect_true(nrow(psuEst$DomainVariables)==length(unique(ss$Individual$IndividualAge)))
 expect_true("NA" %in% psuEst$DomainVariables$Domain)
@@ -177,28 +177,32 @@ expect_true(sum(!is.na(psuEst$Variables$Mean))>0)
 
 stationDesign <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData = ss, SamplingUnitId = "Haul", StratificationColumns = "Gear")
 sexStrat <-  RstoxFDA::DefineIndividualSamplingParameters(NULL, ss, "Stratified", c("IndividualAge"), StratificationColumns = "IndividualSex")
-psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex"))
-
-popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
-popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
+expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
+expect_error(popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst), "Cannot estimate. Estimates are not provided for all samples in 'AnalyticalPSUEstimateData'. Missing for SamplingUnitIds:")
 
 #Test that Abundance and Frequency are NA for unsampled strata (Domain Sex is Unsampled for strata unkown sex)
-expect_true(nrow(popEst$Abundance[is.na(Domain)])>0)
-expect_true(all(is.na(popEst$Abundance[is.na(Domain)]$Abundance)))
-expect_true(all(is.na(popEst$Abundance[is.na(Domain)]$Frequency)))
+expect_true(nrow(psuEst$Abundance[is.na(Domain)])>0)
+expect_true(all(is.na(psuEst$Abundance[is.na(Domain)]$Abundance)))
+expect_true(all(is.na(psuEst$Abundance[is.na(Domain)]$Frequency)))
 
 #Test that Mean and Total NA for unsampled strata
-expect_true(nrow(popEst$Variables[is.na(Domain)])>0)
-expect_true(all(is.na(popEst$Variables[is.na(Domain)]$Total)))
-expect_true(all(is.na(popEst$Variables[is.na(Domain)]$Mean)))
+expect_true(nrow(psuEst$Variables[is.na(Domain)])>0)
+expect_true(all(is.na(psuEst$Variables[is.na(Domain)]$Total)))
+expect_true(all(is.na(psuEst$Variables[is.na(Domain)]$Mean)))
 
 #Test that Mean is NaN and Total is 0 for zero-abundance domains
+sexStrat <-  RstoxFDA::DefineIndividualSamplingParameters(NULL, ss, "Stratified", c("IndividualTotalLength"), StratificationColumns = "IndividualSex")
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualTotalLength", c("IndividualSex"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
+
 zeroAbund <- popEstMeanOfMeans$Abundance[popEstMeanOfMeans$Abundance$Frequency==0]
 NaNMeans <- popEstMeanOfMeans$Variables[is.nan(popEstMeanOfMeans$Variables$Mean)]
 zeroTotals <- popEstMeanOfMeans$Variables[popEstMeanOfMeans$Variables$Total==0]
 expect_true(nrow(zeroAbund)>0)
 expect_true(nrow(zeroAbund)==nrow(NaNMeans))
-
+browser()
 
 #build herring example here. 
 stationDesign <- RstoxFDA::CatchLotterySamplingExample
@@ -247,6 +251,21 @@ popEst <- RstoxFDA:::AnalyticalPopulationEstimate(miniEx, psuEst)
 
 expect_true(abs(popEst$Abundance$Abundance - 10232.75)<1e-2)
 expect_true(abs(popEst$Abundance$Abundance * popEst$Variables$Mean[popEst$Variables$Variable=="IndividualRoundWeight"] - popEst$Variables$Total[popEst$Variables$Variable=="IndividualRoundWeight"]) < 1e-6)
+
+#check that domainEst sums to total est
+psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"), "IndividualSex")
+popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(miniEx, psuEstDomain)
+
+expect_true(length(unique(popEstDomain$Abundance$Domain))>1)
+expect_true(abs(sum(popEstDomain$Abundance$Abundance)-sum(popEst$Abundance$Abundance))<1e-6)
+expect_true(abs(sum(popEstDomain$Variables$Total)-sum(popEst$Variables$Total))<1e-6)
+
+#check that frequencies add to one for unstratified estimate
+expect_true(abs(sum(popEstDomain$Abundance$Frequency)-1) < 1e-6)
+expect_true(abs(sum(popEst$Abundance$Frequency)-1) < 1e-6)
+
+#check that means are consistent between domain estimate and total estimate
+expect(abs(sum(popEstDomain$Variables$Mean*popEstDomain$Abundance$Abundance, na.rm=T)/sum(popEstDomain$Abundance$Abundance) - popEst$Variables$Mean)<1e-6)
 
 #add for variance as well
 #expect_lte((hhCovar[1] - 73125.74) / 73125.74, 0.001)
