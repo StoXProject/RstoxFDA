@@ -141,11 +141,6 @@ NULL
 #'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
 #'  }
 #'  
-#'  The Assignment encodes which identifier in sample records (e.g. \code{\link[RstoxData]{StoxBioticData}}) correspond to the SamplingUnitId
-#'  \describe{
-#'   \item{DataRecordsId}{Optional, character. The identifier in data records that correspond to SamplingUnitId}
-#'  }
-#'  This field is optional, since SamplingParameters may be subject to processing before they are assigned to data records.
 #' 
 #' Optional columns may be NA.
 #' 
@@ -179,13 +174,7 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
   if (!all(sapply(PSUSamplingParametersData, data.table::is.data.table))){
     return(FALSE)
   }
-  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables", "Assignment") %in% names(PSUSamplingParametersData))){
-    return(FALSE)
-  }
-  if (nrow(PSUSamplingParametersData$Assignment)>1){
-    return(FALSE)
-  }
-  if (!("DataRecordsId" %in% names(PSUSamplingParametersData$Assignment))){
+  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables") %in% names(PSUSamplingParametersData))){
     return(FALSE)
   }
   if (!all(c("Stratum", "N", "n", "SelectionMethod", "FrameDescription") %in% names(PSUSamplingParametersData$SampleTable))){

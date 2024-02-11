@@ -41,7 +41,7 @@ assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Str
   sampleTable <- sampleTable[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
   stratificationTable <- flatStox[,.SD,.SDcol=c("Stratum", StratificationColumns)]
   stratificationTable <- stratificationTable[!duplicated(stratificationTable$Stratum),]
-  assignmentTable <- data.table::data.table(DataRecordsId=character())
+  assignmentTable <- data.table::data.table(DataRecordId=character())
   
   designParameters <- list()
   designParameters$SampleTable <- sampleTable
@@ -78,7 +78,7 @@ parseDesignParameters <- function(filename){
   selectionTable <- designParameters[,.SD,.SDcol=c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "HTsamplingWeight", "SelectionProbability", "HHsamplingWeight", "SelectionDescription")]
   sampleTable <- designParameters[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
   stratificationTable <- designParameters[,.SD,.SDcol=c("Stratum", names(designParameters)[!(names(designParameters) %in% names(selectionTable)) & !(names(designParameters) %in% names(sampleTable))])]
-  assignmentTable <- data.table::data.table(DataRecordsId=character())
+  assignmentTable <- data.table::data.table(DataRecordId=character())
   
   if (any(is.na(sampleTable$Stratum)) | any(is.na(selectionTable$Stratum))){
     stop("Invalid design specification. The mandatory column 'Stratum' may not contain missing values (NA).")
@@ -142,8 +142,9 @@ parseDesignParameters <- function(filename){
 #'  execution halts with error if any are violated.
 #'  
 #'  The DefinitionMethod 'AdHocStoxBiotic' constructs Sampling Design Parameters from data, 
-#'  assuming equal probability sampling with fixed sample size, selection without replacement and complete response.
-#'  This is a reasonable approximation if within-strata sampling is approximately simple random selections, 
+#'  assuming equal probability sampling with fixed sample size, selection with replacement and complete response.
+#'  These is a reasonable approximation if within-strata sampling is approximately simple random selections,
+#'  the sample intensitiy is low (only a small fraction of the population is sampled),
 #'  and non-response is believed to be at random.
 #' @param processData \code{\link[RstoxFDA]{PSUSamplingParametersData}} as returned from this function.
 #' @param DefinitionMethod 'ResourceFile' or 'AdHocStoxBiotic'
@@ -433,12 +434,16 @@ DefineSamplingHierarchy <- function(IndividualSamplingParametersData, Hierarchy=
 
 #' Assign PSU Sampling Parameters
 #' @description 
-#'  Assigns data records to PSU Sampling Parameters and provides non-response adjustments for
-#'  selected PSUs that was not sampled.
+#'  Assigns data records to PSU Sampling Parameters, provides non-response adjustments for
+#'  selected PSUs that was not sampled, and changes SamplingUnitId to that used to identify data records.
 #' @details 
-#'  Some sampling parameters provided in ~\code{\link[RstoxFDA]{PSUSamplingParametersData}} are only
+#'  Some sampling parameters provided in \code{\link[RstoxFDA]{PSUSamplingParametersData}} are only
 #'  interpretable for sampling with complete response. This function adjusts these parameters, removes non-respondents from the 
-#'  ~\code{\link[RstoxFDA]{PSUSamplingParametersData}}, and checks that all responding PSUs are present in data records.
+#'  \code{\link[RstoxFDA]{PSUSamplingParametersData}}, and checks that all responding PSUs are present in data records.
+#'  
+#'  After correcting for non-response, the SamplingUnitId in \code{\link[RstoxFDA]{PSUSamplingParametersData}} will be replaced
+#'  by an ID (argument 'DataRecordId') so that sampling units can be brought into correspondance with how they are identified in lower
+#'  level sampling (\code{\link[RstoxFDA]{IndividualSamplingParametersData}})
 #'  
 #'  If any respondants (rows of the SelectionTable of PSUSamplingParametersData that does not have NA for SamplingUnitId) are not
 #'  found in 'SamplingUnitId', execution halts with an error.
@@ -455,35 +460,49 @@ DefineSamplingHierarchy <- function(IndividualSamplingParametersData, Hierarchy=
 #'   \item{MissingAtRandom}{A response propensity is estimated for each stratum as the fraction of the sample resonding, and sample size (n) and InclusionProbability are adjusted by multiplying with this propensity. Sampling weights are adjusted by dividing them with their sum over repsondents in a stratum.}
 #'  }
 #'  
-#' @param PSUSamplingParametersData ~\code{\link[RstoxFDA]{PSUSamplingParametersData}} with sampling parameters for PSU selection
-#' @param StoxBioticData ~\code{\link[RstoxData]{StoxBioticData}} with data records for responding PSUs.
-#' @param DataRecordsId name of Variable in ~\code{\link[RstoxData]{StoxBioticData}} that represent records of sampled PSUs
+#' @param PSUSamplingParametersData \code{\link[RstoxFDA]{PSUSamplingParametersData}} with sampling parameters for PSU selection
+#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} with data records for responding PSUs.
+#' @param DataRecordId name of Variable in \code{\link[RstoxData]{StoxBioticData}} that represent records of sampled PSUs
+#' @param SamplingUnitId name of Variable in \code{\link[RstoxData]{StoxBioticData}} that represent the SamplingUnitId of PSUs selected for sampling
 #' @param DefinitionMethod The method for dealing with non-response, e.g. 'MissingAtRandon'
-#' @return ~\code{\link[RstoxFDA]{PSUSamplingParametersData}}
+#' @return \code{\link[RstoxFDA]{PSUSamplingParametersData}} without non-respondent and with 'SamplingUnitId' changed
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
 #' @export
-AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticData, DataRecordsId, DefinitionMethod=c("MissingAtRandom")){
+AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticData, SamplingUnitId, DataRecordId, DefinitionMethod=c("MissingAtRandom")){
   checkMandatory(PSUSamplingParametersData, "PSUSamplingParametersData")
   checkMandatory(StoxBioticData, "StoxBioticData")
-  checkMandatory(DataRecordsId, "DataRecordsId")
+  checkMandatory(DataRecordId, "DataRecordId")
+  checkMandatory(SamplingUnitId, "SamplingUnitId")
   checkOptions(DefinitionMethod, "DefinitionMethod", c("MissingAtRandom"))
   
   level <- NULL
   for (l in names(StoxBioticData)){
-    if (DataRecordsId %in% names(StoxBioticData[[l]])){
+    if (SamplingUnitId %in% names(StoxBioticData[[l]])){
+      if (!is.null(level)){
+        stop("The 'SamplingUnitId' (", SamplingUnitId ,") exists on several levels in StoxBioticData")
+      }
       level <- l
     }
   }
+
   if (is.null(level)){
-    stop(paste("The variable provided for DataRecordsId (", DataRecordsId,") is not a variable in 'StoxBioticData'"), sep="")
+    stop(paste("The variable provided for SamplingUnitId (", SamplingUnitId,") is not a variable in 'StoxBioticData'"), sep="")
   }
-  
+    
+  if (!(DataRecordId %in% names(StoxBioticData[[level]]))){
+    stop(paste("The column provided for 'DataRecordId' (", DataRecordId,") is not found on level '", level, "', where 'SamplingUnitId' (",SamplingUnitId,") is provided", sep=""))
+  }
+
+  if (!all(duplicated(StoxBioticData[[level]][[DataRecordId]])==duplicated(StoxBioticData[[level]][[SamplingUnitId]]))){
+    stop("DataRecordIds and SamplingUnitIds are not in correspondance with each other in StoxBioticData")    
+  }
+
   records <- PSUSamplingParametersData$SelectionTable$SamplingUnitId[!is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId)]
-  if (!all(records %in% StoxBioticData[[l]][[DataRecordsId]])){
-    missing <- records[!(records %in% StoxBioticData[[l]][[DataRecordsId]])]
-    stop(paste("Records are not found for all sampled PSUs. Missing for the following SamplingUnitIds (", DataRecordsId,"): ", paste(truncateStringVector(missing), collapse=","), sep=""))
+  if (!all(records %in% StoxBioticData[[level]][[SamplingUnitId]])){
+    missing <- records[!(records %in% StoxBioticData[[l]][[SamplingUnitId]])]
+    stop(paste("Records are not found for all sampled PSUs. Missing for the following SamplingUnitIds (", SamplingUnitId,"): ", paste(truncateStringVector(missing), collapse=","), sep=""))
   }
   
   if (DefinitionMethod == "MissingAtRandom"){
@@ -504,7 +523,11 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
     
   }
   
-  PSUSamplingParametersData$Assignment$DataRecordsId <- DataRecordsId
+  #recode sampling units id
+  map <- StoxBioticData[[level]][!duplicated(get(SamplingUnitId)),.SD,.SDcol=c(SamplingUnitId, DataRecordId)]
+  
+  PSUSamplingParametersData$SelectionTable$SamplingUnitId <- map[[DataRecordId]][match(PSUSamplingParametersData$SelectionTable$SamplingUnitId, map[[SamplingUnitId]])]
+  
   return(PSUSamplingParametersData)
 }
 

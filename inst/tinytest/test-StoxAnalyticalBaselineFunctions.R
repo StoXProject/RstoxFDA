@@ -11,8 +11,12 @@ expect_equal(sum(designParams$SelectionTable$HTsamplingWeight), 1)
 expect_equal(sum(designParams$SelectionTable$HHsamplingWeight), 1)
 
 # test assignment to data
-expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "MissingAtRandom"))
-designParamsCorrected <- RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "HaulKey", "MissingAtRandom")
+expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "MissingAtRandom"), "argument \"DataRecordId\" is missing, with no default")
+expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "Haul", "Sample", "MissingAtRandom"), "The column provided for 'DataRecordId' ")
+expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "HaulKey", "Haul", "MissingAtRandom"), "The 'SamplingUnitId' ")
+ex <- RstoxFDA::CatchLotteryExample
+ex$Haul$serialnumber <- RstoxFDA::CatchLotteryExample$Haul$HaulKey
+designParamsCorrected <- RstoxFDA::AssignPSUSamplingParameters(designParams, ex, "serialnumber", "Haul", "MissingAtRandom")
 expect_equal(sum(designParamsCorrected$SelectionTable$HTsamplingWeight),1)
 expect_equal(sum(designParamsCorrected$SelectionTable$HHsamplingWeight),1)
 #HT should be approximately the same after non-response correction
@@ -26,7 +30,8 @@ designParamsSB <- RstoxFDA::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic",
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsSB))
 #compare names of output with stratification variables to output withoutsss
 
-browser()
+expect_true(all(!is.na(designParamsSB$SelectionTable$HHsamplingWeight)))
+expect_true(all(designParamsSB$SampleTable$SelectionMethod=="FSWR"))
 #some check that method and incprob is reasonable.
 
 expect_true(all(names(designParamsSB$SampleTable) == names(designParams$SampleTable)))
@@ -198,10 +203,14 @@ expect_true(nrow(zeroAbund)==nrow(NaNMeans))
 # Add Correctness test for minimal example
 # Add variances
 
+stop()
 #build herring example here. Need to connect SampleUnitId (Haul) to SampleId (Sample)
 stationDesign <- RstoxFDA::CatchLotterySamplingExample
-srs <-  RstoxFDA::DefineIndividualSamplingParameters(NULL, RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
-psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
+ex <- RstoxFDA::CatchLotteryExample
+ex$Haul$serialnumber <- ex$Haul$HaulKey
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+srs <-  RstoxFDA::DefineIndividualSamplingParameters(NULL, ex, "SRS", c("IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
 
