@@ -638,11 +638,11 @@ addZeroesVariables <- function(table, strata, domains){
   
 }
 
-covarAbundance <- function(Totals, PSUSampling){
+covarAbundance <- function(Totals, PSUSampling, MeanOfMeans){
 
   tab <- merge(PSUSampling, Totals, by=c("Stratum", "Domain"), suffixes=c(".PSU", ".Total"))
   tab$AbundanceDev <- tab$Abundance.PSU/tab$SelectionProbability - tab$Abundance.Total
-  tab$FrequencyDev <- tab$Frequency.PSU*tab$HHsamplingWeight - tab$Frequency.Total
+  tab$FrequencyDev <- tab$Frequency.PSU - tab$Frequency.Total
   tab <- tab[,.SD,.SDcol=c("Stratum", "Domain", "SamplingUnitId", "AbundanceDev", "FrequencyDev")]
   
   sampleSize <- PSUSampling[,list(n=length(unique(SamplingUnitId))), by="Stratum"]
@@ -658,6 +658,11 @@ covarAbundance <- function(Totals, PSUSampling){
   
   covar <- sumOfProducts[,list(AbundanceCovariance=AbundanceSOP/(n*(n-1)), FrequencyCovariance=FrequencySOP/(n*(n-1))), by=c("Stratum", "Domain1", "Domain2")]
 
+  if (!MeanOfMeans){
+    StrataAbundance <- Totals[,list(StrataAbundance=sum(Abundance)), by="Stratum"]
+    covar$FrequencyCovariance <- covar$AbundanceCovariance * (1/StrataAbundance$StrataAbundance[match(covar$Stratum, StrataAbundance$Stratum)])**2
+  }
+  
   return(covar)
 }
 
@@ -716,7 +721,14 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   selAbundance <- addZeroesAbundance(selAbundance, CombinedStrata, AnalyticalPSUEstimateData$DomainVariables)
   AbundanceTable <- selAbundance[,list(Abundance=mean(Abundance/SelectionProbability)*sum(HHsamplingWeight), Frequency=sum(HHsamplingWeight*Frequency)/sum(HHsamplingWeight)), by=c("Stratum", "Domain")]    
   
-  AbundanceCovarianceTable <- covarAbundance(AbundanceTable, selAbundance)
+  if (!MeanOfMeans){
+    StrataAbundance <- AbundanceTable[,list(StrataAbundance=sum(Abundance)), by=c("Stratum")]
+    AbundanceTable <- merge(AbundanceTable, StrataAbundance, by=c("Stratum"))
+    AbundanceTable$Frequency <- AbundanceTable$Abundance / AbundanceTable$StrataAbundance
+    AbundanceTable$StrataAbundance <- NULL
+  }
+  
+  AbundanceCovarianceTable <- covarAbundance(AbundanceTable, selAbundance, MeanOfMeans)
   
   selVariables <- merge(PSUSamplingParametersData$SelectionTable, AnalyticalPSUEstimateData$Variables, by.x="SamplingUnitId", by.y="SampleId", suffixes = c(".PSU", ".lower"))
   selVariables$Stratum <- paste("PSU-stratum:", selVariables$Stratum.PSU, " Lower-stratum:", selVariables$Stratum.lower, sep="")
