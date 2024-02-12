@@ -595,37 +595,35 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
 }
 
 #' @noRd
-addZeroesAbundance <- function(table, strata, domains){
+addZeroesAbundance <- function(table, domains){
   samplingParameters <- table[!duplicated(SamplingUnitId), .SD, .SDcol=c("SamplingUnitId", "InclusionProbability", "HTsamplingWeight", "SelectionProbability", "HHsamplingWeight")]
-  
-  allCombos <- data.table::CJ(Stratum=strata$Stratum, Domain=domains$Domain, SamplingUnitId=table$SamplingUnitId)
-  allCombos <- merge(allCombos, strata[,c("Stratum", "LowerStratum")], by="Stratum")
-  missingCombos <- allCombos[!(paste(allCombos$LowerStratum, allCombos$Domain) %in% paste(table$Stratum.lower, table$Domain))]
-  missingCombos$LowerStratum <- NULL
-  
-  zeroes <- merge(table[0,], missingCombos, by=c("SamplingUnitId", "Stratum", "Domain"), all.y=T)
+
+  allCombos <- data.table::CJ(Domain=domains$Domain, SamplingUnitId=table$SamplingUnitId, unique = T)
+  allCombos <- merge(allCombos, table[!duplicated(SamplingUnitId),c("SamplingUnitId", "Stratum", "Stratum.lower")], by="SamplingUnitId")
+  missingCombos <- allCombos[!(paste(Stratum, Domain) %in% paste(table$Stratum, table$Domain)),]
+
+  zeroes <- merge(table[0,], missingCombos, by.x=c("SamplingUnitId", "Stratum", "Domain", "Stratum.lower"), by.y=c("SamplingUnitId", "Stratum", "Domain", "Stratum.lower"), all.y=T)
   zeroes$InclusionProbability <- samplingParameters$InclusionProbability[match(zeroes$SamplingUnitId, samplingParameters$SamplingUnitId)]
   zeroes$HTsamplingWeight < samplingParameters$HTsamplingWeight[match(zeroes$SamplingUnitId, samplingParameters$SamplingUnitId)]
   zeroes$SelectionProbability <- samplingParameters$SelectionProbability[match(zeroes$SamplingUnitId, samplingParameters$SamplingUnitId)]
   zeroes$HHsamplingWeight <- samplingParameters$HHsamplingWeight[match(zeroes$SamplingUnitId, samplingParameters$SamplingUnitId)]
   zeroes$Abundance <- 0
   zeroes$Frequency <- 0
-  
+
   return(rbind(table, zeroes))
   
 }
 
 #' @noRd
-addZeroesVariables <- function(table, strata, domains){
+addZeroesVariables <- function(table, domains){
   
   samplingParameters <- table[!duplicated(SamplingUnitId), .SD, .SDcol=c("SamplingUnitId", "InclusionProbability", "HTsamplingWeight", "SelectionProbability", "HHsamplingWeight")]
   
-  allCombos <- data.table::CJ(Stratum=strata$Stratum, Domain=domains$Domain, SamplingUnitId=table$SamplingUnitId, Variable=unique(table$Variable))
-  allCombos <- merge(allCombos, strata[,c("Stratum", "LowerStratum")], by="Stratum")
+  allCombos <- data.table::CJ(Domain=domains$Domain, SamplingUnitId=table$SamplingUnitId, Variable=unique(table$Variable), unique = T)
+  allCombos <- merge(allCombos, strata[!duplicated(SamplingUnitId),c("SamplingUnitId", "Stratum", "Stratum.lower")], by="SamplingUnitId")
   missingCombos <- allCombos[!(paste(allCombos$LowerStratum, allCombos$Domain, allCombos$Variable) %in% paste(table$Stratum.lower, table$Domain, table$Variable))]
-  missingCombos$LowerStratum <- NULL
 
-  zeroes <- merge(table[0,], missingCombos, by=c("SamplingUnitId", "Stratum", "Domain", "Variable"), all.y=T)
+  zeroes <- merge(table[0,], missingCombos, by.x=c("SamplingUnitId", "Stratum", "Stratum.lower", "Domain", "Variable"), by.y=c("SamplingUnitId", "Stratum", "Stratum.lower", "Domain", "Variable"), all.y=T)
 
   zeroes$InclusionProbability <- samplingParameters$InclusionProbability[match(zeroes$SamplingUnitId, samplingParameters$SamplingUnitId)]
   zeroes$HTsamplingWeight < samplingParameters$HTsamplingWeight[match(zeroes$SamplingUnitId, samplingParameters$SamplingUnitId)]
@@ -633,6 +631,8 @@ addZeroesVariables <- function(table, strata, domains){
   zeroes$HHsamplingWeight <- samplingParameters$HHsamplingWeight[match(zeroes$SamplingUnitId, samplingParameters$SamplingUnitId)]
   zeroes$Total <- 0
   zeroes$Mean <- NaN
+  
+  browser()
   
   return(rbind(table, zeroes))
   
@@ -648,11 +648,14 @@ covarAbundance <- function(Totals, PSUSampling, MeanOfMeans){
   sampleSize <- PSUSampling[,list(n=length(unique(SamplingUnitId))), by="Stratum"]
 
   cross <- data.table::CJ(Domain1=unique(Totals$Domain), Domain2=unique(Totals$Domain))
-  cross <- merge(cross, tab, by.x=c("Domain1"), by.y=c("Domain"), allow.cartesian = T)
+  cross <- cross[cross$Domain1>=cross$Domain2,]
+  cross <- merge(cross, tab[!duplicated(paste(Stratum, Domain, SamplingUnitId)),.SD,.SDcol=c("Stratum", "Domain", "SamplingUnitId")], by.x=c("Domain1"), by.y=c("Domain"), allow.cartesian = T)
   cross <- merge(cross, tab, by.x=c("SamplingUnitId", "Stratum", "Domain2"), by.y=c("SamplingUnitId", "Stratum", "Domain"), suffixes = c("1", "2"))
   cross$AbundanceDevProduct <- cross$AbundanceDev1 * cross$AbundanceDev2
   cross$FrequencyDevProduct <- cross$FrequencyDev1 * cross$FrequencyDev2
-  
+
+  browser()
+    
   sumOfProducts <- cross[,list(AbundanceSOP=sum(AbundanceDevProduct), FrequencySOP=sum(FrequencyDevProduct)), by=c("Stratum", "Domain1", "Domain2")]
   sumOfProducts <- merge(sumOfProducts, sampleSize, by="Stratum")
   
@@ -671,18 +674,21 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
   tab <- merge(PSUSampling, Totals, by=c("Stratum", "Domain", "Variable"), suffixes=c(".PSU", ".Total"))
   tab$TotalDev <- tab$Total.PSU/tab$SelectionProbability - tab$Total.Total
   tab$MeanDev <- tab$Mean.PSU*tab$HHsamplingWeight - tab$Mean.Total
-  tab <- tab[,.SD,.SDcol=c("Stratum", "Domain", "SamplingUnitId", "Variable", "TotalDev", "MeanDev")]
+  tab <- tab[,.SD,.SDcol=c("Stratum", "Domain", "SamplingUnitId", "Variable", "TotalDev", "MeanDev", "HHsamplingWeight")]
   
   sampleSize <- PSUSampling[,list(n=length(unique(SamplingUnitId))), by="Stratum"]
-  browser()
+  
   cross <- data.table::CJ(Domain1=unique(Totals$Domain), Variable1=unique(Totals$Variable), Domain2=unique(Totals$Domain), Variable2=unique(Totals$Variable))
   cross <- merge(cross, tab, by.x=c("Domain1", "Variable1"), by.y=c("Domain", "Variable"), allow.cartesian = T)
-  stop("Doesnt always work.")
-  cross <- merge(cross, tab, by.x=c("SamplingUnitId", "Stratum", "Domain2", "Variable2"), by.y=c("SamplingUnitId", "Stratum", "Domain", "Variable"), suffixes = c("1", "2"))
+  
+  
+  cross <- merge(cross, tab, by.x=c("Stratum", "Domain2", "Variable2"), by.y=c("Stratum", "Domain", "Variable"), suffixes = c("1", "2"))
   cross$TotalDevProduct <- cross$TotalDev1 * cross$TotalDev2
   cross$MeanDevProduct <- cross$MeanDev1 * cross$MeanDev2
-  
-  sumOfProducts <- cross[,list(TotalSOP=sum(TotalDevProduct), MeanSOP=sum(MeanDevProduct)), by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2")]
+  cross$coSampled <- as.numeric(!is.na(cross$MeanDev1)) * as.numeric(!is.na(cross$MeanDev2))
+  browser()
+  stop("Figure out how to deal with cross domain covariance (cosampled domains)")
+  sumOfProducts <- cross[,list(TotalSOP=sum(TotalDevProduct), MeanSOP=sum(MeanDevProduct[coSampled==1]), CoSampled=sum(coSampled), Freq1=sum(HHsamplingWeight1), Freq2=sum(HHsamplingWeight2)), by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2")]
   sumOfProducts <- merge(sumOfProducts, sampleSize, by="Stratum")
   
   covar <- sumOfProducts[,list(TotalCovariance=TotalSOP/(n*(n-1)), MeanCovariance=MeanSOP/(n*(n-1))), by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2")]
@@ -692,7 +698,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
 }
 
 #' For strata with zero abundance, Means are NaN.
-#' For strata with missing sampling, Abundance, Frequencies, Totals and Means are NA
+#' For strata with missing sampling or missing totals, Abundance, Frequencies, Totals and Means are NA
 #' @noRd
 AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPSUEstimateData, MeanOfMeans=F){
 
@@ -718,7 +724,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   
   selAbundance <- merge(PSUSamplingParametersData$SelectionTable, AnalyticalPSUEstimateData$Abundance, by.x="SamplingUnitId", by.y="SampleId", suffixes = c(".PSU", ".lower"))
   selAbundance$Stratum <- paste("PSU-stratum:", selAbundance$Stratum.PSU, " Lower-stratum:", selAbundance$Stratum.lower, sep="")
-  selAbundance <- addZeroesAbundance(selAbundance, CombinedStrata, AnalyticalPSUEstimateData$DomainVariables)
+  selAbundance <- addZeroesAbundance(selAbundance, AnalyticalPSUEstimateData$DomainVariables)
   AbundanceTable <- selAbundance[,list(Abundance=mean(Abundance/SelectionProbability)*sum(HHsamplingWeight), Frequency=sum(HHsamplingWeight*Frequency)/sum(HHsamplingWeight)), by=c("Stratum", "Domain")]    
   
   if (!MeanOfMeans){
@@ -732,25 +738,25 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   
   selVariables <- merge(PSUSamplingParametersData$SelectionTable, AnalyticalPSUEstimateData$Variables, by.x="SamplingUnitId", by.y="SampleId", suffixes = c(".PSU", ".lower"))
   selVariables$Stratum <- paste("PSU-stratum:", selVariables$Stratum.PSU, " Lower-stratum:", selVariables$Stratum.lower, sep="")
-  selVariables <- addZeroesVariables(selVariables, CombinedStrata, AnalyticalPSUEstimateData$DomainVariables)
+  selVariables <- addZeroesVariables(selVariables, AnalyticalPSUEstimateData$DomainVariables)
   VariablesTable <- selVariables[,list(Total=mean(Total/SelectionProbability)*sum(HHsamplingWeight), Mean=sum(Mean*HHsamplingWeight)/sum(HHsamplingWeight)), by=c("Stratum", "Domain", "Variable")]
   
   if (!MeanOfMeans){
     VariablesTable$Mean <- VariablesTable$Total / AbundanceTable$Abundance[match(paste(VariablesTable$Stratum, VariablesTable$Domain), paste(AbundanceTable$Stratum, AbundanceTable$Domain))]
   }
 
-  #VariablesCovarianceTable <- covarVariables(VariablesTable, selVariables, MeanOfMeans)
+  VariablesCovarianceTable <- covarVariables(VariablesTable, selVariables, MeanOfMeans)
   
   output <- list()
   output$Abundance <- AbundanceTable
   output$Variables <- VariablesTable
   output$AbundanceCovariance <- AbundanceCovarianceTable
-  #output$VariablesCovariance <- VariablesCovarianceTable
+  output$VariablesCovariance <- VariablesCovarianceTable
   output$DomainVariables <- AnalyticalPSUEstimateData$DomainVariables
   
   CombinedStrata$LowerStratum <- NULL
   output$StratificationVariables <- CombinedStrata
-
+warning("Handled unsampled PSU strata")
   return(output)
 }
 

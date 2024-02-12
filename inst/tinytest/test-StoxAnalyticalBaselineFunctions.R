@@ -270,6 +270,9 @@ expect_true(abs(sum(popEstDomain$Variables$Mean*popEstDomain$Abundance$Abundance
 #check correctness univariate variance
 expect_true((abs(popEst$AbundanceCovariance$AbundanceCovariance - 73125.74) / 73125.74) < 0.001)
 
+
+warning("Need tests for frequency covariances.")
+
 browser()
 # Fix issue with variances for Variables
 # Test all variances. Abundance, Total, Mean and Frequency, and check def for Mean of Means
