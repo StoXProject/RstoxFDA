@@ -265,14 +265,15 @@ expect_true(abs(sum(popEstDomain$Abundance$Frequency)-1) < 1e-6)
 expect_true(abs(sum(popEst$Abundance$Frequency)-1) < 1e-6)
 
 #check that means are consistent between domain estimate and total estimate
-expect(abs(sum(popEstDomain$Variables$Mean*popEstDomain$Abundance$Abundance, na.rm=T)/sum(popEstDomain$Abundance$Abundance) - popEst$Variables$Mean)<1e-6)
+expect_true(abs(sum(popEstDomain$Variables$Mean*popEstDomain$Abundance$Abundance, na.rm=T)/sum(popEstDomain$Abundance$Abundance) - popEst$Variables$Mean)<1e-6)
 
-#add for variance as well
-#expect_lte((hhCovar[1] - 73125.74) / 73125.74, 0.001)
+#check correctness univariate variance
+expect_true((abs(popEst$AbundanceCovariance$AbundanceCovariance - 73125.74) / 73125.74) < 0.001)
 
 browser()
-# Remove assignemtn from exampledata
-# Add variances
+# Fix issue with variances for Variables
+# Test all variances. Abundance, Total, Mean and Frequency, and check def for Mean of Means
+# Redocument AnalyticalPopulationEstimate to include covariatestructures
 #stop("Document AnalyticalPSUEstimate.")
 #stop("Expose collapseStrata and test")
 #stop("Test collapseStrata with both HH and HT")

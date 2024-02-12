@@ -639,26 +639,50 @@ addZeroesVariables <- function(table, strata, domains){
 }
 
 covarAbundance <- function(Totals, PSUSampling){
-  warning("revisit when point estimates are certain")
-  
+
   tab <- merge(PSUSampling, Totals, by=c("Stratum", "Domain"), suffixes=c(".PSU", ".Total"))
   tab$AbundanceDev <- tab$Abundance.PSU/tab$SelectionProbability - tab$Abundance.Total
   tab$FrequencyDev <- tab$Frequency.PSU*tab$HHsamplingWeight - tab$Frequency.Total
   tab <- tab[,.SD,.SDcol=c("Stratum", "Domain", "SamplingUnitId", "AbundanceDev", "FrequencyDev")]
   
+  sampleSize <- PSUSampling[,list(n=length(unique(SamplingUnitId))), by="Stratum"]
+
   cross <- data.table::CJ(Domain1=unique(Totals$Domain), Domain2=unique(Totals$Domain))
   cross <- merge(cross, tab, by.x=c("Domain1"), by.y=c("Domain"), allow.cartesian = T)
   cross <- merge(cross, tab, by.x=c("SamplingUnitId", "Stratum", "Domain2"), by.y=c("SamplingUnitId", "Stratum", "Domain"), suffixes = c("1", "2"))
   cross$AbundanceDevProduct <- cross$AbundanceDev1 * cross$AbundanceDev2
   cross$FrequencyDevProduct <- cross$FrequencyDev1 * cross$FrequencyDev2
   
-  covar <- cross[,list(AbundanceCovariance=sum(AbundanceDevProduct), FrequencyCovariance=sum(FrequencyDevProduct)), by=c("Stratum", "Domain1", "Domain2")]
+  sumOfProducts <- cross[,list(AbundanceSOP=sum(AbundanceDevProduct), FrequencySOP=sum(FrequencyDevProduct)), by=c("Stratum", "Domain1", "Domain2")]
+  sumOfProducts <- merge(sumOfProducts, sampleSize, by="Stratum")
+  
+  covar <- sumOfProducts[,list(AbundanceCovariance=AbundanceSOP/(n*(n-1)), FrequencyCovariance=FrequencySOP/(n*(n-1))), by=c("Stratum", "Domain1", "Domain2")]
+
   return(covar)
 }
 
 covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
   
-  warning("revisit when point estimates are certain")
+  tab <- merge(PSUSampling, Totals, by=c("Stratum", "Domain", "Variable"), suffixes=c(".PSU", ".Total"))
+  tab$TotalDev <- tab$Total.PSU/tab$SelectionProbability - tab$Total.Total
+  tab$MeanDev <- tab$Mean.PSU*tab$HHsamplingWeight - tab$Mean.Total
+  tab <- tab[,.SD,.SDcol=c("Stratum", "Domain", "SamplingUnitId", "Variable", "TotalDev", "MeanDev")]
+  
+  sampleSize <- PSUSampling[,list(n=length(unique(SamplingUnitId))), by="Stratum"]
+  browser()
+  cross <- data.table::CJ(Domain1=unique(Totals$Domain), Variable1=unique(Totals$Variable), Domain2=unique(Totals$Domain), Variable2=unique(Totals$Variable))
+  cross <- merge(cross, tab, by.x=c("Domain1", "Variable1"), by.y=c("Domain", "Variable"), allow.cartesian = T)
+  stop("Doesnt always work.")
+  cross <- merge(cross, tab, by.x=c("SamplingUnitId", "Stratum", "Domain2", "Variable2"), by.y=c("SamplingUnitId", "Stratum", "Domain", "Variable"), suffixes = c("1", "2"))
+  cross$TotalDevProduct <- cross$TotalDev1 * cross$TotalDev2
+  cross$MeanDevProduct <- cross$MeanDev1 * cross$MeanDev2
+  
+  sumOfProducts <- cross[,list(TotalSOP=sum(TotalDevProduct), MeanSOP=sum(MeanDevProduct)), by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2")]
+  sumOfProducts <- merge(sumOfProducts, sampleSize, by="Stratum")
+  
+  covar <- sumOfProducts[,list(TotalCovariance=TotalSOP/(n*(n-1)), MeanCovariance=MeanSOP/(n*(n-1))), by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2")]
+  
+  return(covar)
   
 }
 
@@ -703,12 +727,13 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
     VariablesTable$Mean <- VariablesTable$Total / AbundanceTable$Abundance[match(paste(VariablesTable$Stratum, VariablesTable$Domain), paste(AbundanceTable$Stratum, AbundanceTable$Domain))]
   }
 
-  VariablesCovarianceTable <- covarVariables(VariablesTable, selVariables, MeanOfMeans)
-  
+  #VariablesCovarianceTable <- covarVariables(VariablesTable, selVariables, MeanOfMeans)
   
   output <- list()
   output$Abundance <- AbundanceTable
   output$Variables <- VariablesTable
+  output$AbundanceCovariance <- AbundanceCovarianceTable
+  #output$VariablesCovariance <- VariablesCovarianceTable
   output$DomainVariables <- AnalyticalPSUEstimateData$DomainVariables
   
   CombinedStrata$LowerStratum <- NULL
