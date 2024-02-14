@@ -748,7 +748,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   missingAbund <- AnalyticalPSUEstimateData$Abundance$SampleId[is.na(AnalyticalPSUEstimateData$Abundance$Abundance)]
   missingFreq <- AnalyticalPSUEstimateData$Abundance$SampleId[is.na(AnalyticalPSUEstimateData$Abundance$Frequency)]
   missingTotal <- AnalyticalPSUEstimateData$Variables$SampleId[is.na(AnalyticalPSUEstimateData$Variables$Total)]
-  missingMean <- AnalyticalPSUEstimateData$Variables$SampleId[is.na(AnalyticalPSUEstimateData$Variables$Total) & !is.nan(AnalyticalPSUEstimateData$Variables$Total)]
+  missingMean <- AnalyticalPSUEstimateData$Variables$SampleId[is.na(AnalyticalPSUEstimateData$Variables$Mean) & !is.nan(AnalyticalPSUEstimateData$Variables$Mean)]
   
   if (!MeanOfMeans & (length(missingAbund)>0 | length(missingTotal)>0)){
     msg <- "Cannot estimate. Estimates are not provided for all samples in 'AnalyticalPSUEstimateData'."
@@ -790,7 +790,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   
   selVariables <- merge(PSUSamplingParametersData$SelectionTable, AnalyticalPSUEstimateData$Variables, by.x="SamplingUnitId", by.y="SampleId", suffixes = c(".PSU", ".lower"))
   selVariables$Stratum <- paste("PSU-stratum:", selVariables$Stratum.PSU, " Lower-stratum:", selVariables$Stratum.lower, sep="")
-  VariablesTable <- selVariables[,list(Total=mean(Total/SelectionProbability)*sum(HHsamplingWeight), Mean=sum(Mean[!is.nan(Mean)]*HHsamplingWeight)/sum(HHsamplingWeight[!is.nan(Mean)]), NoMeans=all(is.nan(Mean))), by=c("Stratum", "Domain", "Variable")]
+  VariablesTable <- selVariables[,list(Total=mean(Total/SelectionProbability)*sum(HHsamplingWeight), Mean=sum(Mean[!is.nan(Mean)]*HHsamplingWeight[!is.nan(Mean)])/sum(HHsamplingWeight[!is.nan(Mean)]), NoMeans=all(is.nan(Mean))), by=c("Stratum", "Domain", "Variable")]
   VariablesTable$Mean[VariablesTable$NoMeans] <- NaN
   VariablesTable$NoMeans <- NULL
   
@@ -809,7 +809,25 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   
   CombinedStrata$LowerStratum <- NULL
   output$StratificationVariables <- CombinedStrata
-warning("Handled unsampled PSU strata")
+  
+  missingStrata <- output$StratificationVariables$Stratum[!(output$StratificationVariables$Stratum %in% AbundanceTable$Stratum)]
+  if (length(missingStrata)>0){
+    strataDomains <- data.table::CJ(Stratum=missingStrata, Domain=output$DomainVariables$Domain, unique = T)
+    output$Abundance <- rbind(output$Abundance, merge(output$Abundance, strataDomains, all.y=T))
+    
+    strataDomains <- data.table::CJ(Stratum=missingStrata, Domain1=output$DomainVariables$Domain, Domain2=output$DomainVariables$Domain, unique = T)
+    strataDomains <- strataDomains[Domain1>=Domain2,]
+    output$AbundanceCovariance <- rbind(output$AbundanceCovariance, merge(output$AbundanceCovariance, strataDomains, all.y = T))
+    
+    strataDomains <- data.table::CJ(Stratum=missingStrata, Domain=output$DomainVariables$Domain, Variable=output$Variables$Variable, unique = T)
+    output$Variables <- rbind(output$Variables, merge(output$Variables, strataDomains, all.y=T))
+
+    strataDomains <- data.table::CJ(Stratum=missingStrata, Domain1=output$DomainVariables$Domain, Domain2=output$DomainVariables$Domain, Variable1=output$Variables$Variable, Variable2=output$Variables$Variable, unique = T)
+    strataDomains <- strataDomains[Domain1>=Domain2 & Variable1>=Variable2,]
+    output$VariablesCovariance <- rbind(output$VariablesCovariance, merge(output$VariablesCovariance, strataDomains, all.y = T))
+    
+  }
+
   return(output)
 }
 

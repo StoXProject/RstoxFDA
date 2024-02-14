@@ -200,7 +200,7 @@ sexStrat <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, ss, "Stratified
 expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
 psuEst <- RstoxFDA:::LiftStrata(psuEst)
 expect_error(popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst), "Cannot estimate. Estimates are not provided for all samples in 'AnalyticalPSUEstimateData'. Missing for SamplingUnitIds:")
-browser()
+
 #Test that Abundance and Frequency are NA for unsampled strata (Domain Sex is Unsampled for strata unkown sex)
 unsampled <- merge(psuEst$Abundance, sexStrat$SampleTable[n==0], by=c("SampleId", "Stratum"))
 expect_true(nrow(unsampled)>0)
@@ -230,9 +230,34 @@ NaNMeans <- popEstMeanOfMeans$Variables[is.nan(popEstMeanOfMeans$Variables$Mean)
 zeroTotals <- popEstMeanOfMeans$Variables[popEstMeanOfMeans$Variables$Total==0]
 expect_true(nrow(zeroAbund)>0)
 expect_true(nrow(zeroAbund)==nrow(NaNMeans))
-browser()
 
-#build herring example here. 
+
+#
+# Test unsampled PSU strata
+#
+
+stationDesign <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData = ss, SamplingUnitId = "Haul", StratificationColumns = "Gear")
+stationDesign$SampleTable$n[stationDesign$SampleTable$Stratum==40]<-0
+stationDesign$SelectionTable <- stationDesign$SelectionTable[Stratum!="40",]
+sexStrat <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, ss, "Stratified", c("IndividualAge"), StratificationColumns = "IndividualSex")
+expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
+psuEst <- RstoxFDA:::LiftStrata(psuEst)
+psuEst$Abundance$Frequency[is.na(psuEst$Abundance$Frequency)] <- 0
+psuEst$Variables$Mean[is.na(psuEst$Variables$Mean) & !is.nan(psuEst$Variables$Mean)] <- .1
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
+
+nastrataAbundance <- popEst$Abundance$Stratum[is.na(popEst$Abundance$Frequency)]
+expect_true(length(grep("PSU-stratum:40", nastrataAbundance))==length(nastrataAbundance))
+nastrataVariables <- popEst$Variables$Stratum[is.na(popEst$Variables$Frequency)]
+expect_true(length(grep("PSU-stratum:40", nastrataVariables))==length(nastrataVariables))
+nastrataAbundanceCovar <- popEst$AbundanceCovariance$Stratum[is.na(popEst$AbundanceCovariance$Frequency)]
+expect_true(length(grep("PSU-stratum:40", nastrataAbundanceCovar))==length(nastrataAbundanceCovar))
+nastrataVariableCovar <- popEst$VariablesCovariance$Stratum[is.na(popEst$VariablesCovariance$Frequency)]
+expect_true(length(grep("PSU-stratum:40", nastrataVariableCovar))==length(nastrataVariableCovar))
+
+#
+# Test herring example here. 
+#
 stationDesign <- RstoxFDA::CatchLotterySamplingExample
 ex <- RstoxFDA::CatchLotteryExample
 ex$Haul$serialnumber <- ex$Haul$HaulKey
@@ -298,11 +323,9 @@ expect_true(abs(sum(popEstDomain$Variables$Mean*popEstDomain$Abundance$Abundance
 #check correctness univariate variance
 expect_true((abs(popEst$AbundanceCovariance$AbundanceCovariance - 73125.74) / 73125.74) < 0.001)
 
-
-warning("Need tests for frequency covariances.")
-
 browser()
 # Fix issue with variances for Variables
+#chekc covars
 # Test all variances. Abundance, Total, Mean and Frequency, and check def for Mean of Means
 # Redocument AnalyticalPopulationEstimate to include covariatestructures
 #stop("Document AnalyticalPSUEstimate.")
