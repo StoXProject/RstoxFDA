@@ -195,22 +195,27 @@ expect_true(nrow(psuEstLifted$StratificationVariables)==length(unique(sexStrat$S
 #
 # Test AnalyticalPopulationEstimate
 #
-browser()
 stationDesign <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData = ss, SamplingUnitId = "Haul", StratificationColumns = "Gear")
 sexStrat <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, ss, "Stratified", c("IndividualAge"), StratificationColumns = "IndividualSex")
 expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
 psuEst <- RstoxFDA:::LiftStrata(psuEst)
 expect_error(popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst), "Cannot estimate. Estimates are not provided for all samples in 'AnalyticalPSUEstimateData'. Missing for SamplingUnitIds:")
-
+browser()
 #Test that Abundance and Frequency are NA for unsampled strata (Domain Sex is Unsampled for strata unkown sex)
-expect_true(nrow(psuEst$Abundance[is.na(Domain)])>0)
-expect_true(all(is.na(psuEst$Abundance[is.na(Domain)]$Abundance)))
-expect_true(all(is.na(psuEst$Abundance[is.na(Domain)]$Frequency)))
+unsampled <- merge(psuEst$Abundance, sexStrat$SampleTable[n==0], by=c("SampleId", "Stratum"))
+expect_true(nrow(unsampled)>0)
+expect_true(all(is.na(psuEst$Abundance[paste(SampleId, Stratum) %in% paste(unsampled$SampleId, unsampled$Stratum)]$Abundance)))
+expect_true(all(is.na(psuEst$Abundance[paste(SampleId, Stratum) %in% paste(unsampled$SampleId, unsampled$Stratum)]$Frequency)))
+expect_true(!any(is.nan(psuEst$Abundance[paste(SampleId, Stratum) %in% paste(unsampled$SampleId, unsampled$Stratum)]$Abundance)))
+expect_true(!any(is.nan(psuEst$Abundance[paste(SampleId, Stratum) %in% paste(unsampled$SampleId, unsampled$Stratum)]$Frequency)))
 
 #Test that Mean and Total NA for unsampled strata
-expect_true(nrow(psuEst$Variables[is.na(Domain)])>0)
-expect_true(all(is.na(psuEst$Variables[is.na(Domain)]$Total)))
-expect_true(all(is.na(psuEst$Variables[is.na(Domain)]$Mean)))
+unsampled <- merge(psuEst$Variables, sexStrat$SampleTable[n==0], by=c("SampleId", "Stratum"))
+expect_true(nrow(unsampled)>0)
+expect_true(all(is.na(psuEst$Variables[paste(SampleId, Stratum) %in% paste(unsampled$SampleId, unsampled$Stratum)]$Total)))
+expect_true(all(is.na(psuEst$Variables[paste(SampleId, Stratum) %in% paste(unsampled$SampleId, unsampled$Stratum)]$Mean)))
+expect_true(!any(is.nan(psuEst$Variables[paste(SampleId, Stratum) %in% paste(unsampled$SampleId, unsampled$Stratum)]$Total)))
+expect_true(!any(is.nan(psuEst$Variables[paste(SampleId, Stratum) %in% paste(unsampled$SampleId, unsampled$Stratum)]$Mean)))
 
 #Test that Mean is NaN and Total is 0 for zero-abundance domains
 sexStrat <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, ss, "Stratified", c("IndividualTotalLength"), StratificationColumns = "IndividualSex")
