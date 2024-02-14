@@ -7,30 +7,37 @@
 AssignPSUSamplingParameters(
   PSUSamplingParametersData,
   StoxBioticData,
-  DataRecordsId,
+  SamplingUnitId,
+  DataRecordId,
   DefinitionMethod = c("MissingAtRandom")
 )
 }
 \arguments{
-\item{PSUSamplingParametersData}{~\code{\link[RstoxFDA]{PSUSamplingParametersData}} with sampling parameters for PSU selection}
+\item{PSUSamplingParametersData}{\code{\link[RstoxFDA]{PSUSamplingParametersData}} with sampling parameters for PSU selection}
 
-\item{StoxBioticData}{~\code{\link[RstoxData]{StoxBioticData}} with data records for responding PSUs.}
+\item{StoxBioticData}{\code{\link[RstoxData]{StoxBioticData}} with data records for responding PSUs.}
 
-\item{DataRecordsId}{name of Variable in ~\code{\link[RstoxData]{StoxBioticData}} that represent records of sampled PSUs}
+\item{SamplingUnitId}{name of Variable in \code{\link[RstoxData]{StoxBioticData}} that represent the SamplingUnitId of PSUs selected for sampling}
+
+\item{DataRecordId}{name of Variable in \code{\link[RstoxData]{StoxBioticData}} that represent records of sampled PSUs}
 
 \item{DefinitionMethod}{The method for dealing with non-response, e.g. 'MissingAtRandon'}
 }
 \value{
-~\code{\link[RstoxFDA]{PSUSamplingParametersData}}
+\code{\link[RstoxFDA]{PSUSamplingParametersData}} without non-respondent and with 'SamplingUnitId' changed
 }
 \description{
-Assigns data records to PSU Sampling Parameters and provides non-response adjustments for
-selected PSUs that was not sampled.
+Assigns data records to PSU Sampling Parameters, provides non-response adjustments for
+selected PSUs that was not sampled, and changes SamplingUnitId to that used to identify data records.
 }
 \details{
-Some sampling parameters provided in ~\code{\link[RstoxFDA]{PSUSamplingParametersData}} are only
+Some sampling parameters provided in \code{\link[RstoxFDA]{PSUSamplingParametersData}} are only
 interpretable for sampling with complete response. This function adjusts these parameters, removes non-respondents from the
-~\code{\link[RstoxFDA]{PSUSamplingParametersData}}, and checks that all responding PSUs are present in data records.
+\code{\link[RstoxFDA]{PSUSamplingParametersData}}, and checks that all responding PSUs are present in data records.
+
+After correcting for non-response, the SamplingUnitId in \code{\link[RstoxFDA]{PSUSamplingParametersData}} will be replaced
+by an ID (argument 'DataRecordId') so that sampling units can be brought into correspondance with how they are identified in lower
+level sampling (\code{\link[RstoxFDA]{IndividualSamplingParametersData}})
 
 If any respondants (rows of the SelectionTable of PSUSamplingParametersData that does not have NA for SamplingUnitId) are not
 found in 'SamplingUnitId', execution halts with an error.

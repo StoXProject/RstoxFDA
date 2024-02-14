@@ -698,7 +698,7 @@ covarAbundance <- function(Totals, PSUSampling, MeanOfMeans){
   return(covar)
 }
 
-covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
+covarVariables <- function(Totals, PSUSampling){
   
   tab <- merge(PSUSampling, Totals, by=c("Stratum", "Domain", "Variable"), suffixes=c(".PSU", ".Total"))
   tab$TotalDev <- tab$Total.PSU/tab$SelectionProbability - tab$Total.Total
@@ -729,7 +729,38 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
 
 #' For strata with zero abundance, Means are NaN.
 #' For strata with missing sampling or missing totals, Abundance, Frequencies, Totals and Means are NA
-#' @noRd
+#' Note on stratification
+#' @details 
+#'  \describe{
+#'   \item{Abundance:}{\deqn{\hat{N}^{(s,d)} = \hat{D} \frac{1}{n^{(s,d)}} \sum_{i=1}^{n} \frac{\hat{N}_{i}}{p_{i}}I^{(s,d)}_{i}}, 
+#'   \deqn{\hat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})}) = \frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} \sum_{j=1}^{n} 
+#'   I^{(s)}_{i} I^{(s)}_{j} (\frac{\hat{N}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{N}^{(s,d_{1})}) (\frac{\hat{N}_{j}}{p_{j}}I^{(s,d_{2})}_{j} - \hat{N}^{(s,d_{2})})}.}
+#'   \item{Frequency, when MeanOfMeans is false:}{\deqn{ \hat{f}^{(s,d)} = \frac{\hat{N}^{(s,d)}}{\hat{N}^{(s)}} } }
+#'   \item{Frequency, when MeanOfMeans is true:}{\deqn{ \hat{f}^{(s,d)} = \frac{1}{\hat{D}^{(s,d)}} \sum_{i=1}^{n}w_{i}\hat{f}_{i}I^{(s,d)}_{i}}}
+#'   \item{Total:}{\deqn{\hat{t}^{(s,d)}=\hat{D}^{(s,d)}\frac{1}{n^{(s,d)}}{\sum_{i=1}^{n}}\frac{\hat{t}_{i}}{p_{i}}I^{(s,d)}_{i}}, 
+#'   \deqn{\hat{CoVar}(\hat{t}^{(s,d_{1})}, \hat{t}^{(s,d_{2})}) = \frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} \sum_{j=1}^{n} 
+#'   I^{(s)}_{i}(\frac{\hat{t}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{t}^{(s,d_{1})}) (\frac{\hat{t}_{j}}{p_{j}}I^{(s,d_{2})}_{j} - \hat{t}^{(s,d_{2})})}.}
+#'   \item{Mean when MeanOfMeans is false:}{\deqn{\hat{\mu}^{(s,d)}=\frac{\hat{t}^{(s,d)}}{\hat{N}^{(s,d)}}}.}
+#'   \item{Mean when MeanOfMeans is true:}{\deqn{\hat{\mu}^{(s,d)}=\frac{1}{\hat{d}^{(s,d)}}\sum_{i=1}^{n}H(\hat{N}_{i})w_{i}\hat{\mu}_{i}I^{(s,d)}_{i}}}
+#'  }
+#'  where:
+#'  \describe{
+#'    \item{\eqn{H(x)}}{A step function which is 1 when \eqn{x>0}, otherwise it is zero.}
+#'    \item{\eqn{I^{(s)}_{i}}}{The indicator function for stratum \eqn{s}. Is 1 when \eqn{i} is in stratum \eqn{s}, otherwise it is zero.}
+#'    \item{\eqn{I^{(s,d)}_{i}}}{The indicator function for domain \eqn{d} and stratum \eqn{s}. Is 1 when \eqn{i} is in stratum \eqn{s} and domain \eqn{d}, otherwise it is zero.}
+#'    \item{\eqn{n}}{Sample size, the number of PSUs sampled.}
+#'    \item{\eqn{n^{(s)}}}{Stratum sample size, the number of PSUs sampled in stratum \eqn{s}: \eqn{n_{s}=\sum_{i=1}^{n}I^{(s)}_{i}}.}
+#'    \item{\eqn{n^{(s,d)}}}{Domain sample size, the number of PSUs sampled in domain{d} and stratum \eqn{s}: \eqn{n^{(s,d)}=\sum_{i=1}^{n}I^{(s,d)}_{i}}.}
+#'    \item{\eqn{p_{i}}}{The selection probability of PSU \eqn{i}. 'SelectionProbability' in \code{\link[RstoxFDA]{PSUSamplingParametersData}}.}
+#'    \item{\eqn{w_{i}}}{The normalized Hansen-Hurwitz sampling weight: \eqn{w_{i}=\frac{1}{p_{i}Q_{i}}}, \eqn{Q_{i}=\sum_{j=1}^{n}\frac{I^{(s(i))}_{j}}{p_{j}}}, where \eqn{s(i)} denote the strata of sample \eqn{i}. 'HHsamplingWeight' in \code{\link[RstoxFDA]{PSUSamplingParametersData}}.}
+#'    \item{\eqn{\hat{D}^{(s,d)}}}{The estimated relative domain size of domain \eqn{d} in stratum \eqn{s}: \eqn{\hat{D}^{(s,d)}=\sum_{i=1}^{n}w_{i}I^{(s,d)}_{i}}.}
+#'    \item{\eqn{\hat{d}^{(s,d)}}}{The estimated relative size of the sub-domain of domain \eqn{d} in stratum \eqn{s} that has positive abundance: \eqn{\hat{d}^{(s,d)}=\sum_{i=1}^{n}w_{i}I^{(s,d)}_{i}H(\hat{N}_{i})}.}
+#'    \item{\eqn{\hat{N}^{(s)}}}{The estimated abundance in stratum \eqn{s}: \eqn{\hat{N}^{(s)}=\frac{1}{n_{s}}\sum_{i=1}^{n}\frac{\hat{N}_{i}}{p_{i}}I^{(s)}_{i}}.}
+#'    \item{\eqn{\hat{N}_{i}}}{The estimated abundance in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
+#'    \item{\eqn{\hat{f}_{i}}}{The estimated frequency in domain \eqn{d} for stratum \eqn{s} at PSU \eqn{i}. 'Frequency' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
+#'    \item{\eqn{\hat{\mu}_{i}}}{The estimated mean in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Mean' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
+#'  }
+#' @export
 AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPSUEstimateData, MeanOfMeans=F){
 
   NestimatesByStrata <- AnalyticalPSUEstimateData$Abundance[,list(estimates=.N),by="Stratum"]
@@ -798,7 +829,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
     VariablesTable$Mean <- VariablesTable$Total / AbundanceTable$Abundance[match(paste(VariablesTable$Stratum, VariablesTable$Domain), paste(AbundanceTable$Stratum, AbundanceTable$Domain))]
   }
 
-  VariablesCovarianceTable <- covarVariables(VariablesTable, selVariables, MeanOfMeans)
+  VariablesCovarianceTable <- covarVariables(VariablesTable, selVariables)
   
   output <- list()
   output$Abundance <- AbundanceTable

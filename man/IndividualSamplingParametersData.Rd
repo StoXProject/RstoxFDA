@@ -9,13 +9,13 @@ Sampling parameters for selection of a sub-sample of individuals
 \details{
 Encodes information about the selection of a sub-sample of observations from individuals, used in analytical design based estimation.
  A sub-sample is simply a sample of a sample. This data type is intended to represent the final stage of sampling in multi-stage sampling,
- and therefor has a reference to the Sample it was taken from ('SampleId'). Apart from that there is no principal difference from single
+ and therefore has a reference to the Sample it was taken from ('SampleId'). Apart from that there is no principal difference from single
  stage sampling. All stratification is specified within the sample identifed by 'SampleId', and all sampling probabilites are specified within strata.
  
  The SampleTable encodes information about the sample of sampling units:
  \describe{
   \item{SampleId}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
-  \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum the sub-sample is taken from.  Treat unstratified sample as single-stratum sampling (provide only one stratum.}
+  \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum the sub-sample is taken from.  Treat unstratified sample as single-stratum sampling (provide only one stratum. All strata with strata size > 0 must be reported for each SampleId.}
   \item{N}{Optional, num: The total number of individuals in Stratum. For unstratified sampling, the total number of individuals in the sample the sub-sample is taken from.}
   \item{n}{Optional, num: The number of individuals selected from the Stratum}
   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}

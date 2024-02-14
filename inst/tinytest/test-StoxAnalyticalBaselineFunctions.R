@@ -261,6 +261,7 @@ expect_true(length(grep("PSU-stratum:40", nastrataVariableCovar))==length(nastra
 stationDesign <- RstoxFDA::CatchLotterySamplingExample
 ex <- RstoxFDA::CatchLotteryExample
 ex$Haul$serialnumber <- ex$Haul$HaulKey
+ex$Individual$IW <- ex$Individual$IndividualRoundWeight
 stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
 srs <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, ex, "SRS", c("IndividualAge"))
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
@@ -299,7 +300,7 @@ miniExInd$SelectionTable$InclusionProbability[miniExInd$SelectionTable$SampleId 
 miniExInd$SelectionTable$InclusionProbability[miniExInd$SelectionTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[2]] <- 60/1785
 miniExInd$SelectionTable$InclusionProbability[miniExInd$SelectionTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[3]] <- 25/2198
 
-psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight", "IW", "IndividualTotalLength"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(miniEx, psuEst)
 
 expect_true(abs(popEst$Abundance$Abundance - 10232.75)<1e-2)
@@ -311,17 +312,22 @@ popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(miniEx, psuEstDomain)
 
 expect_true(length(unique(popEstDomain$Abundance$Domain))>1)
 expect_true(abs(sum(popEstDomain$Abundance$Abundance)-sum(popEst$Abundance$Abundance))<1e-6)
-expect_true(abs(sum(popEstDomain$Variables$Total)-sum(popEst$Variables$Total))<1e-6)
+expect_true(abs(sum(popEstDomain$Variables$Total)-sum(popEst$Variables$Total[popEst$Variables$Variable=="IndividualRoundWeight"]))<1e-6)
 
 #check that frequencies add to one for unstratified estimate
 expect_true(abs(sum(popEstDomain$Abundance$Frequency)-1) < 1e-6)
 expect_true(abs(sum(popEst$Abundance$Frequency)-1) < 1e-6)
 
 #check that means are consistent between domain estimate and total estimate
-expect_true(abs(sum(popEstDomain$Variables$Mean*popEstDomain$Abundance$Abundance, na.rm=T)/sum(popEstDomain$Abundance$Abundance) - popEst$Variables$Mean)<1e-6)
+expect_true(abs(sum(popEstDomain$Variables$Mean*popEstDomain$Abundance$Abundance, na.rm=T)/sum(popEstDomain$Abundance$Abundance) - popEst$Variables$Mean[popEst$Variables$Variable=="IndividualRoundWeight"])<1e-6)
 
 #check correctness univariate variance
 expect_true((abs(popEst$AbundanceCovariance$AbundanceCovariance - 73125.74) / 73125.74) < 0.001)
+
+#check that covariance is identical to variance when variables are completely aligned (IW vs IndividualRoundWeight)
+expect_true(abs(popEst$VariablesCovariance[Variable1=="IW" & Variable2=="IndividualRoundWeight"][["TotalCovariance"]] - popEst$VariablesCovariance[Variable1=="IW" & Variable2=="IW"][["TotalCovariance"]])<1e-6)
+#check that covariance is not identical to variance when variables are not completely aligned (IW vs IndividualTotalLength)
+expect_true(abs(popEst$VariablesCovariance[Variable1=="IW" & Variable2=="IndividualTotalLength"][["TotalCovariance"]] - popEst$VariablesCovariance[Variable1=="IW" & Variable2=="IW"][["TotalCovariance"]])>1)
 
 browser()
 # Fix issue with variances for Variables

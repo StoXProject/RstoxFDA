@@ -43,8 +43,9 @@ The conditions listed for the variables in \code{\link[RstoxFDA]{PSUSamplingPara
 execution halts with error if any are violated.
 
 The DefinitionMethod 'AdHocStoxBiotic' constructs Sampling Design Parameters from data,
-assuming equal probability sampling with fixed sample size, selection without replacement and complete response.
-This is a reasonable approximation if within-strata sampling is approximately simple random selections,
+assuming equal probability sampling with fixed sample size, selection with replacement and complete response.
+These is a reasonable approximation if within-strata sampling is approximately simple random selections,
+the sample intensitiy is low (only a small fraction of the population is sampled),
 and non-response is believed to be at random.
 }
 \concept{Analytical estimation}
