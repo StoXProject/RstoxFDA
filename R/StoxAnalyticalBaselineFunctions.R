@@ -422,10 +422,14 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
 }
 
 #' Extend IndividualSamplingParametersData to reflect selection from PSU by specifying intermediate selection.
+#' Not yet implemented.
+#' @param IndividualSamplingParametersData
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}}
-#' @noRd
+#' @concept Analytical estimation
+#' @md
+#' @export
 DefineSamplingHierarchy <- function(IndividualSamplingParametersData, Hierarchy=character(), Stratification=character(), StrataSizes=character(), SelectionMetod=character(), CollapseStrata=character()){
-  
+  stop("Not Implemented")
 }
 
 #' Assign PSU Sampling Parameters
@@ -527,9 +531,76 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
   return(PSUSamplingParametersData)
 }
 
-#' unsampled strata -> NA
-#' unsamped domain -> 0, NaN
-#' @noRd
+#' Estimate parameters for each Primary Sampling Unit
+#' @description 
+#'  Estimate abundance, frequencies, totals and means for each Primary Sampling Unit (PSU)
+#'  in a multi-stage sampling design, by strata and domains.
+#' @details 
+#'  Provides estimates of abundance, frequencies, totals and means by a Horvitz-Thompson estimator.
+#'  Abundance and totals are only provided if inclusion probabilities are known, while frequencies and means may be calculated
+#'  with only sampling weights. See \code{\link[RstoxFDA]{IndividualSamplingParametersData}}.
+#'  
+#'  Sampling parameters for the selection of individuals from a catch can be inferred for some common sub-sampling techniques
+#'  with the function \code{\link[RstoxFDA]{DefineIndividualSamplingParameters}}. If samples of Individuals are not directly sampled from each
+#'  PSU, any intermediate sampling levels can be incorporated with the function \code{\link[RstoxFDA]{DefineSamplingHierarchy}}
+#' 
+#'  If any strata are specified in the SampleTable of 'IndividualSamplingParametersData' but are not sampled per the SelectionTable
+#'  all estimates will be provided as NAs for this stratum.
+#'  
+#'  Domains that are not present in a sample are naturally reported as having 0 abundance, frequency and total. The corresponding means
+#'  will be undefined and reportet as NaN. Means of NA thus reflects incomlete sampling, while NaN reflects zero abundance in that domain.
+#'  
+#'  In general unbiased estimates rely on known inclusion probabilites, and domain definitions that coincides
+#'  with stratification. When the domain definitions are not aligned
+#'  with the stratification, ratio estimates are provided for which unbiasedness is not guaranteed.
+#'  
+#'  Abundances, frequencies, totals, and means are estimated with the formulas below. A vocabulary of notation is provided after the equations.
+#'  \describe{
+#'   \item{Abundance:}{
+#'   The estimate of the number of individuals in stratum \eqn{s} and domain \eqn{d} at a PSU:
+#'   \deqn{\hat{N}^{(s,d)}=\sum_{i=1}^{m}\frac{1}{\pi_{i}}I^{s,d}_{i}}
+#'   The inclusion probability is a function of the entire sample selection for a stratum.
+#'   If the domain does not coincide with stratum, it must be considered approximate and hence this will be a ratio estimation in that case.
+#'   }
+#'   \item{Frequency:}{
+#'   The estimate of the fraction of individuals in stratum \eqn{s} that are in domain \eqn{d} at a PSU:
+#'   \deqn{\hat{f}^{(s,d)}=\sum_{i=1}^{m}w_{i}I^{s,d}_{i}}
+#'   }
+#'   The sampling weight is a function of the entire sample selection for a stratum.
+#'   If the domain does not coincide with stratum, it must be considered approximate and hence this will be a ratio estimation in that case.
+#'   \item{Total:}{
+#'   The estimate of the total of a variable in stratum \eqn{s} and domain \eqn{d} at a PSU:
+#'   \deqn{\hat{t}^{(s,d)}=\sum_{i=1}^{m}\frac{y_{i}}{\pi_{i}}I^{s,d}_{i}}
+#'   }
+#'   The inclusion probability is a function of the entire sample selection for a stratum.
+#'   If the domain does not coincide with stratum, it must be considered approximate and hence this will be a ratio estimation in that case.
+#'   \item{Mean:}{
+#'   The mean value of a variable in stratum \eqn{s} and domain \eqn{d} at a PSU:
+#'   \deqn{\hat{\mu}^{(s,d)}=\frac{1}{\hat{D}^{(s,d)}}\sum_{i=1}^{m}w_{i}y_{i}I^{s,d}_{i}}
+#'   }
+#'   This depends explicitly on the ratio to the estimate of relative domain size. When the domain coincides with strata
+#'   this is in principle known, but in practice reported strata sizes for samples of individuals are often estimated, bringing
+#'   into question the exact computation of inclusion probabilities.
+#'   In addition, the sampling weight is a function of the entire sample selection for a stratum.
+#'   If the domain does not coincide with stratum, it must also be considered approximate and an additional ratio-estimated quantity.
+#'  }
+#'  \describe{
+#'    \item{\eqn{I^{(s,d)}_{i}}}{The indicator function for domain \eqn{d} and stratum \eqn{s}. Is 1 when \eqn{i} is in stratum \eqn{s} and domain \eqn{d}, otherwise it is zero.}
+#'    \item{\eqn{m}}{The total number of individuals sampled at PSU.}
+#'    \item{\eqn{\pi_{i}}}{The inclusion probability of individual \eqn{i} in PSU.}
+#'    \item{\eqn{w_{i}}}{The normalized Horvitz-Thompson sample weight of an individual \eqn{i}.}
+#'    \item{\eqn{y_{i}}}{The value of a variable observed for an individual \eqn{i}.}
+#'    \item{\eqn{\hat{D}^{(s,d)}}}{The estimated relative domain size of domain \eqn{d} in stratum \eqn{s} at PSU: \eqn{\sum_{i=1}^{m}w_{i}I^{s,d}_{i}}}
+#'  }
+#'  
+#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} with the actual observations of individuals.
+#' @param IndividualSamplingParametersData \code{\link[RstoxData]{IndividualSamplingParametersData}} with sampling parameters for individuals
+#' @param Variables names of variables that means and totals should be estimated for. Must be columns of the Individual table in 'StoxBioticData'
+#' @param DomainVariables names of variables that define domains that estimates should be reported for. Must be columns of 'Individual' or some higher level table in 'StoxBioticData'.
+#' @return \code{\link[RstoxFDA]{AnalyticalPSUEstimate}} with estimates for each PSU of abundance, frequencies, totals and means by stratum and domain.
+#' @concept Analytical estimation
+#' @md
+#' @export
 AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, Variables=character(), DomainVariables=character()){
 
   ind <- RstoxData::MergeStoxBiotic(StoxBioticData, "Individual")
@@ -551,9 +622,9 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
     stop(paste("Invalid speficiation of domain variables. The following variables does not exist in StoxBioticData:", paste(missingDomainIds, collapse=",")))
   }
   
-  missingvariables <- Variables[!(Variables %in% names(ind))]
+  missingvariables <- Variables[!(Variables %in% names(StoxBioticData$Individual))]
   if (length(missingvariables)>0){
-    stop(paste("Invalid speficiation of variables. The following variables does not exist in StoxBioticData:", paste(missingvariables, collapse=",")))
+    stop(paste("Invalid speficiation of variables. The following variables does not exist on the Individual table in StoxBioticData:", paste(missingvariables, collapse=",")))
   }
 
   unsampled <- IndividualSamplingParametersData$SampleTable[!(paste(IndividualSamplingParametersData$SampleTable$SampleId, IndividualSamplingParametersData$SampleTable$Stratum) %in% paste(IndividualSamplingParametersData$SelectionTable$SampleId, IndividualSamplingParametersData$SelectionTable$Stratum)),]

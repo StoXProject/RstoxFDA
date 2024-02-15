@@ -351,5 +351,10 @@ expect_true(abs(popEst$VariablesCovariance[Variable1=="one" & Variable2=="one"][
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
-#stop("Document AnalyticalPSUEstimate.")
+#stop("Add examples.")
+#stop("Add input sanitation.")
 #stop("Test collapseStrata with both HH and HT")
+#stop("Implement Ratio to landings estimate.")
+#stop("Implement DefineHierarchy.")
+#stop("expose to StoX")
+#stop("write vignette.")
