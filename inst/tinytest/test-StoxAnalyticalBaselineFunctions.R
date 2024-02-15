@@ -261,7 +261,8 @@ expect_true(length(grep("PSU-stratum:40", nastrataVariableCovar))==length(nastra
 stationDesign <- RstoxFDA::CatchLotterySamplingExample
 ex <- RstoxFDA::CatchLotteryExample
 ex$Haul$serialnumber <- ex$Haul$HaulKey
-ex$Individual$IW <- ex$Individual$IndividualRoundWeight
+ex$Individual$IW <- ex$Individual$IndividualRoundWeight #for testing that covariances equal variances when appropriate
+ex$Individual$one <- 1 #for testing that variable covariance equal abundance covariance when appropriate.
 stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
 srs <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, ex, "SRS", c("IndividualAge"))
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
@@ -300,8 +301,9 @@ miniExInd$SelectionTable$InclusionProbability[miniExInd$SelectionTable$SampleId 
 miniExInd$SelectionTable$InclusionProbability[miniExInd$SelectionTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[2]] <- 60/1785
 miniExInd$SelectionTable$InclusionProbability[miniExInd$SelectionTable$SampleId %in% miniEx$SelectionTable$SamplingUnitId[3]] <- 25/2198
 
-psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight", "IW", "IndividualTotalLength"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight", "IW", "IndividualTotalLength", "one"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(miniEx, psuEst)
+popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(miniEx, psuEst, MeanOfMeans = T)
 
 expect_true(abs(popEst$Abundance$Abundance - 10232.75)<1e-2)
 expect_true(abs(popEst$Abundance$Abundance * popEst$Variables$Mean[popEst$Variables$Variable=="IndividualRoundWeight"] - popEst$Variables$Total[popEst$Variables$Variable=="IndividualRoundWeight"]) < 1e-6)
@@ -323,16 +325,19 @@ expect_true(abs(sum(popEstDomain$Variables$Mean*popEstDomain$Abundance$Abundance
 
 #check correctness univariate variance
 expect_true((abs(popEst$AbundanceCovariance$AbundanceCovariance - 73125.74) / 73125.74) < 0.001)
-
+browser()
 #check that covariance is identical to variance when variables are completely aligned (IW vs IndividualRoundWeight)
 expect_true(abs(popEst$VariablesCovariance[Variable1=="IW" & Variable2=="IndividualRoundWeight"][["TotalCovariance"]] - popEst$VariablesCovariance[Variable1=="IW" & Variable2=="IW"][["TotalCovariance"]])<1e-6)
 #check that covariance is not identical to variance when variables are not completely aligned (IW vs IndividualTotalLength)
 expect_true(abs(popEst$VariablesCovariance[Variable1=="IW" & Variable2=="IndividualTotalLength"][["TotalCovariance"]] - popEst$VariablesCovariance[Variable1=="IW" & Variable2=="IW"][["TotalCovariance"]])>1)
+#check that variable covariance equal abundance covariance for a variable that is always set to 1.
+expect_true(abs(popEst$VariablesCovariance[Variable1=="one" & Variable2=="one"][["TotalCovariance"]] - popEst$AbundanceCovariance$AbundanceCovariance)<1e-6)
+expect_true(abs(popEst$VariablesCovariance[Variable1=="one" & Variable2=="one"][["MeanCovariance"]] - popEst$AbundanceCovariance$FrequencyCovariance)<1e-6)
 
-browser()
-# Fix issue with variances for Variables
-#chekc covars
-# Test all variances. Abundance, Total, Mean and Frequency, and check def for Mean of Means
+#check that Mean of Means estimates have higher variance than the other option.
+#this is probably not generally guaranteed, but seem to work for this example
+all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
+
 # Redocument AnalyticalPopulationEstimate to include covariatestructures
 #stop("Document AnalyticalPSUEstimate.")
 #stop("Expose collapseStrata and test")
