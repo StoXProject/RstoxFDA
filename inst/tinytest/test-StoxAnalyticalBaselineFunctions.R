@@ -89,14 +89,27 @@ ls <- RstoxFDA:::DefineIndividualSamplingParameters(NULL, ss, "Stratified", c("I
 weights <- ls$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
 expect_true(all(abs(weights$meanN-1) < 1e-6))
 
-
-lsCol <- RstoxFDA:::collapseStrataIndividualDesignParamaters(ls, c("SpeciesCategory", "IndividualSex"))
-expect_true(nrow(lsCol$SampleTable)<nrow(ls$SampleTable))
+lsCol <- RstoxFDA:::CollapseStrata(ls, c("SpeciesCategory", "IndividualSex"))
+expect_true(nrow(lsCol$SampleTable)==nrow(ls$SampleTable))
 expect_true(nrow(lsCol$SelectionTable)==nrow(ls$SelectionTable))
+expect_true(ncol(lsCol$StratificationVariables)==ncol(ls$StratificationVariables))
 weights <- lsCol$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
 expect_true(all(abs(weights$meanN-1) < 1e-6))
 
-lsCol <- RstoxFDA:::collapseStrataIndividualDesignParamaters(ls, c("IndividualSex"))
+lsCol <- RstoxFDA:::CollapseStrata(ls, c())
+expect_true(nrow(lsCol$SampleTable)<nrow(ls$SampleTable))
+expect_true(nrow(lsCol$SelectionTable)==nrow(ls$SelectionTable))
+expect_true(ncol(lsCol$StratificationVariables)<ncol(ls$StratificationVariables))
+expect_true(ncol(lsCol$StratificationVariables)==2)
+weights <- lsCol$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
+expect_true(all(abs(weights$meanN-1) < 1e-6))
+expect_true(all(lsCol$StratificationVariables$Stratum=="All"))
+
+lsCol <- RstoxFDA:::CollapseStrata(ls, c("IndividualSex"))
+expect_true(nrow(lsCol$SampleTable)==nrow(ls$SampleTable)) #original stratification columns are redundant
+expect_true(nrow(lsCol$SelectionTable)==nrow(ls$SelectionTable))
+expect_true(ncol(lsCol$StratificationVariables)<ncol(ls$StratificationVariables))
+expect_true(ncol(lsCol$StratificationVariables)==3)
 weights <- lsCol$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratum", "SampleId")]
 expect_true(all(abs(weights$meanN-1) < 1e-6))
 
@@ -325,7 +338,7 @@ expect_true(abs(sum(popEstDomain$Variables$Mean*popEstDomain$Abundance$Abundance
 
 #check correctness univariate variance
 expect_true((abs(popEst$AbundanceCovariance$AbundanceCovariance - 73125.74) / 73125.74) < 0.001)
-browser()
+
 #check that covariance is identical to variance when variables are completely aligned (IW vs IndividualRoundWeight)
 expect_true(abs(popEst$VariablesCovariance[Variable1=="IW" & Variable2=="IndividualRoundWeight"][["TotalCovariance"]] - popEst$VariablesCovariance[Variable1=="IW" & Variable2=="IW"][["TotalCovariance"]])<1e-6)
 #check that covariance is not identical to variance when variables are not completely aligned (IW vs IndividualTotalLength)
@@ -338,8 +351,5 @@ expect_true(abs(popEst$VariablesCovariance[Variable1=="one" & Variable2=="one"][
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
-# Redocument AnalyticalPopulationEstimate to include covariatestructures
 #stop("Document AnalyticalPSUEstimate.")
-#stop("Expose collapseStrata and test")
 #stop("Test collapseStrata with both HH and HT")
-#stop("Document AnalyticalPopulationEstimate")

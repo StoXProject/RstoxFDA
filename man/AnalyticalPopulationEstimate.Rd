@@ -13,9 +13,9 @@ AnalyticalPopulationEstimate(
 \arguments{
 \item{PSUSamplingParametersData}{\code{\link[RstoxFDA]{PSUSamplingParametersData}} with sampling parameters for a sample of Primary Samplig Units.}
 
-\item{MeanOfMeans}{logical. Determines which estimators are used for frequencies and means. See details.}
+\item{AnalyticalPSUEstimateData}{\code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for each of the Primary Sampling Units in PSUSamplingParametersData}
 
-\item{AnalyticalEstimatesData}{\code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for each of the Primary Sampling Units in PSUSamplingParametersData}
+\item{MeanOfMeans}{logical. Determines which estimators are used for frequencies and means. See details.}
 }
 \value{
 \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimated population parameters by stratum and domain.
@@ -34,6 +34,16 @@ the option 'MeanOfMeans' provides estimation of means and frequencies, but not a
 Means may be unknown for a certain domain for two reasons. They estimate of abundance and frequencies for the domain may be zero.
 In this case unknown means are provded as NaNs, as they result from dividing by zero.
 If either PSU means sampling parameters are unkown, or a the strata is not sampled, means will be provided as NA.
+
+The stratification incorporates both stratified estimates for each PSU and any stratified selection of PSUs.
+E.g. each PSU may provide estimates by length strata, and at the same time the selection of PSUs may be stratified by area.
+In that case this function would return estimates for each combination of length stratum and area.
+This requires all PSUs to provide estimates for the same strata, and the functions halts with error if that is not the case.
+See \code{\link[RstoxFDA]{LiftStrata}} for a way to infer PSU-estimates for strata that have zero abundance.
+If simpler stratification is desired, see \code{\link[RstoxFDA]{CollapseStrata}}.
+
+The domains will be exactly as those defined in estimation for later sampling stages and encoded in 'AnalyticalPSUEstimateData'.
+Consider the arguments to \code{\link[RstoxFDA]{AnalyticalPSUEstimate}} if other domains are desired.
 
 In general unbiased estimates rely on known selection probabilites, and domain definitions that coincides
 with stratification. When only sampling weights are known, or the domain definitions are not aligned

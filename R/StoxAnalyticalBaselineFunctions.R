@@ -616,25 +616,55 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
   return(output)
 }
 
-#' @noRd
-CollapseStrata <- function(IndividualDesignParamatersData, RetainedStrata=character()){
-  collapseStrataIndividualDesignParamaters(IndividualDesignParamatersData)
+#' Collapse strata in sampling design
+#' @description
+#'  Transforms a sampling design to an equivalent one with simpler stratification
+#' @details 
+#'  The sampling information in \code{\link[RstoxFDA]{IndividualDesignParamatersData}} allows for specification of several stratification variables.
+#'  This function facilitates removal of some of these stratificaiton vairables, redefining strata to a coarser stratification scheme that still has known
+#'  stratum sizes.
+#'  
+#'  If all stratification variables are removed, all samples will be assigned to a single stratum named 'All'.
+#'  
+#' @param IndividualDesignParamatersData \code{\link[RstoxFDA]{IndividualDesignParamatersData}} with sampling parameters for sample selection
+#' @param RetainStrata character() with the names of stratification variables to retain. Stratification variables not specified here will be removed.
+#' @return \code{\link[RstoxFDA]{IndividualDesignParamatersData}} with simplified stratification
+#' @concept Analytical estimation
+#' @md
+#' @export
+CollapseStrata <- function(IndividualDesignParamatersData, RetainStrata=character()){
+  
+  checkMandatory(IndividualDesignParamatersData, "IndividualDesignParamatersData")
+  
+  missing <- RetainStrata[!(RetainStrata %in% names(IndividualDesignParamatersData$StratificationVariables))]
+  if (length(missing)>0){
+    stop(paste("The variables", paste(missing, collapse=", ", "are not stratification variables in 'IndividualDesignParametersData")))
+  }
+  
+  collapseStrata <- names(IndividualDesignParamatersData$StratificationVariables)[!names(IndividualDesignParamatersData$StratificationVariables) %in% c(RetainStrata, "Stratum", "SampleId")]
+  return(collapseStrataIndividualDesignParamaters(IndividualDesignParamatersData, collapseVariables = collapseStrata))
 }
 
 #' Unify strata for AnalyticalPSUEstimateData
+#' @description 
+#'  Populates unreported strata with zeroes and NaNs.
 #' @details
-#'  AnalyticalPSUEstimateData may be provided with stratification for each Primary Sampling Unit. These estimates cannot be combined into higher level estimates
-#'  unless the same strata are provided for all PSUs. This may not be the case for two reasons. The stratification may be local to each PSU,
-#'  and no common stratification exists between PSU. For instance, stratified sub-sampling of a catch may have taken place where the criteria for 
-#'  stratification was only used for that particular catch. Otherwise, some strata may not be estimated for some Samples, simply because they did not exist there.
+#'  AnalyticalPSUEstimateData may be provided with stratification for each Primary Sampling Unit. These estimates cannot be combined into population level estimates
+#'  unless the same strata are provided for all Primary Sampling Units (PSUs). See \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}. This may not be the case for two reasons. The stratification may be local to each PSU,
+#'  and no common stratification exists between PSUs. For instance, stratified sub-sampling of a catch may have taken place where the criteria for 
+#'  stratification was only used for that particular catch. Otherwise, some strata may not be estimated for some samples, simply because they did not exist there.
 #'  For instance stratification by length groups can use a common length stratification scheme for all PSUs, but not all of these strata will exist for each catch.
 #' 
-#'  If strata are omitted because they do not exist for a particular Sample, Abundance, Frequencies and Totals can be inferred to be zero, while Means are undefined
-#'  Application of this functions introduces zeros (Abundance, Fequency and Total) and NaN (Means) for all missing strata for all samples in AnalyticalPSUEstimateData
+#'  If strata are omitted because they do not exist for a particular Sample, Abundance, Frequencies and Totals can be inferred to be zero, while Means are undefined.
+#'  Application of this functions introduces zeros (Abundance, Frequency and Total) and NaN (Means) for all missing strata for all samples in 'AnalyticalPSUEstimateData'
 #' 
 #'  In the case where strata definitions are local, the stratification are only useful for the calculation of sampling parameters. If this is the case
-#'  consider using the function CollapseStrata before producing estimates for each sample.
-#' @noRd
+#'  consider using the function \code{\link[RstoxFDA]{CollapseStrata}} before producing estimates for each sample.
+#' @param AnalyticalPSUEstimateData \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for all strata for each PSU that has positive abundance.
+#' @return \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with zeroes and NaNs inferred for strata that have zero abundance in a PSU.
+#' @concept Analytical estimation
+#' @md
+#' @export
 LiftStrata <- function(AnalyticalPSUEstimateData){
 
   allStrata <- data.table::CJ(SampleId=AnalyticalPSUEstimateData$StratificationVariables$SampleId, Stratum=AnalyticalPSUEstimateData$StratificationVariables$Stratum, unique = T)
@@ -757,6 +787,16 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
 #'  In this case unknown means are provded as NaNs, as they result from dividing by zero. 
 #'  If either PSU means sampling parameters are unkown, or a the strata is not sampled, means will be provided as NA.
 #'  
+#'  The stratification incorporates both stratified estimates for each PSU and any stratified selection of PSUs. 
+#'  E.g. each PSU may provide estimates by length strata, and at the same time the selection of PSUs may be stratified by area.
+#'  In that case this function would return estimates for each combination of length stratum and area.
+#'  This requires all PSUs to provide estimates for the same strata, and the functions halts with error if that is not the case.
+#'  See \code{\link[RstoxFDA]{LiftStrata}} for a way to infer PSU-estimates for strata that have zero abundance.
+#'  If simpler stratification is desired, see \code{\link[RstoxFDA]{CollapseStrata}}.
+#'  
+#'  The domains will be exactly as those defined in estimation for later sampling stages and encoded in 'AnalyticalPSUEstimateData'.
+#'  Consider the arguments to \code{\link[RstoxFDA]{AnalyticalPSUEstimate}} if other domains are desired.
+#'  
 #'  In general unbiased estimates rely on known selection probabilites, and domain definitions that coincides
 #'  with stratification. When only sampling weights are known, or the domain definitions are not aligned
 #'  with the stratification, ratio estimates are provided for which unbiasedness is not guaranteed.
@@ -847,7 +887,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
 #'    \item{\eqn{\hat{\mu}_{i}}}{The estimated mean in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Mean' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
 #'  }
 #' @param PSUSamplingParametersData \code{\link[RstoxFDA]{PSUSamplingParametersData}} with sampling parameters for a sample of Primary Samplig Units.
-#' @param AnalyticalEstimatesData \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for each of the Primary Sampling Units in PSUSamplingParametersData
+#' @param AnalyticalPSUEstimateData \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for each of the Primary Sampling Units in PSUSamplingParametersData
 #' @param MeanOfMeans logical. Determines which estimators are used for frequencies and means. See details.
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimated population parameters by stratum and domain.
 #' @concept Analytical estimation
