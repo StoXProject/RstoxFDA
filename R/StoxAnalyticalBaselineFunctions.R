@@ -1098,12 +1098,69 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'  
 #' @param AnalyticalPopulationEstimateData \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimates of mean or total weights and frequencies or abundance in domains
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} with census data on total weight in each stratum
-#' @param WeightVariable character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals.
+#' @param WeightVariable character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals in grams.
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance
 #' @concept Analytical estimation
 #' @export
 #' @md
-AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, WeightVariable=character()){
+AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, WeightVariable=character(), Method=c("StratumWeight", "MeanDomainWeight")){
+  
+  if (WeightVariable %in% AnalyticalPopulationEstimateData$Variables){
+    stop(paste("'WeightVariable'", WeightVariable, "is not estimated in 'AnalyticalPopulationEstimateData'"))
+  }
+
+  if (any(names(StoxLandingData$Landing) %in% c("Stratum", "Domain"))){
+    stop("The names 'Stratum' or 'Domain' may not be used for stratification variables in 'StoxLandingData'")
+  }
+  
+  if (!any(names(StoxLandingData$Landing) %in% c(names(AnalyticalPopulationEstimateData$StratificationVariables), names(AnalyticalPopulationEstimateData$DomainVariables)))){
+    stop("None of the variables in 'StoxLandingData' are available as StratificationColumns or DomainVariables in 'AnalyticalPopulationEstimateData'")
+  }
+  
+  checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
+  checkMandatory(StoxLandingData, "StoxLandingData")
+  checkMandatory(WeightVariable, "WeightVariable")
+  checkOptions(Method, "Method", c("StratumWeight", "MeanDomainWeight"))
+  
+  if (Method == "StratumWeight"){
+
+    potentialNames <- c(names(AnalyticalPopulationEstimateData$StratificationVariables), names(AnalyticalPopulationEstimateData$DomainVariables))
+    landingsStrata <- potentialNames[potentialNames %in% names(StoxLandingData$Landing)]
+    totals <- merge(AnalyticalPopulationEstimateData$Variables[Variable==WeightVariable,.SD,.SDcol=c("Stratum", "Domain", "Total")], AnalyticalPopulationEstimateData$StratificationVariables, by="Stratum")
+    totals <- merge(totals, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
+    estTotalByLandingsStrata <- totals[,list(TotalWeightKg=sum(Total)/1000),by=landingsStrata]
+    
+    landingsByStratum <- StoxLandingData$Landing[,list(LandingsWeightKg=sum(RoundWeight)), by=landingsStrata]
+    totalByStratum <- merge(estTotalByLandingsStrata, landingsByStratum)
+    
+    stratumMap <- data.table::CJ(Stratum=AnalyticalPopulationEstimateData$StratificationVariables$Stratum, Domain=AnalyticalPopulationEstimateData$DomainVariables$Domain, unique = T)
+    stratumMap <- merge(stratumMap, AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcol=c("Stratum", landingsStrata[landingsStrata %in% names(AnalyticalPopulationEstimateData$StratificationVariables)])], by="Stratum")
+    stratumMap <- merge(stratumMap, AnalyticalPopulationEstimateData$DomainVariables[,.SD,.SDcol=c("Domain", landingsStrata[landingsStrata %in% names(AnalyticalPopulationEstimateData$DomainVariables)])], by="Domain")
+    stratumMap <- stratumMap[!duplicated(apply(stratumMap, FUN=paste, 1, collapse=",")),]
+    totalByStratum <- merge(totalByStratum, stratumMap)
+    
+    #
+    # Ratio-estimate abundance
+    #
+    m <- match(paste(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain), paste(totalByStratum$Stratum, totalByStratum$Domain))
+    AnalyticalPopulationEstimateData$Abundance$Abundance <- AnalyticalPopulationEstimateData$Abundance$Abundance * totalByStratum$LandingsWeightKg[m] / totalByStratum$TotalWeightKg[m]
+    m1 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain1), paste(totalByStratum$Stratum, totalByStratum$Domain))
+    m2 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain2), paste(totalByStratum$Stratum, totalByStratum$Domain))
+    AnalyticalPopulationEstimateData$AbundanceCovariance$AbundanceCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance$AbundanceCovariance * (totalByStratum$LandingsWeightKg[m1] / totalByStratum$TotalWeightKg[m1])*(totalByStratum$LandingsWeightKg[m2] / totalByStratum$TotalWeightKg[m2])
+
+    #
+    # Ratio-estimate frequencies
+    #
+    abundanceByStratum <- AnalyticalPopulationEstimateData$Abundance[,list(totalAbundance=sum(Abundance)), by="Stratum"]
+    m <- match(AnalyticalPopulationEstimateData$Abundance$Stratum, abundanceByStratum$Stratum)
+    AnalyticalPopulationEstimateData$Abundance$Frequency <- AnalyticalPopulationEstimateData$Abundance$Abundance / abundanceByStratum$totalAbundance[m]
+    m <- match(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, abundanceByStratum$Stratum)
+    AnalyticalPopulationEstimateData$AbundanceCovariance$FrequencyCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance$AbundanceCovariance * (1/abundanceByStratum$totalAbundance[m])**2
+    
+        
+    return(AnalyticalPopulationEstimateData)
+  }
+
   
   browser()
   

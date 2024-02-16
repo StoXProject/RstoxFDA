@@ -270,6 +270,7 @@ expect_true(length(grep("PSU-stratum:40", nastrataVariableCovar))==length(nastra
 #
 stationDesign <- RstoxFDA::CatchLotterySamplingExample
 ex <- RstoxFDA::CatchLotteryExample
+ex$SpeciesCategory$SpeciesCategory <- "061104"
 ex$Individual$IW <- ex$Individual$IndividualRoundWeight #for testing that covariances equal variances when appropriate
 ex$Individual$one <- 1 #for testing that variable covariance equal abundance covariance when appropriate.
 stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "lotterySerialnumber", "Haul", "MissingAtRandom")
@@ -277,9 +278,63 @@ srs <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, ex, "SRS", c("Indivi
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
 popEstAgeDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
-
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+expect_true(abs(popEst$Variables$Total-125183088936) < 1) #g, not checked for correctness, just there to detect if anything changes. Offical landings over 15m were 133137498 kg within 7% difference
+expect_true(abs(sum(popEstAgeDomain$Abundance$Abundance)-popEst$Abundance$Abundance)<1e-6)
+
+#mean of means should be different, but not too different. Set a reasonable range, re-check if test fails
+maxDIffMeanOfMean <- max((popEstMeanOfMeans$Variables$Mean-popEstAgeDomain$Variables$Mean)/popEstMeanOfMeans$Variables$Mean)
+expect_true(maxDIffMeanOfMean >.01)
+expect_true(maxDIffMeanOfMean <.1)
+
+#
+# Test ratio estimation
+#
+psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), "IndividualAge")
+popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
+
+#some annotation and recoding for for testing purposes (does not correspond to actual gear mapping)
+land <- RstoxFDA::CatchLotteryLandingExample
+land$Landing$SpeciesCategory <- "061104"
+ex$Haul$Gear[ex$Haul$Gear %in% c("3500", "3600")] <- "51"
+ex$Haul$Gear[ex$Haul$Gear %in% c("3700")] <- "53"
+ex$Haul$Gear[ex$Haul$Gear %in% c("3100")] <- "11"
+
+ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "StratumWeight")
+#check that relative difference in abundance equals relative difference in total estimated weigh vs landed weight for all landings as one stratum
+relDiff <- (ratioEst$Abundance$Abundance - popEstDomain$Abundance$Abundance)/popEstDomain$Abundance$Abundance
+expect_true(all(abs(relDiff-(sum(land$Landing$RoundWeight)*1000 - popEst$Variables$Total)/popEst$Variables$Total)<1e-6))
+relDiffCov <- (ratioEst$AbundanceCovariance$AbundanceCovariance - popEstDomain$AbundanceCovariance$AbundanceCovariance*((sum(land$Landing$RoundWeight)*1000/popEst$Variables$Total)**2))/ratioEst$AbundanceCovariance$AbundanceCovariance
+expect_true(all(abs(relDiffCov)<1e-6))
+#check that total and total covariances are unchanged
+expect_true(all(ratioEst$Variables$Total == popEstDomain$Variables$Total))
+expect_true(all(ratioEst$VariablesCovariance$TotalCovariance == popEstDomain$VariablesCovariance$TotalCovariance))
+#frequencies should be recalculated, but have barely changed when all landings is one stratum
+expect_true(all(abs(ratioEst$Abundance$Frequency - popEstDomain$Abundance$Frequency)<1e-6))
+expect_true(!all(ratioEst$Abundance$Frequency == popEstDomain$Abundance$Frequency))
+expect_true(all(abs(ratioEst$AbundanceCovariance$FrequencyCovariance - popEstDomain$AbundanceCovariance$FrequencyCovariance)<1e-6))
+expect_true(!all(ratioEst$AbundanceCovariance$FrequencyCovariance == popEstDomain$AbundanceCovariance$FrequencyCovariance))
+
+
+#
+# Test with landings mapped to domain
+#
+
+psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge", "Gear"))
+popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
+ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "StratumWeight")
+
+#check that relative age comp in Gear domain is preserved, even if abundance estimates are very different.
+domainAbundRatio <- merge(ratioEst$Abundance, ratioEst$DomainVariables, by=c("Domain"))
+ageAbundRatio <- domainAbundRatio[,list(tot=sum(Abundance[Gear=="51"])),by="IndividualAge"]
+ageAbundRatio$tot <- ageAbundRatio$tot / sum(ageAbundRatio$tot)
+domainAbundPop <- merge(popEstDomain$Abundance, popEstDomain$DomainVariables, by=c("Domain"))
+ageAbundPop <- domainAbundPop[,list(tot=sum(Abundance[Gear=="51"])),by="IndividualAge"]
+ageAbundPop$tot <- ageAbundPop$tot / sum(ageAbundPop$tot)
+expect_true(all((ageAbundPop$tot - ageAbundRatio$tot)/ageAbundRatio$tot)<1e-6)
+comp <- merge(domainAbundRatio, domainAbundPop, by=c("Stratum", "Domain"))
+expect_true(max(abs(comp$Abundance.x - comp$Abundance.y)/comp$Abundance.x)>1)
 
 #
 # Correctness test for a minimal example
