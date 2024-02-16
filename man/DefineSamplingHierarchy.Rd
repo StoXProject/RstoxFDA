@@ -6,13 +6,26 @@
 Not yet implemented.}
 \usage{
 DefineSamplingHierarchy(
+  StoxBioticData,
   IndividualSamplingParametersData,
   Hierarchy = character(),
   Stratification = character(),
   StrataSizes = character(),
-  SelectionMetod = character(),
-  CollapseStrata = character()
+  SelectionMetod = character()
 )
+}
+\arguments{
+\item{StoxBioticData}{data records}
+
+\item{IndividualSamplingParametersData}{sampling parameters for lower level selection}
+
+\item{Hierarchy}{character vector describing the hierarchy}
+
+\item{Stratification}{character vector describing the stratification at each level in the hierarchy}
+
+\item{StrataSizes}{identifies column where strata sizes are provided}
+
+\item{SelectionMethod}{sampling method for each level in the hierarchy}
 }
 \value{
 \code{\link[RstoxFDA]{IndividualSamplingParametersData}}

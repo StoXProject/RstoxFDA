@@ -423,12 +423,17 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
 
 #' Extend IndividualSamplingParametersData to reflect selection from PSU by specifying intermediate selection.
 #' Not yet implemented.
-#' @param IndividualSamplingParametersData
+#' @param StoxBioticData data records
+#' @param IndividualSamplingParametersData sampling parameters for lower level selection
+#' @param Hierarchy character vector describing the hierarchy
+#' @param Stratification character vector describing the stratification at each level in the hierarchy
+#' @param StrataSizes identifies column where strata sizes are provided
+#' @param SelectionMethod sampling method for each level in the hierarchy
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}}
 #' @concept Analytical estimation
 #' @md
 #' @export
-DefineSamplingHierarchy <- function(IndividualSamplingParametersData, Hierarchy=character(), Stratification=character(), StrataSizes=character(), SelectionMetod=character(), CollapseStrata=character()){
+DefineSamplingHierarchy <- function(StoxBioticData, IndividualSamplingParametersData, Hierarchy=character(), Stratification=character(), StrataSizes=character(), SelectionMetod=character()){
   stop("Not Implemented")
 }
 
@@ -604,6 +609,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, Variables=character(), DomainVariables=character()){
 
   ind <- RstoxData::MergeStoxBiotic(StoxBioticData, "Individual")
+  ind <- ind[ind$Individual %in% IndividualSamplingParametersData$SelectionTable$IndividualId,]
   
   reservedNames <- c("Stratum", "Domain", "SampleId")
   namingConflicts <- DomainVariables[DomainVariables %in% reservedNames]
@@ -643,7 +649,7 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
     
   ind <- ind[,.SD,.SDcol=c("Individual", "Domain", Variables)]
   ind <- merge(ind, IndividualSamplingParametersData$SelectionTable, by.x=c("Individual"), by.y=c("IndividualId"))
-    
+  
   abundance <- ind[,list(Abundance=sum(1/InclusionProbability), Frequency=sum(HTsamplingWeight)), by=c("SampleId", "Stratum", "Domain")]
 
   #add zero domains
@@ -961,6 +967,26 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
 #' @param AnalyticalPSUEstimateData \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for each of the Primary Sampling Units in PSUSamplingParametersData
 #' @param MeanOfMeans logical. Determines which estimators are used for frequencies and means. See details.
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimated population parameters by stratum and domain.
+#' @examples 
+#'  PSUsamplingParameters <- RstoxFDA::AssignPSUSamplingParameters(RstoxFDA::CatchLotterySamplingExample, 
+#'                                        RstoxFDA::CatchLotteryExample, "lotterySerialnumber", "Haul", "MissingAtRandom")
+#'  individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
+#'                                        RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
+#'                                        
+#'  psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 
+#'                                        individualSamplingParameters, c("IndividualRoundWeight"), c("IndividualAge"))
+#'  popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
+#'  
+#'  #tabulate abundance
+#'  abundance <- popEst$Abundance[,list(Abundance=Abundance), by=c("Stratum", "Domain")]
+#'  #add SE and CV
+#'  abundance <- merge(abundance, popEst$AbundanceCovariance[Domain1==Domain2,list(SE=sqrt(AbundanceCovariance)), 
+#'                    by=list(Stratum=Stratum, Domain=Domain1)])
+#'  abundance$CV <- abundance$SE/abundance$Abundance
+#'  
+#'  #need to order as numeric. Domain is always a chr:
+#'  abundance <- abundance[order(as.numeric(abundance$Domain)),]
+#'  abundance
 #' @concept Analytical estimation
 #' @export
 #' @md

@@ -15,8 +15,7 @@ expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::Catch
 expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "Haul", "Sample", "MissingAtRandom"), "The column provided for 'DataRecordId' ")
 expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "HaulKey", "Haul", "MissingAtRandom"), "The 'SamplingUnitId' ")
 ex <- RstoxFDA::CatchLotteryExample
-ex$Haul$serialnumber <- RstoxFDA::CatchLotteryExample$Haul$HaulKey
-designParamsCorrected <- RstoxFDA::AssignPSUSamplingParameters(designParams, ex, "serialnumber", "Haul", "MissingAtRandom")
+designParamsCorrected <- RstoxFDA::AssignPSUSamplingParameters(designParams, ex, "lotterySerialnumber", "Haul", "MissingAtRandom")
 expect_equal(sum(designParamsCorrected$SelectionTable$HTsamplingWeight),1)
 expect_equal(sum(designParamsCorrected$SelectionTable$HHsamplingWeight),1)
 #HT should be approximately the same after non-response correction
@@ -177,9 +176,7 @@ expect_true(sum(!is.na(psuEst$Variables$Mean))>0)
 lengthStratMissingStrata <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, ss, "LengthStratified", c("IndividualAge"), LengthInterval = 5)
 expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, lengthStratMissingStrata, "IndividualRoundWeight", c("IndividualAge")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
 
-expect_true(nrow(psuEst$DomainVariables)==length(unique(ss$Individual$IndividualAge)))
-expect_true("NA" %in% psuEst$DomainVariables$Domain)
-expect_true(sum(is.na(psuEst$DomainVariables$IndividualAge))==1)
+expect_true(nrow(psuEst$DomainVariables)==length(unique(ss$Individual$IndividualAge[!is.na(ss$Individual$IndividualAge)])))
 expect_true(ncol(psuEst$DomainVariables)==2)
 
 expect_true(sum(is.na(psuEst$Abundance$Abundance))>0)
@@ -273,10 +270,9 @@ expect_true(length(grep("PSU-stratum:40", nastrataVariableCovar))==length(nastra
 #
 stationDesign <- RstoxFDA::CatchLotterySamplingExample
 ex <- RstoxFDA::CatchLotteryExample
-ex$Haul$serialnumber <- ex$Haul$HaulKey
 ex$Individual$IW <- ex$Individual$IndividualRoundWeight #for testing that covariances equal variances when appropriate
 ex$Individual$one <- 1 #for testing that variable covariance equal abundance covariance when appropriate.
-stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "lotterySerialnumber", "Haul", "MissingAtRandom")
 srs <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, ex, "SRS", c("IndividualAge"))
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
 popEstAgeDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)

@@ -11,8 +11,12 @@
 data(CatchLotteryExample)
 }
 \description{
-Example of data formatted as \code{\link[RstoxData]{StoxBioticData}}
+Example of data formatted as \code{\link[RstoxData]{StoxBioticData}}, with an added column 'lotterySerialnumber' at the Haul-table
+which identifies the selection in the catch sampling lottery that this data was recorded for (see 'SamplingUnitId' in \code{\link[RstoxFDA]{CatchLotterySamplingExample}})
+}
+\details{
 Hauls are primary sampling units, selected by Poission sampling with selection probabilities proportional to the catch size.
+Corresponding sampling parameters are provided in \code{\link[RstoxFDA]{CatchLotterySamplingExample}}
 The data contain North Sea herring samples from catch lottery sampling in 2022.
 }
 \examples{

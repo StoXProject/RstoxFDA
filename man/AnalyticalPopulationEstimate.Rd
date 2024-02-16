@@ -135,4 +135,25 @@ Vocabulary for notation used above:
 \item{\eqn{\hat{\mu}_{i}}}{The estimated mean in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Mean' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
 }
 }
+\examples{
+ PSUsamplingParameters <- RstoxFDA::AssignPSUSamplingParameters(RstoxFDA::CatchLotterySamplingExample, 
+                                       RstoxFDA::CatchLotteryExample, "lotterySerialnumber", "Haul", "MissingAtRandom")
+ individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
+                                       RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
+                                       
+ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 
+                                       individualSamplingParameters, c("IndividualRoundWeight"), c("IndividualAge"))
+ popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
+ 
+ #tabulate abundance
+ abundance <- popEst$Abundance[,list(Abundance=Abundance), by=c("Stratum", "Domain")]
+ #add SE and CV
+ abundance <- merge(abundance, popEst$AbundanceCovariance[Domain1==Domain2,list(SE=sqrt(AbundanceCovariance)), 
+                   by=list(Stratum=Stratum, Domain=Domain1)])
+ abundance$CV <- abundance$SE/abundance$Abundance
+ 
+ #need to order as numeric. Domain is always a chr:
+ abundance <- abundance[order(as.numeric(abundance$Domain)),]
+ abundance
+}
 \concept{Analytical estimation}
