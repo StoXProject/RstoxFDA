@@ -1091,7 +1091,21 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   return(output)
 }
 
-AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, DomainVariables){
+#' Ratio estimate of abundance
+#' @description 
+#'  Performs ratio estimate of abundance, based on either the ratio of abundance in domains to total weight in a stratum, or the frequency and mean weights of each domain.
+#' @details 
+#'  
+#' @param AnalyticalPopulationEstimateData \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimates of mean or total weights and frequencies or abundance in domains
+#' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} with census data on total weight in each stratum
+#' @param WeightVariable character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals.
+#' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance
+#' @concept Analytical estimation
+#' @export
+#' @md
+AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, WeightVariable=character()){
+  
+  browser()
   
   #ratio estimate for total number in domain. Domain variables not in landings are taken to be estimated domain of interest. Additional domain variables are specified in DomainVariables
   

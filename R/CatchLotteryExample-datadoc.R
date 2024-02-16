@@ -11,7 +11,7 @@
 #'
 #' @usage data(CatchLotteryExample)
 #'
-#' @format \code{\link[RstoxData]{StoxBioticData}}
+#' @format \code{\link[RstoxFDA]{StoxBioticData}}
 #'
 #' @keywords datasets
 #' @concept Analytical estimation

@@ -5,7 +5,7 @@
 \alias{CatchLotterySamplingExample}
 \title{Sampling parameters from the Norwegian catch lottery sampling program.}
 \format{
-\code{\link[RstoxData]{StoxBioticData}}
+\code{\link[RstoxData]{PSUSamplingParametersData}}
 }
 \usage{
 data(CatchLotterySamplingExample)
