@@ -294,6 +294,10 @@ expect_true(maxDIffMeanOfMean <.1)
 psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), "IndividualAge")
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
 
+CVs <- merge(popEstDomain$Abundance, popEstDomain$AbundanceCovariance[Domain1==Domain2], by.x=c("Stratum", "Domain"), by.y=c("Stratum", "Domain1"))
+CVs$CV <- sqrt(CVs$AbundanceCovariance) / CVs$Abundance
+expect_true(min(CVs$CV)<.2)
+
 #some annotation and recoding for for testing purposes (does not correspond to actual gear mapping)
 land <- RstoxFDA::CatchLotteryLandingExample
 land$Landing$SpeciesCategory <- "061104"
@@ -301,7 +305,7 @@ ex$Haul$Gear[ex$Haul$Gear %in% c("3500", "3600")] <- "51"
 ex$Haul$Gear[ex$Haul$Gear %in% c("3700")] <- "53"
 ex$Haul$Gear[ex$Haul$Gear %in% c("3100")] <- "11"
 
-ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "StratumWeight")
+ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "TotalDomainWeight")
 #check that relative difference in abundance equals relative difference in total estimated weigh vs landed weight for all landings as one stratum
 relDiff <- (ratioEst$Abundance$Abundance - popEstDomain$Abundance$Abundance)/popEstDomain$Abundance$Abundance
 expect_true(all(abs(relDiff-(sum(land$Landing$RoundWeight)*1000 - popEst$Variables$Total)/popEst$Variables$Total)<1e-6))
@@ -323,7 +327,12 @@ expect_true(!all(ratioEst$AbundanceCovariance$FrequencyCovariance == popEstDomai
 
 psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge", "Gear"))
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
-ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "StratumWeight")
+ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "TotalDomainWeight")
+
+#check that some CVs are in reasonable range
+CVs <- merge(ratioEst$Abundance, ratioEst$AbundanceCovariance[Domain1==Domain2], by.x=c("Stratum", "Domain"), by.y=c("Stratum", "Domain1"))
+CVs$CV <- sqrt(CVs$AbundanceCovariance) / CVs$Abundance
+expect_true(min(CVs$CV)<.2)
 
 #check that relative age comp in Gear domain is preserved, even if abundance estimates are very different.
 domainAbundRatio <- merge(ratioEst$Abundance, ratioEst$DomainVariables, by=c("Domain"))
@@ -332,9 +341,31 @@ ageAbundRatio$tot <- ageAbundRatio$tot / sum(ageAbundRatio$tot)
 domainAbundPop <- merge(popEstDomain$Abundance, popEstDomain$DomainVariables, by=c("Domain"))
 ageAbundPop <- domainAbundPop[,list(tot=sum(Abundance[Gear=="51"])),by="IndividualAge"]
 ageAbundPop$tot <- ageAbundPop$tot / sum(ageAbundPop$tot)
-expect_true(all((ageAbundPop$tot - ageAbundRatio$tot)/ageAbundRatio$tot)<1e-6)
+expect_true(all(abs(ageAbundPop$tot - ageAbundRatio$tot)/ageAbundRatio$tot<1e-6))
 comp <- merge(domainAbundRatio, domainAbundPop, by=c("Stratum", "Domain"))
 expect_true(max(abs(comp$Abundance.x - comp$Abundance.y)/comp$Abundance.x)>1)
+
+#
+# Test with MeanDomainWeights
+#
+
+psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge", "Gear"))
+popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
+ratioEstMDW <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "MeanDomainWeight")
+
+#check that estimates are in the same ballpark (catch rounding errors etc)
+expect_true(abs(sum(ratioEstMDW$Abundance$Abundance) - sum(popEstDomain$Abundance$Abundance))/sum(ratioEstMDW$Abundance$Abundance) < .2)
+#check that some CVs are in reasonable range
+CVs <- merge(ratioEstMDW$Abundance, ratioEstMDW$AbundanceCovariance[Domain1==Domain2], by.x=c("Stratum", "Domain"), by.y=c("Stratum", "Domain1"))
+CVs$CV <- sqrt(CVs$AbundanceCovariance) / CVs$Abundance
+expect_true(min(CVs$CV)<.2)
+#check that total and total covariances are unchanged
+expect_true(all(ratioEstMDW$Variables$Total == popEstDomain$Variables$Total))
+expect_true(all(ratioEstMDW$VariablesCovariance$TotalCovariance == popEstDomain$VariablesCovariance$TotalCovariance))
+#frequencies should not be changed 
+expect_true(all(ratioEstMDW$Abundance$Frequency == popEstDomain$Abundance$Frequency))
+expect_true(all(ratioEstMDW$AbundanceCovariance$FrequencyCovariance == popEstDomain$AbundanceCovariance$FrequencyCovariance))
+
 
 #
 # Correctness test for a minimal example
@@ -402,10 +433,10 @@ expect_true(abs(popEst$VariablesCovariance[Variable1=="one" & Variable2=="one"][
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
-#stop("Add examples.")
-#stop("Add input sanitation.")
+#stop("Document ratio estimator.")
+#stop("Add examples PSUestumator and ratio estimator.")
+#stop("Check input sanitation.")
 #stop("Test collapseStrata with both HH and HT")
-#stop("Implement Ratio to landings estimate.")
 #stop("Implement DefineHierarchy.")
 #stop("expose to StoX")
 #stop("write vignette.")
