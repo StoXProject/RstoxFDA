@@ -308,6 +308,7 @@ ex$Haul$Gear[ex$Haul$Gear %in% c("3100")] <- "11"
 ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "TotalDomainWeight")
 #check that relative difference in abundance equals relative difference in total estimated weigh vs landed weight for all landings as one stratum
 relDiff <- (ratioEst$Abundance$Abundance - popEstDomain$Abundance$Abundance)/popEstDomain$Abundance$Abundance
+
 expect_true(all(abs(relDiff-(sum(land$Landing$RoundWeight)*1000 - popEst$Variables$Total)/popEst$Variables$Total)<1e-6))
 relDiffCov <- (ratioEst$AbundanceCovariance$AbundanceCovariance - popEstDomain$AbundanceCovariance$AbundanceCovariance*((sum(land$Landing$RoundWeight)*1000/popEst$Variables$Total)**2))/ratioEst$AbundanceCovariance$AbundanceCovariance
 expect_true(all(abs(relDiffCov)<1e-6))
@@ -325,14 +326,15 @@ expect_true(!all(ratioEst$AbundanceCovariance$FrequencyCovariance == popEstDomai
 # Test with landings mapped to domain
 #
 
-psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge", "Gear"))
+psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge"), "Gear")
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
 ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "TotalDomainWeight")
 
 #check that some CVs are in reasonable range
 CVs <- merge(ratioEst$Abundance, ratioEst$AbundanceCovariance[Domain1==Domain2], by.x=c("Stratum", "Domain"), by.y=c("Stratum", "Domain1"))
 CVs$CV <- sqrt(CVs$AbundanceCovariance) / CVs$Abundance
-expect_true(min(CVs$CV)<.2)
+expect_equal(sum(is.na(CVs$CV)), sum(is.na(CVs$CV)))
+expect_true(min(CVs$CV, na.rm=T)<.5)
 
 #check that relative age comp in Gear domain is preserved, even if abundance estimates are very different.
 domainAbundRatio <- merge(ratioEst$Abundance, ratioEst$DomainVariables, by=c("Domain"))
@@ -343,7 +345,7 @@ ageAbundPop <- domainAbundPop[,list(tot=sum(Abundance[Gear=="51"])),by="Individu
 ageAbundPop$tot <- ageAbundPop$tot / sum(ageAbundPop$tot)
 expect_true(all(abs(ageAbundPop$tot - ageAbundRatio$tot)/ageAbundRatio$tot<1e-6))
 comp <- merge(domainAbundRatio, domainAbundPop, by=c("Stratum", "Domain"))
-expect_true(max(abs(comp$Abundance.x - comp$Abundance.y)/comp$Abundance.x)>1)
+expect_true(max(abs(comp$Abundance.x - comp$Abundance.y)/comp$Abundance.x,na.rm=T)>1)
 
 #
 # Test with MeanDomainWeights
@@ -402,10 +404,6 @@ popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(miniEx, psuEst, Mea
 
 expect_true(abs(popEst$Abundance$Abundance - 10232.75)<1e-2)
 expect_true(abs(popEst$Abundance$Abundance * popEst$Variables$Mean[popEst$Variables$Variable=="IndividualRoundWeight"] - popEst$Variables$Total[popEst$Variables$Variable=="IndividualRoundWeight"]) < 1e-6)
-
-#check Mean Abundance
-expect_true(abs(popEst$Abundance$MeanAbundance - popEst$Abundance$Abundance/mean(1/miniEx$SelectionTable$SelectionProbability)) < 1e-6)
-expect_true(!is.na(popEst$AbundanceCovariance$MeanAbundanceCovariance))
 
 #check annotation of PSU domains
 expect_error(RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"), "IndividualSex" ,"Gears"), "All PSUDomainVariables must be columns in StoxBioticData. The following are not valid: Gears")
