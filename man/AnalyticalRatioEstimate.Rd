@@ -7,7 +7,8 @@
 AnalyticalRatioEstimate(
   AnalyticalPopulationEstimateData,
   StoxLandingData,
-  WeightVariable = character()
+  WeightVariable = character(),
+  Method = c("TotalDomainWeight", "MeanDomainWeight")
 )
 }
 \arguments{
@@ -15,12 +16,27 @@ AnalyticalRatioEstimate(
 
 \item{StoxLandingData}{\code{\link[RstoxData]{StoxLandingData}} with census data on total weight in each stratum}
 
-\item{WeightVariable}{character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals.}
+\item{WeightVariable}{character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals in grams.}
+
+\item{Method}{The method of ratio estimation to use. 'TotalDomainWeight' or 'MeanDomainWeight'. See details}
 }
 \value{
 \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance
 }
 \description{
 Performs ratio estimate of abundance, based on either the ratio of abundance in domains to total weight in a stratum, or the frequency and mean weights of each domain.
+}
+\details{
+Ratio estimates of abundance are obtained by relating abundance to weight and utilizing census data on landed weight to potentially improve estimates.
+Ratio estimation generally incurs some bias in estimation, and analytical expressions for variances are approximate.
+
+Ratio estimation of abundance may either improve an estimate of abundance obtained by other means, or provide an estimate of abundance
+when only proportions in domains are known.
+
+The function obtains a ratio estimate of total abundance in landings by one of the following methods (provided in the argument 'Method'):
+\describe{
+\item{TotalDomainWeight}{}
+\item{MeanDomainWeight}{}
+}
 }
 \concept{Analytical estimation}

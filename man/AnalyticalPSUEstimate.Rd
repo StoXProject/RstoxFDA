@@ -8,7 +8,8 @@ AnalyticalPSUEstimate(
   StoxBioticData,
   IndividualSamplingParametersData,
   Variables = character(),
-  DomainVariables = character()
+  DomainVariables = character(),
+  PSUDomainVariables = character()
 )
 }
 \arguments{
@@ -18,7 +19,9 @@ AnalyticalPSUEstimate(
 
 \item{Variables}{names of variables that means and totals should be estimated for. Must be columns of the Individual table in 'StoxBioticData'}
 
-\item{DomainVariables}{names of variables that define domains that estimates should be reported for. Must be columns of 'Individual' or some higher level table in 'StoxBioticData'.}
+\item{DomainVariables}{names of variables that define domains of individuals that estimates should be made for. Must be columns of 'Individual' or some higher level table in 'StoxBioticData'.}
+
+\item{PSUDomainVariables}{names of variables that define groups of PSUs to be annotated on the results for later processing. Must be columns of 'Individual' or some higher level table in 'StoxBioticData', and must have a unique value for each PSU.}
 }
 \value{
 \code{\link[RstoxFDA]{AnalyticalPSUEstimate}} with estimates for each PSU of abundance, frequencies, totals and means by stratum and domain.
@@ -32,6 +35,10 @@ Provides estimates of abundance, frequencies, totals and means by a Horvitz-Thom
 Abundance and totals are only provided if inclusion probabilities are known, while frequencies and means may be calculated
 with only sampling weights. See \code{\link[RstoxFDA]{IndividualSamplingParametersData}}.
 
+Results may be combined into population level estimates with \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}. For this
+reason it is also possible to provide groups of PSUs to be annotated on the output (the argument 'PSUDomainVariables').
+PSU domains has no effect on estimation, but are merely annotated on the results for further processing or reporting.
+
 Sampling parameters for the selection of individuals from a catch can be inferred for some common sub-sampling techniques
 with the function \code{\link[RstoxFDA]{DefineIndividualSamplingParameters}}. If samples of Individuals are not directly sampled from each
 PSU, any intermediate sampling levels can be incorporated with the function \code{\link[RstoxFDA]{DefineSamplingHierarchy}}
@@ -39,8 +46,8 @@ PSU, any intermediate sampling levels can be incorporated with the function \cod
 If any strata are specified in the SampleTable of 'IndividualSamplingParametersData' but are not sampled per the SelectionTable
 all estimates will be provided as NAs for this stratum.
 
-Domains that are not present in a sample are naturally reported as having 0 abundance, frequency and total. The corresponding means
-will be undefined and reportet as NaN. Means of NA thus reflects incomlete sampling, while NaN reflects zero abundance in that domain.
+Domains and that are not present in a sample are not reported, although their estimated abundance and total is zero. Use the function
+\code{\link[RstoxFDA]{LiftStrata}} to infer zero values for unreported domains, and mark unsampled strata as NA.
 
 In general unbiased estimates rely on known inclusion probabilites, and domain definitions that coincides
 with stratification. When the domain definitions are not aligned

@@ -403,6 +403,21 @@ popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(miniEx, psuEst, Mea
 expect_true(abs(popEst$Abundance$Abundance - 10232.75)<1e-2)
 expect_true(abs(popEst$Abundance$Abundance * popEst$Variables$Mean[popEst$Variables$Variable=="IndividualRoundWeight"] - popEst$Variables$Total[popEst$Variables$Variable=="IndividualRoundWeight"]) < 1e-6)
 
+#check Mean Abundance
+expect_true(abs(popEst$Abundance$MeanAbundance - popEst$Abundance$Abundance/mean(1/miniEx$SelectionTable$SelectionProbability)) < 1e-6)
+expect_true(!is.na(popEst$AbundanceCovariance$MeanAbundanceCovariance))
+
+#check annotation of PSU domains
+expect_error(RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"), "IndividualSex" ,"Gears"), "All PSUDomainVariables must be columns in StoxBioticData. The following are not valid: Gears")
+psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"), "IndividualSex" ,"Gear")
+expect_equal(nrow(psuEstDomain$PSUDomainVariables),3)
+expect_error(RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"), "IndividualSex" ,"IndividualSex"), "PSUDomainVariables must be unique to each PSU. Duplicates found for IndividualSexfor PSUs:")
+psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"), "IndividualSex" , c("Gear", "SpeciesCategory"))
+psuEstDomain <- LiftStrata(psuEstDomain)
+expect_equal(ncol(psuEstDomain$PSUDomainVariables), 4)
+psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"), "IndividualSex")
+expect_true(all(psuEstDomain$PSUDomainVariables$PSUDomain=="All"))
+
 #check that domainEst sums to total est
 psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"), "IndividualSex")
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(miniEx, psuEstDomain)

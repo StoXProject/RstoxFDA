@@ -545,6 +545,10 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #'  Abundance and totals are only provided if inclusion probabilities are known, while frequencies and means may be calculated
 #'  with only sampling weights. See \code{\link[RstoxFDA]{IndividualSamplingParametersData}}.
 #'  
+#'  Results may be combined into population level estimates with \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}. For this
+#'  reason it is also possible to provide groups of PSUs to be annotated on the output (the argument 'PSUDomainVariables').
+#'  PSU domains has no effect on estimation, but are merely annotated on the results for further processing or reporting.
+#'  
 #'  Sampling parameters for the selection of individuals from a catch can be inferred for some common sub-sampling techniques
 #'  with the function \code{\link[RstoxFDA]{DefineIndividualSamplingParameters}}. If samples of Individuals are not directly sampled from each
 #'  PSU, any intermediate sampling levels can be incorporated with the function \code{\link[RstoxFDA]{DefineSamplingHierarchy}}
@@ -552,8 +556,8 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #'  If any strata are specified in the SampleTable of 'IndividualSamplingParametersData' but are not sampled per the SelectionTable
 #'  all estimates will be provided as NAs for this stratum.
 #'  
-#'  Domains that are not present in a sample are naturally reported as having 0 abundance, frequency and total. The corresponding means
-#'  will be undefined and reportet as NaN. Means of NA thus reflects incomlete sampling, while NaN reflects zero abundance in that domain.
+#'  Domains and that are not present in a sample are not reported, although their estimated abundance and total is zero. Use the function
+#'  \code{\link[RstoxFDA]{LiftStrata}} to infer zero values for unreported domains, and mark unsampled strata as NA.
 #'  
 #'  In general unbiased estimates rely on known inclusion probabilites, and domain definitions that coincides
 #'  with stratification. When the domain definitions are not aligned
@@ -601,22 +605,52 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} with the actual observations of individuals.
 #' @param IndividualSamplingParametersData \code{\link[RstoxData]{IndividualSamplingParametersData}} with sampling parameters for individuals
 #' @param Variables names of variables that means and totals should be estimated for. Must be columns of the Individual table in 'StoxBioticData'
-#' @param DomainVariables names of variables that define domains that estimates should be reported for. Must be columns of 'Individual' or some higher level table in 'StoxBioticData'.
+#' @param DomainVariables names of variables that define domains of individuals that estimates should be made for. Must be columns of 'Individual' or some higher level table in 'StoxBioticData'.
+#' @param PSUDomainVariables names of variables that define groups of PSUs to be annotated on the results for later processing. Must be columns of 'Individual' or some higher level table in 'StoxBioticData', and must have a unique value for each PSU.
 #' @return \code{\link[RstoxFDA]{AnalyticalPSUEstimate}} with estimates for each PSU of abundance, frequencies, totals and means by stratum and domain.
 #' @concept Analytical estimation
 #' @md
 #' @export
-AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, Variables=character(), DomainVariables=character()){
+AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, Variables=character(), DomainVariables=character(), PSUDomainVariables=character()){
 
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(IndividualSamplingParametersData, "IndividualSamplingParametersData")
+  
   ind <- RstoxData::MergeStoxBiotic(StoxBioticData, "Individual")
   ind <- ind[ind$Individual %in% IndividualSamplingParametersData$SelectionTable$IndividualId,]
+
+  reservedNames <- c("PSUDomain", "SampleId", "Individual")
+  namingConflicts <- PSUDomainVariables[PSUDomainVariables %in% reservedNames]
+  if (length(namingConflicts)>0){
+    stop("The PSU domain variables", paste(paste(namingConflicts, collapse=","), " are specified. The following variable names cannot be used for variables  in domain definitions:", paste(reservedNames, collapse=",")))
+  }
   
+  missing <- PSUDomainVariables[!(PSUDomainVariables %in% names(ind))]
+  if (length(missing)>0){
+    stop(paste("All PSUDomainVariables must be columns in StoxBioticData. The following are not valid:", truncateStringVector(missing)))
+  }
+    
+  PSUdomains <- ind[,.SD, .SDcol=c("Individual", PSUDomainVariables)]
+  PSUdomains$PSUDomain <- apply(PSUdomains[,.SD,.SDcol=PSUDomainVariables], FUN=paste, MARGIN = 1, collapse="/")
+  PSUdomains <- merge(PSUdomains, IndividualSamplingParametersData$SelectionTable[,.SD,.SDcol=c("SampleId", "IndividualId")], by.x="Individual", by.y="IndividualId")
+  for (dom in PSUDomainVariables){
+    uniqueness <- PSUdomains[,list(total=length(unique(get(dom)))), by="SampleId"]
+    nonunique <- uniqueness$SampleId[uniqueness$total!=1]
+    if (length(nonunique)>0){
+      stop("PSUDomainVariables must be unique to each PSU. Duplicates found for ", dom, "for PSUs:", truncateStringVector(nonunique))
+    }
+  }
+  PSUdomains <- PSUdomains[!duplicated(PSUdomains$SampleId),.SD,.SDcol=c("SampleId", "PSUDomain", PSUDomainVariables)]
+  if (length(PSUDomainVariables)==0){
+    PSUdomains$PSUDomain <- "All"
+  }
+
   reservedNames <- c("Stratum", "Domain", "SampleId")
   namingConflicts <- DomainVariables[DomainVariables %in% reservedNames]
   if (length(namingConflicts)>0){
     stop("The domain variables", paste(paste(namingConflicts, collapse=","), " are specified. The following variable names cannot be used for variables  in domain definitions:", paste(reservedNames, collapse=",")))
   }
-  
+
   reservedNames <- c(names(IndividualSamplingParametersData$SelectionTable), "Domain")
   namingConflicts <- Variables[Variables %in% reservedNames]
   if (length(namingConflicts)>0){
@@ -688,6 +722,7 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
   output$Abundance <- abundance[order(SampleId, Stratum, Domain),]
   output$Variables <- estimates[order(SampleId, Stratum, Domain, Variable),]
   output$DomainVariables <- domaintable[order(Domain),]
+  output$PSUDomainVariables <- PSUdomains
   output$StratificationVariables <- IndividualSamplingParametersData$StratificationVariables[order(SampleId, Stratum),]
 
   return(output)
@@ -775,7 +810,7 @@ LiftStrata <- function(AnalyticalPSUEstimateData){
 }
 
 covarAbundance <- function(Totals, PSUSampling, MeanOfMeans){
-
+  
   tab <- merge(PSUSampling, Totals, by=c("Stratum", "Domain"), suffixes=c(".PSU", ".Total"))
   tab$AbundanceDev <- tab$Abundance.PSU/tab$SelectionProbability - tab$Abundance.Total
   tab$FrequencyDev <- tab$Frequency.PSU - tab$Frequency.Total
@@ -791,8 +826,9 @@ covarAbundance <- function(Totals, PSUSampling, MeanOfMeans){
   cross <- merge(cross, tab, by.x=c("SamplingUnitId", "Stratum", "Domain2"), by.y=c("SamplingUnitId", "Stratum", "Domain"), suffixes = c("1", "2"))
   cross$AbundanceDevProduct <- cross$AbundanceDev1 * cross$AbundanceDev2
   cross$FrequencyDevProduct <- cross$FrequencyDev1 * cross$FrequencyDev2
+  cross$MeanAbundanceDevProduct <- cross$MeanAbundanceDev1 * cross$MeanAbundanceDev2
 
-  sumOfProducts <- cross[,list(AbundanceSOP=sum(AbundanceDevProduct), FrequencySOP=sum(FrequencyDevProduct)), by=c("Stratum", "Domain1", "Domain2")]
+  sumOfProducts <- cross[,list(AbundanceSOP=sum(AbundanceDevProduct), FrequencySOP=sum(FrequencyDevProduct), MeanAbundanceSOP=sum(MeanAbundanceDevProduct)), by=c("Stratum", "Domain1", "Domain2")]
   sumOfProducts <- merge(sumOfProducts, sampleSize, by="Stratum")
   
   covar <- sumOfProducts[,list(AbundanceCovariance=AbundanceSOP/(n*(n-1)), FrequencyCovariance=FrequencySOP/(n*(n-1))), by=c("Stratum", "Domain1", "Domain2")]
@@ -991,6 +1027,9 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
 #' @export
 #' @md
 AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPSUEstimateData, MeanOfMeans=F){
+  browser()
+  checkMandatory(PSUSamplingParametersData, "PSUSamplingParametersData")
+  checkMandatory(AnalyticalPSUEstimateData, "AnalyticalPSUEstimateData")
 
   NestimatesByStrata <- AnalyticalPSUEstimateData$Abundance[,list(estimates=.N),by="Stratum"]
   if (!length(unique(NestimatesByStrata$estimates))==1){
@@ -1094,11 +1133,23 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #' Ratio estimate of abundance
 #' @description 
 #'  Performs ratio estimate of abundance, based on either the ratio of abundance in domains to total weight in a stratum, or the frequency and mean weights of each domain.
-#' @details 
+#' @details
+#'  Ratio estimates of abundance are obtained by relating abundance to weight and utilizing census data on landed weight to potentially improve estimates.
+#'  Ratio estimation generally incurs some bias in estimation, and analytical expressions for variances are approximate.
+#'  
+#'  Ratio estimation of abundance may either improve an estimate of abundance obtained by other means, or provide an estimate of abundance
+#'  when only proportions in domains are known.
+#'  
+#'  The function obtains a ratio estimate of total abundance in landings by one of the following methods (provided in the argument 'Method'):
+#'  \describe{
+#'   \item{TotalDomainWeight}{}
+#'   \item{MeanDomainWeight}{}
+#'  }
 #'  
 #' @param AnalyticalPopulationEstimateData \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimates of mean or total weights and frequencies or abundance in domains
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} with census data on total weight in each stratum
 #' @param WeightVariable character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals in grams.
+#' @param Method The method of ratio estimation to use. 'TotalDomainWeight' or 'MeanDomainWeight'. See details 
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance
 #' @concept Analytical estimation
 #' @export
