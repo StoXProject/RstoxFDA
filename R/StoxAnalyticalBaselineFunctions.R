@@ -603,7 +603,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #'  }
 #'  
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} with the actual observations of individuals.
-#' @param IndividualSamplingParametersData \code{\link[RstoxData]{IndividualSamplingParametersData}} with sampling parameters for individuals
+#' @param IndividualSamplingParametersData \code{\link[RstoxFDA]{IndividualSamplingParametersData}} with sampling parameters for individuals
 #' @param Variables names of variables that means and totals should be estimated for. Must be columns of the Individual table in 'StoxBioticData'
 #' @param DomainVariables names of variables that define domains of individuals that estimates should be made for. Must be columns of 'Individual' or some higher level table in 'StoxBioticData'.
 #' @param PSUDomainVariables names of variables that define groups of PSUs to be annotated on the results for later processing. Must be columns of 'Individual' or some higher level table in 'StoxBioticData', and must have a unique value for each PSU.
@@ -820,10 +820,14 @@ covarAbundance <- function(Totals, PSUSampling, MeanOfMeans){
     for (PSUDom in unique(stratatable$PSUDomain)){
       table <- stratatable[stratatable$PSUDomain == PSUDom,]
 
-      relDomainSize <- sum(table$HHsamplingWeight[!duplicated(table$SamplingUnitId)])
-      stopifnot(relDomainSize<=1+1e-6)
+      relPSUDomainSize <- sum(table$HHsamplingWeight[!duplicated(table$SamplingUnitId)])
+      relDomainSizes <- table[,list(relDomainSize=sum(HHsamplingWeight[!duplicated(SamplingUnitId)])), by=c("Stratum", "Domain")]
+      stopifnot(relPSUDomainSize<=1+1e-1)
+      stopifnot(all(relDomainSizes$relDomainSize <= relPSUDomainSize))
 
-      table$AbundanceDev <- table$Abundance.PSU/table$SelectionProbability - table$Abundance.Total
+      table <- merge(table, relDomainSizes, by=c("Stratum", "Domain"))
+      
+      table$AbundanceDev <- table$relDomainSize*table$Abundance.PSU/table$SelectionProbability - table$Abundance.Total
       table$FrequencyDev <- table$Frequency.PSU - table$Frequency.Total
       table <- table[,.SD,.SDcol=c("Stratum", "Domain", "SamplingUnitId", "AbundanceDev", "FrequencyDev")]
 
@@ -836,7 +840,7 @@ covarAbundance <- function(Totals, PSUSampling, MeanOfMeans){
       
       sumOfProducts <- cross[,list(AbundanceSOP=sum(AbundanceDevProduct), FrequencySOP=sum(FrequencyDevProduct)), by=c("Stratum", "Domain1", "Domain2")]
       sumOfProducts <- merge(sumOfProducts, sampleSize, by="Stratum")
-      covar <- sumOfProducts[,list(AbundanceCovariance=AbundanceSOP*(1/(n*(n-1)))*(1/relDomainSize**2), FrequencyCovariance=FrequencySOP*(1/(n*(n-1)))*(1/relDomainSize**2)), by=c("Stratum", "Domain1", "Domain2")]
+      covar <- sumOfProducts[,list(AbundanceCovariance=AbundanceSOP*(1/(n*(n-1)))*(1/relPSUDomainSize**2), FrequencyCovariance=FrequencySOP*(1/(n*(n-1)))*(1/relPSUDomainSize**2)), by=c("Stratum", "Domain1", "Domain2")]
       
       if (!MeanOfMeans){
         StrataAbundance <- Totals[,list(StrataAbundance=sum(Abundance)), by="Stratum"]
@@ -851,7 +855,7 @@ covarAbundance <- function(Totals, PSUSampling, MeanOfMeans){
   return(covars)
 }
 
-covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
+covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
   
   
   sampleSize <- PSUSampling[,list(n=length(unique(SamplingUnitId))), by="Stratum"]
@@ -863,11 +867,15 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
     for (PSUDom in unique(strataTable$PSUDomain)){
       table <- strataTable[strataTable$PSUDomain == PSUDom,]
       
-      relDomainSize <- sum(table$HHsamplingWeight[!duplicated(table$SamplingUnitId)])
-      stopifnot(relDomainSize<=1+1e-6)
+      relPSUDomainSize <- sum(table$HHsamplingWeight[!duplicated(table$SamplingUnitId)])
+      relDomainSizes <- table[,list(relDomainSize=sum(HHsamplingWeight[!duplicated(SamplingUnitId)])), by=c("Stratum", "Domain")]
+      stopifnot(relPSUDomainSize<=1+1e-1)
+      stopifnot(all(relDomainSizes$relDomainSize <= relPSUDomainSize))
       
-      table$TotalDev <- table$Total.PSU/table$SelectionProbability - table$Total.Total
-      table$MeanDev <- table$Mean.PSU*table$HHsamplingWeight - table$Mean.Total
+      table <- merge(table, relDomainSizes, by=c("Stratum", "Domain"))
+      
+      table$TotalDev <- table$relDomainSize*table$Total.PSU/table$SelectionProbability - table$Total.Total
+      table$MeanDev <- table$Mean.PSU - table$Mean.Total
       table <- table[,.SD,.SDcol=c("Stratum", "Domain", "SamplingUnitId", "Variable", "TotalDev", "MeanDev", "HHsamplingWeight", "Total.PSU", "SelectionProbability")]
       
       cross <- data.table::CJ(Domain1=unique(Totals$Domain), Variable1=unique(Totals$Variable), Domain2=unique(Totals$Domain), Variable2=unique(Totals$Variable))
@@ -880,24 +888,21 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
       
       sumOfProducts <- cross[,list(TotalSOP=sum(TotalDevProduct), 
                                    MeanSOP=sum(MeanDevProduct[coSampled==1]), 
-                                   CoSampled=sum(coSampled), 
                                    Freq1=sum(HHsamplingWeight1[coSampled==1]), 
-                                   Freq2=sum(HHsamplingWeight2[coSampled==1]), 
-                                   Total1=mean(Total.PSU1[coSampled==1]/SelectionProbability1[coSampled==1]), 
-                                   Total2=mean(Total.PSU2[coSampled==1]/SelectionProbability2[coSampled==1])), 
+                                   Freq2=sum(HHsamplingWeight2[coSampled==1])), 
                              by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2")]
       sumOfProducts <- merge(sumOfProducts, sampleSize, by="Stratum")
       
-      covar <- sumOfProducts[,list(TotalCovariance=TotalSOP*(1/(n*(n-1)))*(1/relDomainSize**2), 
-                                   MeanOfMeanCovariance=(1/Freq1**2)*MeanSOP/(n*(n-1)), 
-                                   MeanCovariance=(1/Total2**2)*TotalSOP/(n*(n-1))), 
+      covar <- sumOfProducts[,list(TotalCovariance=TotalSOP*(1/(n*(n-1)))*(1/relPSUDomainSize**2), 
+                                   MeanCovariance=(1/Freq1**2)*MeanSOP/(n*(n-1))), 
                              by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2")]
       
-      if (MeanOfMeans){
-        covar$MeanCovariance <- covar$MeanOfMeanCovariance
+      if (!MeanOfMeans){
+        m1 <- match(paste(covar$Stratum, covar$Domain1), paste(Abundance$Stratum, Abundance$Domain))
+        m2 <- match(paste(covar$Stratum, covar$Domain2), paste(Abundance$Stratum, Abundance$Domain))
+        covar$MeanCovariance <- covar$TotalCovariance * (1/Abundance$Abundance[m1]) * (1/Abundance$Abundance[m2])
       }
-      covar$MeanOfMeanCovariance <- NULL
-      
+
       
       covars <- rbind(covars, covar)    
     }
@@ -931,14 +936,23 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
 #'  See \code{\link[RstoxFDA]{LiftStrata}} for a way to infer PSU-estimates for strata that have zero abundance.
 #'  If simpler stratification is desired, see \code{\link[RstoxFDA]{CollapseStrata}}.
 #'  
-#'  The domains will be exactly as those defined in estimation for later sampling stages and encoded in 'AnalyticalPSUEstimateData'.
-#'  Consider the arguments to \code{\link[RstoxFDA]{AnalyticalPSUEstimate}} if other domains are desired.
+#'  The domains will be the combination of the domain the PSU belongs to (PSU-domains), and
+#'  the domains defined in estimation for later sampling stages and encoded in 'AnalyticalPSUEstimateData'.
+#'  Consider the arguments to \code{\link[RstoxFDA]{AnalyticalPSUEstimate}} if other 
+#'  later stage domains are desired. For variance estimation, it will sometimes be necessary
+#'  to distinguish the domain size of the PSU-domains. In these cases we will refer to the
+#'  PSU-domain of a domain. For example, catches may be PSUs and a domain will be defined as 'age 5 fish caught with
+#'  purse seine'. The gear (Purse seine) is a property of the catch and is naturally specified as a 
+#'  PSU-domain, so the PSU-domain of "age 5 fish caught with purse seine" is "purse seine". The domain will be
+#'  the total number of PSUs in the population that caught age 5 fish with purse seine, while the domain size of
+#'  the PSU domain will be simply all purse seine catches in the population. Hence domain sizes are always smaller
+#'  than their corresponding PSU-domain sizes.
 #'  
 #'  In general unbiased estimates rely on known selection probabilites, and domain definitions that coincides
 #'  with stratification. When only sampling weights are known, or the domain definitions are not aligned
 #'  with the stratification, ratio estimates are provided for which unbiasedness is not guaranteed.
 #'  
-#'  Only between-PSU variance is accounted for ignoring the variance contribution from the later sampling stages.
+#'  Only between-PSU variance is accounted for, ignoring the variance contribution from the later sampling stages.
 #'  This provides and unbiased estimate of the co-variances when PSUs are selected completely independently.
 #'  This is the case for Poission sampling or sampling with replacement. It is also approximately true for
 #'  regular sampling without replacement when the sampling intensity is low (Only a small fraction of the population PSUs are sampled).
@@ -954,52 +968,68 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
 #'  \describe{
 #'   \item{Abundance:}{
 #'   The estimate of the total number of individuals in domain \eqn{d} and stratum \eqn{s}:
-#'   \deqn{\hat{N}^{(s,d)} = \hat{D}^{(s,d)} \frac{1}{n^{(s)}} \sum_{i=1}^{n} \frac{\hat{N}^{(s,d)}_{i}}{p_{i}}I^{(s,d)}_{i}} 
+#'   \deqn{\hat{N}^{(s,d)} = \frac{1}{n^{(s)}} \sum_{i=1}^{n} \hat{D}^{(s,d)}\frac{\hat{N}^{(s,d)}_{i}}{p_{i}}I^{(s,d)}_{i}} 
 #'   with co-variance:
-#'   \deqn{\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})}) = \frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} \sum_{j=1}^{n} 
-#'   I^{(s)}_{i} I^{(s)}_{j} (\frac{\hat{N}^{(s,d_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{N}^{(s,d_{1})}) (\frac{\hat{N}^{(s,d_{2})}_{j}}{p_{j}}I^{(s,d_{2})}_{j} - \hat{N}^{(s,d_{2})})}
-#'   In the general case \eqn{\hat{D}^{(s,d)}} is estimated by a ratio estimator, and the error in estimating \eqn{\hat{D}^{(s,d)}} is ignored. When \eqn{d} covers all of \eqn{s}, \eqn{\hat{D}^{(s,d)}=1} is known. 
+#'   \deqn{\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})}) = \frac{1}{\hat{P}^{(s,d_{1})}\hat{P}^{(s,d_{2})}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
+#'   I^{(s)}_{i} J^{(s,d_{1})}_{i} J^{(s,d_{2})}_{i} (\hat{D}^{(s,d)}\frac{\hat{N}^{(s,d_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{N}^{(s,d_{1})}) (\hat{D}^{(s,d)}\frac{\hat{N}^{(s,d_{2})}_{i}}{p_{i}}I^{(s,d_{2})}_{i} - \hat{N}^{(s,d_{2})})}
+#'   
+#'   Note that unless \eqn{\hat{P}^{(s,d_{1})}=\hat{P}^{(s,d_{2})}} the covariance is zero.
+#'   
+#'   In the general case \eqn{\hat{D}^{(s,d)}} and \eqn{\hat{P}^{(s,d)}} is estimated by a ratio estimator, and the error those estimates are ignored. When \eqn{d} covers all of \eqn{s}, \eqn{\hat{D}^{(s,d)}=1} and \eqn{\hat{P}^{(s,d)}=1} is known. 
 #'   In this case both expressions can be shown to be unbiased. In addition the estimate may depend on any ratio estimation for \eqn{\hat{N}^{(s,d)}}. See \code{\link[RstoxFDA]{AnalyticalPSUEstimate}}. 
+#'   
 #'   These quantities can only be calculated when \eqn{p_{i}} is provided, and will otherwise be NA.}
 #'   
-#'   \item{Frequency}{
+#'   \item{Frequency:}{
 #'   The estimate of the fraction of individuals in stratum \eqn{s} that are in domain \eqn{d}, when MeanOfMeans is false:
 #'   \deqn{ \hat{f}^{(s,d)} = \frac{\hat{N}^{(s,d)}}{\hat{N}^{(s)}} }
 #'   with co-variance:
 #'   \deqn{ \widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})}) = \frac{1}{(\hat{N}^{(s)})^{2}}\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})}
-#'   These are ratio estimates depending on the ratio to the estimated value \eqn{\hat{N}^{(s)}}, and the error in this estimate is ignored.
+#'   
+#'   These are ratio estimates depending on the ratio to the estimate value \eqn{\hat{N}^{(s)}}, and the error in this estimate is ignored.
 #'   In addition, the estimate may depend on a ratio estimate for \eqn{\hat{N}^{(s,d)}} and \eqn{\hat{N}^{(s,d)}_{i}}, as explained for 'Abundance'
 #'   and in \code{\link[RstoxFDA]{AnalyticalPSUEstimate}}.
+#'   }
 #'   
+#'   \item{Frequency, Mean of Means:}{
 #'   The estimate of the fraction of individuals in stratum \eqn{s} that are in domain \eqn{d}, when MeanOfMeans is true:
-#'   \deqn{ \hat{f}^{(s,d)} = \frac{1}{\hat{D}^{(s,d)}} \sum_{i=1}^{n}w_{i}\hat{f}^{(s,d)}_{i}I^{(s,d)}_{i}}
+#'   \deqn{ \hat{f}^{(s,d)} =  \sum_{i=1}^{n}\frac{w_{i}}{\hat{D}^{(s,d)}}\hat{f}^{(s,d)}_{i}I^{(s,d)}_{i}}
 #'   with co-variance:
-#'   \deqn{\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})}) = \frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} \sum_{j=1}^{n} 
-#'   I^{(s)}_{i} I^{(s)}_{j} (\hat{f}_{i}I^{(s,d_{1})}_{i} - \hat{f}^{(s,d_{1})}) (\hat{f}_{j}I^{(s,d_{2})}_{j} - \hat{f}^{(s,d_{2})})}.}
-#'   These are ratio estimates depending on the ratio ratio estimation of \eqn{\hat{f}^{(s,d)}} and \eqn{\hat{f}^{(s,d)}_{i}}, and the error in these estimates are ignored.
+#'   \deqn{\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})}) = \frac{1}{\hat{P}^{(s,d_{1})}\hat{P}^{(s,d_{2})}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
+#'   I^{(s)}_{i} J^{(s,d_{1})}_{i} J^{(s,d_{2})}_{i} (\hat{f}_{i}I^{(s,d_{1})}_{i} - \hat{f}^{(s,d_{1})}) (\hat{f}_{i}I^{(s,d_{2})}_{i} - \hat{f}^{(s,d_{2})})}.}
+#'   
+#'   Note that unless \eqn{\hat{P}^{(s,d_{1})}=\hat{P}^{(s,d_{2})}} the covariance is zero.
+#'   
+#'   These are ratio estimates depending on the ratio ratio estimation of \eqn{\hat{f}^{(s,d)}}, \eqn{\hat{f}^{(s,d)}_{i}}, \eqn{\hat{D}^{(s,d)}}, and \eqn{\hat{P}^{(s,d)}}, and the error in these estimates are ignored.
 #'   See comments above (\eqn{\hat{f}^{(s,d)}}) and in \code{\link[RstoxFDA]{AnalyticalPSUEstimate}} (\eqn{\hat{f}^{(s,d)}_{i}}).
 #'   
 #'   \item{Total:}{
 #'   The estimate of the total value of some variable in domain \eqn{d} and stratum \eqn{s}.
-#'   \deqn{\hat{t}^{(s,d)}=\hat{D}^{(s,d)}\frac{1}{n^{(s,d)}}{\sum_{i=1}^{n}}\frac{\hat{t}^{(s,d)}_{i}}{p_{i}}I^{(s,d)}_{i}}
+#'   \deqn{\hat{t}^{(s,d)}=\frac{1}{n^{(s,d)}}{\sum_{i=1}^{n}}\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d)}_{i}}{p_{i}}I^{(s,d)}_{i}}
 #'   with co-variance:
-#'   \deqn{\widehat{CoVar}(\hat{t}^{(s,d_{1})}, \hat{t}^{(s,d_{2})}) = \frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} \sum_{j=1}^{n} 
-#'   I^{(s)}_{i}(\frac{\hat{t}^{(s,d_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{t}^{(s,d_{1})}) (\frac{\hat{t}^{(s,d_{2})}_{j}}{p_{j}}I^{(s,d_{2})}_{j} - \hat{t}^{(s,d_{2})})}.
-#'   In the general case \eqn{\hat{D}^{(s,d)}} is estimated by a ratio estimator, and the error in estimating \eqn{\hat{D}^{(s,d)}} is ignored. When \eqn{d} covers all of \eqn{s}, \eqn{\hat{D}^{(s,d)}=1} is known. In this case both expressions can be shown to be unbiased. These quantities can only be calculated when \eqn{p_{i}} is provided, and will otherwise be NA.}
-#'   \item{Mean}{
+#'   \deqn{\widehat{CoVar}(\hat{t}^{(s,d_{1})}, \hat{t}^{(s,d_{2})}) = \frac{1}{\hat{P}^{(s,d_{1})}\hat{P}^{(s,d_{2})}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
+#'   I^{(s)}_{i} J^{(s,d_{1})}_{i} J^{(s,d_{2})}_{i}(\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{t}^{(s,d_{1})}) (\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{2})}_{i}}{p_{i}}I^{(s,d_{2})}_{i} - \hat{t}^{(s,d_{2})})}.
+#'   
+#'   Note that unless \eqn{\hat{P}^{(s,d_{1})}=\hat{P}^{(s,d_{2})}} the covariance is zero.
+#'   
+#'   In the general case \eqn{\hat{D}^{(s,d)}} and \eqn{\hat{P}^{(s,d)}} is estimated by a ratio estimator, and the error in these estimates are ignored. When \eqn{d} covers all of \eqn{s}, \eqn{\hat{D}^{(s,d)}=1} and \eqn{\hat{P}^{(s,d)}=1}is known. In this case both expressions can be shown to be unbiased. These quantities can only be calculated when \eqn{p_{i}} is provided, and will otherwise be NA.}
+#'
+#'   \item{Mean:}{
 #'   The estimate of the mean value of some variable in domain \eqn{d} and stratum \eqn{s}, when MeanOfMeans is false:
 #'   \deqn{\hat{\mu}^{(s,d)} = \frac{\hat{t}^{(s,d)}}{\hat{N}^{(s,d)}}}
 #'   with co-variance:
-#'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1})}, \hat{\mu}^{(s,d_{2})}) = \frac{1}{(\hat{N}^{(s,d_{1} \cap d_{2})})^{2}}\widehat{CoVar}(\hat{t}^{(s,d_{1})}, \hat{t}^{(s,d_{2})})}
+#'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1})}, \hat{\mu}^{(s,d_{2})}) = \frac{1}{\hat{N}^{(s,d_{1})} \hat{N}^{(s,d_{2})}}\widehat{CoVar}(\hat{t}^{(s,d_{1})}, \hat{t}^{(s,d_{2})})}
 #'   These are ratio estimates depending on the ratio to the estimated value \eqn{\hat{N}^{(s,d)}}, and the error in this estimate is ignored.
 #'   In addition, the estimate may depend on a ratio estimate for \eqn{\hat{t}^{(s,d)}} and \eqn{\hat{t}^{(s,d)}_{i}}, as explained for 'Abundance'
 #'   and in \code{\link[RstoxFDA]{AnalyticalPSUEstimate}}.
+#'   }
 #'   
+#'   \item{Mean, Mean of Means:}{
 #'   The estimate of the mean value of some variable in domain \eqn{d} and stratum \eqn{s}, when MeanOfMeans is true:
-#'   \deqn{\hat{\mu}^{(s,d)}=\frac{1}{\hat{d}^{(s,d)}}\sum_{i=1}^{n}w_{i}\hat{\mu}_{i}I^{(s,d)}_{i}H(\hat{N}^{(s,d)}_{i})}
+#'   \deqn{\hat{\mu}^{(s,d)}=\sum_{i=1}^{n}\frac{w_{i}}{\hat{d}^{(s,d)}}\hat{\mu}_{i}I^{(s,d)}_{i}H(\hat{N}^{(s,d)}_{i})}
 #'   with co-variance:
-#'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1})}, \hat{\mu}^{(s,d_{2})}) = \frac{1}{(\hat{d}^{(s,d_{1} \cap d_{2})})^{2}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} \sum_{j=1}^{n} 
-#'   I^{(s,d_{1})}_{i}I^{(s,d_{2})}_{j}H(\hat{f}^{(s,d_{1})}_{i})H(\hat{f}^{(s,d_{2})}_{j})(\hat{\mu}^{(s,d_{1})}_{i}w_{i} - \hat{\mu}^{(s,d_{1})}) (\hat{\mu}^{(s,d_{2})}_{j}w_{j} - \hat{\mu}^{(s,d_{2})})}}
+#'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1})}, \hat{\mu}^{(s,d_{2})}) = \frac{1}{(\hat{d}^{(s,d_{1} \cap d_{2})})^{2}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
+#'   I^{(s,d_{1})}_{i}I^{(s,d_{2})}_{i} J^{(s,d_{1})}_{i}J^{(s,d_{2})}_{i} H(\hat{f}^{(s,d_{1})}_{i})H(\hat{f}^{(s,d_{2})}_{i})( \hat{\mu}^{(s,d_{1})}_{i} - \hat{\mu}^{(s,d_{1})}) (\hat{\mu}^{(s,d_{2})}_{i} - \hat{\mu}^{(s,d_{2})})}}
 #'   These are ratio estimates depending on the ratio ratio estimation of \eqn{\hat{d}^{(s,d)}}, \eqn{\hat{d}^{(s,d_{1} \cap d_{2})}} and \eqn{\hat{\mu}^{(s,d)}_{i}}, and the error in these estimates are ignored.
 #'  }
 #'  
@@ -1008,16 +1038,17 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
 #'    \item{\eqn{H(x)}}{A step function which is 1 when \eqn{x>0}, otherwise it is zero.}
 #'    \item{\eqn{I^{(s)}_{i}}}{The indicator function for stratum \eqn{s}. Is 1 when \eqn{i} is in stratum \eqn{s}, otherwise it is zero.}
 #'    \item{\eqn{I^{(s,d)}_{i}}}{The indicator function for domain \eqn{d} and stratum \eqn{s}. Is 1 when \eqn{i} is in stratum \eqn{s} and domain \eqn{d}, otherwise it is zero.}
+#'    \item{\eqn{J^{(s,d)}_{i}}}{The indicator function for domain \eqn{d} and stratum \eqn{s}. Is 1 when \eqn{i} is in stratum \eqn{s} and the PSU-domain of domain \eqn{d}, otherwise it is zero.}
 #'    \item{\eqn{n}}{Sample size, the number of PSUs sampled.}
 #'    \item{\eqn{n^{(s)}}}{Stratum sample size, the number of PSUs sampled in stratum \eqn{s}: \eqn{n_{s}=\sum_{i=1}^{n}I^{(s)}_{i}}.}
 #'    \item{\eqn{n^{(s,d)}}}{Domain sample size, the number of PSUs sampled in domain{d} and stratum \eqn{s}: \eqn{n^{(s,d)}=\sum_{i=1}^{n}I^{(s,d)}_{i}}.}
 #'    \item{\eqn{p_{i}}}{The selection probability of PSU \eqn{i}. 'SelectionProbability' in \code{\link[RstoxFDA]{PSUSamplingParametersData}}.}
 #'    \item{\eqn{w_{i}}}{The normalized Hansen-Hurwitz sampling weight: \eqn{w_{i}=\frac{1}{p_{i}Q_{i}}}, \eqn{Q_{i}=\sum_{j=1}^{n}\frac{I^{(s(i))}_{j}}{p_{j}}}, where \eqn{s(i)} denote the strata of sample \eqn{i}. 'HHsamplingWeight' in \code{\link[RstoxFDA]{PSUSamplingParametersData}}.}
-#'    \item{\eqn{\hat{D}^{(s,d)}}}{The estimated relative domain size (total number of PSUs) of domain \eqn{d} in stratum \eqn{s}: \eqn{\hat{D}^{(s,d)}=\sum_{i=1}^{n}w_{i}I^{(s,d)}_{i}}.}
-#'    \item{\eqn{\hat{d}^{(s,d)}}}{The estimated relative domain size (total number of PSUs) that has observations (positive abundance or frequency) in domain \eqn{d} in stratum \eqn{s}: \eqn{\hat{d}^{(s,d)}=\sum_{i=1}^{n}w_{i}I^{(s,d)}_{i}H(\hat{f}^{(s,d)}_{i})}.}
+#'    \item{\eqn{\hat{D}^{(s,d)}}}{The estimated relative domain size (fraction of PSUs) of domain \eqn{d} in stratum \eqn{s}: \eqn{\hat{D}^{(s,d)}=\sum_{i=1}^{n}w_{i}I^{(s,d)}_{i}}.}
+#'    \item{\eqn{\hat{P}^{(s,d)}}}{The estimated relative domain size (fraction of PSUs) of the PSU-domain of domain \eqn{d} in stratum \eqn{s}: \eqn{\hat{P}^{(s,d)}=\sum_{i=1}^{n}w_{i}J^{(s,d)}_{i}}.}
+#'    \item{\eqn{\hat{d}^{(s,d)}}}{The estimated relative domain size (fraction of PSUs) that has observations (positive abundance or frequency) in domain \eqn{d} in stratum \eqn{s}: \eqn{\hat{d}^{(s,d)}=\sum_{i=1}^{n}w_{i}I^{(s,d)}_{i}H(\hat{f}^{(s,d)}_{i})}.}
 #'    \item{\eqn{\hat{d}^{(s,d_{1} \cap d_{2})}}}{The estimated relative domain size (total number of PSUs) that has observations (positive abundance or frequency) in both domain \eqn{d_{1}} and \eqn{d_{2}} in stratum \eqn{s}: \eqn{\hat{d}^{(s,d)}=\sum_{i=1}^{n}w_{i}I^{(s,d_{1})}_{i}I^{(s,d_{2})}_{i}H(\hat{f}^{(s,d_{1})}_{i})H(\hat{f}^{(s,d_{2})}_{j})}.}
 #'    \item{\eqn{\hat{N}^{(s)}}}{The estimated abundance in stratum \eqn{s}: \eqn{\hat{N}^{(s)}=\frac{1}{n_{s}}\sum_{i=1}^{n}\frac{\hat{N}_{i}}{p_{i}}I^{(s)}_{i}}.}
-#'    \item{\eqn{\hat{N}^{(s,d_{1} \cap d_{2})}}}{The estimated abundance in the domain restricted to both \eqn{d_{1}} and \eqn{d_{2}}. See formula for \eqn{\hat{N}^{(s,d)}}.}
 #'    \item{\eqn{\hat{N}^{(s)}_{i}}}{The estimated total abundance in stratum \eqn{s} at PSU \eqn{i}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
 #'    \item{\eqn{\hat{N}^{(s,d)}_{i}}}{The estimated abundance in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
 #'    \item{\eqn{\hat{f}^{(s,d)}_{i}}}{The estimated frequency in domain \eqn{d} for stratum \eqn{s} at PSU \eqn{i}. 'Frequency' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
@@ -1028,19 +1059,23 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
 #' @param MeanOfMeans logical. Determines which estimators are used for frequencies and means. See details.
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimated population parameters by stratum and domain.
 #' @examples 
-#'  PSUsamplingParameters <- RstoxFDA::AssignPSUSamplingParameters(RstoxFDA::CatchLotterySamplingExample, 
-#'                                        RstoxFDA::CatchLotteryExample, "lotterySerialnumber", "Haul", "MissingAtRandom")
+#'  PSUsamplingParameters <- RstoxFDA::AssignPSUSamplingParameters(
+#'                                        RstoxFDA::CatchLotterySamplingExample, 
+#'                                        RstoxFDA::CatchLotteryExample, 
+#'                                        "lotterySerialnumber", "Haul", "MissingAtRandom")
 #'  individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
 #'                                        RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
 #'                                        
 #'  psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 
-#'                                        individualSamplingParameters, c("IndividualRoundWeight"), c("IndividualAge"))
+#'                                        individualSamplingParameters, 
+#'                                        c("IndividualRoundWeight"), c("IndividualAge"))
 #'  popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
 #'  
 #'  #tabulate abundance
 #'  abundance <- popEst$Abundance[,list(Abundance=Abundance), by=c("Stratum", "Domain")]
 #'  #add SE and CV
-#'  abundance <- merge(abundance, popEst$AbundanceCovariance[Domain1==Domain2,list(SE=sqrt(AbundanceCovariance)), 
+#'  abundance <- merge(abundance, popEst$AbundanceCovariance[Domain1==Domain2,
+#'                    list(SE=sqrt(AbundanceCovariance)), 
 #'                    by=list(Stratum=Stratum, Domain=Domain1)])
 #'  abundance$CV <- abundance$SE/abundance$Abundance
 #'  
@@ -1051,7 +1086,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans){
 #' @export
 #' @md
 AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPSUEstimateData, MeanOfMeans=F){
-  warning("Update documentation to account for PSU domains. Update documentation of AnalyticalPSUEstimateData")
+
   checkMandatory(PSUSamplingParametersData, "PSUSamplingParametersData")
   checkMandatory(AnalyticalPSUEstimateData, "AnalyticalPSUEstimateData")
 
@@ -1146,7 +1181,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
     VariablesTable$Mean <- VariablesTable$Total / AbundanceTable$Abundance[match(paste(VariablesTable$Stratum, VariablesTable$Domain), paste(AbundanceTable$Stratum, AbundanceTable$Domain))]
   }
 
-  VariablesCovarianceTable <- covarVariables(VariablesTable, selVariables, MeanOfMeans)
+  VariablesCovarianceTable <- covarVariables(VariablesTable, selVariables, MeanOfMeans, AbundanceTable)
   
   
   #

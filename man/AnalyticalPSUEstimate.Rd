@@ -15,7 +15,7 @@ AnalyticalPSUEstimate(
 \arguments{
 \item{StoxBioticData}{\code{\link[RstoxData]{StoxBioticData}} with the actual observations of individuals.}
 
-\item{IndividualSamplingParametersData}{\code{\link[RstoxData]{IndividualSamplingParametersData}} with sampling parameters for individuals}
+\item{IndividualSamplingParametersData}{\code{\link[RstoxFDA]{IndividualSamplingParametersData}} with sampling parameters for individuals}
 
 \item{Variables}{names of variables that means and totals should be estimated for. Must be columns of the Individual table in 'StoxBioticData'}
 
