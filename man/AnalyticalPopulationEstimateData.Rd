@@ -4,29 +4,43 @@
 \alias{AnalyticalPopulationEstimateData}
 \title{Analytical Population Estimate Data}
 \description{
-Analytical estimates for each PSU
+Analytical estimates for a population
  
  Abundance
  \describe{
    \item{Stratum}{}
    \item{Domain}{}
-   \item{PSU}{}
-   \item{Total}{}
-   \item{TotalVar}{}
+   \item{Abundance}{}
    \item{Frequency}{}
-   \item{FrequencyVar}{}
  }
  
  Variables
  \describe{
    \item{Stratum}{}
    \item{Domain}{}
-   \item{PSU}{}
    \item{Variable}{}
    \item{Total}{}
-   \item{TotalVar}{}
    \item{Mean}{}
-   \item{MeanVar}{}
+ }
+ 
+ AbundanceCovariance
+ \describe{
+   \item{Stratum}{}
+   \item{Domain1}{}
+   \item{Domain2}{}
+   \item{AbundanceCovariance}{}
+   \item{FrequencyCovariance}{}
+ }
+ 
+ VariableCovariance
+ \describe{
+   \item{Stratum}{}
+   \item{Domain1}{}
+   \item{Domain2}{}
+   \item{Variable1}{}
+   \item{Variable2}{}
+   \item{TotalCovariance}{}
+   \item{MeanCovariance}{}
  }
  
  StratificationVariables
@@ -37,7 +51,6 @@ Analytical estimates for each PSU
  
  DomainVariables
  \describe{
-  \item{Stratum}{}
   \item{Domain}{}
   \item{DomainVariables}{}
  }

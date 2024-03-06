@@ -288,6 +288,13 @@ maxDIffMeanOfMean <- max((popEstMeanOfMeans$Variables$Mean-popEstAgeDomain$Varia
 expect_true(maxDIffMeanOfMean >.01)
 expect_true(maxDIffMeanOfMean <.1)
 
+#test PSU domains
+psuEstPD <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c(), c("Gear"))
+popEstPD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstPD)
+expect_true(abs(popEst$Abundance$Abundance - sum(popEstPD$Abundance$Abundance))/popEst$Abundance$Abundance < 1e-2)
+expect_true(abs(popEst$Variables$Total - sum(popEstPD$Variables$Total))/popEst$Variables$Total < 1e-2)
+
+
 #
 # Test ratio estimation
 #
@@ -334,7 +341,7 @@ ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRo
 CVs <- merge(ratioEst$Abundance, ratioEst$AbundanceCovariance[Domain1==Domain2], by.x=c("Stratum", "Domain"), by.y=c("Stratum", "Domain1"))
 CVs$CV <- sqrt(CVs$AbundanceCovariance) / CVs$Abundance
 expect_equal(sum(is.na(CVs$CV)), sum(is.na(CVs$CV)))
-expect_true(min(CVs$CV, na.rm=T)<.5)
+expect_true(min(CVs$CV, na.rm=T)<.2)
 
 #check that relative age comp in Gear domain is preserved, even if abundance estimates are very different.
 domainAbundRatio <- merge(ratioEst$Abundance, ratioEst$DomainVariables, by=c("Domain"))
@@ -360,6 +367,7 @@ expect_true(abs(sum(ratioEstMDW$Abundance$Abundance) - sum(popEstDomain$Abundanc
 #check that some CVs are in reasonable range
 CVs <- merge(ratioEstMDW$Abundance, ratioEstMDW$AbundanceCovariance[Domain1==Domain2], by.x=c("Stratum", "Domain"), by.y=c("Stratum", "Domain1"))
 CVs$CV <- sqrt(CVs$AbundanceCovariance) / CVs$Abundance
+
 expect_true(min(CVs$CV)<.2)
 #check that total and total covariances are unchanged
 expect_true(all(ratioEstMDW$Variables$Total == popEstDomain$Variables$Total))
@@ -447,8 +455,10 @@ expect_true(abs(popEst$VariablesCovariance[Variable1=="one" & Variable2=="one"][
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
 #stop("Document ratio estimator.")
+#stop("Add sample size info to PopulationEstimateData, consider what to do with samples sizes < 2)
 #stop("Add examples PSUestumator and ratio estimator.")
 #stop("Check input sanitation.")
+#stop("Fix documentation of PopulationEstimateData object.")
 #stop("Test collapseStrata with both HH and HT")
 #stop("Implement DefineHierarchy.")
 #stop("expose to StoX")

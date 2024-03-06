@@ -21,35 +21,45 @@ is.Date <- function(date){
 #' @description
 #'  Analytical estimates for each PSU
 #'  
+#'  List containingin the following \code{\link[data.table]{data.table}}s:
+#'  
 #'  Abundance
 #'  \describe{
+#'    \item{SampleId}{Identfier for Primary sampling unit (PSU)}
 #'    \item{Stratum}{Identifier for stratification of individuals}
 #'    \item{Domain}{Identifier of domains for individuals}
-#'    \item{SampleId}{Identgier for Primary sampling unit}
-#'    \item{Abundance}{Total number in Stratum and domain. Unsampled strata is reported as NA}
+#'    \item{Abundance}{Total number in Stratum and Domain at th PSU. Unsampled strata is reported as NA}
 #'    \item{Frequency}{Frequency in Domain within Stratum. Unsampled strata is reported as NA}
 #'  }
 #'  
 #'  Variables
 #'  \describe{
-#'    \item{SampleId}{}
-#'    \item{Stratum}{}
-#'    \item{Domain}{}
-#'    \item{Variable}{}
-#'    \item{Total}{. Unsampled strata is reported as NA}
-#'    \item{Mean}{. Unsampled strata is reported as NA}
+#'    \item{SampleId}{Identfier for Primary sampling unit (PSU)}
+#'    \item{Stratum}{Identifier for stratification of individuals}
+#'    \item{Domain}{Identifier of domains for individuals}
+#'    \item{Variable}{Variable that total and mean is reported for}
+#'    \item{Total}{Total value of variable in Stratum and Domain at the PSU. Unsampled strata is reported as NA}
+#'    \item{Mean}{Mean value of variable in Stratum and Domain at the PSU. Unsampled strata is reported as NA}
 #'  }
 #'  
 #'  DomainVariables
 #'  \describe{
-#'   \item{Domain}{}
-#'   \item{<DomainVariables>}{}
+#'   \item{Domain}{Identifier of domains for individuals. In addition the domain is identified by the combination of any additional columns in this table}
+#'   \item{<DomainVariables>}{Columns that relate the domains to data records.}
+#'  }
+#'  
+#'  PSUDomainVariables
+#'  \describe{
+#'   \item{SampleId}{Identifier for Primary Sampling Unit (PSU)}
+#'   \item{PSUDomain}{Identfier of domains for PSUs. In addition PSU-domains are identified by the combination of any additional columns in this table.}
+#'   \item{<DomainVariables>}{Columns that relate the PSU domains to data records.}
 #'  }
 #'  
 #'  StratificationVariables
 #'  \describe{
-#'   \item{Stratum}{}
-#'   \item{<StratificationVariables>}{}
+#'   \item{SampleId}{Identifier for Primary Sampling Unit (PSU)}
+#'   \item{Stratum}{Identfier of stratum for individuals at PSU. In addition strata are identified by the combination of any additional columns in this table.}
+#'   \item{<StratificationVariables>}{Columns that realte the PSU domains to data records.}
 #'  }
 #' 
 #' @name AnalyticalPSUEstimateData
@@ -61,29 +71,43 @@ NULL
 #' Analytical Population Estimate Data
 #' 
 #' @description
-#'  Analytical estimates for each PSU
+#'  Analytical estimates for a population
 #'  
 #'  Abundance
 #'  \describe{
 #'    \item{Stratum}{}
 #'    \item{Domain}{}
-#'    \item{PSU}{}
-#'    \item{Total}{}
-#'    \item{TotalVar}{}
+#'    \item{Abundance}{}
 #'    \item{Frequency}{}
-#'    \item{FrequencyVar}{}
 #'  }
 #'  
 #'  Variables
 #'  \describe{
 #'    \item{Stratum}{}
 #'    \item{Domain}{}
-#'    \item{PSU}{}
 #'    \item{Variable}{}
 #'    \item{Total}{}
-#'    \item{TotalVar}{}
 #'    \item{Mean}{}
-#'    \item{MeanVar}{}
+#'  }
+#'  
+#'  AbundanceCovariance
+#'  \describe{
+#'    \item{Stratum}{}
+#'    \item{Domain1}{}
+#'    \item{Domain2}{}
+#'    \item{AbundanceCovariance}{}
+#'    \item{FrequencyCovariance}{}
+#'  }
+#'  
+#'  VariableCovariance
+#'  \describe{
+#'    \item{Stratum}{}
+#'    \item{Domain1}{}
+#'    \item{Domain2}{}
+#'    \item{Variable1}{}
+#'    \item{Variable2}{}
+#'    \item{TotalCovariance}{}
+#'    \item{MeanCovariance}{}
 #'  }
 #'  
 #'  StratificationVariables
@@ -94,7 +118,6 @@ NULL
 #'  
 #'  DomainVariables
 #'  \describe{
-#'   \item{Stratum}{}
 #'   \item{Domain}{}
 #'   \item{DomainVariables}{}
 #'  }
