@@ -433,7 +433,7 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
 #' @concept Analytical estimation
 #' @md
 #' @export
-DefineSamplingHierarchy <- function(StoxBioticData, IndividualSamplingParametersData, Hierarchy=character(), Stratification=character(), StrataSizes=character(), SelectionMetod=character()){
+DefineSamplingHierarchy <- function(StoxBioticData, IndividualSamplingParametersData, Hierarchy=character(), Stratification=character(), StrataSizes=character(), SelectionMethod=character()){
   stop("Not Implemented")
 }
 
@@ -732,29 +732,29 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
 #' @description
 #'  Transforms a sampling design to an equivalent one with simpler stratification
 #' @details 
-#'  The sampling information in \code{\link[RstoxFDA]{IndividualDesignParamatersData}} allows for specification of several stratification variables.
+#'  The sampling information in \code{\link[RstoxFDA]{IndividualSamplingParametersData}} allows for specification of several stratification variables.
 #'  This function facilitates removal of some of these stratificaiton vairables, redefining strata to a coarser stratification scheme that still has known
 #'  stratum sizes.
 #'  
 #'  If all stratification variables are removed, all samples will be assigned to a single stratum named 'All'.
 #'  
-#' @param IndividualDesignParamatersData \code{\link[RstoxFDA]{IndividualDesignParamatersData}} with sampling parameters for sample selection
+#' @param IndividualSamplingParametersData \code{\link[RstoxFDA]{IndividualSamplingParametersData}} with sampling parameters for sample selection
 #' @param RetainStrata character() with the names of stratification variables to retain. Stratification variables not specified here will be removed.
-#' @return \code{\link[RstoxFDA]{IndividualDesignParamatersData}} with simplified stratification
+#' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}} with simplified stratification
 #' @concept Analytical estimation
 #' @md
 #' @export
-CollapseStrata <- function(IndividualDesignParamatersData, RetainStrata=character()){
+CollapseStrata <- function(IndividualSamplingParametersData, RetainStrata=character()){
   
-  checkMandatory(IndividualDesignParamatersData, "IndividualDesignParamatersData")
+  checkMandatory(IndividualSamplingParametersData, "IndividualSamplingParametersData")
   
-  missing <- RetainStrata[!(RetainStrata %in% names(IndividualDesignParamatersData$StratificationVariables))]
+  missing <- RetainStrata[!(RetainStrata %in% names(IndividualSamplingParametersData$StratificationVariables))]
   if (length(missing)>0){
     stop(paste("The variables", paste(missing, collapse=", ", "are not stratification variables in 'IndividualDesignParametersData")))
   }
   
-  collapseStrata <- names(IndividualDesignParamatersData$StratificationVariables)[!names(IndividualDesignParamatersData$StratificationVariables) %in% c(RetainStrata, "Stratum", "SampleId")]
-  return(collapseStrataIndividualDesignParamaters(IndividualDesignParamatersData, collapseVariables = collapseStrata))
+  collapseStrata <- names(IndividualSamplingParametersData$StratificationVariables)[!names(IndividualSamplingParametersData$StratificationVariables) %in% c(RetainStrata, "Stratum", "SampleId")]
+  return(collapseStrataIndividualDesignParamaters(IndividualSamplingParametersData, collapseVariables = collapseStrata))
 }
 
 #' Unify strata for AnalyticalPSUEstimateData
@@ -1282,12 +1282,11 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'   \item{\eqn{\hat{N}^{(s,d)}}}{The estimated abundance in the domain \eqn{d} in stratum \eqn{s}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
 #'   \item{\eqn{\hat{t}^{(s,d)}}}{The estimated total weight in domain \eqn{d} in stratum \eqn{s}. The 'Total' for the 'Variable' identified by the argument 'WeightVariable' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
 #'   \item{\eqn{\hat{t}^{(L)}}}{The estimated total weight in the landing partition: \eqn{\hat{t}^{(L)}=\sum_{(s,d) \in L}\hat{t}^{(s,d)}}}
-#'   \item{\eqn{\hat{Q}^{(L)}}}{}
 #'   \item{\eqn{\widehat{rN}^{(s)}}}{The estimated total abundance in stratum \eqn{s}, based on total domain weight estimates: \eqn{\widehat{rN}^{(s)}=\sum_{d}\widehat{rN}^{(s,d)}}, where the sum runs over all domains in stratum \eqn{s}.}
 #'   \item{\eqn{\widehat{qN}^{(s)}}}{The estimated total abundance in stratum \eqn{s}, based on mean domain weight estimates: \eqn{\widehat{qN}^{(s)}=\sum_{d}\widehat{qN}^{(s,d)}}, where the sum runs over all domains in stratum \eqn{s}.}
 #'   \item{\eqn{\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})}}{The estimated covariance of abundance between the domains \eqn{d_{1}} and \eqn{d_{2}} in stratum \eqn{s}. 'AbundanceCovariance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
-#'   \item{\eqn{\hat{f}^{(s,d)}}}{}
-#'   \item{\eqn{\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})})}}{}
+#'   \item{\eqn{\hat{f}^{(s,d)}}}{The estimated frequency in domain \eqn{d} in stratum \eqn{s}. 'Frequency' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+#'   \item{\eqn{\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})})}}{The estimated covariance of frequencies between the domains \eqn{d_{1}} and \eqn{d_{2}} in stratum \eqn{s}. 'FrequencyCovariance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
 #'  }
 #'  
 #' @param AnalyticalPopulationEstimateData \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimates of mean or total weights and frequencies or abundance in domains

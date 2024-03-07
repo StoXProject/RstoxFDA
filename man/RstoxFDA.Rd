@@ -3,7 +3,6 @@
 \docType{package}
 \name{RstoxFDA}
 \alias{RstoxFDA}
-\alias{RstoxFDA-package}
 \title{Fisheries Dependent Analysis with RstoX}
 \description{
 Fisheries dependent analysis, including running the Estimated Catch at Age model through the Reca package developed by the Norwegian Computing Center.

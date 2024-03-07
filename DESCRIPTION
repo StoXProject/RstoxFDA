@@ -39,5 +39,5 @@ Suggests:
     tinytest
 Additional_repositories: 
 	https://stoxproject.github.io/repo
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 VignetteBuilder: knitr

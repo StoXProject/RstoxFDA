@@ -7,7 +7,7 @@
 #'
 #' @docType data
 #'
-#' @usage data(CatchLotteryLandingsExample)
+#' @usage data(CatchLotteryLandingExample)
 #'
 #' @format \code{\link[RstoxData]{StoxLandingData}}
 #'

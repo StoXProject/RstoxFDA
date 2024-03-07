@@ -82,12 +82,11 @@ Vocabulary for equations given above:
 \item{\eqn{\hat{N}^{(s,d)}}}{The estimated abundance in the domain \eqn{d} in stratum \eqn{s}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
 \item{\eqn{\hat{t}^{(s,d)}}}{The estimated total weight in domain \eqn{d} in stratum \eqn{s}. The 'Total' for the 'Variable' identified by the argument 'WeightVariable' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
 \item{\eqn{\hat{t}^{(L)}}}{The estimated total weight in the landing partition: \eqn{\hat{t}^{(L)}=\sum_{(s,d) \in L}\hat{t}^{(s,d)}}}
-\item{\eqn{\hat{Q}^{(L)}}}{}
 \item{\eqn{\widehat{rN}^{(s)}}}{The estimated total abundance in stratum \eqn{s}, based on total domain weight estimates: \eqn{\widehat{rN}^{(s)}=\sum_{d}\widehat{rN}^{(s,d)}}, where the sum runs over all domains in stratum \eqn{s}.}
 \item{\eqn{\widehat{qN}^{(s)}}}{The estimated total abundance in stratum \eqn{s}, based on mean domain weight estimates: \eqn{\widehat{qN}^{(s)}=\sum_{d}\widehat{qN}^{(s,d)}}, where the sum runs over all domains in stratum \eqn{s}.}
 \item{\eqn{\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})}}{The estimated covariance of abundance between the domains \eqn{d_{1}} and \eqn{d_{2}} in stratum \eqn{s}. 'AbundanceCovariance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
-\item{\eqn{\hat{f}^{(s,d)}}}{}
-\item{\eqn{\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})})}}{}
+\item{\eqn{\hat{f}^{(s,d)}}}{The estimated frequency in domain \eqn{d} in stratum \eqn{s}. 'Frequency' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+\item{\eqn{\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})})}}{The estimated covariance of frequencies between the domains \eqn{d_{1}} and \eqn{d_{2}} in stratum \eqn{s}. 'FrequencyCovariance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
 }
 }
 \examples{
