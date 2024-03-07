@@ -11,7 +11,7 @@ DefineSamplingHierarchy(
   Hierarchy = character(),
   Stratification = character(),
   StrataSizes = character(),
-  SelectionMetod = character()
+  SelectionMethod = character()
 )
 }
 \arguments{

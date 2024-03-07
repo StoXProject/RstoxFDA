@@ -4,21 +4,21 @@
 \alias{CollapseStrata}
 \title{Collapse strata in sampling design}
 \usage{
-CollapseStrata(IndividualDesignParamatersData, RetainStrata = character())
+CollapseStrata(IndividualSamplingParametersData, RetainStrata = character())
 }
 \arguments{
-\item{IndividualDesignParamatersData}{\code{\link[RstoxFDA]{IndividualDesignParamatersData}} with sampling parameters for sample selection}
+\item{IndividualSamplingParametersData}{\code{\link[RstoxFDA]{IndividualSamplingParametersData}} with sampling parameters for sample selection}
 
 \item{RetainStrata}{character() with the names of stratification variables to retain. Stratification variables not specified here will be removed.}
 }
 \value{
-\code{\link[RstoxFDA]{IndividualDesignParamatersData}} with simplified stratification
+\code{\link[RstoxFDA]{IndividualSamplingParametersData}} with simplified stratification
 }
 \description{
 Transforms a sampling design to an equivalent one with simpler stratification
 }
 \details{
-The sampling information in \code{\link[RstoxFDA]{IndividualDesignParamatersData}} allows for specification of several stratification variables.
+The sampling information in \code{\link[RstoxFDA]{IndividualSamplingParametersData}} allows for specification of several stratification variables.
 This function facilitates removal of some of these stratificaiton vairables, redefining strata to a coarser stratification scheme that still has known
 stratum sizes.
 

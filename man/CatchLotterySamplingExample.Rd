@@ -5,7 +5,7 @@
 \alias{CatchLotterySamplingExample}
 \title{Sampling parameters from the Norwegian catch lottery sampling program.}
 \format{
-\code{\link[RstoxData]{PSUSamplingParametersData}}
+\code{\link[RstoxFDA]{PSUSamplingParametersData}}
 }
 \usage{
 data(CatchLotterySamplingExample)
@@ -21,7 +21,8 @@ The corresponding samples are provided in \code{\link[RstoxFDA]{CatchLotteryExam
 \examples{
  #all selected PSU that where actuall sampled are provided in CatchLotteryExample
  sum(!is.na(CatchLotterySamplingExample$SelectionTable$SamplingUnitId))
- sum(CatchLotterySamplingExample$SelectionTable$SamplingUnitId \%in\% CatchLotteryExample$Haul$HaulKey)
+ sum(CatchLotterySamplingExample$SelectionTable$SamplingUnitId \%in\% 
+               CatchLotteryExample$Haul$HaulKey)
 }
 \concept{Analytical estimation}
 \keyword{datasets}

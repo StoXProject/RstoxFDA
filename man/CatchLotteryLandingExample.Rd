@@ -8,7 +8,7 @@
 \code{\link[RstoxData]{StoxLandingData}}
 }
 \usage{
-data(CatchLotteryLandingsExample)
+data(CatchLotteryLandingExample)
 }
 \description{
 Example of data formatted as \code{\link[RstoxData]{StoxLandingData}}

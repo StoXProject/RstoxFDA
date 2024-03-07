@@ -433,7 +433,7 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
 #' @concept Analytical estimation
 #' @md
 #' @export
-DefineSamplingHierarchy <- function(StoxBioticData, IndividualSamplingParametersData, Hierarchy=character(), Stratification=character(), StrataSizes=character(), SelectionMetod=character()){
+DefineSamplingHierarchy <- function(StoxBioticData, IndividualSamplingParametersData, Hierarchy=character(), Stratification=character(), StrataSizes=character(), SelectionMethod=character()){
   stop("Not Implemented")
 }
 
@@ -732,29 +732,29 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
 #' @description
 #'  Transforms a sampling design to an equivalent one with simpler stratification
 #' @details 
-#'  The sampling information in \code{\link[RstoxFDA]{IndividualDesignParamatersData}} allows for specification of several stratification variables.
+#'  The sampling information in \code{\link[RstoxFDA]{IndividualSamplingParametersData}} allows for specification of several stratification variables.
 #'  This function facilitates removal of some of these stratificaiton vairables, redefining strata to a coarser stratification scheme that still has known
 #'  stratum sizes.
 #'  
 #'  If all stratification variables are removed, all samples will be assigned to a single stratum named 'All'.
 #'  
-#' @param IndividualDesignParamatersData \code{\link[RstoxFDA]{IndividualDesignParamatersData}} with sampling parameters for sample selection
+#' @param IndividualSamplingParametersData \code{\link[RstoxFDA]{IndividualSamplingParametersData}} with sampling parameters for sample selection
 #' @param RetainStrata character() with the names of stratification variables to retain. Stratification variables not specified here will be removed.
-#' @return \code{\link[RstoxFDA]{IndividualDesignParamatersData}} with simplified stratification
+#' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}} with simplified stratification
 #' @concept Analytical estimation
 #' @md
 #' @export
-CollapseStrata <- function(IndividualDesignParamatersData, RetainStrata=character()){
+CollapseStrata <- function(IndividualSamplingParametersData, RetainStrata=character()){
   
-  checkMandatory(IndividualDesignParamatersData, "IndividualDesignParamatersData")
+  checkMandatory(IndividualSamplingParametersData, "IndividualSamplingParametersData")
   
-  missing <- RetainStrata[!(RetainStrata %in% names(IndividualDesignParamatersData$StratificationVariables))]
+  missing <- RetainStrata[!(RetainStrata %in% names(IndividualSamplingParametersData$StratificationVariables))]
   if (length(missing)>0){
     stop(paste("The variables", paste(missing, collapse=", ", "are not stratification variables in 'IndividualDesignParametersData")))
   }
   
-  collapseStrata <- names(IndividualDesignParamatersData$StratificationVariables)[!names(IndividualDesignParamatersData$StratificationVariables) %in% c(RetainStrata, "Stratum", "SampleId")]
-  return(collapseStrataIndividualDesignParamaters(IndividualDesignParamatersData, collapseVariables = collapseStrata))
+  collapseStrata <- names(IndividualSamplingParametersData$StratificationVariables)[!names(IndividualSamplingParametersData$StratificationVariables) %in% c(RetainStrata, "Stratum", "SampleId")]
+  return(collapseStrataIndividualDesignParamaters(IndividualSamplingParametersData, collapseVariables = collapseStrata))
 }
 
 #' Unify strata for AnalyticalPSUEstimateData
