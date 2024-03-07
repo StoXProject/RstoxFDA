@@ -1,6 +1,6 @@
 #' Data from the Norwegian catch lottery sampling program.
 #'
-#' Example of data formatted as \code{\link[RstoxData]{StoxBioticData}}, with an added column 'lotterySerialnumber' at the Haul-table
+#' Example of data formatted as \code{\link[RstoxData]{StoxBioticData}}, with an added column 'lotterySerialnumber' at the Haul-table and an added column 'CountryVessel' at the Station-table
 #' which identifies the selection in the catch sampling lottery that this data was recorded for (see 'SamplingUnitId' in \code{\link[RstoxFDA]{CatchLotterySamplingExample}})
 #' 
 #' Hauls are primary sampling units, selected by Poission sampling with selection probabilities proportional to the catch size.

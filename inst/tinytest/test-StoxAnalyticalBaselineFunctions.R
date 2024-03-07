@@ -372,9 +372,6 @@ expect_true(min(CVs$CV)<.2)
 #check that total and total covariances are unchanged
 expect_true(all(ratioEstMDW$Variables$Total == popEstDomain$Variables$Total))
 expect_true(all(ratioEstMDW$VariablesCovariance$TotalCovariance == popEstDomain$VariablesCovariance$TotalCovariance))
-#frequencies should not be changed 
-expect_true(all(ratioEstMDW$Abundance$Frequency == popEstDomain$Abundance$Frequency))
-expect_true(all(ratioEstMDW$AbundanceCovariance$FrequencyCovariance == popEstDomain$AbundanceCovariance$FrequencyCovariance))
 
 
 #
@@ -454,12 +451,11 @@ expect_true(abs(popEst$VariablesCovariance[Variable1=="one" & Variable2=="one"][
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
-#stop("Document ratio estimator.")
 #stop("Add sample size info to PopulationEstimateData, consider what to do with samples sizes < 2)
-#stop("Add examples PSUestumator and ratio estimator.")
 #stop("Check input sanitation.")
 #stop("Fix documentation of PopulationEstimateData object.")
 #stop("Test collapseStrata with both HH and HT")
 #stop("Implement DefineHierarchy.")
 #stop("expose to StoX")
 #stop("write vignette.")
+#stop("Make tests for all estimated parameters with and without domain and stratification)

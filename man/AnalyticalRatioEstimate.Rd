@@ -21,22 +21,96 @@ AnalyticalRatioEstimate(
 \item{Method}{The method of ratio estimation to use. 'TotalDomainWeight' or 'MeanDomainWeight'. See details}
 }
 \value{
-\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance
+\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance and frequency.
 }
 \description{
-Performs ratio estimate of abundance, based on either the ratio of abundance in domains to total weight in a stratum, or the frequency and mean weights of each domain.
+Performs ratio estimate of abundance, based on either the ratio of abundance in domains to total weight in a stratum,
+or the frequency and mean weights of each domain.
 }
 \details{
 Ratio estimates of abundance are obtained by relating abundance to weight and utilizing census data on landed weight to potentially improve estimates.
 Ratio estimation generally incurs some bias in estimation, and analytical expressions for variances are approximate.
 
+Landings are partitioned and assigned to domains in 'AnalyticalPopulationEstimateData' by matching column names.
+Column names in 'StoxLandingData' that are also either Stratification Columns or Domain Columns in 'AnalyticalPopulationEstimateData'
+are used to construct the landings partitions that provide total weigts for the ratio estimates.
+
 Ratio estimation of abundance may either improve an estimate of abundance obtained by other means, or provide an estimate of abundance
-when only proportions in domains are known.
+when only proportions in domains are known. When only proprotions (frequencies) are known, the Method 'MeanDomainWeight'
+must be used. This requires that landing partitions are not covering more than one strata, although they may cover less.
+That is all Stratification columns in 'AnalyticalPopulationEstimateData' must have a corresponding column in 'StoxLandingData'
 
 The function obtains a ratio estimate of total abundance in landings by one of the following methods (provided in the argument 'Method'):
 \describe{
-\item{TotalDomainWeight}{}
-\item{MeanDomainWeight}{}
+\item{TotalDomainWeight}{
+When 'Method' is 'TotalDomainWeight', the variable 'Abundance' will be estimated as \eqn{\widehat{rN}^{(s,d)}}, and the variable 'Frequency' as \eqn{\widehat{rf}^{(s,d)}}.
+These estimators and their corresponding variances ('AbundanceCovariance' and 'FrequencyCovariance') are given below.
+The estimates are based on the ratio:
+\deqn{\hat{R}^{(s,d)}=\frac{W^{(L)}}{\hat{t}^{(L)}}}
+where \eqn{L=part(s,d)} is a partition of the landings containing the domain, \eqn{W^{(L)}} is the total landed weight in this partition and \eqn{\hat{t}^{(L)}} is the estimated total weight in this partition.
+The abundance is estimated as:
+\deqn{\widehat{rN}^{(s,d)} = \hat{R}^{(s,d)}\hat{N}^{(s,d)}}
+The frequency is estimated as:
+\deqn{\widehat{rf}^{(s,d)} = \frac{\widehat{rN}^{(s,d)}}{\widehat{rN}^{(s)}}}
+And covariances are estimated as:
+\deqn{\widehat{CoVar}(\widehat{rN}^{(s,d_{1})}, \widehat{rN}^{(s,d_{2})}) = \hat{R}^{(s,d_{1})}\hat{R}^{(s,d_{2})}\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})}
+\deqn{\widehat{CoVar}(\widehat{rf}^{(s,d_{1})}, \widehat{rf}^{(s,d_{2})}) = \frac{1}{\widehat{rN}^{(s)}}\widehat{CoVar}(\widehat{rN}^{(s,d_{1})}, \widehat{rN}^{(s,d_{2})})}
+ignoring the error in \eqn{\hat{R}^{(s,d)}} and \eqn{\widehat{rN}^{(s)}}.
+
 }
+\item{MeanDomainWeight}{
+When 'Method' is 'MeanDomainWeight', 'Abundance' will be estimated as \eqn{\widehat{qN}^{(s,d)}}, and the variable 'Frequency' as \eqn{\widehat{qf}^{(s,d)}}.
+These estimators and their corresponding variances ('AbundanceCovariance' and 'FrequencyCovariance') are given below.
+The estimates are based on the mean individual weight, and an estimate of total landings in each domain:
+\deqn{\hat{W}^{(s,d)}=\frac{\hat{f}^{(s,d)}W^{(L)}}{\sum_{(s,d) \in L}\hat{f}^{(s,d)}}}
+where \eqn{L=part(s,d)} is a partition of the landings containing the domain.
+Since frequencies are normalized to strata, L cannot contain several strata.
+The abundance is estimated as:
+\deqn{\widehat{qN}^{(s,d)} = \frac{\hat{W}^{(s,d)}}{\hat{\mu}^{(s,d)}} = \hat{f}^{(s,d)}\hat{Q}^{(s,d)}}
+with \eqn{\hat{Q}^{(s,d)}=\frac{W^{(L)}}{\hat{\mu}^{(s,d)}\sum_{(s,d) \in L}\hat{f}^{(s,d)}}}
+The frequency is estimated as:
+\deqn{\widehat{qf}^{(s,d)} = \frac{\widehat{qN}^{(s,d)}}{\widehat{qN}^{(s)}}}
+And covariances are estimated as:
+\deqn{\widehat{CoVar}(\widehat{qN}^{(s,d_{1})}, \widehat{qN}^{(s,d_{2})}) = \hat{Q}^{(s,d_{1})}\hat{Q}^{(s,d_{2})}\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})})}
+\deqn{\widehat{CoVar}(\widehat{qf}^{(s,d_{1})}, \widehat{qf}^{(s,d_{2})}) = \frac{1}{\widehat{qN}^{(s)}}\widehat{CoVar}(\widehat{qN}^{(s,d_{1})}, \widehat{qN}^{(s,d_{2})})}
+ignoring the error in \eqn{\hat{Q}^{(s,d)}} and \eqn{\widehat{qN}^{(s)}}.
+}
+}
+Vocabulary for equations given above:
+\describe{
+\item{\eqn{part(s,d)}}{The partition of the landings containing the domain \eqn{d} in stratum \eqn{s}.}
+\item{\eqn{\hat{N}^{(s,d)}}}{The estimated abundance in the domain \eqn{d} in stratum \eqn{s}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+\item{\eqn{\hat{t}^{(s,d)}}}{The estimated total weight in domain \eqn{d} in stratum \eqn{s}. The 'Total' for the 'Variable' identified by the argument 'WeightVariable' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+\item{\eqn{\hat{t}^{(L)}}}{The estimated total weight in the landing partition: \eqn{\hat{t}^{(L)}=\sum_{(s,d) \in L}\hat{t}^{(s,d)}}}
+\item{\eqn{\hat{Q}^{(L)}}}{}
+\item{\eqn{\widehat{rN}^{(s)}}}{The estimated total abundance in stratum \eqn{s}, based on total domain weight estimates: \eqn{\widehat{rN}^{(s)}=\sum_{d}\widehat{rN}^{(s,d)}}, where the sum runs over all domains in stratum \eqn{s}.}
+\item{\eqn{\widehat{qN}^{(s)}}}{The estimated total abundance in stratum \eqn{s}, based on mean domain weight estimates: \eqn{\widehat{qN}^{(s)}=\sum_{d}\widehat{qN}^{(s,d)}}, where the sum runs over all domains in stratum \eqn{s}.}
+\item{\eqn{\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})}}{The estimated covariance of abundance between the domains \eqn{d_{1}} and \eqn{d_{2}} in stratum \eqn{s}. 'AbundanceCovariance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+\item{\eqn{\hat{f}^{(s,d)}}}{}
+\item{\eqn{\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})})}}{}
+}
+}
+\examples{
+
+ PSUsamplingParameters <- RstoxFDA::AssignPSUSamplingParameters(
+                                       RstoxFDA::CatchLotterySamplingExample, 
+                                       RstoxFDA::CatchLotteryExample, 
+                                       "lotterySerialnumber", "Haul", "MissingAtRandom")
+ individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
+                                       RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
+ 
+ # Estimate for the domain 'CountryVessel'                                      
+ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 
+                                       individualSamplingParameters, 
+                                       c("IndividualRoundWeight"), 
+                                       c("IndividualAge"), c("CountryVessel"))
+ popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
+ 
+ # perform ration estimate, assigning total weights by 'CountryVessel'
+ ratioEst <- RstoxFDA::AnalyticalRatioEstimate(popEst, 
+                                        RstoxFDA::CatchLotteryLandingExample, 
+                                        "IndividualRoundWeight", 
+                                        "TotalDomainWeight")
+ 
 }
 \concept{Analytical estimation}

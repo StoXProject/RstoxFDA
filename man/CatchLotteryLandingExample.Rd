@@ -19,7 +19,8 @@ Samples from the Catch Lottery covering this fishery are provided in \code{\link
 }
 \examples{
  #report destination (country landed) of landed catch in tonnes
- RstoxFDA::CatchLotteryLandingExample$Landing[,list(weightT=sum(RoundWeight)/1000), by=c("CountryLanding")]
+ RstoxFDA::CatchLotteryLandingExample$Landing[,list(weightT=sum(RoundWeight)/1000), 
+                                                  by=c("CountryLanding")]
 }
 \concept{Analytical estimation}
 \keyword{datasets}

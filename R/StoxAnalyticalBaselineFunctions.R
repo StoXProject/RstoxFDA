@@ -1224,30 +1224,104 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 
 #' Ratio estimate of abundance
 #' @description 
-#'  Performs ratio estimate of abundance, based on either the ratio of abundance in domains to total weight in a stratum, or the frequency and mean weights of each domain.
+#'  Performs ratio estimate of abundance, based on either the ratio of abundance in domains to total weight in a stratum, 
+#'  or the frequency and mean weights of each domain.
 #' @details
 #'  Ratio estimates of abundance are obtained by relating abundance to weight and utilizing census data on landed weight to potentially improve estimates.
 #'  Ratio estimation generally incurs some bias in estimation, and analytical expressions for variances are approximate.
 #'  
+#'  Landings are partitioned and assigned to domains in 'AnalyticalPopulationEstimateData' by matching column names.
+#'  Column names in 'StoxLandingData' that are also either Stratification Columns or Domain Columns in 'AnalyticalPopulationEstimateData'
+#'  are used to construct the landings partitions that provide total weigts for the ratio estimates.
+#'  
 #'  Ratio estimation of abundance may either improve an estimate of abundance obtained by other means, or provide an estimate of abundance
-#'  when only proportions in domains are known.
+#'  when only proportions in domains are known. When only proprotions (frequencies) are known, the Method 'MeanDomainWeight'
+#'  must be used. This requires that landing partitions are not covering more than one strata, although they may cover less.
+#'  That is all Stratification columns in 'AnalyticalPopulationEstimateData' must have a corresponding column in 'StoxLandingData'
 #'  
 #'  The function obtains a ratio estimate of total abundance in landings by one of the following methods (provided in the argument 'Method'):
 #'  \describe{
-#'   \item{TotalDomainWeight}{}
-#'   \item{MeanDomainWeight}{}
+#'   \item{TotalDomainWeight}{
+#'     When 'Method' is 'TotalDomainWeight', the variable 'Abundance' will be estimated as \eqn{\widehat{rN}^{(s,d)}}, and the variable 'Frequency' as \eqn{\widehat{rf}^{(s,d)}}.
+#'     These estimators and their corresponding variances ('AbundanceCovariance' and 'FrequencyCovariance') are given below. 
+#'     The estimates are based on the ratio:
+#'     \deqn{\hat{R}^{(s,d)}=\frac{W^{(L)}}{\hat{t}^{(L)}}}
+#'     where \eqn{L=part(s,d)} is a partition of the landings containing the domain, \eqn{W^{(L)}} is the total landed weight in this partition and \eqn{\hat{t}^{(L)}} is the estimated total weight in this partition.
+#'     The abundance is estimated as:
+#'     \deqn{\widehat{rN}^{(s,d)} = \hat{R}^{(s,d)}\hat{N}^{(s,d)}}
+#'     The frequency is estimated as:
+#'     \deqn{\widehat{rf}^{(s,d)} = \frac{\widehat{rN}^{(s,d)}}{\widehat{rN}^{(s)}}}
+#'     And covariances are estimated as:
+#'     \deqn{\widehat{CoVar}(\widehat{rN}^{(s,d_{1})}, \widehat{rN}^{(s,d_{2})}) = \hat{R}^{(s,d_{1})}\hat{R}^{(s,d_{2})}\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})}
+#'     \deqn{\widehat{CoVar}(\widehat{rf}^{(s,d_{1})}, \widehat{rf}^{(s,d_{2})}) = \frac{1}{\widehat{rN}^{(s)}}\widehat{CoVar}(\widehat{rN}^{(s,d_{1})}, \widehat{rN}^{(s,d_{2})})}
+#'     ignoring the error in \eqn{\hat{R}^{(s,d)}} and \eqn{\widehat{rN}^{(s)}}.     
+#'     
+#'   
+#'   }
+#'   \item{MeanDomainWeight}{
+#'      When 'Method' is 'MeanDomainWeight', 'Abundance' will be estimated as \eqn{\widehat{qN}^{(s,d)}}, and the variable 'Frequency' as \eqn{\widehat{qf}^{(s,d)}}.
+#'     These estimators and their corresponding variances ('AbundanceCovariance' and 'FrequencyCovariance') are given below. 
+#'     The estimates are based on the mean individual weight, and an estimate of total landings in each domain:
+#'     \deqn{\hat{W}^{(s,d)}=\frac{\hat{f}^{(s,d)}W^{(L)}}{\sum_{(s,d) \in L}\hat{f}^{(s,d)}}}
+#'     where \eqn{L=part(s,d)} is a partition of the landings containing the domain. 
+#'     Since frequencies are normalized to strata, L cannot contain several strata.
+#'     The abundance is estimated as:
+#'     \deqn{\widehat{qN}^{(s,d)} = \frac{\hat{W}^{(s,d)}}{\hat{\mu}^{(s,d)}} = \hat{f}^{(s,d)}\hat{Q}^{(s,d)}}
+#'     with \eqn{\hat{Q}^{(s,d)}=\frac{W^{(L)}}{\hat{\mu}^{(s,d)}\sum_{(s,d) \in L}\hat{f}^{(s,d)}}}
+#'     The frequency is estimated as:
+#'     \deqn{\widehat{qf}^{(s,d)} = \frac{\widehat{qN}^{(s,d)}}{\widehat{qN}^{(s)}}}
+#'     And covariances are estimated as:
+#'     \deqn{\widehat{CoVar}(\widehat{qN}^{(s,d_{1})}, \widehat{qN}^{(s,d_{2})}) = \hat{Q}^{(s,d_{1})}\hat{Q}^{(s,d_{2})}\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})})}
+#'     \deqn{\widehat{CoVar}(\widehat{qf}^{(s,d_{1})}, \widehat{qf}^{(s,d_{2})}) = \frac{1}{\widehat{qN}^{(s)}}\widehat{CoVar}(\widehat{qN}^{(s,d_{1})}, \widehat{qN}^{(s,d_{2})})}
+#'     ignoring the error in \eqn{\hat{Q}^{(s,d)}} and \eqn{\widehat{qN}^{(s)}}.
+#'   }
+#'   }
+#'  Vocabulary for equations given above:
+#'  \describe{
+#'   \item{\eqn{part(s,d)}}{The partition of the landings containing the domain \eqn{d} in stratum \eqn{s}.}
+#'   \item{\eqn{\hat{N}^{(s,d)}}}{The estimated abundance in the domain \eqn{d} in stratum \eqn{s}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+#'   \item{\eqn{\hat{t}^{(s,d)}}}{The estimated total weight in domain \eqn{d} in stratum \eqn{s}. The 'Total' for the 'Variable' identified by the argument 'WeightVariable' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+#'   \item{\eqn{\hat{t}^{(L)}}}{The estimated total weight in the landing partition: \eqn{\hat{t}^{(L)}=\sum_{(s,d) \in L}\hat{t}^{(s,d)}}}
+#'   \item{\eqn{\hat{Q}^{(L)}}}{}
+#'   \item{\eqn{\widehat{rN}^{(s)}}}{The estimated total abundance in stratum \eqn{s}, based on total domain weight estimates: \eqn{\widehat{rN}^{(s)}=\sum_{d}\widehat{rN}^{(s,d)}}, where the sum runs over all domains in stratum \eqn{s}.}
+#'   \item{\eqn{\widehat{qN}^{(s)}}}{The estimated total abundance in stratum \eqn{s}, based on mean domain weight estimates: \eqn{\widehat{qN}^{(s)}=\sum_{d}\widehat{qN}^{(s,d)}}, where the sum runs over all domains in stratum \eqn{s}.}
+#'   \item{\eqn{\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})}}{The estimated covariance of abundance between the domains \eqn{d_{1}} and \eqn{d_{2}} in stratum \eqn{s}. 'AbundanceCovariance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+#'   \item{\eqn{\hat{f}^{(s,d)}}}{}
+#'   \item{\eqn{\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})})}}{}
 #'  }
 #'  
 #' @param AnalyticalPopulationEstimateData \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimates of mean or total weights and frequencies or abundance in domains
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} with census data on total weight in each stratum
 #' @param WeightVariable character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals in grams.
 #' @param Method The method of ratio estimation to use. 'TotalDomainWeight' or 'MeanDomainWeight'. See details 
-#' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance
+#' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance and frequency.
+#' @examples 
+#' 
+#'  PSUsamplingParameters <- RstoxFDA::AssignPSUSamplingParameters(
+#'                                        RstoxFDA::CatchLotterySamplingExample, 
+#'                                        RstoxFDA::CatchLotteryExample, 
+#'                                        "lotterySerialnumber", "Haul", "MissingAtRandom")
+#'  individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
+#'                                        RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
+#'  
+#'  # Estimate for the domain 'CountryVessel'                                      
+#'  psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 
+#'                                        individualSamplingParameters, 
+#'                                        c("IndividualRoundWeight"), 
+#'                                        c("IndividualAge"), c("CountryVessel"))
+#'  popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
+#'  
+#'  # perform ration estimate, assigning total weights by 'CountryVessel'
+#'  ratioEst <- RstoxFDA::AnalyticalRatioEstimate(popEst, 
+#'                                         RstoxFDA::CatchLotteryLandingExample, 
+#'                                         "IndividualRoundWeight", 
+#'                                         "TotalDomainWeight")
+#'  
 #' @concept Analytical estimation
 #' @export
 #' @md
 AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, WeightVariable=character(), Method=c("TotalDomainWeight", "MeanDomainWeight")){
-  warning("Document")
+  
   if (WeightVariable %in% AnalyticalPopulationEstimateData$Variables){
     stop(paste("'WeightVariable'", WeightVariable, "is not estimated in 'AnalyticalPopulationEstimateData'"))
   }
@@ -1268,19 +1342,19 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
   if (Method == "TotalDomainWeight"){
 
     potentialNames <- c(names(AnalyticalPopulationEstimateData$StratificationVariables), names(AnalyticalPopulationEstimateData$DomainVariables))
-    landingsStrata <- potentialNames[potentialNames %in% names(StoxLandingData$Landing)]
+    landingsPartition <- potentialNames[potentialNames %in% names(StoxLandingData$Landing)]
     totals <- merge(AnalyticalPopulationEstimateData$Variables[Variable==WeightVariable,.SD,.SDcol=c("Stratum", "Domain", "Total")], AnalyticalPopulationEstimateData$StratificationVariables, by="Stratum")
     totals <- merge(totals, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
-    estTotalByLandingsStrata <- totals[,list(TotalWeightKg=sum(Total)/1000),by=landingsStrata]
+    estTotalBylandingsPartition <- totals[,list(TotalWeightKg=sum(Total)/1000),by=landingsPartition]
     
-    landingsByStratum <- StoxLandingData$Landing[,list(LandingsWeightKg=sum(RoundWeight)), by=landingsStrata]
-    totalByStratum <- merge(estTotalByLandingsStrata, landingsByStratum)
+    landingsByStratum <- StoxLandingData$Landing[,list(LandingsWeightKg=sum(RoundWeight)), by=landingsPartition]
+    totalByStratum <- merge(estTotalBylandingsPartition, landingsByStratum)
     
-    stratumMap <- data.table::CJ(Stratum=AnalyticalPopulationEstimateData$StratificationVariables$Stratum, Domain=AnalyticalPopulationEstimateData$DomainVariables$Domain, unique = T)
-    stratumMap <- merge(stratumMap, AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcol=c("Stratum", landingsStrata[landingsStrata %in% names(AnalyticalPopulationEstimateData$StratificationVariables)])], by="Stratum")
-    stratumMap <- merge(stratumMap, AnalyticalPopulationEstimateData$DomainVariables[,.SD,.SDcol=c("Domain", landingsStrata[landingsStrata %in% names(AnalyticalPopulationEstimateData$DomainVariables)])], by="Domain")
-    stratumMap <- stratumMap[!duplicated(apply(stratumMap, FUN=paste, 1, collapse=",")),]
-    totalByStratum <- merge(totalByStratum, stratumMap)
+    domainPartitionMap <- data.table::CJ(Stratum=AnalyticalPopulationEstimateData$StratificationVariables$Stratum, Domain=AnalyticalPopulationEstimateData$DomainVariables$Domain, unique = T)
+    domainPartitionMap <- merge(domainPartitionMap, AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcol=c("Stratum", landingsPartition[landingsPartition %in% names(AnalyticalPopulationEstimateData$StratificationVariables)])], by="Stratum")
+    domainPartitionMap <- merge(domainPartitionMap, AnalyticalPopulationEstimateData$DomainVariables[,.SD,.SDcol=c("Domain", landingsPartition[landingsPartition %in% names(AnalyticalPopulationEstimateData$DomainVariables)])], by="Domain")
+    domainPartitionMap <- domainPartitionMap[!duplicated(apply(domainPartitionMap, FUN=paste, 1, collapse=",")),]
+    totalByStratum <- merge(totalByStratum, domainPartitionMap)
     
     #
     # Ratio-estimate abundance
@@ -1313,19 +1387,19 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     }
     
     potentialNames <- c(names(AnalyticalPopulationEstimateData$StratificationVariables), names(AnalyticalPopulationEstimateData$DomainVariables))
-    landingsStrata <- potentialNames[potentialNames %in% names(StoxLandingData$Landing)]
+    landingsPartition <- potentialNames[potentialNames %in% names(StoxLandingData$Landing)]
     
     frequencies <- AnalyticalPopulationEstimateData$Abundance[,.SD,.SDcol=c("Stratum", "Domain", "Frequency")]
     frequencies <- merge(frequencies, AnalyticalPopulationEstimateData$StratificationVariables, by="Stratum")
     frequencies <- merge(frequencies, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
     
-    # normalize frequencies to landingsStrata within samplingstrata
-    totalFrequencies <- frequencies[,list(totalFreq=sum(Frequency)), by=c("Stratum", landingsStrata)]
-    frequencies <- merge(frequencies, totalFrequencies, by=c("Stratum", landingsStrata), all.x = T)
+    # normalize frequencies to landingsPartition within samplingstrata
+    totalFrequencies <- frequencies[,list(totalFreq=sum(Frequency)), by=c("Stratum", landingsPartition)]
+    frequencies <- merge(frequencies, totalFrequencies, by=c("Stratum", landingsPartition), all.x = T)
     
     # estimate total landings in domain
-    totalLandings <- StoxLandingData$Landing[,list(totalLanding=sum(RoundWeight)*1000), by=landingsStrata] #WeightVariable is in grams.
-    frequencies <- merge(frequencies, totalLandings, by=landingsStrata, all.x=T)
+    totalLandings <- StoxLandingData$Landing[,list(totalLanding=sum(RoundWeight)*1000), by=landingsPartition] #WeightVariable is in grams.
+    frequencies <- merge(frequencies, totalLandings, by=landingsPartition, all.x=T)
     frequencies$domainLanding <- (frequencies$Frequency / frequencies$totalFreq) * frequencies$totalLanding
     
     means <- AnalyticalPopulationEstimateData$Variables[AnalyticalPopulationEstimateData$Variables$Variable == WeightVariable,]
@@ -1336,9 +1410,21 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     freqMatch <- match(paste(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain), paste(frequencies$Stratum, frequencies$Domain))
     meanMatch <- match(paste(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain), paste(means$Stratum, means$Domain))
     AnalyticalPopulationEstimateData$Abundance$Abundance <- frequencies$domainLanding[freqMatch] / means$Mean[meanMatch]
-    m1 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain1), paste(means$Stratum, means$Domain))
-    m2 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain2), paste(means$Stratum, means$Domain))
-    AnalyticalPopulationEstimateData$AbundanceCovariance$AbundanceCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance$FrequencyCovariance * frequencies$domainLanding[m1] * frequencies$domainLanding[m2]
+    m1 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain1), paste(frequencies$Stratum, frequencies$Domain))
+    m2 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain2), paste(frequencies$Stratum, frequencies$Domain))
+    meanMatch1 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain1), paste(means$Stratum, means$Domain))
+    meanMatch2 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain2), paste(means$Stratum, means$Domain))
+    AnalyticalPopulationEstimateData$AbundanceCovariance$AbundanceCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance$FrequencyCovariance * (frequencies$totalLanding[m1] / (frequencies$totalFreq[m1] * means$Mean[meanMatch1])) * (frequencies$totalLanding[m2] / (frequencies$totalFreq[m2] * means$Mean[meanMatch2]))
+    
+    #
+    # Ratio-estimate frequencies
+    #
+    abundanceByStratum <- AnalyticalPopulationEstimateData$Abundance[,list(totalAbundance=sum(Abundance)), by="Stratum"]
+    m <- match(AnalyticalPopulationEstimateData$Abundance$Stratum, abundanceByStratum$Stratum)
+    AnalyticalPopulationEstimateData$Abundance$Frequency <- AnalyticalPopulationEstimateData$Abundance$Abundance / abundanceByStratum$totalAbundance[m]
+    m <- match(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, abundanceByStratum$Stratum)
+    AnalyticalPopulationEstimateData$AbundanceCovariance$FrequencyCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance$AbundanceCovariance * (1/abundanceByStratum$totalAbundance[m])**2
+    
     
     return(AnalyticalPopulationEstimateData)
   }

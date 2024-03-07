@@ -124,6 +124,7 @@ CatchLotteryExample <- bioData
 filter <- is.na(CatchLotteryExample$Sample$CatchFractionNumber)
 CatchLotteryExample$Sample$CatchFractionNumber[filter] <- CatchLotteryExample$Sample$CatchFractionWeight[filter]*CatchLotteryExample$Sample$SampleNumber[filter] / CatchLotteryExample$Sample$SampleWeight[filter]
 CatchLotteryExample$Haul$lotterySerialnumber <- CatchLotteryExample$Haul$HaulKey
+CatchLotteryExample$Station$CountryVessel <- "NOR"
 usethis::use_data(CatchLotteryExample, overwrite = T)
 
 CatchLotterySamplingExample <- RstoxFDA::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFile)
