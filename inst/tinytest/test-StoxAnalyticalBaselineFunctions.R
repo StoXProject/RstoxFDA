@@ -418,7 +418,7 @@ psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRou
 expect_equal(nrow(psuEstDomain$PSUDomainVariables),3)
 expect_error(RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"), "IndividualSex" ,"IndividualSex"), "PSUDomainVariables must be unique to each PSU. Duplicates found for IndividualSexfor PSUs:")
 psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"), "IndividualSex" , c("Gear", "SpeciesCategory"))
-psuEstDomain <- LiftStrata(psuEstDomain)
+psuEstDomain <- RstoxFDA:::LiftStrata(psuEstDomain)
 expect_equal(ncol(psuEstDomain$PSUDomainVariables), 4)
 psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, miniExInd, c("IndividualRoundWeight"), "IndividualSex")
 expect_true(all(psuEstDomain$PSUDomainVariables$PSUDomain=="All"))
@@ -442,10 +442,12 @@ expect_true(abs(sum(popEstDomain$Variables$Mean*popEstDomain$Abundance$Abundance
 expect_true((abs(popEst$AbundanceCovariance$AbundanceCovariance - 73125.74) / 73125.74) < 0.001)
 
 #check that covariance is identical to variance when variables are completely aligned (IW vs IndividualRoundWeight)
-expect_true(abs(popEst$VariablesCovariance$TotalCovariance[popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance$Variable2=="IndividualRoundWeight"] - popEst$VariablesCovariance$TotalCovariance[popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance$Variable2=="IW"])<1e-6)
+filt1 <- popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance$Variable2=="IndividualRoundWeight"
+filt2 <- popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance$Variable2=="IW"
+expect_true(abs(popEst$VariablesCovariance$TotalCovariance[filt1] - popEst$VariablesCovariance$TotalCovariance[filt2])<1e-6)
 #check that covariance is not identical to variance when variables are not completely aligned (IW vs IndividualTotalLength)
 
-expect_true(abs(popEst$VariablesCovariance$TotalCovariance[popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance$Variable2=="IndividualTotalLength"] - popEst$VariablesCovariance$TotalCovariance[popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance$Variable2=="IW"])>1)
+expect_true(abs(popEst$VariablesCovariance$TotalCovariance[popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance$Variable2=="IndividualTotalLength"] - popEst$VariablesCovariance$TotalCovariance[filt2])>1)
 #check that variable covariance equal abundance covariance for a variable that is always set to 1.
 expect_true(abs(popEst$VariablesCovariance$TotalCovariance[popEst$VariablesCovariance$Variable1=="one" & popEst$VariablesCovariance$Variable2=="one"] - popEst$AbundanceCovariance$AbundanceCovariance)<1e-6)
 expect_true(abs(popEst$VariablesCovariance$MeanCovariance[popEst$VariablesCovariance$Variable1=="one" & popEst$VariablesCovariance$Variable2=="one"] - popEst$AbundanceCovariance$FrequencyCovariance)<1e-6)
