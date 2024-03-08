@@ -967,6 +967,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'  confidence intervals for estimates can be deduced from a normal distribution with \eqn{\mu=\hat{x}} and \eqn{\sigma=\hat{SE}({\hat{x}})}.
 #'  
 #'  Abundances, frequencies, totals, and means are estimated with the formulas below. A vocabulary of notation is provided after the equations.
+#'  Estimates of PSU domain sizes are provided without variance-estimations. These are also documented in the vocabulary below.
 #'  
 #'  \describe{
 #'   \item{Abundance:}{
@@ -974,7 +975,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'   \deqn{\hat{N}^{(s,d)} = \frac{1}{n^{(s)}} \sum_{i=1}^{n} \hat{D}^{(s,d)}\frac{\hat{N}^{(s,d)}_{i}}{p_{i}}I^{(s,d)}_{i}} 
 #'   with co-variance:
 #'   \deqn{\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})}) = \frac{1}{\hat{P}^{(s,d_{1})}\hat{P}^{(s,d_{2})}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
-#'   I^{(s)}_{i} J^{(s,d_{1})}_{i} J^{(s,d_{2})}_{i} (\hat{D}^{(s,d)}\frac{\hat{N}^{(s,d_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{N}^{(s,d_{1})}) (\hat{D}^{(s,d)}\frac{\hat{N}^{(s,d_{2})}_{i}}{p_{i}}I^{(s,d_{2})}_{i} - \hat{N}^{(s,d_{2})})}
+#'   I^{(s,d_{1})}_{i} I^{(s,d_{2})}_{i} (\hat{D}^{(s,d)}\frac{\hat{N}^{(s,d_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{N}^{(s,d_{1})}) (\hat{D}^{(s,d)}\frac{\hat{N}^{(s,d_{2})}_{i}}{p_{i}}I^{(s,d_{2})}_{i} - \hat{N}^{(s,d_{2})})}
 #'   
 #'   Note that unless \eqn{\hat{P}^{(s,d_{1})}=\hat{P}^{(s,d_{2})}} the covariance is zero.
 #'   
@@ -999,7 +1000,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'   \deqn{ \hat{f}^{(s,d)} =  \sum_{i=1}^{n}\frac{w_{i}}{\hat{D}^{(s,d)}}\hat{f}^{(s,d)}_{i}I^{(s,d)}_{i}}
 #'   with co-variance:
 #'   \deqn{\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})}) = \frac{1}{\hat{P}^{(s,d_{1})}\hat{P}^{(s,d_{2})}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
-#'   I^{(s)}_{i} J^{(s,d_{1})}_{i} J^{(s,d_{2})}_{i} (\hat{f}_{i}I^{(s,d_{1})}_{i} - \hat{f}^{(s,d_{1})}) (\hat{f}_{i}I^{(s,d_{2})}_{i} - \hat{f}^{(s,d_{2})})}.}
+#'   I^{(s,d_{1})}_{i} I^{(s,d_{2})}_{i} (\hat{f}_{i}I^{(s,d_{1})}_{i} - \hat{f}^{(s,d_{1})}) (\hat{f}_{i}I^{(s,d_{2})}_{i} - \hat{f}^{(s,d_{2})})}.}
 #'   
 #'   Note that unless \eqn{\hat{P}^{(s,d_{1})}=\hat{P}^{(s,d_{2})}} the covariance is zero.
 #'   
@@ -1011,7 +1012,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'   \deqn{\hat{t}^{(s,d)}=\frac{1}{n^{(s,d)}}{\sum_{i=1}^{n}}\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d)}_{i}}{p_{i}}I^{(s,d)}_{i}}
 #'   with co-variance:
 #'   \deqn{\widehat{CoVar}(\hat{t}^{(s,d_{1})}, \hat{t}^{(s,d_{2})}) = \frac{1}{\hat{P}^{(s,d_{1})}\hat{P}^{(s,d_{2})}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
-#'   I^{(s)}_{i} J^{(s,d_{1})}_{i} J^{(s,d_{2})}_{i}(\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{t}^{(s,d_{1})}) (\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{2})}_{i}}{p_{i}}I^{(s,d_{2})}_{i} - \hat{t}^{(s,d_{2})})}.
+#'   I^{(s,d_{1})}_{i} I^{(s,d_{2})}_{i}(\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{t}^{(s,d_{1})}) (\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{2})}_{i}}{p_{i}}I^{(s,d_{2})}_{i} - \hat{t}^{(s,d_{2})})}.
 #'   
 #'   Note that unless \eqn{\hat{P}^{(s,d_{1})}=\hat{P}^{(s,d_{2})}} the covariance is zero.
 #'   
@@ -1032,7 +1033,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'   \deqn{\hat{\mu}^{(s,d)}=\sum_{i=1}^{n}\frac{w_{i}}{\hat{d}^{(s,d)}}\hat{\mu}_{i}I^{(s,d)}_{i}H(\hat{N}^{(s,d)}_{i})}
 #'   with co-variance:
 #'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1})}, \hat{\mu}^{(s,d_{2})}) = \frac{1}{(\hat{d}^{(s,d_{1} \cap d_{2})})^{2}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
-#'   I^{(s,d_{1})}_{i}I^{(s,d_{2})}_{i} J^{(s,d_{1})}_{i}J^{(s,d_{2})}_{i} H(\hat{f}^{(s,d_{1})}_{i})H(\hat{f}^{(s,d_{2})}_{i})( \hat{\mu}^{(s,d_{1})}_{i} - \hat{\mu}^{(s,d_{1})}) (\hat{\mu}^{(s,d_{2})}_{i} - \hat{\mu}^{(s,d_{2})})}}
+#'   I^{(s,d_{1})}_{i}I^{(s,d_{2})}_{i} H(\hat{f}^{(s,d_{1})}_{i})H(\hat{f}^{(s,d_{2})}_{i})( \hat{\mu}^{(s,d_{1})}_{i} - \hat{\mu}^{(s,d_{1})}) (\hat{\mu}^{(s,d_{2})}_{i} - \hat{\mu}^{(s,d_{2})})}}
 #'   These are ratio estimates depending on the ratio ratio estimation of \eqn{\hat{d}^{(s,d)}}, \eqn{\hat{d}^{(s,d_{1} \cap d_{2})}} and \eqn{\hat{\mu}^{(s,d)}_{i}}, and the error in these estimates are ignored.
 #'  }
 #'  
@@ -1044,11 +1045,12 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'    \item{\eqn{J^{(s,d)}_{i}}}{The indicator function for domain \eqn{d} and stratum \eqn{s}. Is 1 when \eqn{i} is in stratum \eqn{s} and the PSU-domain of domain \eqn{d}, otherwise it is zero.}
 #'    \item{\eqn{n}}{Sample size, the number of PSUs sampled.}
 #'    \item{\eqn{n^{(s)}}}{Stratum sample size, the number of PSUs sampled in stratum \eqn{s}: \eqn{n_{s}=\sum_{i=1}^{n}I^{(s)}_{i}}.}
-#'    \item{\eqn{n^{(s,d)}}}{Domain sample size, the number of PSUs sampled in domain{d} and stratum \eqn{s}: \eqn{n^{(s,d)}=\sum_{i=1}^{n}I^{(s,d)}_{i}}.}
+#'    \item{\eqn{n^{(s,d)}}}{Domain sample size, the number of PSUs sampled in domain{d} and stratum \eqn{s}: \eqn{n^{(s,d)}=\sum_{i=1}^{n}I^{(s,d)}_{i}}. 'Samples' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
 #'    \item{\eqn{p_{i}}}{The selection probability of PSU \eqn{i}. 'SelectionProbability' in \code{\link[RstoxFDA]{PSUSamplingParametersData}}.}
 #'    \item{\eqn{w_{i}}}{The normalized Hansen-Hurwitz sampling weight: \eqn{w_{i}=\frac{1}{p_{i}Q_{i}}}, \eqn{Q_{i}=\sum_{j=1}^{n}\frac{I^{(s(i))}_{j}}{p_{j}}}, where \eqn{s(i)} denote the strata of sample \eqn{i}. 'HHsamplingWeight' in \code{\link[RstoxFDA]{PSUSamplingParametersData}}.}
 #'    \item{\eqn{\hat{D}^{(s,d)}}}{The estimated relative domain size (fraction of PSUs) of domain \eqn{d} in stratum \eqn{s}: \eqn{\hat{D}^{(s,d)}=\sum_{i=1}^{n}w_{i}I^{(s,d)}_{i}}.}
-#'    \item{\eqn{\hat{P}^{(s,d)}}}{The estimated relative domain size (fraction of PSUs) of the PSU-domain of domain \eqn{d} in stratum \eqn{s}: \eqn{\hat{P}^{(s,d)}=\sum_{i=1}^{n}w_{i}J^{(s,d)}_{i}}.}
+#'    \item{\eqn{\hat{P}^{(s,d)}}}{The estimated relative domain size (fraction of PSUs) of the PSU-domain of domain \eqn{d} in stratum \eqn{s}: \eqn{\hat{P}^{(s,d)}=\sum_{i=1}^{n}w_{i}J^{(s,d)}_{i}}.  'PSURelativeDomainSize' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+#'    \item{\eqn{\hat{M}^{(s,d)}}}{The estimated domain size (number of PSUs) of the PSU-domain of domain \eqn{d} in stratum \eqn{s}: \eqn{\hat{M}^{(s,d)}=\sum_{i=1}^{n}\frac{1}{p_{i}}J^{(s,d)}_{i}}.  'PSURelativeDomainSize' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
 #'    \item{\eqn{\hat{d}^{(s,d)}}}{The estimated relative domain size (fraction of PSUs) that has observations (positive abundance or frequency) in domain \eqn{d} in stratum \eqn{s}: \eqn{\hat{d}^{(s,d)}=\sum_{i=1}^{n}w_{i}I^{(s,d)}_{i}H(\hat{f}^{(s,d)}_{i})}.}
 #'    \item{\eqn{\hat{d}^{(s,d_{1} \cap d_{2})}}}{The estimated relative domain size (total number of PSUs) that has observations (positive abundance or frequency) in both domain \eqn{d_{1}} and \eqn{d_{2}} in stratum \eqn{s}: \eqn{\hat{d}^{(s,d)}=\sum_{i=1}^{n}w_{i}I^{(s,d_{1})}_{i}I^{(s,d_{2})}_{i}H(\hat{f}^{(s,d_{1})}_{i})H(\hat{f}^{(s,d_{2})}_{j})}.}
 #'    \item{\eqn{\hat{N}^{(s)}}}{The estimated abundance in stratum \eqn{s}: \eqn{\hat{N}^{(s)}=\frac{1}{n_{s}}\sum_{i=1}^{n}\frac{\hat{N}_{i}}{p_{i}}I^{(s)}_{i}}.}
