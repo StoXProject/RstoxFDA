@@ -337,7 +337,9 @@ psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeig
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
 ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "TotalDomainWeight")
 
-#check that some CVs are in reasonable range
+expect_equal(length(unique(stationDesign$SelectionTable$SamplingUnitId)), sum(popEstDomain$SampleSummary$Samples))
+expect_true(!is.null(ratioEst$SampleSummary))
+
 CVs <- merge(ratioEst$Abundance, ratioEst$AbundanceCovariance[Domain1==Domain2], by.x=c("Stratum", "Domain"), by.y=c("Stratum", "Domain1"))
 CVs$CV <- sqrt(CVs$AbundanceCovariance) / CVs$Abundance
 expect_equal(sum(is.na(CVs$CV)), sum(is.na(CVs$CV)))
@@ -442,18 +444,19 @@ expect_true((abs(popEst$AbundanceCovariance$AbundanceCovariance - 73125.74) / 73
 #check that covariance is identical to variance when variables are completely aligned (IW vs IndividualRoundWeight)
 expect_true(abs(popEst$VariablesCovariance$TotalCovariance[popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance$Variable2=="IndividualRoundWeight"] - popEst$VariablesCovariance$TotalCovariance[popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance$Variable2=="IW"])<1e-6)
 #check that covariance is not identical to variance when variables are not completely aligned (IW vs IndividualTotalLength)
+
 expect_true(abs(popEst$VariablesCovariance$TotalCovariance[popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance$Variable2=="IndividualTotalLength"] - popEst$VariablesCovariance$TotalCovariance[popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance$Variable2=="IW"])>1)
 #check that variable covariance equal abundance covariance for a variable that is always set to 1.
 expect_true(abs(popEst$VariablesCovariance$TotalCovariance[popEst$VariablesCovariance$Variable1=="one" & popEst$VariablesCovariance$Variable2=="one"] - popEst$AbundanceCovariance$AbundanceCovariance)<1e-6)
 expect_true(abs(popEst$VariablesCovariance$MeanCovariance[popEst$VariablesCovariance$Variable1=="one" & popEst$VariablesCovariance$Variable2=="one"] - popEst$AbundanceCovariance$FrequencyCovariance)<1e-6)
 
+#stop("Above fails in online checks. Expected TRUE, but got logical of length 0. Figure out what is going on.")
+
 #check that Mean of Means estimates have higher variance than the other option.
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
-#stop("Add sample size info to PopulationEstimateData, consider what to do with samples sizes < 2)
 #stop("Check input sanitation.")
-#stop("Fix documentation of PopulationEstimateData object.")
 #stop("Test collapseStrata with both HH and HT")
 #stop("Implement DefineHierarchy.")
 #stop("expose to StoX")

@@ -6,7 +6,7 @@
 \description{
 Analytical estimates for each PSU
  
- List containingin the following \code{\link[data.table]{data.table}}s:
+ List containing the following \code{\link[data.table]{data.table}}s:
  
  Abundance
  \describe{
@@ -44,7 +44,7 @@ Analytical estimates for each PSU
  \describe{
   \item{SampleId}{Identifier for Primary Sampling Unit (PSU)}
   \item{Stratum}{Identfier of stratum for individuals at PSU. In addition strata are identified by the combination of any additional columns in this table.}
-  \item{<StratificationVariables>}{Columns that realte the PSU domains to data records.}
+  \item{<StratificationVariables>}{Columns that relate the PSU domains to data records.}
  }
 }
 \concept{Analytical estimation}

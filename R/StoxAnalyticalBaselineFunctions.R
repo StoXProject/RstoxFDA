@@ -780,7 +780,7 @@ CollapseStrata <- function(IndividualSamplingParametersData, RetainStrata=charac
 LiftStrata <- function(AnalyticalPSUEstimateData){
 
   allStrata <- data.table::CJ(SampleId=AnalyticalPSUEstimateData$StratificationVariables$SampleId, Stratum=AnalyticalPSUEstimateData$StratificationVariables$Stratum, unique = T)
-  missingStrata <- allStrata[!(paste(SampleId, Stratum) %in% paste(AnalyticalPSUEstimateData$StratificationVariables$SampleId, AnalyticalPSUEstimateData$StratificationVariables$Stratum)),]
+  missingStrata <- allStrata[!(paste(allStrata$SampleId, allStrata$Stratum) %in% paste(AnalyticalPSUEstimateData$StratificationVariables$SampleId, AnalyticalPSUEstimateData$StratificationVariables$Stratum)),]
   
   domains <- data.table::CJ(Stratum=AnalyticalPSUEstimateData$StratificationVariables$Stratum, Domain=AnalyticalPSUEstimateData$DomainVariables$Domain, unique = T)
   missingStrataWdomains <- merge(missingStrata, domains, by="Stratum", allow.cartesian = T)
@@ -798,13 +798,16 @@ LiftStrata <- function(AnalyticalPSUEstimateData){
   VariableAdditions$Mean <- NaN
   VariableAdditions <- VariableAdditions[,.SD,.SDcol=names(AnalyticalPSUEstimateData$Variables)]
   
-  stratvars <- AnalyticalPSUEstimateData$StratificationVariables[!duplicated(Stratum),.SD,.SDcol=names(AnalyticalPSUEstimateData$StratificationVariables)[names(AnalyticalPSUEstimateData$StratificationVariables)!="SampleId"]]
+  stratvars <- AnalyticalPSUEstimateData$StratificationVariables[!duplicated(AnalyticalPSUEstimateData$StratificationVariables$Stratum),.SD,.SDcol=names(AnalyticalPSUEstimateData$StratificationVariables)[names(AnalyticalPSUEstimateData$StratificationVariables)!="SampleId"]]
   StratVarAdditions <- merge(missingStrata, stratvars, by="Stratum")
   StratVarAdditions <- StratVarAdditions[,.SD,.SDcol=names(AnalyticalPSUEstimateData$StratificationVariables)]
   
-  AnalyticalPSUEstimateData$Abundance <- rbind(AnalyticalPSUEstimateData$Abundance, AbundanceAdditions)[order(SampleId, Stratum, Domain)]
-  AnalyticalPSUEstimateData$Variables <- rbind(AnalyticalPSUEstimateData$Variables, VariableAdditions)[order(SampleId, Stratum, Domain)]
-  AnalyticalPSUEstimateData$StratificationVariables <- rbind(AnalyticalPSUEstimateData$StratificationVariables, StratVarAdditions)[order(SampleId, Stratum)]
+  AnalyticalPSUEstimateData$Abundance <- rbind(AnalyticalPSUEstimateData$Abundance, AbundanceAdditions)
+  AnalyticalPSUEstimateData$Abundance <- AnalyticalPSUEstimateData$Abundance[order(AnalyticalPSUEstimateData$Abundance$SampleId, AnalyticalPSUEstimateData$Abundance$Stratum, AnalyticalPSUEstimateData$Abundance$Domain),]
+  AnalyticalPSUEstimateData$Variables <- rbind(AnalyticalPSUEstimateData$Variables, VariableAdditions)
+  AnalyticalPSUEstimateData$Variables <- AnalyticalPSUEstimateData$Variables[order(AnalyticalPSUEstimateData$Variables$SampleId, AnalyticalPSUEstimateData$Variables$Stratum, AnalyticalPSUEstimateData$Variables$Domain),]
+  AnalyticalPSUEstimateData$StratificationVariables <- rbind(AnalyticalPSUEstimateData$StratificationVariables, StratVarAdditions)
+  AnalyticalPSUEstimateData$StratificationVariables <- AnalyticalPSUEstimateData$StratificationVariables[order(AnalyticalPSUEstimateData$StratificationVariables$SampleId, AnalyticalPSUEstimateData$StratificationVariables$Stratum),]
   
   return(AnalyticalPSUEstimateData)
 }
@@ -1183,12 +1186,19 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 
   VariablesCovarianceTable <- covarVariables(VariablesTable, selVariables, MeanOfMeans, AbundanceTable)
   
+  #
+  # Add sample size etc..
+  #
+  
+  SampleTable <- PSUSamplingParametersData$SelectionTable[,list(Samples=length(unique(SamplingUnitId)), PSUDomainSize=mean(1/SelectionProbability)*sum(HHsamplingWeight), PSURelativeDomainSize=sum(HHsamplingWeight)), by=c("Stratum", "PSUDomain")]    
+  
   
   #
   # Format output
   #
   
   output <- list()
+  output$SampleSummary <- SampleTable
   output$Abundance <- AbundanceTable
   output$Variables <- VariablesTable
   output$AbundanceCovariance <- AbundanceCovarianceTable
