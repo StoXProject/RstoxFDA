@@ -111,33 +111,33 @@ These are ratio estimates depending on the ratio ratio estimation of \eqn{\hat{f
 See comments above (\eqn{\hat{f}^{(s,d)}}) and in \code{\link[RstoxFDA]{AnalyticalPSUEstimate}} (\eqn{\hat{f}^{(s,d)}_{i}}).
 
 \item{Total:}{
-The estimate of the total value of some variable in domain \eqn{d} and stratum \eqn{s}.
-\deqn{\hat{t}^{(s,d)}=\frac{1}{n^{(s,d)}}{\sum_{i=1}^{n}}\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d)}_{i}}{p_{i}}I^{(s,d)}_{i}}
+The estimate of the total value of some variable \eqn{v} in domain \eqn{d} and stratum \eqn{s}.
+\deqn{\hat{t}^{(s,d,v)}=\frac{1}{n^{(s,d)}}{\sum_{i=1}^{n}}\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d,v)}_{i}}{p_{i}}I^{(s,d)}_{i}}
 with co-variance:
-\deqn{\widehat{CoVar}(\hat{t}^{(s,d_{1})}, \hat{t}^{(s,d_{2})}) = \frac{1}{\hat{P}^{(s,d_{1})}\hat{P}^{(s,d_{2})}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
-  I^{(s,d_{1})}_{i} I^{(s,d_{2})}_{i}(\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{t}^{(s,d_{1})}) (\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{2})}_{i}}{p_{i}}I^{(s,d_{2})}_{i} - \hat{t}^{(s,d_{2})})}.
+\deqn{\widehat{CoVar}(\hat{t}^{(s,d_{1},v_{1})}, \hat{t}^{(s,d_{2},v_{2})}) = \frac{1}{\hat{P}^{(s,d_{1})}\hat{P}^{(s,d_{2})}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
+  I^{(s,d_{1})}_{i} I^{(s,d_{2})}_{i}(\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{1},v_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{t}^{(s,d_{1},v_{1})}) (\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{2},v_{2})}_{i}}{p_{i}}I^{(s,d_{2})}_{i} - \hat{t}^{(s,d_{2},v_{2})})}.
 
 Note that unless \eqn{\hat{P}^{(s,d_{1})}=\hat{P}^{(s,d_{2})}} the covariance is zero.
 
 In the general case \eqn{\hat{D}^{(s,d)}} and \eqn{\hat{P}^{(s,d)}} is estimated by a ratio estimator, and the error in these estimates are ignored. When \eqn{d} covers all of \eqn{s}, \eqn{\hat{D}^{(s,d)}=1} and \eqn{\hat{P}^{(s,d)}=1}is known. In this case both expressions can be shown to be unbiased. These quantities can only be calculated when \eqn{p_{i}} is provided, and will otherwise be NA.}
 
 \item{Mean:}{
-The estimate of the mean value of some variable in domain \eqn{d} and stratum \eqn{s}, when MeanOfMeans is false:
-\deqn{\hat{\mu}^{(s,d)} = \frac{\hat{t}^{(s,d)}}{\hat{N}^{(s,d)}}}
+The estimate of the mean value of some variable \eqn{v} in domain \eqn{d} and stratum \eqn{s}, when MeanOfMeans is false:
+\deqn{\hat{\mu}^{(s,d,v)} = \frac{\hat{t}^{(s,d,v)}}{\hat{N}^{(s,d)}}}
 with co-variance:
-\deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1})}, \hat{\mu}^{(s,d_{2})}) = \frac{1}{\hat{N}^{(s,d_{1})} \hat{N}^{(s,d_{2})}}\widehat{CoVar}(\hat{t}^{(s,d_{1})}, \hat{t}^{(s,d_{2})})}
+\deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1},v_{1})}, \hat{\mu}^{(s,d_{2},v_{2})}) = \frac{1}{\hat{N}^{(s,d_{1})} \hat{N}^{(s,d_{2})}}\widehat{CoVar}(\hat{t}^{(s,d_{1},v_{1})}, \hat{t}^{(s,d_{2},v_{2})})}
 These are ratio estimates depending on the ratio to the estimated value \eqn{\hat{N}^{(s,d)}}, and the error in this estimate is ignored.
-In addition, the estimate may depend on a ratio estimate for \eqn{\hat{t}^{(s,d)}} and \eqn{\hat{t}^{(s,d)}_{i}}, as explained for 'Abundance'
+In addition, the estimate may depend on a ratio estimate for \eqn{\hat{t}^{(s,d,v)}} and \eqn{\hat{t}^{(s,d,v)}_{i}}, as explained for 'Abundance'
 and in \code{\link[RstoxFDA]{AnalyticalPSUEstimate}}.
 }
 
 \item{Mean, Mean of Means:}{
 The estimate of the mean value of some variable in domain \eqn{d} and stratum \eqn{s}, when MeanOfMeans is true:
-\deqn{\hat{\mu}^{(s,d)}=\sum_{i=1}^{n}\frac{w_{i}}{\hat{d}^{(s,d)}}\hat{\mu}_{i}I^{(s,d)}_{i}H(\hat{N}^{(s,d)}_{i})}
+\deqn{\hat{\mu}^{(s,d,v)}=\sum_{i=1}^{n}\frac{w_{i}}{\hat{d}^{(s,d)}}\hat{\mu}_{i}I^{(s,d,v)}_{i}H(\hat{N}^{(s,d)}_{i})}
 with co-variance:
-\deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1})}, \hat{\mu}^{(s,d_{2})}) = \frac{1}{(\hat{d}^{(s,d_{1} \cap d_{2})})^{2}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
-  I^{(s,d_{1})}_{i}I^{(s,d_{2})}_{i} H(\hat{f}^{(s,d_{1})}_{i})H(\hat{f}^{(s,d_{2})}_{i})( \hat{\mu}^{(s,d_{1})}_{i} - \hat{\mu}^{(s,d_{1})}) (\hat{\mu}^{(s,d_{2})}_{i} - \hat{\mu}^{(s,d_{2})})}}
-These are ratio estimates depending on the ratio ratio estimation of \eqn{\hat{d}^{(s,d)}}, \eqn{\hat{d}^{(s,d_{1} \cap d_{2})}} and \eqn{\hat{\mu}^{(s,d)}_{i}}, and the error in these estimates are ignored.
+\deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1},v_{1})}, \hat{\mu}^{(s,d_{2},v_{2})}) = \frac{1}{(\hat{d}^{(s,d_{1} \cap d_{2})})^{2}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
+  I^{(s,d_{1})}_{i}I^{(s,d_{2})}_{i} H(\hat{f}^{(s,d_{1})}_{i})H(\hat{f}^{(s,d_{2})}_{i})( \hat{\mu}^{(s,d_{1},v_{1})}_{i} - \hat{\mu}^{(s,d_{1},v_{1})}) (\hat{\mu}^{(s,d_{2},v_{2})}_{i} - \hat{\mu}^{(s,d_{2},v_{2})})}}
+These are ratio estimates depending on the ratio ratio estimation of \eqn{\hat{d}^{(s,d)}}, \eqn{\hat{d}^{(s,d_{1} \cap d_{2})}} and \eqn{\hat{\mu}^{(s,d,v)}_{i}}, and the error in these estimates are ignored.
 }
 
 Vocabulary for notation used above:
@@ -160,7 +160,8 @@ Vocabulary for notation used above:
 \item{\eqn{\hat{N}^{(s)}_{i}}}{The estimated total abundance in stratum \eqn{s} at PSU \eqn{i}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
 \item{\eqn{\hat{N}^{(s,d)}_{i}}}{The estimated abundance in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
 \item{\eqn{\hat{f}^{(s,d)}_{i}}}{The estimated frequency in domain \eqn{d} for stratum \eqn{s} at PSU \eqn{i}. 'Frequency' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
-\item{\eqn{\hat{\mu}_{i}}}{The estimated mean in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Mean' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
+\item{\eqn{\hat{t}^{(s,d,v)}_{i}}}{The estimated total of some variable \eqn{v} in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Total' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
+\item{\eqn{\hat{\mu}^{(s,d,v)}_{i}}}{The estimated mean of some variable \eqn{v} in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Mean' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
 }
 }
 \examples{

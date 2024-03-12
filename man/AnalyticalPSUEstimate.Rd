@@ -68,14 +68,14 @@ The estimate of the fraction of individuals in stratum \eqn{s} that are in domai
 The sampling weight is a function of the entire sample selection for a stratum.
 If the domain does not coincide with stratum, it must be considered approximate and hence this will be a ratio estimation in that case.
 \item{Total:}{
-The estimate of the total of a variable in stratum \eqn{s} and domain \eqn{d} at a PSU:
-\deqn{\hat{t}^{(s,d)}=\sum_{i=1}^{m}\frac{y_{i}}{\pi_{i}}I^{s,d}_{i}}
+The estimate of the total of a variable \eqn{v} in stratum \eqn{s} and domain \eqn{d} at a PSU:
+\deqn{\hat{t}^{(s,d,v)}=\sum_{i=1}^{m}\frac{y^{v}_{i}}{\pi_{i}}I^{s,d}_{i}}
 }
 The inclusion probability is a function of the entire sample selection for a stratum.
 If the domain does not coincide with stratum, it must be considered approximate and hence this will be a ratio estimation in that case.
 \item{Mean:}{
-The mean value of a variable in stratum \eqn{s} and domain \eqn{d} at a PSU:
-\deqn{\hat{\mu}^{(s,d)}=\frac{1}{\hat{D}^{(s,d)}}\sum_{i=1}^{m}w_{i}y_{i}I^{s,d}_{i}}
+The mean value of a variable \eqn{v} in stratum \eqn{s} and domain \eqn{d} at a PSU:
+\deqn{\hat{\mu}^{(s,d,v)}=\frac{1}{\hat{D}^{(s,d)}}\sum_{i=1}^{m}w_{i}y^{v}_{i}I^{s,d}_{i}}
 }
 This depends explicitly on the ratio to the estimate of relative domain size. When the domain coincides with strata
 this is in principle known, but in practice reported strata sizes for samples of individuals are often estimated, bringing
@@ -88,7 +88,7 @@ If the domain does not coincide with stratum, it must also be considered approxi
 \item{\eqn{m}}{The total number of individuals sampled at PSU.}
 \item{\eqn{\pi_{i}}}{The inclusion probability of individual \eqn{i} in PSU.}
 \item{\eqn{w_{i}}}{The normalized Horvitz-Thompson sample weight of an individual \eqn{i}.}
-\item{\eqn{y_{i}}}{The value of a variable observed for an individual \eqn{i}.}
+\item{\eqn{y^{v}_{i}}}{The value of a variable \eqn{v} observed for an individual \eqn{i}.}
 \item{\eqn{\hat{D}^{(s,d)}}}{The estimated relative domain size of domain \eqn{d} in stratum \eqn{s} at PSU: \eqn{\sum_{i=1}^{m}w_{i}I^{s,d}_{i}}}
 }
 }

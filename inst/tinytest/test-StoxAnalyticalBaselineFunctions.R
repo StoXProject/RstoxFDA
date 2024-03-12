@@ -312,6 +312,9 @@ ex$Haul$Gear[ex$Haul$Gear %in% c("3500", "3600")] <- "51"
 ex$Haul$Gear[ex$Haul$Gear %in% c("3700")] <- "53"
 ex$Haul$Gear[ex$Haul$Gear %in% c("3100")] <- "11"
 
+# add tiny error to Mean to ensure that it is recalculated
+popEstDomain$Variables$Mean <- popEstDomain$Variables$Mean + 1e-3
+
 ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "TotalDomainWeight")
 #check that relative difference in abundance equals relative difference in total estimated weigh vs landed weight for all landings as one stratum
 relDiff <- (ratioEst$Abundance$Abundance - popEstDomain$Abundance$Abundance)/popEstDomain$Abundance$Abundance
@@ -319,14 +322,22 @@ relDiff <- (ratioEst$Abundance$Abundance - popEstDomain$Abundance$Abundance)/pop
 expect_true(all(abs(relDiff-(sum(land$Landing$RoundWeight)*1000 - popEst$Variables$Total)/popEst$Variables$Total)<1e-6))
 relDiffCov <- (ratioEst$AbundanceCovariance$AbundanceCovariance - popEstDomain$AbundanceCovariance$AbundanceCovariance*((sum(land$Landing$RoundWeight)*1000/popEst$Variables$Total)**2))/ratioEst$AbundanceCovariance$AbundanceCovariance
 expect_true(all(abs(relDiffCov)<1e-6))
-#check that total and total covariances are unchanged
-expect_true(all(ratioEst$Variables$Total == popEstDomain$Variables$Total))
-expect_true(all(ratioEst$VariablesCovariance$TotalCovariance == popEstDomain$VariablesCovariance$TotalCovariance))
-#frequencies should be recalculated, but have barely changed when all landings is one stratum
+#check that total and total covariances are changed in accordance with difference between estimated total weight and landing total weight
+expect_true(all((abs(ratioEst$Variables$Total - popEstDomain$Variables$Total)/ratioEst$Variables$Total) - (sum(land$Landing$RoundWeight)*1000 - sum(popEstDomain$Variables$Total))/(sum(land$Landing$RoundWeight)*1000) < 1e-6))
+
+expect_true(all(abs(ratioEst$VariablesCovariance$TotalCovariance - popEstDomain$VariablesCovariance$TotalCovariance)/ratioEst$VariablesCovariance$TotalCovariance - 
+                  ((sum(land$Landing$RoundWeight)*1000)**2 - popEst$Variables$Total**2)/((sum(land$Landing$RoundWeight)*1000)**2) < 1e-6))
+
+#frequencies and means should be recalculated, but have barely changed when all landings is one stratum
 expect_true(all(abs(ratioEst$Abundance$Frequency - popEstDomain$Abundance$Frequency)<1e-6))
 expect_true(!all(ratioEst$Abundance$Frequency == popEstDomain$Abundance$Frequency))
 expect_true(all(abs(ratioEst$AbundanceCovariance$FrequencyCovariance - popEstDomain$AbundanceCovariance$FrequencyCovariance)<1e-6))
 expect_true(!all(ratioEst$AbundanceCovariance$FrequencyCovariance == popEstDomain$AbundanceCovariance$FrequencyCovariance))
+
+expect_true(all(abs(ratioEst$VariableratioEst$Variables$Mean == popEstDomain$Variables$Mean - popEstDomain$Variable$Mean)<1e-6))
+expect_true(!all(ratioEst$Variables$Mean == popEstDomain$Variables$Mean))
+expect_true(all(abs(ratioEst$VariablesCovariance$MeanCovariance - popEstDomain$VariablesCovariance$MeanCovariance)<1e-6))
+expect_true(!all(ratioEst$VariablesCovariance$MeanCovariance == popEstDomain$VariablesCovariance$MeanCovariance))
 
 
 #
@@ -364,16 +375,24 @@ psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeig
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
 ratioEstMDW <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "MeanDomainWeight")
 
-#check that estimates are in the same ballpark (catch rounding errors etc)
+#check that total abundance estimates are in the same ballpark (catch rounding errors etc)
 expect_true(abs(sum(ratioEstMDW$Abundance$Abundance) - sum(popEstDomain$Abundance$Abundance))/sum(ratioEstMDW$Abundance$Abundance) < .2)
 #check that some CVs are in reasonable range
 CVs <- merge(ratioEstMDW$Abundance, ratioEstMDW$AbundanceCovariance[Domain1==Domain2], by.x=c("Stratum", "Domain"), by.y=c("Stratum", "Domain1"))
 CVs$CV <- sqrt(CVs$AbundanceCovariance) / CVs$Abundance
-
 expect_true(min(CVs$CV)<.2)
-#check that total and total covariances are unchanged
-expect_true(all(ratioEstMDW$Variables$Total == popEstDomain$Variables$Total))
-expect_true(all(ratioEstMDW$VariablesCovariance$TotalCovariance == popEstDomain$VariablesCovariance$TotalCovariance))
+
+#check that total and total are changed in accordance with difference between estimated total weight and landing total weight
+expect_true((sum(ratioEstMDW$Variables$Total) - sum(popEstDomain$Variables$Total))/sum(ratioEstMDW$Variables$Total) - (sum(popEstDomain$Variables$Total) - sum(land$Landing$RoundWeight*1000)/sum(land$Landing$RoundWeight*1000)) < 1e-6)
+
+#check that some CVs are in reasonable range
+CVs <- merge(ratioEstMDW$Variables, ratioEstMDW$VariablesCovariance[Domain1==Domain2], by.x=c("Stratum", "Domain"), by.y=c("Stratum", "Domain1"))
+CVs$CV <- sqrt(CVs$TotalCovariance) / CVs$Total
+expect_true(min(CVs$CV)<.2)
+
+#check that Means and Covariances are unchanged
+expect_true(all(ratioEstMDW$Variables$Mean == popEstDomain$Variables$Mean))
+expect_true(all(ratioEstMDW$VariablesCovariance$MeanCovariance == popEstDomain$VariablesCovariance$MeanCovariance))
 
 
 #
@@ -458,6 +477,8 @@ filt2 <- popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
+#stop("Check notation for variable covariances in PopulationEstimate doc.")
+#stop("Make function to ratio estimate less granular domains.")
 #stop("Check input sanitation.")
 #stop("Test collapseStrata with both HH and HT")
 #stop("Implement DefineHierarchy.")

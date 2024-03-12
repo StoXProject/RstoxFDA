@@ -578,14 +578,14 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #'   The sampling weight is a function of the entire sample selection for a stratum.
 #'   If the domain does not coincide with stratum, it must be considered approximate and hence this will be a ratio estimation in that case.
 #'   \item{Total:}{
-#'   The estimate of the total of a variable in stratum \eqn{s} and domain \eqn{d} at a PSU:
-#'   \deqn{\hat{t}^{(s,d)}=\sum_{i=1}^{m}\frac{y_{i}}{\pi_{i}}I^{s,d}_{i}}
+#'   The estimate of the total of a variable \eqn{v} in stratum \eqn{s} and domain \eqn{d} at a PSU:
+#'   \deqn{\hat{t}^{(s,d,v)}=\sum_{i=1}^{m}\frac{y^{v}_{i}}{\pi_{i}}I^{s,d}_{i}}
 #'   }
 #'   The inclusion probability is a function of the entire sample selection for a stratum.
 #'   If the domain does not coincide with stratum, it must be considered approximate and hence this will be a ratio estimation in that case.
 #'   \item{Mean:}{
-#'   The mean value of a variable in stratum \eqn{s} and domain \eqn{d} at a PSU:
-#'   \deqn{\hat{\mu}^{(s,d)}=\frac{1}{\hat{D}^{(s,d)}}\sum_{i=1}^{m}w_{i}y_{i}I^{s,d}_{i}}
+#'   The mean value of a variable \eqn{v} in stratum \eqn{s} and domain \eqn{d} at a PSU:
+#'   \deqn{\hat{\mu}^{(s,d,v)}=\frac{1}{\hat{D}^{(s,d)}}\sum_{i=1}^{m}w_{i}y^{v}_{i}I^{s,d}_{i}}
 #'   }
 #'   This depends explicitly on the ratio to the estimate of relative domain size. When the domain coincides with strata
 #'   this is in principle known, but in practice reported strata sizes for samples of individuals are often estimated, bringing
@@ -598,7 +598,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #'    \item{\eqn{m}}{The total number of individuals sampled at PSU.}
 #'    \item{\eqn{\pi_{i}}}{The inclusion probability of individual \eqn{i} in PSU.}
 #'    \item{\eqn{w_{i}}}{The normalized Horvitz-Thompson sample weight of an individual \eqn{i}.}
-#'    \item{\eqn{y_{i}}}{The value of a variable observed for an individual \eqn{i}.}
+#'    \item{\eqn{y^{v}_{i}}}{The value of a variable \eqn{v} observed for an individual \eqn{i}.}
 #'    \item{\eqn{\hat{D}^{(s,d)}}}{The estimated relative domain size of domain \eqn{d} in stratum \eqn{s} at PSU: \eqn{\sum_{i=1}^{m}w_{i}I^{s,d}_{i}}}
 #'  }
 #'  
@@ -1008,33 +1008,33 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'   See comments above (\eqn{\hat{f}^{(s,d)}}) and in \code{\link[RstoxFDA]{AnalyticalPSUEstimate}} (\eqn{\hat{f}^{(s,d)}_{i}}).
 #'   
 #'   \item{Total:}{
-#'   The estimate of the total value of some variable in domain \eqn{d} and stratum \eqn{s}.
-#'   \deqn{\hat{t}^{(s,d)}=\frac{1}{n^{(s,d)}}{\sum_{i=1}^{n}}\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d)}_{i}}{p_{i}}I^{(s,d)}_{i}}
+#'   The estimate of the total value of some variable \eqn{v} in domain \eqn{d} and stratum \eqn{s}.
+#'   \deqn{\hat{t}^{(s,d,v)}=\frac{1}{n^{(s,d)}}{\sum_{i=1}^{n}}\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d,v)}_{i}}{p_{i}}I^{(s,d)}_{i}}
 #'   with co-variance:
-#'   \deqn{\widehat{CoVar}(\hat{t}^{(s,d_{1})}, \hat{t}^{(s,d_{2})}) = \frac{1}{\hat{P}^{(s,d_{1})}\hat{P}^{(s,d_{2})}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
-#'   I^{(s,d_{1})}_{i} I^{(s,d_{2})}_{i}(\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{t}^{(s,d_{1})}) (\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{2})}_{i}}{p_{i}}I^{(s,d_{2})}_{i} - \hat{t}^{(s,d_{2})})}.
+#'   \deqn{\widehat{CoVar}(\hat{t}^{(s,d_{1},v_{1})}, \hat{t}^{(s,d_{2},v_{2})}) = \frac{1}{\hat{P}^{(s,d_{1})}\hat{P}^{(s,d_{2})}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
+#'   I^{(s,d_{1})}_{i} I^{(s,d_{2})}_{i}(\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{1},v_{1})}_{i}}{p_{i}}I^{(s,d_{1})}_{i} - \hat{t}^{(s,d_{1},v_{1})}) (\hat{D}^{(s,d)}\frac{\hat{t}^{(s,d_{2},v_{2})}_{i}}{p_{i}}I^{(s,d_{2})}_{i} - \hat{t}^{(s,d_{2},v_{2})})}.
 #'   
 #'   Note that unless \eqn{\hat{P}^{(s,d_{1})}=\hat{P}^{(s,d_{2})}} the covariance is zero.
 #'   
 #'   In the general case \eqn{\hat{D}^{(s,d)}} and \eqn{\hat{P}^{(s,d)}} is estimated by a ratio estimator, and the error in these estimates are ignored. When \eqn{d} covers all of \eqn{s}, \eqn{\hat{D}^{(s,d)}=1} and \eqn{\hat{P}^{(s,d)}=1}is known. In this case both expressions can be shown to be unbiased. These quantities can only be calculated when \eqn{p_{i}} is provided, and will otherwise be NA.}
 #'
 #'   \item{Mean:}{
-#'   The estimate of the mean value of some variable in domain \eqn{d} and stratum \eqn{s}, when MeanOfMeans is false:
-#'   \deqn{\hat{\mu}^{(s,d)} = \frac{\hat{t}^{(s,d)}}{\hat{N}^{(s,d)}}}
+#'   The estimate of the mean value of some variable \eqn{v} in domain \eqn{d} and stratum \eqn{s}, when MeanOfMeans is false:
+#'   \deqn{\hat{\mu}^{(s,d,v)} = \frac{\hat{t}^{(s,d,v)}}{\hat{N}^{(s,d)}}}
 #'   with co-variance:
-#'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1})}, \hat{\mu}^{(s,d_{2})}) = \frac{1}{\hat{N}^{(s,d_{1})} \hat{N}^{(s,d_{2})}}\widehat{CoVar}(\hat{t}^{(s,d_{1})}, \hat{t}^{(s,d_{2})})}
+#'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1},v_{1})}, \hat{\mu}^{(s,d_{2},v_{2})}) = \frac{1}{\hat{N}^{(s,d_{1})} \hat{N}^{(s,d_{2})}}\widehat{CoVar}(\hat{t}^{(s,d_{1},v_{1})}, \hat{t}^{(s,d_{2},v_{2})})}
 #'   These are ratio estimates depending on the ratio to the estimated value \eqn{\hat{N}^{(s,d)}}, and the error in this estimate is ignored.
-#'   In addition, the estimate may depend on a ratio estimate for \eqn{\hat{t}^{(s,d)}} and \eqn{\hat{t}^{(s,d)}_{i}}, as explained for 'Abundance'
+#'   In addition, the estimate may depend on a ratio estimate for \eqn{\hat{t}^{(s,d,v)}} and \eqn{\hat{t}^{(s,d,v)}_{i}}, as explained for 'Abundance'
 #'   and in \code{\link[RstoxFDA]{AnalyticalPSUEstimate}}.
 #'   }
 #'   
 #'   \item{Mean, Mean of Means:}{
 #'   The estimate of the mean value of some variable in domain \eqn{d} and stratum \eqn{s}, when MeanOfMeans is true:
-#'   \deqn{\hat{\mu}^{(s,d)}=\sum_{i=1}^{n}\frac{w_{i}}{\hat{d}^{(s,d)}}\hat{\mu}_{i}I^{(s,d)}_{i}H(\hat{N}^{(s,d)}_{i})}
+#'   \deqn{\hat{\mu}^{(s,d,v)}=\sum_{i=1}^{n}\frac{w_{i}}{\hat{d}^{(s,d)}}\hat{\mu}_{i}I^{(s,d,v)}_{i}H(\hat{N}^{(s,d)}_{i})}
 #'   with co-variance:
-#'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1})}, \hat{\mu}^{(s,d_{2})}) = \frac{1}{(\hat{d}^{(s,d_{1} \cap d_{2})})^{2}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
-#'   I^{(s,d_{1})}_{i}I^{(s,d_{2})}_{i} H(\hat{f}^{(s,d_{1})}_{i})H(\hat{f}^{(s,d_{2})}_{i})( \hat{\mu}^{(s,d_{1})}_{i} - \hat{\mu}^{(s,d_{1})}) (\hat{\mu}^{(s,d_{2})}_{i} - \hat{\mu}^{(s,d_{2})})}}
-#'   These are ratio estimates depending on the ratio ratio estimation of \eqn{\hat{d}^{(s,d)}}, \eqn{\hat{d}^{(s,d_{1} \cap d_{2})}} and \eqn{\hat{\mu}^{(s,d)}_{i}}, and the error in these estimates are ignored.
+#'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1},v_{1})}, \hat{\mu}^{(s,d_{2},v_{2})}) = \frac{1}{(\hat{d}^{(s,d_{1} \cap d_{2})})^{2}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
+#'   I^{(s,d_{1})}_{i}I^{(s,d_{2})}_{i} H(\hat{f}^{(s,d_{1})}_{i})H(\hat{f}^{(s,d_{2})}_{i})( \hat{\mu}^{(s,d_{1},v_{1})}_{i} - \hat{\mu}^{(s,d_{1},v_{1})}) (\hat{\mu}^{(s,d_{2},v_{2})}_{i} - \hat{\mu}^{(s,d_{2},v_{2})})}}
+#'   These are ratio estimates depending on the ratio ratio estimation of \eqn{\hat{d}^{(s,d)}}, \eqn{\hat{d}^{(s,d_{1} \cap d_{2})}} and \eqn{\hat{\mu}^{(s,d,v)}_{i}}, and the error in these estimates are ignored.
 #'  }
 #'  
 #'  Vocabulary for notation used above:
@@ -1057,7 +1057,8 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'    \item{\eqn{\hat{N}^{(s)}_{i}}}{The estimated total abundance in stratum \eqn{s} at PSU \eqn{i}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
 #'    \item{\eqn{\hat{N}^{(s,d)}_{i}}}{The estimated abundance in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
 #'    \item{\eqn{\hat{f}^{(s,d)}_{i}}}{The estimated frequency in domain \eqn{d} for stratum \eqn{s} at PSU \eqn{i}. 'Frequency' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
-#'    \item{\eqn{\hat{\mu}_{i}}}{The estimated mean in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Mean' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
+#'    \item{\eqn{\hat{t}^{(s,d,v)}_{i}}}{The estimated total of some variable \eqn{v} in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Total' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
+#'    \item{\eqn{\hat{\mu}^{(s,d,v)}_{i}}}{The estimated mean of some variable \eqn{v} in domain \eqn{d} and stratum \eqn{s} at PSU \eqn{i}. 'Mean' in \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}.}
 #'  }
 #' @param PSUSamplingParametersData \code{\link[RstoxFDA]{PSUSamplingParametersData}} with sampling parameters for a sample of Primary Samplig Units.
 #' @param AnalyticalPSUEstimateData \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for each of the Primary Sampling Units in PSUSamplingParametersData
@@ -1234,9 +1235,9 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   return(output)
 }
 
-#' Ratio estimate of abundance
+#' Ratio estimate to census landings
 #' @description 
-#'  Performs ratio estimate of abundance, based on either the ratio of abundance in domains to total weight in a stratum, 
+#'  Performs ratio estimate adjustments of estimates, based on either the ratio of abundance in domains to total weights in a stratum, 
 #'  or the frequency and mean weights of each domain.
 #' @details
 #'  Ratio estimates of abundance are obtained by relating abundance to weight and utilizing census data on landed weight to potentially improve estimates.
@@ -1254,51 +1255,75 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'  The function obtains a ratio estimate of total abundance in landings by one of the following methods (provided in the argument 'Method'):
 #'  \describe{
 #'   \item{TotalDomainWeight}{
-#'     When 'Method' is 'TotalDomainWeight', the variable 'Abundance' will be estimated as \eqn{\widehat{rN}^{(s,d)}}, and the variable 'Frequency' as \eqn{\widehat{rf}^{(s,d)}}.
-#'     These estimators and their corresponding variances ('AbundanceCovariance' and 'FrequencyCovariance') are given below. 
+#'     When 'Method' is 'TotalDomainWeight', the 'Abundance' will be estimated as \eqn{\widehat{rN}^{(s,d)}}, the 'Frequency' as \eqn{\widehat{rf}^{(s,d)}}, the 'Total' as \eqn{\widehat{rt}^{(s,d,v}}, and the 'Mean' as \eqn{\widehat{r\mu}^{(s,d,v)}}.
+#'     These estimators and their corresponding variances ('AbundanceCovariance', 'FrequencyCovariance', 'TotalCovariance', and 'MeanCovariance') are given below. 
+#'     This method requires Abundance and Total individual weight to be estimated for each domain.
 #'     The estimates are based on the ratio:
-#'     \deqn{\hat{R}^{(s,d)}=\frac{W^{(L)}}{\hat{t}^{(L)}}}
-#'     where \eqn{L=part(s,d)} is a partition of the landings containing the domain, \eqn{W^{(L)}} is the total landed weight in this partition and \eqn{\hat{t}^{(L)}} is the estimated total weight in this partition.
+#'     \deqn{\hat{R}^{(s,d)}=\frac{W^{(L)}}{\hat{t}^{(L,\mathrm{w})}}}
+#'     where \eqn{L=part(s,d)} is a partition of the landings containing the domain, \eqn{W^{(L)}} is the total landed weight in this partition (as reported in 'StoxLandingData') and \eqn{\hat{t}^{(L,\mathrm{w})}} is the estimated total weight in this partition (As reported by the Variable 'WeightVariable' in 'AnalyticalPopulationEstimateData).
 #'     The abundance is estimated as:
 #'     \deqn{\widehat{rN}^{(s,d)} = \hat{R}^{(s,d)}\hat{N}^{(s,d)}}
+#'     And covariances are estimated as:
+#'     \deqn{\widehat{CoVar}(\widehat{rN}^{(s,d_{1})}, \widehat{rN}^{(s,d_{2})}) = \hat{R}^{(s,d_{1})}\hat{R}^{(s,d_{2})}\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})}
+#'     ignoring the error in \eqn{\hat{R}^{(s,d)}}.
 #'     The frequency is estimated as:
 #'     \deqn{\widehat{rf}^{(s,d)} = \frac{\widehat{rN}^{(s,d)}}{\widehat{rN}^{(s)}}}
 #'     And covariances are estimated as:
-#'     \deqn{\widehat{CoVar}(\widehat{rN}^{(s,d_{1})}, \widehat{rN}^{(s,d_{2})}) = \hat{R}^{(s,d_{1})}\hat{R}^{(s,d_{2})}\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})}
 #'     \deqn{\widehat{CoVar}(\widehat{rf}^{(s,d_{1})}, \widehat{rf}^{(s,d_{2})}) = \frac{1}{\widehat{rN}^{(s)}}\widehat{CoVar}(\widehat{rN}^{(s,d_{1})}, \widehat{rN}^{(s,d_{2})})}
-#'     ignoring the error in \eqn{\hat{R}^{(s,d)}} and \eqn{\widehat{rN}^{(s)}}.     
+#'     ignoring the error in \eqn{\widehat{rN}^{(s)}}.
+#'     The totals are estimated as:
+#'     \deqn{\widehat{rt}^{(s,d,v)}=\hat{R}^{(s,d)}\hat{t}^{(s,d,v)}}
+#'     And covariances are estimated as:
+#'     \deqn{\widehat{CoVar}(\widehat{rt}^{(s,d_{1},v_{1})}, \widehat{rt}^{(s,d_{2},v_{2})}) = \hat{R}^{(s,d_{1})}\hat{R}^{(s,d_{2})}\widehat{CoVar}(\hat{t}^{(s,d_{1},v_{1})}, \hat{t}^{(s,d_{2},v_{2})})}
+#'     ignoring the error in \eqn{\hat{R}^{(s,d)}}.
+#'     The means are estimated as:
+#'     \deqn{\widehat{r\mu}^{(s,d,v)}=\frac{\widehat{rt}^{(s,d,v)}}{\widehat{rN}^{(s,d)}}}
+#'     And covariances are estimated as:
+#'     \deqn{\widehat{CoVar}(\widehat{r\mu}^{(s,d_{1},v_{1})}, \widehat{r\mu}^{(s,d_{2},v_{2})}) = \widehat{rN}^{(s,d_{1})}\widehat{rN}^{(s,d_{2})}\widehat{CoVar}(\widehat{rt}^{(s,d_{1},v_{1})}, \widehat{rt}^{(s,d_{2},v_{2})})}
 #'     
 #'   
 #'   }
 #'   \item{MeanDomainWeight}{
-#'      When 'Method' is 'MeanDomainWeight', 'Abundance' will be estimated as \eqn{\widehat{qN}^{(s,d)}}, and the variable 'Frequency' as \eqn{\widehat{qf}^{(s,d)}}.
-#'     These estimators and their corresponding variances ('AbundanceCovariance' and 'FrequencyCovariance') are given below. 
-#'     The estimates are based on the mean individual weight, and an estimate of total landings in each domain:
-#'     \deqn{\hat{W}^{(s,d)}=\frac{\hat{f}^{(s,d)}W^{(L)}}{\sum_{(s,d) \in L}\hat{f}^{(s,d)}}}
+#'      When 'Method' is 'MeanDomainWeight', 'Abundance' will be estimated as \eqn{\widehat{qN}^{(s,d)}}, the variable 'Frequency' as \eqn{\widehat{qf}^{(s,d)}}, and the variable 'Total' as \eqn{\widehat{qt}^{(s,d,v)}}.
+#'     These estimators and their corresponding variances ('AbundanceCovariance', 'FrequencyCovariance', and 'TotalCovariance') are given below. #'     Note that no revised estimate for means are provided with this method. 'Mean' and MeanCovariance' is unchanged.
+#'     The estimates are based on estimated frequencies and ratio of of total landings in each landing partition to the estimated mean individual weight ('WeightVariable'):
+#'     \deqn{\hat{Q}^{(s,d)}=\frac{W^{(L)}}{\sum_{(s',d') \in L}\hat{f}^{(s',d')}\hat{\mu}^{(s',d',\mathrm{w})}}}
 #'     where \eqn{L=part(s,d)} is a partition of the landings containing the domain. 
 #'     Since frequencies are normalized to strata, L cannot contain several strata.
 #'     The abundance is estimated as:
-#'     \deqn{\widehat{qN}^{(s,d)} = \frac{\hat{W}^{(s,d)}}{\hat{\mu}^{(s,d)}} = \hat{f}^{(s,d)}\hat{Q}^{(s,d)}}
-#'     with \eqn{\hat{Q}^{(s,d)}=\frac{W^{(L)}}{\hat{\mu}^{(s,d)}\sum_{(s,d) \in L}\hat{f}^{(s,d)}}}
+#'     \deqn{\widehat{qN}^{(s,d)} = \hat{f}^{(s,d)}\hat{Q}^{(s,d)}}
+#'     And covariances are estimated as:
+#'     \deqn{\widehat{CoVar}(\widehat{qN}^{(s,d_{1})}, \widehat{qN}^{(s,d_{2})}) = \hat{Q}^{(s,d_{1})}\hat{Q}^{(s,d_{2})}\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})})}
+#'     ignoring the error in \eqn{\hat{Q}^{(s,d)}}.
 #'     The frequency is estimated as:
 #'     \deqn{\widehat{qf}^{(s,d)} = \frac{\widehat{qN}^{(s,d)}}{\widehat{qN}^{(s)}}}
 #'     And covariances are estimated as:
-#'     \deqn{\widehat{CoVar}(\widehat{qN}^{(s,d_{1})}, \widehat{qN}^{(s,d_{2})}) = \hat{Q}^{(s,d_{1})}\hat{Q}^{(s,d_{2})}\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})})}
 #'     \deqn{\widehat{CoVar}(\widehat{qf}^{(s,d_{1})}, \widehat{qf}^{(s,d_{2})}) = \frac{1}{\widehat{qN}^{(s)}}\widehat{CoVar}(\widehat{qN}^{(s,d_{1})}, \widehat{qN}^{(s,d_{2})})}
-#'     ignoring the error in \eqn{\hat{Q}^{(s,d)}} and \eqn{\widehat{qN}^{(s)}}.
+#'     ignoring the error in \eqn{\widehat{qN}^{(s)}}.
+#'     Totals are estimated as:
+#'     \deqn{\widehat{qt}^{(s,d,v)} = \widehat{qN}^{(s,d)}\hat{\mu}^{(s,d,v)}}
+#'     And covariances are estimated as:
+#'     \deqn{\widehat{CoVar}(\widehat{qt}^{(s,d_{1},v_{1})}, \widehat{qt}^{(s,d_{2},v_{2})}) = \widehat{qN}^{(s,d_{1})}\widehat{qN}^{(s,d_{2})}\widehat{CoVar}(\hat{\mu}^{(s,d_{1},v_{1})}, \hat{\mu}^{(s,d_{2},v_{2})})}
+#'     ignoring the error in \eqn{\widehat{qN}^{(s,d)}}.
+#'     Note that no revised estimate for means are provided with this method. 'Mean' and MeanCovariance' is unchanged.
 #'   }
 #'   }
 #'  Vocabulary for equations given above:
 #'  \describe{
 #'   \item{\eqn{part(s,d)}}{The partition of the landings containing the domain \eqn{d} in stratum \eqn{s}.}
 #'   \item{\eqn{\hat{N}^{(s,d)}}}{The estimated abundance in the domain \eqn{d} in stratum \eqn{s}. 'Abundance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
-#'   \item{\eqn{\hat{t}^{(s,d)}}}{The estimated total weight in domain \eqn{d} in stratum \eqn{s}. The 'Total' for the 'Variable' identified by the argument 'WeightVariable' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
-#'   \item{\eqn{\hat{t}^{(L)}}}{The estimated total weight in the landing partition: \eqn{\hat{t}^{(L)}=\sum_{(s,d) \in L}\hat{t}^{(s,d)}}}
+#'   \item{\eqn{\hat{t}^{(s,d,v)}}}{The estimated total of variable \eqn{v} in domain \eqn{d} in stratum \eqn{s}. The 'Total' for the 'Variable' \eqn{v} in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+#'   \item{\eqn{\hat{t}^{(s,d,\mathrm{w})}}}{The estimated total weight in domain \eqn{d} in stratum \eqn{s}. The 'Total' for the 'Variable' identified by the argument 'WeightVariable' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+#'   \item{\eqn{\hat{\mu}^{(s,d,v)}}}{The estimated mean of the variable \eqn{v} in domain \eqn{d} in stratum \eqn{s}. The 'Mean' for the 'Variable' \eqn{v} in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+#'   \item{\eqn{\hat{\mu}^{(s,d,\mathrm{w})}}}{The estimated mean weight in domain \eqn{d} in stratum \eqn{s}. The 'Mean' for the 'Variable' identified by the argument 'WeightVariable' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+#'   \item{\eqn{\hat{t}^{(L,\mathrm{w})}}}{The estimated total weight in the landing partition: \eqn{\hat{t}^{(L)}=\sum_{(s,d) \in L}\hat{t}^{(s,d,\mathrm{w})}}}
 #'   \item{\eqn{\widehat{rN}^{(s)}}}{The estimated total abundance in stratum \eqn{s}, based on total domain weight estimates: \eqn{\widehat{rN}^{(s)}=\sum_{d}\widehat{rN}^{(s,d)}}, where the sum runs over all domains in stratum \eqn{s}.}
 #'   \item{\eqn{\widehat{qN}^{(s)}}}{The estimated total abundance in stratum \eqn{s}, based on mean domain weight estimates: \eqn{\widehat{qN}^{(s)}=\sum_{d}\widehat{qN}^{(s,d)}}, where the sum runs over all domains in stratum \eqn{s}.}
 #'   \item{\eqn{\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})}}{The estimated covariance of abundance between the domains \eqn{d_{1}} and \eqn{d_{2}} in stratum \eqn{s}. 'AbundanceCovariance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
 #'   \item{\eqn{\hat{f}^{(s,d)}}}{The estimated frequency in domain \eqn{d} in stratum \eqn{s}. 'Frequency' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
 #'   \item{\eqn{\widehat{CoVar}(\hat{f}^{(s,d_{1})}, \hat{f}^{(s,d_{2})})}}{The estimated covariance of frequencies between the domains \eqn{d_{1}} and \eqn{d_{2}} in stratum \eqn{s}. 'FrequencyCovariance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+#'   \item{\eqn{\widehat{CoVar}(\hat{t}^{(s,d_{1},v_{1})}, \hat{f}^{(s,d_{2},v_{2})})}}{The estimated covariance of totals between the variable \eqn{v_{1}} in domain \eqn{d_{1}} and the variable \eqn{v_{2}} in domain \eqn{d_{2}} in stratum \eqn{s}. 'TotalCovariance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
+#'   \item{\eqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1},v_{1})}, \hat{f}^{(s,d_{2},v_{2})})}}{The estimated covariance of means between the variable \eqn{v_{1}} in domain \eqn{d_{1}} and the variable \eqn{v_{2}} in domain \eqn{d_{2}} in stratum \eqn{s}. 'MeanCovariance' in \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}.}
 #'  }
 #'  
 #' @param AnalyticalPopulationEstimateData \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimates of mean or total weights and frequencies or abundance in domains
@@ -1385,7 +1410,26 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     m <- match(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, abundanceByStratum$Stratum)
     AnalyticalPopulationEstimateData$AbundanceCovariance$FrequencyCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance$AbundanceCovariance * (1/abundanceByStratum$totalAbundance[m])**2
     
-        
+    #
+    # Ratio estimate totals
+    #
+    m <- match(paste(AnalyticalPopulationEstimateData$Variables$Stratum, AnalyticalPopulationEstimateData$Variables$Domain), paste(totalByStratum$Stratum, totalByStratum$Domain))
+    AnalyticalPopulationEstimateData$Variables$Total <- AnalyticalPopulationEstimateData$Variables$Total * totalByStratum$LandingsWeightKg[m] / totalByStratum$TotalWeightKg[m]
+    m1 <- match(paste(AnalyticalPopulationEstimateData$VariablesCovariance$Stratum, AnalyticalPopulationEstimateData$VariablesCovariance$Domain1), paste(totalByStratum$Stratum, totalByStratum$Domain))
+    AnalyticalPopulationEstimateData$VariablesCovariance$TotalCovariance <- AnalyticalPopulationEstimateData$VariablesCovariance$TotalCovariance * (totalByStratum$LandingsWeightKg[m1] / totalByStratum$TotalWeightKg[m1])
+    m2 <- match(paste(AnalyticalPopulationEstimateData$VariablesCovariance$Stratum, AnalyticalPopulationEstimateData$VariablesCovariance$Domain2), paste(totalByStratum$Stratum, totalByStratum$Domain))
+    AnalyticalPopulationEstimateData$VariablesCovariance$TotalCovariance <- AnalyticalPopulationEstimateData$VariablesCovariance$TotalCovariance * (totalByStratum$LandingsWeightKg[m2] / totalByStratum$TotalWeightKg[m2])
+    
+    #
+    # Ratio estimate means, based on revised abundance and totals
+    #
+    
+    m <- match(paste(AnalyticalPopulationEstimateData$Variables$Stratum, AnalyticalPopulationEstimateData$Variables$Domain), paste(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain))
+    AnalyticalPopulationEstimateData$Variables$Mean <- AnalyticalPopulationEstimateData$Variables$Total / AnalyticalPopulationEstimateData$Abundance$Abundance[m]
+    m1 <- match(paste(AnalyticalPopulationEstimateData$VariablesCovariance$Stratum, AnalyticalPopulationEstimateData$VariablesCovariance$Domain1), paste(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain))
+    m2 <- match(paste(AnalyticalPopulationEstimateData$VariablesCovariance$Stratum, AnalyticalPopulationEstimateData$VariablesCovariance$Domain2), paste(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain))
+    AnalyticalPopulationEstimateData$VariablesCovariance$MeanCovariance <- AnalyticalPopulationEstimateData$VariablesCovariance$TotalCovariance * (1/AnalyticalPopulationEstimateData$Abundance$Abundance[m1]) * (1/AnalyticalPopulationEstimateData$Abundance$Abundance[m2])
+    
     return(AnalyticalPopulationEstimateData)
   }
   
@@ -1403,9 +1447,13 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     frequencies <- AnalyticalPopulationEstimateData$Abundance[,.SD,.SDcol=c("Stratum", "Domain", "Frequency")]
     frequencies <- merge(frequencies, AnalyticalPopulationEstimateData$StratificationVariables, by="Stratum")
     frequencies <- merge(frequencies, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
+
+    #add mean weights
+    meanW <- AnalyticalPopulationEstimateData$Variables[AnalyticalPopulationEstimateData$Variables$Variable==WeightVariable,.SD,.SDcol=c("Stratum", "Domain", "Mean")]
+    frequencies <- merge(frequencies, meanW, by=c("Stratum", "Domain"))
     
     # normalize frequencies to landingsPartition within samplingstrata
-    totalFrequencies <- frequencies[,list(totalFreq=sum(Frequency)), by=c("Stratum", landingsPartition)]
+    totalFrequencies <- frequencies[,list(totalFreq=sum(Frequency*Mean)), by=c("Stratum", landingsPartition)]
     frequencies <- merge(frequencies, totalFrequencies, by=c("Stratum", landingsPartition), all.x = T)
     
     # estimate total landings in domain
@@ -1419,13 +1467,10 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     # Ratio-estimate abundance from estimated domain landings and domain means
     #
     freqMatch <- match(paste(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain), paste(frequencies$Stratum, frequencies$Domain))
-    meanMatch <- match(paste(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain), paste(means$Stratum, means$Domain))
-    AnalyticalPopulationEstimateData$Abundance$Abundance <- frequencies$domainLanding[freqMatch] / means$Mean[meanMatch]
+    AnalyticalPopulationEstimateData$Abundance$Abundance <- frequencies$domainLanding[freqMatch]
     m1 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain1), paste(frequencies$Stratum, frequencies$Domain))
     m2 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain2), paste(frequencies$Stratum, frequencies$Domain))
-    meanMatch1 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain1), paste(means$Stratum, means$Domain))
-    meanMatch2 <- match(paste(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain2), paste(means$Stratum, means$Domain))
-    AnalyticalPopulationEstimateData$AbundanceCovariance$AbundanceCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance$FrequencyCovariance * (frequencies$totalLanding[m1] / (frequencies$totalFreq[m1] * means$Mean[meanMatch1])) * (frequencies$totalLanding[m2] / (frequencies$totalFreq[m2] * means$Mean[meanMatch2]))
+    AnalyticalPopulationEstimateData$AbundanceCovariance$AbundanceCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance$FrequencyCovariance * (frequencies$totalLanding[m1] / (frequencies$totalFreq[m1])) * (frequencies$totalLanding[m2] / (frequencies$totalFreq[m2]))
     
     #
     # Ratio-estimate frequencies
@@ -1436,6 +1481,18 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     m <- match(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, abundanceByStratum$Stratum)
     AnalyticalPopulationEstimateData$AbundanceCovariance$FrequencyCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance$AbundanceCovariance * (1/abundanceByStratum$totalAbundance[m])**2
     
+    #
+    # Ratio estimate totals 
+    #
+    m <- match(paste(AnalyticalPopulationEstimateData$Variables$Stratum, AnalyticalPopulationEstimateData$Variables$Domain), paste(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain))
+    AnalyticalPopulationEstimateData$Variables$Total <- AnalyticalPopulationEstimateData$Variables$Mean * AnalyticalPopulationEstimateData$Abundance$Abundance[m]
+    m1 <- match(paste(AnalyticalPopulationEstimateData$VariablesCovariance$Stratum, AnalyticalPopulationEstimateData$VariablesCovariance$Domain1), paste(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain))
+    m2 <- match(paste(AnalyticalPopulationEstimateData$VariablesCovariance$Stratum, AnalyticalPopulationEstimateData$VariablesCovariance$Domain2), paste(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain))
+    AnalyticalPopulationEstimateData$VariablesCovariance$TotalCovariance <- AnalyticalPopulationEstimateData$VariablesCovariance$MeanCovariance * AnalyticalPopulationEstimateData$Abundance$Abundance[m1] * AnalyticalPopulationEstimateData$Abundance$Abundance[m2]
+    
+    #
+    # Do nothing with means.
+    #
     
     return(AnalyticalPopulationEstimateData)
   }
