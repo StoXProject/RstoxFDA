@@ -58,7 +58,7 @@ convertCovariateMap2PrepReca <- function(stoxObj){
 
 #' @noRd
 packCMlist <- function(member, name){
-  if (class(member) != "list" | is.null(names(member))){
+  if (!("list" %in% class(member)) | is.null(names(member))){
     res <- list()
     res[[name]] <- member
     return(res)
@@ -80,7 +80,7 @@ convertCovariateMap2Stox <- function(prepObj){
   newMap <- list()
   CovariateMap <- packCMlist(prepObj$CovariateMaps, "CovariateMaps")
   for (n in names(CovariateMap)){
-    if (class(CovariateMap[[n]]) != "list"){
+    if (!("list" %in% class(CovariateMap[[n]]))){
       newMap[[n]] <- data.table::data.table(names=1:length(CovariateMap[[n]]), values=CovariateMap[[n]])
     }
     else{

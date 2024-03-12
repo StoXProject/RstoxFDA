@@ -95,7 +95,6 @@ StoxLandingData$Landing$Quarter <- quarters(StoxLandingData$Landing$CatchDate)
 # test with one grouping variable
 tab <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Gear"), Unit = "ton")
 RstoxFDA:::PlotSamplingOverviewCell(tab, "Gear")
-
 RstoxFDA:::PlotSamplingOverviewCell(tab, "Gear", UseDefaultColorSettings = T)
 
 # test with two grouping variable

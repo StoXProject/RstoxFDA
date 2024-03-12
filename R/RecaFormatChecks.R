@@ -185,7 +185,6 @@ checkWeightLength<-function(weightlength, landings){
 checkCovariateConsistency <- function(modelobj, landingscov){
   inlandings <- rownames(modelobj$info[modelobj$info[,"in.landings"]==1,])
   if (any(!(inlandings %in% names(landingscov)))){
-    browser()
     stop("some covariates labeled as in.landings are not found in corresponding covariate matrix in landings")
   }
 
