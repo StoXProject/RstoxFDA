@@ -1,3 +1,6 @@
+# RstoxFDA v1.3-9003
+* Added functions for analytical catch at age estimation
+
 # RstoxFDA v1.3-9002
 * Fixed issue with PlotMeanWeightAtAge and PlotMeanLengthAtAge that would not plot mean values for configurations with no grouping variables
 

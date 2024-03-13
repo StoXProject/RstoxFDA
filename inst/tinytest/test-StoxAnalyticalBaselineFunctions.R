@@ -341,6 +341,41 @@ expect_true(!all(ratioEst$VariablesCovariance$MeanCovariance == popEstDomain$Var
 
 
 #
+# Test total catch estimates (no ind domains)
+#
+
+psuEstNoD <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"))
+popEstNoD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstNoD)
+ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstNoD, land, "IndividualRoundWeight", "TotalDomainWeight")
+
+#error should be close to zero, since domain coincides with strata
+expect_true(abs(ratioEst$Variables$Total - sum(land$Landing$RoundWeight)*1000)<1e-6)
+expect_true(sqrt(ratioEst$VariablesCovariance$TotalCovariance) / ratioEst$Variables$Total < 1e-2)
+
+#
+# Test total catch estimates (w PSu domains)
+#
+
+psuEstNoD <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), PSUDomainVariables = c("Gear"))
+popEstNoD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstNoD)
+ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstNoD, land, "IndividualRoundWeight", "TotalDomainWeight")
+
+#should have some higher errors, since some domains have few samples
+expect_true(abs(sum(ratioEst$Variables$Total) - sum(land$Landing$RoundWeight)*1000)<1e-6)
+expect_true(!all(sqrt(ratioEst$VariablesCovariance$TotalCovariance) / ratioEst$Variables$Total < 1e-2))
+
+#
+# Test total catch estimates (w ind domains)
+#
+
+psuEstNoD <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualSex"))
+popEstNoD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstNoD)
+ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstNoD, land, "IndividualRoundWeight", "TotalDomainWeight")
+
+expect_true(abs(sum(ratioEst$Variables$Total) - sum(land$Landing$RoundWeight)*1000)<1e-4)
+
+
+#
 # Test with landings mapped to domain
 #
 
@@ -477,7 +512,7 @@ filt2 <- popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
-#stop("Check notation for variable covariances in PopulationEstimate doc.")
+#stop(check if landing columns with matching names in ratio estimate have any matching values. Issue warning if only some values are matching)
 #stop("Make function to ratio estimate less granular domains.")
 #stop("Check input sanitation.")
 #stop("Test collapseStrata with both HH and HT")

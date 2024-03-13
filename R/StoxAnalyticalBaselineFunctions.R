@@ -1358,7 +1358,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #' @md
 AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, WeightVariable=character(), Method=c("TotalDomainWeight", "MeanDomainWeight")){
   
-  if (WeightVariable %in% AnalyticalPopulationEstimateData$Variables){
+  if (!(WeightVariable %in% AnalyticalPopulationEstimateData$Variables$Variable)){
     stop(paste("'WeightVariable'", WeightVariable, "is not estimated in 'AnalyticalPopulationEstimateData'"))
   }
 
