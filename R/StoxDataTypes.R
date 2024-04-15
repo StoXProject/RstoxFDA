@@ -2420,6 +2420,18 @@ stoxFunctionAttributes <- list(
     functionCategory = "baseline", 
     functionOutputDataType = "AnalyticalPopulationEstimateData"
   ),
+  AnalyticalRatioEstimate = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPopulationEstimateData",
+    functionParameterDefaults = list(
+      Method = "TotalDomainWeight",
+      WeightVariable = "IndividualRoundWeight"
+    ),
+    functionParameterFormat = list(
+      WeightVariable = "weightvariableratioestimate"
+    )
+  ),
   
   ListBioticDifference = list(
     functionType = "modelData", 
@@ -2983,6 +2995,15 @@ processPropertyFormats <- list(
         }
       }
       possibleValues <- unique(possibleValues)
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  weightvariableratioestimate = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "Variable that represent weight of individuals in grams (choose only one)", 
+    possibleValues = function(AnalyticalPopulationEstimateData) {
+      possibleValues <- unique(AnalyticalPopulationEstimateData$Variables$Variable)
       return(sort(possibleValues))
     }, 
     variableTypes = "character"
