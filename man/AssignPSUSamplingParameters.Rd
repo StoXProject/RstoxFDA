@@ -7,8 +7,8 @@
 AssignPSUSamplingParameters(
   PSUSamplingParametersData,
   StoxBioticData,
-  SamplingUnitId,
-  DataRecordId,
+  SamplingUnitId = character(),
+  DataRecordId = character(),
   DefinitionMethod = c("MissingAtRandom")
 )
 }
@@ -36,10 +36,10 @@ interpretable for sampling with complete response. This function adjusts these p
 \code{\link[RstoxFDA]{PSUSamplingParametersData}}, and checks that all responding PSUs are present in data records.
 
 After correcting for non-response, the SamplingUnitId in \code{\link[RstoxFDA]{PSUSamplingParametersData}} will be replaced
-by an ID (argument 'DataRecordId') so that sampling units can be brought into correspondance with how they are identified in lower
+by an ID (argument 'DataRecordId') so that sampling units can be brought into correspondence with how they are identified in lower
 level sampling (\code{\link[RstoxFDA]{IndividualSamplingParametersData}})
 
-If any respondants (rows of the SelectionTable of PSUSamplingParametersData that does not have NA for SamplingUnitId) are not
+If any respondents (rows of the SelectionTable of PSUSamplingParametersData that does not have NA for SamplingUnitId) are not
 found in 'SamplingUnitId', execution halts with an error.
 
 Response after selection can generally be considered a process that modifies the sampling parameters that are set by design.

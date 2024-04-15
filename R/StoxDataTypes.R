@@ -2331,6 +2331,34 @@ stoxFunctionAttributes <- list(
       ColumnName = "Period"
     )
   ),
+  DefineIndividualSamplingParameters = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "IndividualSamplingParametersData",
+    functionParameterFormat = list(
+      Parameters = "individualparameters",
+      StratificationColumns = "individualstratificationcolumns"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ),
+      StoxBioticData = list(
+        UseProcessData = FALSE
+      ),
+      Parameters = list(
+        UseProcessData = FALSE
+      ),
+      LengthInterval = list(
+        DefinitionMethod = "LengthStratified",
+        UseProcessData = FALSE
+      ),
+      StratificationColumns = list(
+        DefinitionMethod = "Stratified",
+        UseProcessData = FALSE
+      )
+    )
+  ),
   DefinePSUSamplingParameters = list(
     functionType = "processData", 
     functionCategory = "baseline", 
@@ -2365,6 +2393,19 @@ stoxFunctionAttributes <- list(
       )
     )
   ),
+  #AssignPSUSamplingParameters <- list(
+  #  functionType = "processData", 
+  #  functionCategory = "baseline", 
+  #  functionOutputDataType = "PSUSamplingParametersData",
+  #  functionParameterFormat = list(
+  #    SamplingUnitId = "samplingunitid",
+  #    DataRecordId = "datarecordid"
+  #  ),
+  #  functionParameterDefaults = list(
+  #    DefinitionMethod = "MissingAtRandom"
+  #  )
+  #),
+  
   ListBioticDifference = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
@@ -2821,12 +2862,55 @@ processPropertyFormats <- list(
     }, 
     variableTypes = "character"
   ),
-  samplingunitid = list(
+  individualstratificationcolumns = list(
     class = "vector", 
-    title = "One or more variables to use for sampling unit identification", 
+    title = "One or more variables to use as stratification columns", 
     possibleValues = function(StoxBioticData) {
       possibleValues <- c()
-      for (n in c("Station", "Haul", "SpeciesCategory", "Sample")){
+      for (n in c("Individual")){
+          for (nn in names(StoxBioticData[[n]])){
+            if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+              possibleValues <- c(possibleValues, nn)
+            }
+          }
+      }
+      possibleValues <- unique(possibleValues)
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  individualparameters = list(
+    class = "vector", 
+    title = "One or more parameter to included in the design specification", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- unique(names(StoxBioticData$Individual))
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  samplingunitid = list(
+    class = "vector", #convert to class single, if that becomes available. 
+    title = "Variable to use for sampling unit identification (choose only one)", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Cruise", "Station", "Haul", "SpeciesCategory", "Sample")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  datarecordid = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "Variable to use for data record identification (choose only one)", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Cruise", "Station", "Haul", "SpeciesCategory", "Sample")){
         for (nn in names(StoxBioticData[[n]])){
           if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
             possibleValues <- c(possibleValues, nn)

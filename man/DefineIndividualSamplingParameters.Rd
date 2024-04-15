@@ -8,7 +8,7 @@ DefineIndividualSamplingParameters(
   processData,
   StoxBioticData,
   DefinitionMethod = c("SRS", "Stratified", "LengthStratified"),
-  Parameters = c(),
+  Parameters = character(),
   LengthInterval = numeric(),
   StratificationColumns = character(),
   UseProcessData = FALSE

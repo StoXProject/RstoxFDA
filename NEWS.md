@@ -1,5 +1,5 @@
 # RstoxFDA v1.3-9003
-* Added functions for analytical catch at age estimation (DefinePSUSamplingParameters)
+* Added functions for analytical catch at age estimation (DefinePSUSamplingParameters, DefineIndividualSamplingParameters)
 
 # RstoxFDA v1.3-9002
 * Fixed issue with PlotMeanWeightAtAge and PlotMeanLengthAtAge that would not plot mean values for configurations with no grouping variables
