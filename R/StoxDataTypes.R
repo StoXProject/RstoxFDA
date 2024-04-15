@@ -2393,18 +2393,18 @@ stoxFunctionAttributes <- list(
       )
     )
   ),
-  #AssignPSUSamplingParameters <- list(
-  #  functionType = "processData", 
-  #  functionCategory = "baseline", 
-  #  functionOutputDataType = "PSUSamplingParametersData",
-  #  functionParameterFormat = list(
-  #    SamplingUnitId = "samplingunitid",
-  #    DataRecordId = "datarecordid"
-  #  ),
-  #  functionParameterDefaults = list(
-  #    DefinitionMethod = "MissingAtRandom"
-  #  )
-  #),
+  AssignPSUSamplingParameters = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "PSUSamplingParametersData",
+    functionParameterFormat = list(
+      SamplingUnitId = "samplingunitid",
+      DataRecordId = "datarecordid"
+    ),
+    functionParameterDefaults = list(
+      DefinitionMethod = "MissingAtRandom"
+    )
+  ),
   
   ListBioticDifference = list(
     functionType = "modelData", 
