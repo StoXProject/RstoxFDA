@@ -2415,6 +2415,11 @@ stoxFunctionAttributes <- list(
       PSUDomainVariables = "psudomainvariables"
     )
   ),
+  AnalyticalPopulationEstimate = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPopulationEstimateData"
+  ),
   
   ListBioticDifference = list(
     functionType = "modelData", 
