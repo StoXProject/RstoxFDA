@@ -1379,8 +1379,36 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
 
     potentialNames <- c(names(AnalyticalPopulationEstimateData$StratificationVariables), names(AnalyticalPopulationEstimateData$DomainVariables))
     landingsPartition <- potentialNames[potentialNames %in% names(StoxLandingData$Landing)]
+
+    if (length(landingsPartition)==0){
+      stop("None of the Domain Variables or Stratification Variables are columns in 'StoxLandingData'")
+    }
+    
     totals <- merge(AnalyticalPopulationEstimateData$Variables[Variable==WeightVariable,.SD,.SDcol=c("Stratum", "Domain", "Total")], AnalyticalPopulationEstimateData$StratificationVariables, by="Stratum")
     totals <- merge(totals, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
+  
+    domainsLandings <- apply(StoxLandingData$Landing[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
+    domainsEstimates <- apply(totals[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
+
+    #
+    # Check matches
+    #
+    
+    if (!any(domainsEstimates %in% domainsLandings)){
+      stop(paste("None of the landing partitions (", paste(landingsPartition, collapse = ","), ") in 'StoxLandingData' have corresponding domains in 'AnalyticalPopulationEstimateData'", sep=""))
+    }
+    missingLandings <- domainsLandings[!(domainsLandings %in% domainsEstimates)]
+    if (length(missingLandings)>0){
+      stop(paste("Not all of the landing partitions (", paste(landingsPartition, collapse = ","), ") in 'StoxLandingData' have corresponding domains in 'AnalyticalPopulationEstimateData'. Missing for: ", truncateStringVector(missingLandings), sep=""))
+    }
+    missingEstimates <- domainsEstimates[!(domainsEstimates %in% domainsLandings)]
+    if (length(missingEstimates)>0){
+      stop(paste("Not all of the estimated domains (", paste(landingsPartition, collapse = ","), ") in 'AnalyticalPopulationEstimateData' have corresponding landing partitions in 'StoxLandingData'. Missing for: ", truncateStringVector(missingEstimates), sep=""))
+    }
+    
+    #
+    # calculate total weights
+    #
     estTotalBylandingsPartition <- totals[,list(TotalWeightKg=sum(Total)/1000),by=landingsPartition]
     
     landingsByStratum <- StoxLandingData$Landing[,list(LandingsWeightKg=sum(RoundWeight)), by=landingsPartition]
@@ -1444,6 +1472,10 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     potentialNames <- c(names(AnalyticalPopulationEstimateData$StratificationVariables), names(AnalyticalPopulationEstimateData$DomainVariables))
     landingsPartition <- potentialNames[potentialNames %in% names(StoxLandingData$Landing)]
     
+    if (length(landingsPartition)==0){
+      stop("None of the Domain Variables or Stratification Variables are columns in 'StoxLandingData'")
+    }
+    
     frequencies <- AnalyticalPopulationEstimateData$Abundance[,.SD,.SDcol=c("Stratum", "Domain", "Frequency")]
     frequencies <- merge(frequencies, AnalyticalPopulationEstimateData$StratificationVariables, by="Stratum")
     frequencies <- merge(frequencies, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
@@ -1454,6 +1486,31 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     
     # normalize frequencies to landingsPartition within samplingstrata
     totalFrequencies <- frequencies[,list(totalFreq=sum(Frequency*Mean)), by=c("Stratum", landingsPartition)]
+    
+    
+    domainsLandings <- apply(StoxLandingData$Landing[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
+    domainsEstimates <- apply(totalFrequencies[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
+    
+    #
+    # Check matches
+    #
+    
+    if (!any(domainsEstimates %in% domainsLandings)){
+      stop(paste("None of the landing partitions (", paste(landingsPartition, collapse = ","), ") in 'StoxLandingData' have corresponding domains in 'AnalyticalPopulationEstimateData'", sep=""))
+    }
+    missingLandings <- domainsLandings[!(domainsLandings %in% domainsEstimates)]
+    if (length(missingLandings)>0){
+      stop(paste("Not all of the landing partitions (", paste(landingsPartition, collapse = ","), ") in 'StoxLandingData' have corresponding domains in 'AnalyticalPopulationEstimateData'. Missing for: ", truncateStringVector(missingLandings), sep=""))
+    }
+    missingEstimates <- domainsEstimates[!(domainsEstimates %in% domainsLandings)]
+    if (length(missingEstimates)>0){
+      stop(paste("Not all of the estimated domains (", paste(landingsPartition, collapse = ","), ") in 'AnalyticalPopulationEstimateData' have corresponding landing partitions in 'StoxLandingData'. Missing for: ", truncateStringVector(missingEstimates), sep=""))
+    }
+    
+    #
+    # calculate total frequencies
+    #
+    
     frequencies <- merge(frequencies, totalFrequencies, by=c("Stratum", landingsPartition), all.x = T)
     
     # estimate total landings in domain

@@ -315,6 +315,25 @@ ex$Haul$Gear[ex$Haul$Gear %in% c("3100")] <- "11"
 # add tiny error to Mean to ensure that it is recalculated
 popEstDomain$Variables$Mean <- popEstDomain$Variables$Mean + 1e-3
 
+#
+# Input tests TotalDomainWeight
+#
+psuBySex <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), "IndividualSex")
+popBySex <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuBySex)
+ll <- land
+ll$Landing$IndividualSex <- "M"
+expect_error(RstoxFDA:::AnalyticalRatioEstimate(popBySex, ll, "IndividualRoundWeight", "TotalDomainWeight"), "Not all of the estimated domains ")
+ll <- land
+ll$Landing$SpeciesCategory[1] <- 1
+expect_error(RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, ll, "IndividualRoundWeight", "TotalDomainWeight"), "Not all of the landing partitions ")
+ll <- land
+ll$Landing$SpeciesCategory <- NULL
+expect_error(RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, ll, "IndividualRoundWeight", "TotalDomainWeight"), "None of the variables in 'StoxLandingData' are available as StratificationColumns or DomainVariables in 'AnalyticalPopulationEstimateData")
+
+#
+# Calculations TotalDomainWeight
+#
+
 ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "TotalDomainWeight")
 #check that relative difference in abundance equals relative difference in total estimated weigh vs landed weight for all landings as one stratum
 relDiff <- (ratioEst$Abundance$Abundance - popEstDomain$Abundance$Abundance)/popEstDomain$Abundance$Abundance
@@ -405,6 +424,18 @@ expect_true(max(abs(comp$Abundance.x - comp$Abundance.y)/comp$Abundance.x,na.rm=
 #
 # Test with MeanDomainWeights
 #
+
+#
+# Input tests MeanDomainWeight
+#
+
+ll <- land
+ll$Landing$IndividualSex <- "M"
+expect_error(RstoxFDA:::AnalyticalRatioEstimate(popBySex, ll, "IndividualRoundWeight", "MeanDomainWeight"), "Not all of the estimated domains ")
+ll <- land
+ll$Landing$SpeciesCategory[1] <- 1
+expect_error(RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, ll, "IndividualRoundWeight", "MeanDomainWeight"), "Not all of the landing partitions ")
+
 
 psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge", "Gear"))
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
@@ -512,7 +543,6 @@ filt2 <- popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
-#stop(check if landing columns with matching names in ratio estimate have any matching values. Issue warning if only some values are matching)
 #stop("Make function to ratio estimate less granular domains.")
 #stop("Check input sanitation.")
 #stop("Test collapseStrata with both HH and HT")
