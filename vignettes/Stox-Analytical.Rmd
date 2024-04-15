@@ -1,0 +1,98 @@
+---
+title: "StoX-Analytical-Estimates"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{StoX-Analytical-Estimates}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r include, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include=FALSE}
+library(RstoxFDA)
+```
+
+This vignette explains how to use RstoxFDA functions in the StoX user-interface to prepare and run analytical catch-at-age estimates. Some data preparation may be necessary, and the vignette [StoX FDA data preparation (baseline)](Stox-data-preparation.html) introduces some common data-preparation tasks for catch at age estimation, with formats commonly used at the Institute of Marine Research (IMR). In order to make informed decisions on data preparation and model configuration, it will be necessary to get an overview of the fisheries and how it is covered by the available samples, for instance using the functions introduced in [Stox Fisheries overview (report)](Stox-FDA-overview.html).
+
+This document introduces some problems and tasks, and how RstoxFDA-functions may be applied to solve them. The details of how to use the functions introduced here are provided as function documentation viewable in the StoX "function description"-tab, or in an R-console via '?', e.g:
+
+```{r docfunction, echo=TRUE}
+?RstoxFDA::AnalyticalPopulationEstimate
+```
+
+Documentation for data formats are provided in the same way. E.g.:
+
+```{r docformat, echo=TRUE}
+?RstoxFDA::AnalyticalPopulationEstimateData
+```
+
+StoX is composed of several R-packages. Functions will be referred to by their package name with the notation _package::function_. In the StoX user-interface, the package that functions belong to are not visible, so the function denoted here as _package::function_, will be available as just _function_. Any data formats are similarly denoted **package::format**.
+
+## Installation
+RstoxFDA is an optional packages in StoX. In order to use the functions introduced in this vignette in the StoX user-interface, make sure RstoxFDA is installed. See installation instructions on [github: StoXProject/RstoxFDA](https://github.com/StoXProject/RstoxFDA). To install the StoX user-interface, see instructions on [github: StoXProject/StoX](https://github.com/StoXProject/StoX).
+
+
+# Analytical estimates with multi-stage sampling
+
+## 2-stage approximation
+RstoxFDA provides a generic framework for analytical estimates of multi-stage sampling data, through a 2-stage approximation. The sampling design is conceptually divided into two steps: Selection of primary sampling units (PSUs), and selection of individuals within each sampling unit. If selection probabilities can be inferred for each of these two steps:
+
+* Abundance, Frequency, Means and Totals of any variables observed for individuals, can be estimated for each PSU. The estimation of within PSU-variance is not supported. This is provided with the function _RstoxFDA::AnalyticalPSUEstimate_ .
+* Population quantities and associated sampling variances may then be estimated with the function _RstoxFDA::AnalyticalPopulationEstimate_ .
+* Official landing statistics can be utilized to improve the estimate with the function _RstoxFDA::AnalyticalRatioEstimate_ .
+
+In most circumstances, only a small fraction of the PSUs available in a stratum is actually sampled, and typically this provide a good approximation to the sampling variance, even if within-PSU variance is not accounted for.
+
+## Design specification
+Correct estimates relies on careful specification of sampling design ...
+
+
+## Data preparation
+Data preparation is mainly done in the StoX-baseline, and is introduced in the vignette [StoX FDA data preparation (baseline)](Stox-data-preparation.html). 
+
+## StoX project
+
+| Process name | Function | Description |
+|------|---------|--------|
+|  | DefinePSUSamplingParameters |  |
+|  | DefineIndividualSamplingParameters |  |
+|  | AssignPSUSamplingParameters |  |
+|  | DefineIndividualSamplingParameters |  |
+|  | AnalyticalPSUEstimate |  |
+|  | AnalyticalPopulationEstimate |  |
+|  | AnalyticalRatioEstimate |  |
+
+
+
+## Reports
+
+|Report function | Description |
+|:------|:-----|
+|  | Estimated total catch, mean length, mean weight, and mean age |
+|  | Total catch of each age group |
+|  | Covariances of total catch of each age group  |
+|  | Total catch of each length group |
+|  | Total catch of each age-length group |
+|  | Mean weight of each age group |
+|  | Mean length of each age group |
+|  | Summary statistics of model parameters. For convergence checks |
+
+In addition some functions are relevant in this context, that may also be used with other estimation approaches, such as Reca:
+
+|Report function | Description |
+|:------|:-----|
+| ReportFdaSampling | Produces overview of sampling coverage. Useful for exploring cell-configurations, and checking if desired fixed-effect configurations are possible. |
+| ReportFdaLandings | Produces summaries of landings. |
+| ReportParameterConvergence | Computes the Gelman-Rubin R-statistic  |
+| ReportFdaSOP | Performs Sum-Of-Products tests, checking that the products of mean weight at age and estimated catch at age sum to total landed weight. |
+
+## Stock splitting
+
+
+# References
