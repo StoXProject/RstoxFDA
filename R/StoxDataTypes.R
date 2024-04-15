@@ -2405,6 +2405,16 @@ stoxFunctionAttributes <- list(
       DefinitionMethod = "MissingAtRandom"
     )
   ),
+  AnalyticalPSUEstimate = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPSUEstimateData",
+    functionParameterFormat = list(
+      Variables = "individualnumericvariables",
+      DomainVariables = "individualdomainvariables",
+      PSUDomainVariables = "psudomainvariables"
+    )
+  ),
   
   ListBioticDifference = list(
     functionType = "modelData", 
@@ -2879,12 +2889,62 @@ processPropertyFormats <- list(
     }, 
     variableTypes = "character"
   ),
+  individualdomainvariables = list(
+    class = "vector", 
+    title = "One or more variables to use for domain definitions", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Individual")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  psudomainvariables = list(
+    class = "vector", 
+    title = "One or more variables to use for domain definitions", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Cruise", "Station", "Haul", "SpeciesCategory", "Sample")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
   individualparameters = list(
     class = "vector", 
     title = "One or more parameter to included in the design specification", 
     possibleValues = function(StoxBioticData) {
       possibleValues <- unique(names(StoxBioticData$Individual))
       return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  individualnumericvariables = list(
+    class = "vector", 
+    title = "One or more numeric variables", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Individual")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.numeric(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
     }, 
     variableTypes = "character"
   ),

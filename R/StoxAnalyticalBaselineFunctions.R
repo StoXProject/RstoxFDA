@@ -604,10 +604,10 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #'  
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} with the actual observations of individuals.
 #' @param IndividualSamplingParametersData \code{\link[RstoxFDA]{IndividualSamplingParametersData}} with sampling parameters for individuals
-#' @param Variables names of variables that means and totals should be estimated for. Must be columns of the Individual table in 'StoxBioticData'
+#' @param Variables names of variables that means and totals should be estimated for. Must be numeric columns of the Individual table in 'StoxBioticData'
 #' @param DomainVariables names of variables that define domains of individuals that estimates should be made for. Must be columns of 'Individual' or some higher level table in 'StoxBioticData'.
 #' @param PSUDomainVariables names of variables that define groups of PSUs to be annotated on the results for later processing. Must be columns of 'Individual' or some higher level table in 'StoxBioticData', and must have a unique value for each PSU.
-#' @return \code{\link[RstoxFDA]{AnalyticalPSUEstimate}} with estimates for each PSU of abundance, frequencies, totals and means by stratum and domain.
+#' @return \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for each PSU of abundance, frequencies, totals and means by stratum and domain.
 #' @concept Analytical estimation
 #' @md
 #' @export

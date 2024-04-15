@@ -17,14 +17,14 @@ AnalyticalPSUEstimate(
 
 \item{IndividualSamplingParametersData}{\code{\link[RstoxFDA]{IndividualSamplingParametersData}} with sampling parameters for individuals}
 
-\item{Variables}{names of variables that means and totals should be estimated for. Must be columns of the Individual table in 'StoxBioticData'}
+\item{Variables}{names of variables that means and totals should be estimated for. Must be numeric columns of the Individual table in 'StoxBioticData'}
 
 \item{DomainVariables}{names of variables that define domains of individuals that estimates should be made for. Must be columns of 'Individual' or some higher level table in 'StoxBioticData'.}
 
 \item{PSUDomainVariables}{names of variables that define groups of PSUs to be annotated on the results for later processing. Must be columns of 'Individual' or some higher level table in 'StoxBioticData', and must have a unique value for each PSU.}
 }
 \value{
-\code{\link[RstoxFDA]{AnalyticalPSUEstimate}} with estimates for each PSU of abundance, frequencies, totals and means by stratum and domain.
+\code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for each PSU of abundance, frequencies, totals and means by stratum and domain.
 }
 \description{
 Estimate abundance, frequencies, totals and means for each Primary Sampling Unit (PSU)

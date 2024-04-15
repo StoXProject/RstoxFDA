@@ -63,7 +63,6 @@ Data preparation is mainly done in the StoX-baseline, and is introduced in the v
 |  | DefinePSUSamplingParameters |  |
 |  | DefineIndividualSamplingParameters |  |
 |  | AssignPSUSamplingParameters |  |
-|  | DefineIndividualSamplingParameters |  |
 |  | AnalyticalPSUEstimate |  |
 |  | AnalyticalPopulationEstimate |  |
 |  | AnalyticalRatioEstimate |  |
