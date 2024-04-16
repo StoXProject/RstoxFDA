@@ -11,7 +11,7 @@ expect_equal(sum(designParams$SelectionTable$HTsamplingWeight), 1)
 expect_equal(sum(designParams$SelectionTable$HHsamplingWeight), 1)
 
 # test assignment to data
-expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "MissingAtRandom"), "argument \"DataRecordId\" is missing, with no default")
+expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "MissingAtRandom"), "Argument \'DataRecordId\' must be provided.")
 expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "Haul", "Sample", "MissingAtRandom"), "The column provided for 'DataRecordId' ")
 expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "HaulKey", "Haul", "MissingAtRandom"), "The 'SamplingUnitId' ")
 ex <- RstoxFDA::CatchLotteryExample
@@ -543,6 +543,8 @@ filt2 <- popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
+#figure out how to make ratio estimation for total landings easy
+#make one report (CAA)
 #stop("Make function to ratio estimate less granular domains.")
 #stop("Check input sanitation.")
 #stop("Test collapseStrata with both HH and HT")
