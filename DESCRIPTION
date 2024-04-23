@@ -37,6 +37,6 @@ Suggests:
     rmarkdown,
     tinytest
 Additional_repositories: 
-    https://stoxproject.github.io/unstableRepo
+    https://stoxproject.github.io/testingRepo
     https://stoxproject.github.io/repo
 RoxygenNote: 7.3.1
