@@ -64,12 +64,8 @@ iasf <- sf::st_transform(iasf, "+proj=eqc")
 iasf <- sf::st_simplify(iasf, dTolerance=.4)
 iasf <- sf::st_buffer(iasf, dist = .03)
 iasf <- sf::st_transform(iasf, "+proj=latlon")
-ia <- sf::as_Spatial(iasf)
 
-ia$StratumName <- paste(ia$Major_FA, ia$SubArea, sep=".")
-ia@data <- ia@data[,c("StratumName","Major_FA")]
-
-merged <- RstoxFDA::mergePolygons(ia, "StratumName")
+merged <- RstoxFDA::mergePolygons(iasf, "StratumName")
 expect_true("sf" %in% class(merged))
 expect_equal(nrow(merged), length(unique(ia$StratumName)))
 
