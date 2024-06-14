@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - master
-      - testing
   pull_request:
     branches:
       - testing
@@ -31,13 +30,34 @@ jobs:
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
-
+        
       - name: Install MacOS dependencies
         if: runner.os == 'macOS'
         run: |
           rm -f '/usr/local/bin/gfortran'
           brew install udunits proj
         shell: bash
+
+        #
+        # Install StoX dependencies, corresponding to release status (unstable, pre-release or release)
+        #
+      - name: Install R package dependencies from the unstableRepo
+        if: (github.event_name == 'push' && github.ref_name == 'develop') || (github.event_name == 'pull_request' && github.base_ref == 'develop')
+        run: |
+          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/unstableRepo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+
+      - name: Install R package dependencies from the testingRepo
+        if: (github.event_name == 'push' && github.ref_name == 'testing') || (github.event_name == 'pull_request' && github.base_ref == 'testing')
+        run: |
+          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/testingRepo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+
+      - name: Install R package dependencies from the official repo
+        if: (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'pull_request' && github.base_ref == 'master')
+        run: |
+          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
 
       - name: Install dependencies
         run: |
