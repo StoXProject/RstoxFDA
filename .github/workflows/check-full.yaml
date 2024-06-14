@@ -159,6 +159,29 @@ jobs:
           remotes::install_cran("sessioninfo")
         shell: Rscript {0}
         
+        
+        #
+        # Install StoX dependencies, corresponding to release status (unstable, pre-release or release)
+        #
+      - name: Install R package dependencies from the unstableRepo
+        if: (github.event_name == 'push' && github.ref_name == 'develop') || (github.event_name == 'pull_request' && github.base_ref == 'develop')
+        run: |
+          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/unstableRepo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+
+      - name: Install R package dependencies from the testingRepo
+        if: (github.event_name == 'push' && github.ref_name == 'testing') || (github.event_name == 'pull_request' && github.base_ref == 'testing')
+        run: |
+          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/testingRepo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+
+      - name: Install R package dependencies from the official repo
+        if: (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'pull_request' && github.base_ref == 'master')
+        run: |
+          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+        
+        
       - name: Session info
         run: |
           options(width = 100)
@@ -198,25 +221,54 @@ jobs:
           file.copy(Sys.getenv("PKG_FILE"), Sys.getenv("PKG_FREL"))
         shell: Rscript {0}
 
-        # Upload to drat repo only for one version (4.1) on Linux, and only for all the specifically given R versions for macOS and Windows (not next). Next is included to detect errors immediatelly when the new R is patched:
-      - name: Upload to DRAT repo
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
+    ## 5a. Upload to the official (DRAT) repo, but only from the master branch. Here we skip the matrix.config.r = release, as a new StoX release should be ready shortly after each R minor release and listed specifically in the matrix.config:
+      - name: Upload to the official (DRAT) repo
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref_name == 'master'
         env:
           BUILD_NUMBER: ${{ github.sha  }}
           DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
         run: . repo_deploy.sh
         shell: bash
 
-      - name: Upload to DRAT testingRepo
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+      ## 5b. Upload to the (DRAT) testingRepo, but only from the testing branch. Here we skip the matrix.config.r = release, as a new StoX release should be ready shortly after each R minor release and listed specifically in the matrix.config:
+      - name: Upload to the testing (DRAT) repo
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref_name == 'testing'
         env:
           BUILD_NUMBER: ${{ github.sha  }}
           DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
         run: . testingRepo_deploy.sh
         shell: bash
 
-      - name: Create release and upload files
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+      ## 5c. Upload to the (DRAT) unstableRepo, but only from the develop branch. Here we skip the matrix.config.r = release, as a new StoX release should be ready shortly after each R minor release and listed specifically in the matrix.config:
+      - name: Upload to the unstable (DRAT) repo
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref_name == 'develop'
+        env:
+          BUILD_NUMBER: ${{ github.sha  }}
+          DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
+        run: . unstableRepo_deploy.sh
+        shell: bash
+
+
+
+      ###############################
+      #### 6. Release on GitHub: ####
+      ###############################
+      
+      - name: Create release on GitHub and upload files for testing branch
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref_name == 'testing'
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          commit: testing
+          tag: ${{ env.FINAL_TAG }}
+          name: ${{ env.FINAL_TAG }}
+          artifacts: ${{ env.PKG_REPO }}/${{ env.PKG_FREL }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release on GitHub and upload files for master branch
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref_name == 'master'
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
