@@ -2,13 +2,9 @@ on:
   push:
     branches:
       - master
-      - testing
-      - develop
   pull_request:
     branches:
       - master
-      - testing
-      - develop
 
 name: R-CMD-check
 
@@ -26,24 +22,23 @@ jobs:
         # for windows and mac all builds are pushed to drat repo on merge to master (except pre-release builds), except 'next'
         
         # 2023-08-23 fails, not getting Reca. Because it is not built yet for macos and next or 4.3.
-          - {os: macOS-latest,   r: 'next', pkgext: '.tgz'} #tested without Reca
-          - {os: macOS-latest,   r: '4.3', pkgext: '.tgz'} #tested without Reca
+          #- {os: macOS-latest,   r: 'next', pkgext: '.tgz'}
+          #- {os: macOS-latest,   r: '4.3', pkgext: '.tgz'}
+          
           - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'}
           - {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'}
-          - {os: macOS-latest,   r: '4.0',     pkgext: '.tgz'}
 
+          # 2023-08-23 fails, not getting Reca. Because it is not built yet for windows and next or 4.3.
           - {os: windows-latest, r: 'next', pkgext: '.zip'} 
           - {os: windows-latest, r: '4.3', pkgext: '.zip'}
+          
           - {os: windows-latest, r: '4.2', pkgext: '.zip'}
           - {os: windows-latest, r: '4.1',  pkgext: '.zip'}
-          - {os: windows-latest, r: '4.0',     pkgext: '.zip',    rspm: "https://cloud.r-project.org"}
 
           - {os: ubuntu-latest,  r: 'next', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
-          # source is pushed to drat repos on merge to for ubunutu when r is 4.2 (source is the same for all R versions), update script if 4.2 is taken out
-          - {os: ubuntu-22.04,   r: '4.3',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-22.04,   r: '4.2',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          # 4.1 is pushed to drat repo on merge to master for ubunutu (except pre-release builds), update script if 4.1 is taken out
           - {os: ubuntu-20.04,   r: '4.1',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
-          - {os: ubuntu-20.04,   r: '4.0',     pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -54,13 +49,9 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Prepare for deployment at push
-        if: github.event_name == 'push'
+      - name: Do autorelease increment, tagging, and environment setup
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
-          curl "https://raw.githubusercontent.com/StoXProject/unstableRepo/main/scripts/checktag-actions.sh" --output unstableRepo_checktag.sh
-          curl "https://raw.githubusercontent.com/StoXProject/unstableRepo/main/scripts/deploy-actions.sh" --output unstableRepo_deploy.sh
-          chmod +x ./unstableRepo_checktag.sh ./unstableRepo_deploy.sh
-          . unstableRepo_checktag.sh
           curl "https://raw.githubusercontent.com/StoXProject/testingRepo/main/scripts/checktag-actions.sh" --output testingRepo_checktag.sh
           curl "https://raw.githubusercontent.com/StoXProject/testingRepo/main/scripts/deploy-actions.sh" --output testingRepo_deploy.sh
           chmod +x ./testingRepo_checktag.sh ./testingRepo_deploy.sh
@@ -90,12 +81,6 @@ jobs:
         shell: bash
 
       - uses: r-lib/actions/setup-pandoc@v2
-
-      - name: Anticipate Bintray shutdown
-        if: runner.os == 'macOS'
-        run: |
-          brew update
-        shell: bash
 
       - name: Query dependencies
         run: |
@@ -135,12 +120,13 @@ jobs:
           rm -f '/usr/local/bin/python3-config'
           rm -f '/usr/local/bin/python3.11-config'
           export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=false # This prevents Homebrew from re-installing R, which will lead to .Platform$pkgType = "source".
+          brew install gdal
         shell: bash
 
       - name: Prepare for dependencies on Linux
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install libproj-dev libgeos-dev libudunits2-dev
+          sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
         shell: bash
       
       - name: Install dependencies on Linux
@@ -180,26 +166,15 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      # turn off testing of suggestions for configurations where Reca is not provided in StoX package repositories
-      - name: Check without suggest-dependencies
-        if: runner.os == 'macOS' && (matrix.config.r== 'next' || matrix.config.r== '4.3')
+      - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_: false
-          _R_CHECK_FORCE_SUGGESTS_ : false
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
         shell: Rscript {0}
 
-      - name: Check with suggest-dependencies
-        if: runner.os != 'macOS' || (matrix.config.r!= 'next' && matrix.config.r!= '4.3')
-        env:
-          _R_CHECK_CRAN_INCOMING_: false
-          _R_CHECK_FORCE_SUGGESTS_ : true
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
-        shell: Rscript {0}
-
-      - name: Show unit test output
+      - name: Show testthat output
         if: always()
-        run: find check -name 'tinytest.Rout*' -exec cat '{}' \; || true
+        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
 
       - name: Upload check results
@@ -209,61 +184,44 @@ jobs:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
 
-      #######################################################
-      #### 4. Build the package source and binary files: ####
-      #######################################################
-      
-      - name: Build package source archive from branches develop, testing and master
-        if: runner.os == 'Linux' && matrix.config.r == '4.2' && github.event_name == 'push' && (github.ref_name == 'master' || github.ref_name == 'testing' || github.ref_name == 'develop')
+      - name: Build package source archive
+        if: runner.os == 'Linux' && matrix.config.r == '4.1' && github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           pkgbuild::build(".", dest_path = ".", binary = FALSE)
           system(paste0("PKG_FREL=", Sys.getenv("PKG_FILE"), " >> ", Sys.getenv("GITHUB_ENV")))
         shell: Rscript {0}
 
-      - name: Build package binary archive from branches develop, testing and master for Windows and macOS (this builds also on matrix.config.r = release, which can or can not be a duplicate)
-        if: (runner.os == 'Windows' || runner.os == 'macOS') && github.event_name == 'push' && (github.ref_name == 'master' || github.ref_name == 'testing' || github.ref_name == 'develop')
+      - name: Build package binary archive
+        if: (runner.os == 'Windows' || runner.os == 'macOS') && github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           pkgbuild::build(".", dest_path = ".", binary = TRUE)
-          print("PKG_FILE")
-          print(Sys.getenv("PKG_FILE"))
-          print("PKG_FREL")
-          print(Sys.getenv("PKG_FREL"))
           file.copy(Sys.getenv("PKG_FILE"), Sys.getenv("PKG_FREL"))
         shell: Rscript {0}
 
-      
-
-      ######################################
-      #### 5. Deploy to the drat repos: ####
-      ######################################
-
-      # Upload to drat repo only for one version (4.2) on Linux, and only for all the specifically given R versions for macOS and Windows (not next). Next is included to detect errors immediatelly when the new R is patched:
-      
-      ## 5a. Upload to the official (DRAT) repo, but only from the master branch. 
-      - name: Upload to the official (DRAT) repo
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.2') ) && github.event_name == 'push' && github.ref_name == 'master'
+        # Upload to drat repo only for one version (4.1) on Linux, and only for all the specifically given R versions for macOS and Windows (not next). Next is included to detect errors immediatelly when the new R is patched:
+      - name: Upload to DRAT repo
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           BUILD_NUMBER: ${{ github.sha  }}
           DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
         run: . repo_deploy.sh
         shell: bash
 
-
-      ## 5b. Upload to the (DRAT) testingRepo, but only from the testing branch.
-      - name: Upload to the testing (DRAT) repo
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.2') ) && github.event_name == 'push' && github.ref_name == 'testing'
+      - name: Upload to DRAT testingRepo
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           BUILD_NUMBER: ${{ github.sha  }}
           DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
         run: . testingRepo_deploy.sh
         shell: bash
 
-
-      ## 5c. Upload to the (DRAT) unstableRepo, but only from the develop branch.
-      - name: Upload to the unstable (DRAT) repo
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.2') ) && github.event_name == 'push' && github.ref_name == 'develop'
-        env:
-          BUILD_NUMBER: ${{ github.sha  }}
-          DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
-        run: . unstableRepo_deploy.sh
-        shell: bash
+      - name: Create release and upload files
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          commit: master
+          tag: ${{ env.FINAL_TAG }}
+          name: ${{ env.FINAL_TAG }}
+          artifacts: ${{ env.PKG_REPO }}/${{ env.PKG_FREL }}
+          token: ${{ secrets.GITHUB_TOKEN }}
