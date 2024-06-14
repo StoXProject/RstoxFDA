@@ -164,6 +164,15 @@ jobs:
         
         
         #
+        # Install Reca (awlays from repo)
+        #
+      - name: Install Reca 
+        if: (github.event_name == 'push' && github.ref_name == 'develop') || (github.event_name == 'pull_request' && github.base_ref == 'develop')
+        run: |
+          remotes::install_package("Reca", dependencies = TRUE, repos = repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+        
+        #
         # Install StoX dependencies, corresponding to release status (unstable, pre-release or release)
         #
       - name: Install R package dependencies from the unstableRepo

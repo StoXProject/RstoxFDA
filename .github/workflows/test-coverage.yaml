@@ -35,8 +35,28 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           rm -f '/usr/local/bin/gfortran'
-          brew install udunits proj
+          rm -f '/usr/local/bin/2to3'
+          rm -f '/usr/local/bin/2to3-3.11'
+          rm -f '/usr/local/bin/idle3'
+          rm -f '/usr/local/bin/idle3.11'
+          rm -f '/usr/local/bin/pydoc3'
+          rm -f '/usr/local/bin/pydoc3.11'
+          rm -f '/usr/local/bin/python3'
+          rm -f '/usr/local/bin/python3.11'
+          rm -f '/usr/local/bin/python3-config'
+          rm -f '/usr/local/bin/python3.11-config'
+          export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=false # This prevents Homebrew from re-installing R, which will lead to .Platform$pkgType = "source".
+          brew install gdal
         shell: bash
+
+        #
+        # Install Reca (awlays from repo)
+        #
+      - name: Install Reca 
+        if: (github.event_name == 'push' && github.ref_name == 'develop') || (github.event_name == 'pull_request' && github.base_ref == 'develop')
+        run: |
+          remotes::install_package("Reca", dependencies = TRUE, repos = repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
 
         #
         # Install StoX dependencies, corresponding to release status (unstable, pre-release or release)
