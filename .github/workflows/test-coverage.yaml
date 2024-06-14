@@ -53,9 +53,8 @@ jobs:
         # Install Reca (awlays from repo)
         #
       - name: Install Reca 
-        if: (github.event_name == 'push' && github.ref_name == 'develop') || (github.event_name == 'pull_request' && github.base_ref == 'develop')
         run: |
-          utils::install_packages("Reca", dependencies = TRUE, repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
+          utils::install.packages("Reca", repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
         shell: Rscript {0}
 
         #
