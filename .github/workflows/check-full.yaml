@@ -169,7 +169,7 @@ jobs:
       - name: Install Reca 
         if: (github.event_name == 'push' && github.ref_name == 'develop') || (github.event_name == 'pull_request' && github.base_ref == 'develop')
         run: |
-          remotes::install_package("Reca", dependencies = TRUE, repos = repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
+          install_packages("Reca", dependencies = TRUE, repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
         shell: Rscript {0}
         
         #
