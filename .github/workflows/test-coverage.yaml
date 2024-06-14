@@ -50,12 +50,13 @@ jobs:
         shell: bash
 
         #
-        # Install Reca (awlays from repo)
+        # Install Reca (awlays from prod repo)
         #
       - name: Install Reca 
         run: |
-          utils::install.packages("Reca", repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
+          remotes::install_cran("Reca", repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
         shell: Rscript {0}
+
 
         #
         # Install StoX dependencies, corresponding to release status (unstable, pre-release or release)

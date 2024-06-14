@@ -153,22 +153,21 @@ jobs:
           }
         shell: Rscript {0}
 
+        #
+        # Install Reca (awlays from prod repo)
+        #
+      - name: Install Reca 
+        run: |
+          remotes::install_cran("Reca", repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+
+
 
       - name: Install CRANdependencies
         run: |
           remotes::install_cran("rcmdcheck")
-          #remotes::install_cran("git2r")
           remotes::install_cran("drat")
           remotes::install_cran("sessioninfo")
-        shell: Rscript {0}
-        
-        
-        #
-        # Install Reca (awlays from repo)
-        #
-      - name: Install Reca 
-        run: |
-          utils::install_packages("Reca", repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
         shell: Rscript {0}
         
         #
