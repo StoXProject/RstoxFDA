@@ -21,13 +21,8 @@ The corresponding samples are provided in \code{\link[RstoxFDA]{CatchLotteryExam
 \examples{
  #all selected PSU that where actuall sampled are provided in CatchLotteryExample
  sum(!is.na(CatchLotterySamplingExample$SelectionTable$SamplingUnitId))
-<<<<<<< HEAD
- sum(CatchLotterySamplingExample$SelectionTable$SamplingUnitId \%in\% 
-               CatchLotteryExample$Haul$HaulKey)
-=======
  sum(CatchLotterySamplingExample$SelectionTable$SamplingUnitId \%in\%
        CatchLotteryExample$Haul$HaulKey)
->>>>>>> develop
 }
 \concept{Analytical estimation}
 \keyword{datasets}
