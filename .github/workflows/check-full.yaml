@@ -29,13 +29,17 @@ jobs:
           - {os: macOS-latest,   r: '4.3', pkgext: '.tgz'} # will be tested without suggests
           
           - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'} # will be tested without suggests
-          - {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'} # will be tested without suggests
+          
+          # 4.1 dropped by SrtoxBase and RstoxData ?
+          #- {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'} # will be tested without suggests
 
           - {os: windows-latest, r: 'next', pkgext: '.zip'} 
           - {os: windows-latest, r: '4.3', pkgext: '.zip'}
           
           - {os: windows-latest, r: '4.2', pkgext: '.zip'}
-          - {os: windows-latest, r: '4.1',  pkgext: '.zip'}
+          
+          # 4.1 dropped by SrtoxBase and RstoxData ?
+          #- {os: windows-latest, r: '4.1',  pkgext: '.zip'}
 
           - {os: ubuntu-latest,  r: 'next', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-22.04,   r: '4.2',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
