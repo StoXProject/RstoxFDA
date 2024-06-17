@@ -1,6 +1,6 @@
 Package: RstoxFDA
-Version: 2.0.0-9001
-Date: 2024-04-23
+Version: 1.3.0-9004
+Date: 2024-06-17
 Title: Fisheries Dependent Analysis with RstoX
 Authors@R: c(
   person(given = "Edvin", 
@@ -26,8 +26,8 @@ Imports:
     RColorBrewer (>= 1.1-2),
     rnaturalearth (>= 1.0.1),
     rnaturalearthdata (>= 1.0.0),
-    RstoxBase (>= 1.11.4-9007),
-    RstoxData (>= 1.10.2-9006),
+    RstoxBase (>= 1.11.4-9013),
+    RstoxData (>= 1.10.2-9009),
     sf (>= 1.0.0),
     stats (>= 3.5.0),
     utils (>= 3.5.0)
@@ -37,6 +37,5 @@ Suggests:
     rmarkdown,
     tinytest
 Additional_repositories: 
-    https://stoxproject.github.io/testingRepo
     https://stoxproject.github.io/repo
 RoxygenNote: 7.3.1
