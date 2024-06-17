@@ -17,7 +17,7 @@ appendAreaCode(
 \arguments{
 \item{table}{data.table to be annotated.}
 
-\item{areaPolygons}{\code{\link[sp]{SpatialPolygonsDataFrame}}}
+\item{areaPolygons}{\code{\link[sf]{sf}} data.frame}
 
 \item{latName}{name of WGS84 lat column in 'table'}
 

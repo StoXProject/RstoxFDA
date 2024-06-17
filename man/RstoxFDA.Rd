@@ -3,7 +3,6 @@
 \docType{package}
 \name{RstoxFDA}
 \alias{RstoxFDA}
-\alias{RstoxFDA-package}
 \title{Fisheries Dependent Analysis with RstoX}
 \description{
 Fisheries dependent analysis, including running the Estimated Catch at Age model through the Reca package developed by the Norwegian Computing Center.
@@ -31,11 +30,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Arne Johannes Holmin \email{arnejh@hi.no}
+\strong{Maintainer}: Edvin Fuglebakk \email{arnejh@hi.no}
 
 Authors:
 \itemize{
-  \item Edvin Fuglebakk
+  \item Arne Johannes Holmin
 }
 
 }

@@ -5,7 +5,7 @@
 \alias{locationsFdir2017}
 \title{Location codes (FDIR to 2017 incl.)}
 \format{
-\code{\link[sp]{SpatialPolygonsDataFrame}} with location names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+\code{\link[sf]{sf}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}} (v.2).
 }
 \usage{
 data(locationsFdir2017)

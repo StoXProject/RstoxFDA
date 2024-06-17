@@ -5,7 +5,7 @@
 \alias{ICESsubDivision}
 \title{ICES sub-divisions (area codes from 2018)}
 \format{
-\code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+\code{\link[sf]{sf}} data.frame with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 }
 \usage{
 data(ICESsubDivision)
