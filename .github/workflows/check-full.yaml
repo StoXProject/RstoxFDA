@@ -28,10 +28,9 @@ jobs:
           - {os: macOS-latest,   r: 'next', pkgext: '.tgz'} # will be tested without suggests
           - {os: macOS-latest,   r: '4.3', pkgext: '.tgz'} # will be tested without suggests
           
-          - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'}
-          - {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'}
+          - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'} # will be tested without suggests
+          - {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'} # will be tested without suggests
 
-          # 2023-08-23 fails, not getting Reca. Because it is not built yet for windows and next or 4.3.
           - {os: windows-latest, r: 'next', pkgext: '.zip'} 
           - {os: windows-latest, r: '4.3', pkgext: '.zip'}
           
@@ -149,7 +148,7 @@ jobs:
           missing <- setdiff(needed$package, installed)
           if(length(missing)) {
             message("Installing the following packages using default type:\n", paste0(missing, collapse = ", "))
-            utils::install.packages(missing, dependencies = TRUE)
+            utils::install.packages(missing, dependencies = TRUE, type="source")
           }
         shell: Rscript {0}
 
@@ -201,7 +200,7 @@ jobs:
 
      # turn off testing of suggestions for configurations where Reca is not provided in StoX package repositories
       - name: Check without suggest-dependencies
-        if: runner.os == 'macOS' && (matrix.config.r== 'next' || matrix.config.r== '4.3')
+        if: runner.os == 'macOS'
         env:
           _R_CHECK_CRAN_INCOMING_: false
           _R_CHECK_FORCE_SUGGESTS_ : false

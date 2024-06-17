@@ -1512,8 +1512,9 @@ DefineAgeErrorMatrix <- function(processData, DefinitionMethod=c("ResourceFile")
   colnames(dt) <- coln
   dt$ReadAge <- rownames(matrix)
 
-  if (!all(colSums(matrix) == 1)){
-    stop("Malformed resource file. Columns must sum to 1.")
+  if (!all(abs(colSums(matrix)-1) < 1e-6)){
+    notone <- colSums(matrix)[colSums(matrix)!=1]
+    stop(paste("Malformed resource file. Columns must sum to 1. Got:", paste(notone, collapse = ",")))
   }
 
   if (any(matrix < 0) | any(matrix > 1)){
