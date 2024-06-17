@@ -148,7 +148,7 @@ jobs:
           missing <- setdiff(needed$package, installed)
           if(length(missing)) {
             message("Installing the following packages using default type:\n", paste0(missing, collapse = ", "))
-            utils::install.packages(missing, dependencies = TRUE, type="source")
+            utils::install.packages(missing, dependencies = TRUE)
           }
         shell: Rscript {0}
 
@@ -208,7 +208,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Check with suggest-dependencies
-        if: runner.os != 'macOS' || (matrix.config.r!= 'next' && matrix.config.r!= '4.3')
+        if: runner.os != 'macOS'
         env:
           _R_CHECK_CRAN_INCOMING_: false
           _R_CHECK_FORCE_SUGGESTS_ : true
