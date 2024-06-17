@@ -2,9 +2,13 @@ on:
   push:
     branches:
       - master
+      - develop
+      - testing
   pull_request:
     branches:
       - master
+      - develop
+      - testing
 
 name: R-CMD-check
 
@@ -21,27 +25,26 @@ jobs:
         config:
         # for windows and mac all builds are pushed to drat repo on merge to master (except pre-release builds), except 'next'
         
-        # 2023-08-23 fails, not getting Reca. Because it is not built yet for macos and next or 4.3.
-          #- {os: macOS-latest,   r: 'next', pkgext: '.tgz'}
-          #- {os: macOS-latest,   r: '4.3', pkgext: '.tgz'}
+          - {os: macOS-latest,   r: 'next', pkgext: '.tgz'} # will be tested without suggests
+          - {os: macOS-latest,   r: '4.3', pkgext: '.tgz'} # will be tested without suggests
           
-          - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'}
-          - {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'}
-          - {os: macOS-latest,   r: '4.0',     pkgext: '.tgz'}
+          - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'} # will be tested without suggests
+          
+          # 4.1 dropped by SrtoxBase and RstoxData ?
+          #- {os: macOS-latest,   r: '4.1',  pkgext: '.tgz'} # will be tested without suggests
 
-          # 2023-08-23 fails, not getting Reca. Because it is not built yet for windows and next or 4.3.
           - {os: windows-latest, r: 'next', pkgext: '.zip'} 
           - {os: windows-latest, r: '4.3', pkgext: '.zip'}
           
           - {os: windows-latest, r: '4.2', pkgext: '.zip'}
-          - {os: windows-latest, r: '4.1',  pkgext: '.zip'}
-          - {os: windows-latest, r: '4.0',     pkgext: '.zip',    rspm: "https://cloud.r-project.org"}
+          
+          # 4.1 dropped by SrtoxBase and RstoxData ?
+          #- {os: windows-latest, r: '4.1',  pkgext: '.zip'}
 
           - {os: ubuntu-latest,  r: 'next', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-22.04,   r: '4.2',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           # 4.1 is pushed to drat repo on merge to master for ubunutu (except pre-release builds), update script if 4.1 is taken out
           - {os: ubuntu-20.04,   r: '4.1',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
-          - {os: ubuntu-20.04,   r: '4.0',     pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -153,14 +156,44 @@ jobs:
           }
         shell: Rscript {0}
 
+        #
+        # Install Reca (awlays from prod repo)
+        #
+      - name: Install Reca 
+        run: |
+          remotes::install_cran("Reca", repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+
+
 
       - name: Install CRANdependencies
         run: |
           remotes::install_cran("rcmdcheck")
-          #remotes::install_cran("git2r")
           remotes::install_cran("drat")
           remotes::install_cran("sessioninfo")
         shell: Rscript {0}
+        
+        #
+        # Install StoX dependencies, corresponding to release status (unstable, pre-release or release)
+        #
+      - name: Install R package dependencies from the unstableRepo
+        if: (github.event_name == 'push' && github.ref_name == 'develop') || (github.event_name == 'pull_request' && github.base_ref == 'develop')
+        run: |
+          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/unstableRepo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+
+      - name: Install R package dependencies from the testingRepo
+        if: (github.event_name == 'push' && github.ref_name == 'testing') || (github.event_name == 'pull_request' && github.base_ref == 'testing')
+        run: |
+          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/testingRepo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+
+      - name: Install R package dependencies from the official repo
+        if: (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'pull_request' && github.base_ref == 'master')
+        run: |
+          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+        
         
       - name: Session info
         run: |
@@ -169,15 +202,26 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      - name: Check
+     # turn off testing of suggestions for configurations where Reca is not provided in StoX package repositories
+      - name: Check without suggest-dependencies
+        if: runner.os == 'macOS'
         env:
           _R_CHECK_CRAN_INCOMING_: false
+          _R_CHECK_FORCE_SUGGESTS_ : false
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
         shell: Rscript {0}
 
-      - name: Show testthat output
+      - name: Check with suggest-dependencies
+        if: runner.os != 'macOS'
+        env:
+          _R_CHECK_CRAN_INCOMING_: false
+          _R_CHECK_FORCE_SUGGESTS_ : true
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
+        shell: Rscript {0}
+
+      - name: Show test output
         if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+        run: find check -name 'tinytest.Rout*' -exec cat '{}' \; || true
         shell: bash
 
       - name: Upload check results
@@ -201,25 +245,54 @@ jobs:
           file.copy(Sys.getenv("PKG_FILE"), Sys.getenv("PKG_FREL"))
         shell: Rscript {0}
 
-        # Upload to drat repo only for one version (4.1) on Linux, and only for all the specifically given R versions for macOS and Windows (not next). Next is included to detect errors immediatelly when the new R is patched:
-      - name: Upload to DRAT repo
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
+    ## 5a. Upload to the official (DRAT) repo, but only from the master branch. Here we skip the matrix.config.r = release, as a new StoX release should be ready shortly after each R minor release and listed specifically in the matrix.config:
+      - name: Upload to the official (DRAT) repo
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref_name == 'master'
         env:
           BUILD_NUMBER: ${{ github.sha  }}
           DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
         run: . repo_deploy.sh
         shell: bash
 
-      - name: Upload to DRAT testingRepo
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+      ## 5b. Upload to the (DRAT) testingRepo, but only from the testing branch. Here we skip the matrix.config.r = release, as a new StoX release should be ready shortly after each R minor release and listed specifically in the matrix.config:
+      - name: Upload to the testing (DRAT) repo
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref_name == 'testing'
         env:
           BUILD_NUMBER: ${{ github.sha  }}
           DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
         run: . testingRepo_deploy.sh
         shell: bash
 
-      - name: Create release and upload files
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+      ## 5c. Upload to the (DRAT) unstableRepo, but only from the develop branch. Here we skip the matrix.config.r = release, as a new StoX release should be ready shortly after each R minor release and listed specifically in the matrix.config:
+      - name: Upload to the unstable (DRAT) repo
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref_name == 'develop'
+        env:
+          BUILD_NUMBER: ${{ github.sha  }}
+          DRAT_DEPLOY_TOKEN: ${{ secrets.DRAT_DEPLOY_TOKEN }}
+        run: . unstableRepo_deploy.sh
+        shell: bash
+
+
+
+      ###############################
+      #### 6. Release on GitHub: ####
+      ###############################
+      
+      - name: Create release on GitHub and upload files for testing branch
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref_name == 'testing'
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          commit: testing
+          tag: ${{ env.FINAL_TAG }}
+          name: ${{ env.FINAL_TAG }}
+          artifacts: ${{ env.PKG_REPO }}/${{ env.PKG_FREL }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release on GitHub and upload files for master branch
+        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.1') ) && github.event_name == 'push' && github.ref_name == 'master'
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true

@@ -18,7 +18,7 @@
 #' @examples
 #'  #all selected PSU that where actuall sampled are provided in CatchLotteryExample
 #'  sum(!is.na(CatchLotterySamplingExample$SelectionTable$SamplingUnitId))
-#'  sum(CatchLotterySamplingExample$SelectionTable$SamplingUnitId %in% 
-#'                CatchLotteryExample$Haul$HaulKey)
+#'  sum(CatchLotterySamplingExample$SelectionTable$SamplingUnitId %in%
+#'        CatchLotteryExample$Haul$HaulKey)
 "CatchLotterySamplingExample"
 

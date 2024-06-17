@@ -1,7 +1,7 @@
 designParamsFile <- system.file("testresources", "lotteryParameters", "lotteryDesignNSH.txt", package="RstoxFDA")
 
 #regular read:
-designParams <- RstoxFDA::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFile)
+designParams <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFile)
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParams))
 expect_equal(nrow(designParams$SelectionTable), 64)
 expect_equal(nrow(designParams$SampleTable), 1)
@@ -25,7 +25,7 @@ expect_true(abs((mean(1/designParamsCorrected$SelectionTable$InclusionProbabilit
 
 #define from data
 suppressWarnings(StoxBioticData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic(system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA"))))
-designParamsSB <- RstoxFDA::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
+designParamsSB <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsSB))
 #compare names of output with stratification variables to output withoutsss
 
@@ -116,6 +116,7 @@ expect_true(all(abs(weights$meanN-1) < 1e-6))
 #test estimate with HansenHurwitzDomainEstimate
 data <- RstoxFDA::CatchLotteryExample
 indSampling <- RstoxFDA:::DefineIndividualSamplingParameters(NULL, data, "SRS", c("IndividualAge"))
+
 psuSampling <- RstoxFDA::CatchLotterySamplingExample
 
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(data, indSampling, "IndividualRoundWeight")

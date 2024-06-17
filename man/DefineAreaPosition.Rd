@@ -33,7 +33,7 @@ Define positions for areas of a spatial coding system.
 Defines an association between area codes and positions that represent that area code.
 For example an area code could be associated with the centre of mass of the area, or
 some other point within the area. This may be useful for providing approximate
-coordinates when locations are identified by area codes. The soruce of the
+coordinates when locations are identified by area codes. The soruces of the
 area-position association may be a table or a appropriately formatted
 polygon-definition (\code{\link[RstoxBase]{StratumPolygon}}).
 
@@ -50,7 +50,7 @@ For DefinitionMethod 'StratumPolygon':
 Definitions are extracted from a \code{\link[RstoxBase]{StratumPolygon}}:
 'Area' in \code{\link[RstoxFDA]{AreaPosition}} is derived from the column 'StratumName' in \code{\link[RstoxBase]{StratumPolygon}}.
 'Location' in \code{\link[RstoxFDA]{AreaPosition}} is encoded as missing.
-'Latitude' and 'Longitude' in \code{\link[RstoxFDA]{AreaPosition}} are the coordinates set for each polygon in \code{\link[RstoxBase]{StratumPolygon}}.
+'Latitude' and 'Longitude' in \code{\link[RstoxFDA]{AreaPosition}} are the centroids set for each polygon in \code{\link[RstoxBase]{StratumPolygon}}. Note that for oddly shaped polygons (concave polygons) the centroid may lay outside the area.
 }
 \seealso{
 \code{\link[RstoxFDA]{SetAreaPositionsBiotic}} and \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to data.

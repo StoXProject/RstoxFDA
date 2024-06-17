@@ -17,7 +17,7 @@
 #'
 #' @usage data(GSAsubArea)
 #'
-#' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+#' @format \code{\link[sf]{sf}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}} (v.2).
 #' 
 #' @concept area code polygons
 #' @keywords datasets

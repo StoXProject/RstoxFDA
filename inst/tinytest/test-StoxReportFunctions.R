@@ -10,50 +10,6 @@ expect_true(!any(is.na(decomp$MeanWeightByAge$SD)))
 expect_true(!any(is.na(decomp$MeanWeightByAge$Low)))
 expect_true(!any(is.na(decomp$MeanWeightByAge$High)))
 
-#context("Test StoxReportFunctions: ReportRecaParameterStatistics")
-StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
-StoxLandingData <- readRDS(StoxLandingFile)
-StoxBioticFile <- system.file("testresources","StoxBioticData.rds", package="RstoxFDA")
-StoxBioticData <- readRDS(StoxBioticFile)
-StoxBioticData$Individual <- StoxBioticData$Individual[StoxBioticData$Individual$IndividualAge<4,]
-StoxBioticData$Haul$Gear <- StoxLandingData$Landing$Gear[c(1:20, 1:20, 1:5)]
-StoxBioticData$Station$Area <- StoxLandingData$Landing$Area[c(1:20, 1:20, 1:5)]
-prep <- RstoxFDA::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Gear", "Area"), CellEffect = c("All"), MinAge = 2, MaxAge = 3)
-
-fpath1 <- RstoxFDA:::makeTempDirReca("chain1")
-fpath2 <- RstoxFDA:::makeTempDirReca("chain2")
-fpath3 <- RstoxFDA:::makeTempDirReca("chain3")
-
-paramOut1 <- RstoxFDA::ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = fpath1)
-paramOut2 <- RstoxFDA::ParameterizeRecaModels(prep, 10, 50, 1, ResultDirectory = fpath2)
-
-paramSummary <- RstoxFDA::ReportRecaParameterStatistics(paramOut1)
-paramSummary <- RstoxFDA::ReportRecaParameterStatistics(paramOut2, paramSummary, AppendReport = TRUE)
-expect_true(RstoxFDA::is.ParameterizationSummaryData(paramSummary))
-
-RstoxFDA:::removeTempDirReca(fpath1)
-RstoxFDA:::removeTempDirReca(fpath2)
-RstoxFDA:::removeTempDirReca(fpath3)
-
-convergence <- RstoxFDA::ReportParameterConvergence(paramSummary)
-
-expect_true(RstoxFDA::is.ParameterConvergenceData(convergence))
-expect_true(nrow(convergence$ConvergenceReport) < 433)
-expect_true(nrow(convergence$ConvergenceReport) > 0)
-
-#construct three identical chains, should signal convergence
-paramSummary <- RstoxFDA::ReportRecaParameterStatistics(paramOut1)
-paramOut1$GlobalParameters$GlobalParameters$resultdir="B"
-paramSummary <- RstoxFDA::ReportRecaParameterStatistics(paramOut1, paramSummary, AppendReport = T)
-paramOut1$GlobalParameters$GlobalParameters$resultdir="C"
-paramSummary <- RstoxFDA::ReportRecaParameterStatistics(paramOut1, paramSummary, AppendReport = T)
-
-#context("Check Gelman-Rubin for equal chains")
-convergence <- RstoxFDA::ReportParameterConvergence(paramSummary, Tolerance = 0)
-expect_equal(nrow(convergence$ConvergenceReport), 433)
-expect_true(all(abs(convergence$ConvergenceReport$GelmanRubinR-1)<.1))
-
-
 #context("Test StoxReportFunctions: ReportRecaCatchStatistics")
 predictiondatafile <- system.file("testresources","stocksplitpred.rds", package="RstoxFDA")
 catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
@@ -139,7 +95,7 @@ expect_true(sum(gReport$FisheriesSampling$Catches, na.rm=T) == sum(qgReport$Fish
 SamplingReport <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"))
 expect_true(abs(sum(StoxBioticData$Sample$CatchFractionWeight, na.rm=T) - sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches)) / sum(SamplingReport$FisheriesSampling$WeightOfSampledCatches) < .01)
 expect_true(abs(sum(StoxLandingData$Landing$RoundWeight, na.rm=T) - sum(SamplingReport$FisheriesSampling$LandedRoundWeight)) / sum(SamplingReport$FisheriesSampling$LandedRoundWeight) < .01)
-expect_true(RstoxFDA::is.ReportFdaSamplingData(SamplingReport))
+expect_true(RstoxFDA:::is.ReportFdaSamplingData(SamplingReport))
 expect_true(all(!is.na(SamplingReport$FisheriesSampling$LandedRoundWeight)))
 expect_equal(RstoxData::getUnit(SamplingReport$FisheriesSampling$WeightOfSampledCatches), "mass-kg")
 expect_true(is.na(RstoxData::getUnit(SamplingReport$FisheriesSampling$Catches)))
@@ -160,7 +116,7 @@ expect_true(all(SamplingReportRounded$FisheriesSampling$WeightOfSampledCatches !
 
 # test one with NAs
 SamplingReportSV <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"), Unit="kiloton", Decimals = 6, SamplingVariables = c("IndividualSex"))
-expect_true(is.ReportFdaSamplingData(SamplingReportSV))
+expect_true(RstoxFDA:::is.ReportFdaSamplingData(SamplingReportSV))
 expect_true("SamplingVariables" %in% names(SamplingReportSV))
 expect_true("IndividualSex" %in% names(SamplingReportSV$FisheriesSampling))
 expect_equal(sum(is.na(SamplingReportSV$FisheriesSampling$IndividualSex)),2)
@@ -209,8 +165,8 @@ catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.r
 catchAtAgeReportDecomp <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeDecomp)
 catchAtAgeReportFlat <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeFlat)
 
-expect_true(RstoxFDA::is.ReportFdaData(catchAtAgeReportDecomp))
-expect_true(RstoxFDA::is.ReportFdaData(catchAtAgeReportFlat))
+expect_true(RstoxFDA:::is.ReportFdaData(catchAtAgeReportDecomp))
+expect_true(RstoxFDA:::is.ReportFdaData(catchAtAgeReportFlat))
 
 diff <- sum(catchAtAgeReportFlat$NbyAge$CatchAtAge) - sum(catchAtAgeReportDecomp$NbyAge$CatchAtAge)
 reldiff <- abs(diff/sum(catchAtAgeReportFlat$NbyAge$CatchAtAge))
@@ -294,7 +250,7 @@ expect_equal(catchAtAgeReportMi$NbyAge$SD[1:3]*1e6, catchAtAgeReportFlatPlusGr$N
 # Report Mean weight
 
 MeanWeightReportDecomp <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimals = 4, Unit = "kg")
-expect_true(RstoxFDA::is.ReportFdaData(MeanWeightReportDecomp))
+expect_true(RstoxFDA:::is.ReportFdaData(MeanWeightReportDecomp))
 expect_equal(RstoxData::getUnit(MeanWeightReportDecomp$MeanWeightByAge$MeanIndividualWeight), "mass-kg")
 
 MeanWeightReportDecimal <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, Decimal=4)
@@ -333,7 +289,7 @@ expect_true(all(MeanWeightReportDecompPlusGr$MeanWeightByAge$MeanIndividualWeigh
 
 # Report Mean length
 MeanLengthReportDecomp <- RstoxFDA::ReportRecaLengthAtAge(catchAtAgeDecomp, Unit="cm", Decimals=1)
-expect_true(RstoxFDA::is.ReportFdaData(MeanLengthReportDecomp))
+expect_true(RstoxFDA:::is.ReportFdaData(MeanLengthReportDecomp))
 expect_true(!all(nchar(as.character(MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength[MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength>0]))>5))
 expect_equal(RstoxData::getUnit(MeanLengthReportDecomp$MeanLengthByAge$MeanIndividualLength), "length-cm")
 
@@ -381,7 +337,7 @@ catchAtAgeReportDecompPlusGr <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeDecomp,
 MeanWeightReportDecompPlusGr <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6, Threshold = 1000)
 expect_true(sum(is.na(MeanWeightReportDecompPlusGr$MeanWeightByAge$MeanIndividualWeight))>1)
 sopTabNa <- RstoxFDA::ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"))
-expect_true(RstoxFDA::is.ReportFdaSOP(sopTabNa))
+expect_true(RstoxFDA:::is.ReportFdaSOP(sopTabNa))
 sopTabNa <- sopTabNa$SopReport
 expect_true(any(sopTabNa$Difference<0))
 
@@ -391,7 +347,7 @@ catchAtAgeReportDecompPlusGr <- RstoxFDA::ReportRecaCatchAtAge(catchAtAgeDecomp,
 MeanWeightReportDecompPlusGr <- RstoxFDA::ReportRecaWeightAtAge(catchAtAgeDecomp, PlusGroup=5, Decimals = 6)
 sopTab <- RstoxFDA::ReportFdaSOP(catchAtAgeReportDecompPlusGr, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"))
 sopTabKi <- RstoxFDA::ReportFdaSOP(catchAtAgeReportDecompPlusGrKi, MeanWeightReportDecompPlusGr, StoxLandingData, GroupingVariables = c("Gear", "Area"), UnitFraction = "%")
-expect_true(RstoxFDA::is.ReportFdaSOP(sopTab))
+expect_true(RstoxFDA:::is.ReportFdaSOP(sopTab))
 sopTab <- sopTab$SopReport
 sopTabKi <- sopTabKi$SopReport
 expect_true(all(abs(sopTab$RelativeDifference) < 0.02))

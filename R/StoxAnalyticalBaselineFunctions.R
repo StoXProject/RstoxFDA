@@ -37,7 +37,7 @@ assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Str
   selectionUnits <- flatStox[,.SD, .SDcol=c("Stratum", "Order", "SamplingUnitId")]
   selectionUnits <- selectionUnits[!duplicated(selectionUnits$SamplingUnitId),]
   selectionTable <- merge(flatStox[,.SD, .SDcol=c("Stratum", "Order", "SamplingUnitId")], CommonSelectionData)
-  sampleTable <- flatStox[,list(N=as.numeric(NA), n=length(unique(SamplingUnitId)), SelectionMethod="FSWR", FrameDescription=as.character(NA)), by=c("Stratum")]
+  sampleTable <- flatStox[,list(N=as.numeric(NA), n=length(unique(get("SamplingUnitId"))), SelectionMethod="FSWR", FrameDescription=as.character(NA)), by=c("Stratum")]
   sampleTable <- sampleTable[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
   stratificationTable <- flatStox[,.SD,.SDcol=c("Stratum", StratificationColumns)]
   stratificationTable <- stratificationTable[!duplicated(stratificationTable$Stratum),]
@@ -150,7 +150,7 @@ parseDesignParameters <- function(filename){
 #' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling.
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{PSUSamplingParametersData}}
-#' @export
+#' @noRd
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
@@ -233,8 +233,8 @@ collapseStrataIndividualDesignParamaters <- function(designParam, collapseVariab
   
   designParam$StratificationVariables$Stratum <- designParam$StratificationVariables$newStratum
   designParam$StratificationVariables$newStratum <- NULL
-  
-  designParam$SampleTable <- designParam$SampleTable[,list(N=sum(N), n=sum(n), SelectionMethod=SelectionMethod[1], SampleDescription=as.character(NA)), by=c("SampleId", "Stratum")]
+
+  designParam$SampleTable <- designParam$SampleTable[,list(N=sum(get("N")), n=sum(get("n")), SelectionMethod=get("SelectionMethod")[1], SampleDescription=as.character(NA)), by=c("SampleId", "Stratum")]
   designParam$StratificationVariables <- designParam$StratificationVariables[!duplicated(paste(designParam$StratificationVariables$SampleId, designParam$StratificationVariables$Stratum)),.SD, .SDcol=c("SampleId", "Stratum", retain)]
   return(designParam)
 }
@@ -272,8 +272,8 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
   stratificationTable <- individuals[!duplicated(paste(individuals$SampleId, individuals$Stratum)), .SD,.SDcol=c("SampleId", "Stratum", StratificationColumns)]
   
   individuals$Sampled <- hasParam
-  stratumTotals <- individuals[,list(totalInStratum=.N, sampledInStratum=sum(Sampled)), by=c("Stratum", "SampleId")]
-  sampleTotals <- individuals[,list(totalInSample=.N), by=c("SampleId")]
+  stratumTotals <- individuals[,list(totalInStratum=get(".N"), sampledInStratum=sum(get("Sampled"))), by=c("Stratum", "SampleId")]
+  sampleTotals <- individuals[,list(totalInSample=get(".N")), by=c("SampleId")]
   stratumFraction <- merge(stratumTotals, sampleTotals, by="SampleId")
   stratumFraction$StratumFraction <- stratumFraction$totalInStratum / stratumFraction$totalInSample
   individuals <- merge(individuals, stratumFraction, by=c("SampleId", "Stratum"))
@@ -336,7 +336,7 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
 #' @param StratificationColumns names of columns in the Individual table of StoxBioticData that identify strata for Stratified selection (DefinitionMethod 'Stratified').
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}} where SampleId refers to the variable 'Haul' on the 'Haul' table in StoxBioticData, and IndividualId refers to the variable 'Individual' on the 'Individual' table of StoxBioticData.
-#' @export
+#' @noRd
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
@@ -511,7 +511,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
   }
   
   if (DefinitionMethod == "MissingAtRandom"){
-    responsePropensity <- PSUSamplingParametersData$SelectionTable[,list(ResponsePropensity=sum(!is.na(SamplingUnitId))/.N), by=c("Stratum")]
+    responsePropensity <- PSUSamplingParametersData$SelectionTable[,list(ResponsePropensity=sum(!is.na(get("SamplingUnitId")))/get(".N")), by=c("Stratum")]
     
     PSUSamplingParametersData$SampleTable$n <- PSUSamplingParametersData$SampleTable$n * responsePropensity$ResponsePropensity[match(PSUSamplingParametersData$SampleTable$Stratum, responsePropensity$Stratum)]
     
@@ -522,7 +522,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
     PSUSamplingParametersData$SelectionTable <- PSUSamplingParametersData$SelectionTable[!is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId)]
     
     #correct normalized sampling weights
-    weights <- PSUSamplingParametersData$SelectionTable[,list(HHsum=sum(HHsamplingWeight), HTsum=sum(HTsamplingWeight)), by=c("Stratum")]
+    weights <- PSUSamplingParametersData$SelectionTable[,list(HHsum=sum(get("HHsamplingWeight")), HTsum=sum(get("HTsamplingWeight"))), by=c("Stratum")]
     PSUSamplingParametersData$SelectionTable$HTsamplingWeight <- PSUSamplingParametersData$SelectionTable$HTsamplingWeight / weights$HTsum[match(PSUSamplingParametersData$SelectionTable$Stratum, weights$Stratum)]
     PSUSamplingParametersData$SelectionTable$HHsamplingWeight <- PSUSamplingParametersData$SelectionTable$HHsamplingWeight / weights$HHsum[match(PSUSamplingParametersData$SelectionTable$Stratum, weights$Stratum)]
     

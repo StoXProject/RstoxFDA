@@ -1,3 +1,7 @@
+# ECA tests are only run if Reca is installed.
+
+if (nchar(system.file(package="Reca"))>0){
+
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
 
@@ -41,3 +45,5 @@ reportCAALwoLength <- RstoxFDA::ReportRecaCatchAtLengthAndAge(results)
 expect_equal(nrow(reportCAALwLength$NbyLength), 2158)
 expect_equal(nrow(reportCAALwoLength$NbyLength), 26)
 expect_equal(sum(reportCAALwoLength$NbyLength$CatchAtLength), sum(reportCAALwLength$NbyLength$CatchAtLength))
+
+}

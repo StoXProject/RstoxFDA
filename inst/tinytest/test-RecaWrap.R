@@ -1,4 +1,7 @@
+# ECA tests are only run if Reca is installed.
 
+if (nchar(system.file(package="Reca"))>0){
+  
 fishdata <- data.table::as.data.table(readRDS(system.file(package = "RstoxFDA", "testresources", "fishdata.rda")))
 landings <- data.table::as.data.table(readRDS(system.file(package = "RstoxFDA", "testresources", "landings.rda")))
 
@@ -237,3 +240,5 @@ expect_true(!is.null(recaObj$AgeLength$CovariateMatrix$constant))
 expect_true(!is.null(recaObj$WeightLength$CovariateMatrix$constant))
 expect_true("constant" %in% rownames(recaObj$AgeLength$info))
 expect_true("constant" %in% rownames(recaObj$WeightLength$info))
+
+}
