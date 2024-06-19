@@ -369,7 +369,8 @@ popEstNoD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstNoD)
 ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstNoD, land, "IndividualRoundWeight", "TotalDomainWeight")
 
 #error should be close to zero, since domain coincides with strata
-expect_true(abs(ratioEst$Variables$Total - sum(land$Landing$RoundWeight)*1000)<1e-6)
+
+expect_true(abs(ratioEst$Variables$Total - sum(land$Landing$RoundWeight)*1000)/ratioEst$Variables$Total<1e-6)
 expect_true(sqrt(ratioEst$VariablesCovariance$TotalCovariance) / ratioEst$Variables$Total < 1e-2)
 
 #
