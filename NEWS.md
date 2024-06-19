@@ -9,8 +9,6 @@
 * Changed the definition neighbours in DefineCarNeighbours from polygons touching to polygons within 1 metre distance in mercator projection.
 * Changed areaCodeConversionTable to work with provided area definitions in mercator projection
 
-NOTE: currently support for converting old projects is not included. They may not work if processdata contains the old kind of spatial strata encodings based on sp SpatialPolygons. This should be fixed before pre-release.
-
 # RstoxFDA v1.3-9002
 * Fixed issue with PlotMeanWeightAtAge and PlotMeanLengthAtAge that would not plot mean values for configurations with no grouping variables
 
