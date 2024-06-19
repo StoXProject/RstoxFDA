@@ -39,4 +39,4 @@ Suggests:
 Additional_repositories: 
     https://stoxproject.github.io/repo
 Vignettebuilder: knitr
-
+RoxygenNote: 7.3.1
