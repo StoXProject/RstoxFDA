@@ -1068,7 +1068,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'  PSUsamplingParameters <- RstoxFDA::AssignPSUSamplingParameters(
 #'                                        RstoxFDA::CatchLotterySamplingExample, 
 #'                                        RstoxFDA::CatchLotteryExample, 
-#'                                        "lotterySerialnumber", "Haul", "MissingAtRandom")
+#'                                        "serialnumber", "Haul", "MissingAtRandom")
 #'  individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
 #'                                        RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
 #'                                        
@@ -1336,7 +1336,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'  PSUsamplingParameters <- RstoxFDA::AssignPSUSamplingParameters(
 #'                                        RstoxFDA::CatchLotterySamplingExample, 
 #'                                        RstoxFDA::CatchLotteryExample, 
-#'                                        "lotterySerialnumber", "Haul", "MissingAtRandom")
+#'                                        "serialnumber", "Haul", "MissingAtRandom")
 #'  individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
 #'                                        RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
 #'  

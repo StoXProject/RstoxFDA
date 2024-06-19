@@ -168,7 +168,7 @@ Vocabulary for notation used above:
  PSUsamplingParameters <- RstoxFDA::AssignPSUSamplingParameters(
                                        RstoxFDA::CatchLotterySamplingExample, 
                                        RstoxFDA::CatchLotteryExample, 
-                                       "lotterySerialnumber", "Haul", "MissingAtRandom")
+                                       "serialnumber", "Haul", "MissingAtRandom")
  individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
                                        RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
                                        
