@@ -16,6 +16,128 @@ is.Date <- function(date){
   return(FALSE)
 }
 
+#' Analytical PSU Estimate Data
+#' 
+#' @description
+#'  Analytical estimates for each PSU
+#'  
+#'  List containing the following \code{\link[data.table]{data.table}}s:
+#'  
+#'  Abundance
+#'  \describe{
+#'    \item{SampleId}{Identfier for Primary sampling unit (PSU)}
+#'    \item{Stratum}{Identifier for stratification of individuals}
+#'    \item{Domain}{Identifier of domains for individuals}
+#'    \item{Abundance}{Total number in Stratum and Domain at th PSU. Unsampled strata is reported as NA}
+#'    \item{Frequency}{Frequency in Domain within Stratum. Unsampled strata is reported as NA}
+#'  }
+#'  
+#'  Variables
+#'  \describe{
+#'    \item{SampleId}{Identfier for Primary sampling unit (PSU)}
+#'    \item{Stratum}{Identifier for stratification of individuals}
+#'    \item{Domain}{Identifier of domains for individuals}
+#'    \item{Variable}{Variable that total and mean is reported for}
+#'    \item{Total}{Total value of variable in Stratum and Domain at the PSU. Unsampled strata is reported as NA}
+#'    \item{Mean}{Mean value of variable in Stratum and Domain at the PSU. Unsampled strata is reported as NA}
+#'  }
+#'  
+#'  DomainVariables
+#'  \describe{
+#'   \item{Domain}{Identifier of domains for individuals. In addition the domain is identified by the combination of any additional columns in this table}
+#'   \item{<DomainVariables>}{Columns that relate the domains to data records.}
+#'  }
+#'  
+#'  PSUDomainVariables
+#'  \describe{
+#'   \item{SampleId}{Identifier for Primary Sampling Unit (PSU)}
+#'   \item{PSUDomain}{Identfier of domains for PSUs. In addition PSU-domains are identified by the combination of any additional columns in this table.}
+#'   \item{<DomainVariables>}{Columns that relate the PSU domains to data records.}
+#'  }
+#'  
+#'  StratificationVariables
+#'  \describe{
+#'   \item{SampleId}{Identifier for Primary Sampling Unit (PSU)}
+#'   \item{Stratum}{Identfier of stratum for individuals at PSU. In addition strata are identified by the combination of any additional columns in this table.}
+#'   \item{<StratificationVariables>}{Columns that relate the PSU domains to data records.}
+#'  }
+#' 
+#' @name AnalyticalPSUEstimateData
+#' @concept Data types
+#' @concept Analytical estimation
+#' 
+NULL
+
+#' Analytical Population Estimate Data
+#' 
+#' @description
+#'  Analytical estimates for a population
+#'  
+#'  SampleSummary
+#'  \describe{
+#'   \item{Stratum}{Stratum that summary is provided for.}
+#'   \item{PSUDomain}{PSU domain that summary is provided for.}
+#'   \item{Samples}{The number of PSUs sampled in the domain.}
+#'   \item{PSUDomainSize}{The estimated number of PSUs in the domain.}
+#'   \item{PSURelativeDomainSize}{The estimated fraction of PSUs in the domain, relative to the number of PSUs in the stratum.}
+#'  }
+#'  
+#'  Abundance
+#'  \describe{
+#'    \item{Stratum}{Stratum that abundance is provided for.}
+#'    \item{Domain}{The domain that the abundance is provided for.}
+#'    \item{Abundance}{The estimated number of individuals in the domain and stratum.}
+#'    \item{Frequency}{The estimated fraction of individuals in the domain, relative ot the total number in stratum.}
+#'  }
+#'  
+#'  Variables
+#'  \describe{
+#'    \item{Stratum}{The stratum that estimates are provided for.}
+#'    \item{Domain}{The domain that estimates are provided for.}
+#'    \item{Variable}{The variable (measurment) that estimates are provided for.}
+#'    \item{Total}{The estimated total value of the variable in domain and stratum.}
+#'    \item{Mean}{The estimated mean value fo the variable in domain and stratum.}
+#'  }
+#'  
+#'  AbundanceCovariance
+#'  \describe{
+#'    \item{Stratum}{The stratum that covariances are provided for.}
+#'    \item{Domain1}{A domain that covariances are provided for.}
+#'    \item{Domain2}{A domain that covariances are provided for.}
+#'    \item{AbundanceCovariance}{The estimated covariance of abundance between Domain1 and Domain2.}
+#'    \item{FrequencyCovariance}{The estimated covariance of frequency between Domain1 and Domain2.}
+#'  }
+#'  
+#'  VariableCovariance
+#'  \describe{
+#'    \item{Stratum}{The stratum that covariances are provied for.}
+#'    \item{Domain1}{A domain that covariances are provided for.}
+#'    \item{Domain2}{A domain that covariances are provided for.}
+#'    \item{Variable1}{A variable that covariances are provided for.}
+#'    \item{Variable2}{A variable that covariances are provided for.}
+#'    \item{TotalCovariance}{The estimated covariance of total value of Variable1 in Domain1 and Variable2 in Domain2}
+#'    \item{MeanCovariance}{The estimated covariance of the mean value of Variable1 in Domain1 and Variable2 in Domain2}
+#'  }
+#'  
+#'  StratificationVariables
+#'  \describe{
+#'   \item{Stratum}{A stratum, as identified in other tables.}
+#'   \item{StratificationVariables}{Columns that relate the stratum to data records.}
+#'  }
+#'  
+#'  DomainVariables
+#'  \describe{
+#'   \item{Domain}{A domain, as identified in other tables.}
+#'   \item{DomainVariables}{Columns that relate the domain to data records.}
+#'  }
+#' 
+#' @name AnalyticalPopulationEstimateData
+#' @concept Data types
+#' @concept Analytical estimation
+#' 
+NULL
+
+
 #' PSU Sampling Design Parameters
 #' 
 #' Sampling parameters for selection of Primary Sampling Units
@@ -51,11 +173,6 @@ is.Date <- function(date){
 #'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
 #'  }
 #'  
-#'  The Assignment encodes which identifier in sample records (e.g. \code{\link[RstoxData]{StoxBioticData}}) correspond to the SamplingUnitId
-#'  \describe{
-#'   \item{DataRecordsId}{Optional, character. The identifier in data records that correspond to SamplingUnitId}
-#'  }
-#'  This field is optional, since SamplingParameters may be subject to processing before they are assigned to data records.
 #' 
 #' Optional columns may be NA.
 #' 
@@ -89,13 +206,7 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
   if (!all(sapply(PSUSamplingParametersData, data.table::is.data.table))){
     return(FALSE)
   }
-  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables", "Assignment") %in% names(PSUSamplingParametersData))){
-    return(FALSE)
-  }
-  if (nrow(PSUSamplingParametersData$Assignment)>1){
-    return(FALSE)
-  }
-  if (!("DataRecordsId" %in% names(PSUSamplingParametersData$Assignment))){
+  if (!all(c("SampleTable", "SelectionTable", "StratificationVariables") %in% names(PSUSamplingParametersData))){
     return(FALSE)
   }
   if (!all(c("Stratum", "N", "n", "SelectionMethod", "FrameDescription") %in% names(PSUSamplingParametersData$SampleTable))){
@@ -147,13 +258,13 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
 #' @details 
 #'  Encodes information about the selection of a sub-sample of observations from individuals, used in analytical design based estimation.
 #'  A sub-sample is simply a sample of a sample. This data type is intended to represent the final stage of sampling in multi-stage sampling,
-#'  and therefor has a reference to the Sample it was taken from ('SampleId'). Apart from that there is no principal difference from single
+#'  and therefore has a reference to the Sample it was taken from ('SampleId'). Apart from that there is no principal difference from single
 #'  stage sampling. All stratification is specified within the sample identifed by 'SampleId', and all sampling probabilites are specified within strata.
 #'  
 #'  The SampleTable encodes information about the sample of sampling units:
 #'  \describe{
 #'   \item{SampleId}{Mandatory, chr: Identifies the sample the sub-sample is taken from.}
-#'   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum the sub-sample is taken from.  Treat unstratified sample as single-stratum sampling (provide only one stratum.}
+#'   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum the sub-sample is taken from.  Treat unstratified sample as single-stratum sampling (provide only one stratum. All strata with strata size > 0 must be reported for each SampleId.}
 #'   \item{N}{Optional, num: The total number of individuals in Stratum. For unstratified sampling, the total number of individuals in the sample the sub-sample is taken from.}
 #'   \item{n}{Optional, num: The number of individuals selected from the Stratum}
 #'   \item{SelectionMethod}{Mandatory, chr: 'Poission', 'FSWR' or 'FSWOR'. The manner of selection for use in bootstrap or inference of inclusionProbabilities, selectionProbabilites, co-inclusion probabilities or co-selection probabilities.}
@@ -206,6 +317,7 @@ NULL
 #' @concept Data types
 #' @noRd
 is.IndividualSamplingParametersData <- function(IndividualSamplingParametersData){
+  
   if (!is.list(IndividualSamplingParametersData)){
     return(FALSE)
   }
@@ -2219,6 +2331,107 @@ stoxFunctionAttributes <- list(
       ColumnName = "Period"
     )
   ),
+  DefineIndividualSamplingParameters = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "IndividualSamplingParametersData",
+    functionParameterFormat = list(
+      Parameters = "individualparameters",
+      StratificationColumns = "individualstratificationcolumns"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ),
+      StoxBioticData = list(
+        UseProcessData = FALSE
+      ),
+      Parameters = list(
+        UseProcessData = FALSE
+      ),
+      LengthInterval = list(
+        DefinitionMethod = "LengthStratified",
+        UseProcessData = FALSE
+      ),
+      StratificationColumns = list(
+        DefinitionMethod = "Stratified",
+        UseProcessData = FALSE
+      )
+    )
+  ),
+  DefinePSUSamplingParameters = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "PSUSamplingParametersData",
+    functionParameterFormat = list(
+      FileName = "filePath",
+      SamplingUnitId = "samplingunitid",
+      StratificationColumns = "stratificationcolumns"
+      ),
+    functionParameterDefaults = list(
+      DefinitionMethod = "ResourceFile"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ),
+      FileName = list(
+        DefinitionMethod = "ResourceFile",
+        UseProcessData = FALSE
+      ),
+      StoxBioticData = list(
+        DefinitionMethod = "AdHocStoxBiotic",
+        UseProcessData = FALSE
+      ),
+      SamplingUnitId = list(
+        DefinitionMethod = "AdHocStoxBiotic",
+        UseProcessData = FALSE
+      ),
+      StratificationColumns = list(
+        DefinitionMethod = "AdHocStoxBiotic",
+        UseProcessData = FALSE
+      )
+    )
+  ),
+  AssignPSUSamplingParameters = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "PSUSamplingParametersData",
+    functionParameterFormat = list(
+      SamplingUnitId = "samplingunitid",
+      DataRecordId = "datarecordid"
+    ),
+    functionParameterDefaults = list(
+      DefinitionMethod = "MissingAtRandom"
+    )
+  ),
+  AnalyticalPSUEstimate = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPSUEstimateData",
+    functionParameterFormat = list(
+      Variables = "individualnumericvariables",
+      DomainVariables = "individualdomainvariables",
+      PSUDomainVariables = "psudomainvariables"
+    )
+  ),
+  AnalyticalPopulationEstimate = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPopulationEstimateData"
+  ),
+  AnalyticalRatioEstimate = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPopulationEstimateData",
+    functionParameterDefaults = list(
+      Method = "TotalDomainWeight",
+      WeightVariable = "IndividualRoundWeight"
+    ),
+    functionParameterFormat = list(
+      WeightVariable = "weightvariableratioestimate"
+    )
+  ),
   
   ListBioticDifference = list(
     functionType = "modelData", 
@@ -2652,6 +2865,145 @@ processPropertyFormats <- list(
       }
       possibleValues <- unique(possibleValues)
       possibleValues <- possibleValues[!(possibleValues %in% c("CruiseKey", "StationKey", "HaulKey", "SpeciesCategoryKey", "SampleKey"))]
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  stratificationcolumns = list(
+    class = "vector", 
+    title = "One or more variables to use as stratification columns", 
+    possibleValues = function(StoxBioticData, SamplingUnitId) {
+      possibleValues <- c()
+      for (n in c("Station", "Haul", "SpeciesCategory", "Sample")){
+        if (SamplingUnitId %in% names(StoxBioticData[[n]])){
+          for (nn in names(StoxBioticData[[n]])){
+            if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+              possibleValues <- c(possibleValues, nn)
+            }
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      possibleValues <- possibleValues[possibleValues != SamplingUnitId]
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  individualstratificationcolumns = list(
+    class = "vector", 
+    title = "One or more variables to use as stratification columns", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Individual")){
+          for (nn in names(StoxBioticData[[n]])){
+            if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+              possibleValues <- c(possibleValues, nn)
+            }
+          }
+      }
+      possibleValues <- unique(possibleValues)
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  individualdomainvariables = list(
+    class = "vector", 
+    title = "One or more variables to use for domain definitions", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Individual")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  psudomainvariables = list(
+    class = "vector", 
+    title = "One or more variables to use for domain definitions", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Cruise", "Station", "Haul", "SpeciesCategory", "Sample")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  individualparameters = list(
+    class = "vector", 
+    title = "One or more parameter to included in the design specification", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- unique(names(StoxBioticData$Individual))
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  individualnumericvariables = list(
+    class = "vector", 
+    title = "One or more numeric variables", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Individual")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.numeric(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+    }, 
+    variableTypes = "character"
+  ),
+  samplingunitid = list(
+    class = "vector", #convert to class single, if that becomes available. 
+    title = "Variable to use for sampling unit identification (choose only one)", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Cruise", "Station", "Haul", "SpeciesCategory", "Sample")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  datarecordid = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "Variable to use for data record identification (choose only one)", 
+    possibleValues = function(StoxBioticData) {
+      possibleValues <- c()
+      for (n in c("Cruise", "Station", "Haul", "SpeciesCategory", "Sample")){
+        for (nn in names(StoxBioticData[[n]])){
+          if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
+            possibleValues <- c(possibleValues, nn)
+          }
+        }
+      }
+      possibleValues <- unique(possibleValues)
+      return(sort(possibleValues))
+    }, 
+    variableTypes = "character"
+  ),
+  weightvariableratioestimate = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "Variable that represent weight of individuals in grams (choose only one)", 
+    possibleValues = function(AnalyticalPopulationEstimateData) {
+      possibleValues <- unique(AnalyticalPopulationEstimateData$Variables$Variable)
       return(sort(possibleValues))
     }, 
     variableTypes = "character"

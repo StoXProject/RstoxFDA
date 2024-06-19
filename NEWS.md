@@ -1,3 +1,7 @@
+
+# RstoxFDA v1.3-9005
+* Added functions for analytical catch at age estimation (DefinePSUSamplingParameters, DefineIndividualSamplingParameters, AssignPSUSamplingParameters, AnalyticalPSUEstimate, AnalyticalPopulationEstimate, AnalyticalRatioEstimate)
+
 # 1.3.0-9004
 * Converted area code resources from sp SpatialPolygons to sf data.frames, reflecting changes in RstoxBase v 2. Breaks compatibility with RstoxBase < 2.
 * Changed ReadLandingFDA to use ForceUnique as implemented in RstoxData v 2. Breaks compatibility with RstoxData < 2
