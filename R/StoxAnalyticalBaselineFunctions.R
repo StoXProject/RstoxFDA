@@ -63,7 +63,7 @@ parseDesignParameters <- function(filename){
   }
   stratificationColumns <- c()
   for (n in names(headers)){
-    if (!n %in% names(colClasses)){
+    if (!(n %in% names(colClasses))){
       stratificationColumns <- c(stratificationColumns, n)
       newnames <- c(names(colClasses), n)
       colClasses <- c(colClasses, "character")
@@ -85,8 +85,8 @@ parseDesignParameters <- function(filename){
   }
   
   for (n in stratificationColumns){
-    stopifnot(n %in% names(sampleTable))
-    if (any(is.na(sampleTable[[n]]))){
+    stopifnot(n %in% names(stratificationTable))
+    if (any(is.na(stratificationTable[[n]]))){
       stop(paste("Invalid design specification. The stratification column", n, "may not contain missing values (NA)."))
     }
   }
@@ -100,10 +100,10 @@ parseDesignParameters <- function(filename){
 
   if (length(stratificationColumns) > 0){
     stratificationVariableStrings <- apply(stratificationTable[,.SD, .SDcol=stratificationColumns], 1, paste, collapse="/")
-    duplicatedStrata <- stratificationTable$Stratum[duplicated(stratificationVariableStrings)]
-    
-    if (length(duplicatedStrata)>0){
-      stop(paste("Invalid design specification. The stratification variables must uniquely identify a stratum. Duplicates found for:", paste(duplicatedStrata, collapse=",")))
+    stratCount <- stratificationTable[,list(nStrata=length(unique(Stratum))), by=list(stratVars=stratificationVariableStrings)]
+    duplicatedStrata <- stratCount[nStrata>1,]
+    if (nrow(duplicatedStrata)>0){
+      stop(paste("Invalid design specification. The stratification variables must uniquely identify a stratum. Duplicates found for:", paste(duplicatedStrata$stratVars, collapse=",")))
     }
   }
   

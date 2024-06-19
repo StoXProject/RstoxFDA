@@ -241,7 +241,7 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
   }
   
   if (ncol(PSUSamplingParametersData$StratificationVariables) > 1){
-    stratificationVariableStrings <- apply(PSUSamplingParametersData$StratificationVariables[,.SD, .SDcol=names(PSUSamplingParametersData$StratificationVariables[names(PSUSamplingParametersData$StratificationVariables)!="Stratum"])], 1, paste, collapse="/")
+    stratificationVariableStrings <- apply(PSUSamplingParametersData$StratificationVariables[,.SD, .SDcol=names(PSUSamplingParametersData$StratificationVariables)[names(PSUSamplingParametersData$StratificationVariables)!="Stratum"]], 1, paste, collapse="/")
     duplicatedStrata <- PSUSamplingParametersData$StratificationVariables$Stratum[duplicated(stratificationVariableStrings)]
     
     if (length(duplicatedStrata)>0){

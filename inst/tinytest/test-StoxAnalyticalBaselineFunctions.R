@@ -10,6 +10,16 @@ expect_equal(nrow(designParams$StratificationVariables), 1)
 expect_equal(sum(designParams$SelectionTable$HTsamplingWeight), 1)
 expect_equal(sum(designParams$SelectionTable$HHsamplingWeight), 1)
 
+designParamsFileStratified <- system.file("testresources", "lotteryParameters", "lotteryDesignNSHstrata.txt", package="RstoxFDA")
+designParamsStratified <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFileStratified)
+expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsStratified))
+expect_equal(nrow(designParamsStratified$SelectionTable), 64)
+expect_equal(nrow(designParamsStratified$SampleTable), 1)
+expect_equal(ncol(designParamsStratified$StratificationVariables), 2)
+expect_equal(nrow(designParamsStratified$StratificationVariables), 1)
+expect_equal(sum(designParamsStratified$SelectionTable$HTsamplingWeight), 1)
+expect_equal(sum(designParamsStratified$SelectionTable$HHsamplingWeight), 1)
+
 # test assignment to data
 expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "MissingAtRandom"), "Argument \'DataRecordId\' must be provided.")
 expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "Haul", "Sample", "MissingAtRandom"), "The column provided for 'DataRecordId' ")
