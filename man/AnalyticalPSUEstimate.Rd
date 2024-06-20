@@ -46,7 +46,7 @@ PSU, any intermediate sampling levels can be incorporated with the function \cod
 If any strata are specified in the SampleTable of 'IndividualSamplingParametersData' but are not sampled per the SelectionTable
 all estimates will be provided as NAs for this stratum.
 
-Domains and that are not present in a sample are not reported, although their estimated abundance and total is zero. Use the function
+Domains that are not present in a sample are not reported, although their estimated abundance and total is zero. Use the function
 \code{\link[RstoxFDA]{LiftStrata}} to infer zero values for unreported domains, and mark unsampled strata as NA.
 
 In general unbiased estimates rely on known inclusion probabilites, and domain definitions that coincides

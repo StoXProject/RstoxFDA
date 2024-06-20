@@ -227,13 +227,14 @@ The following functions provides reporting from analytical estimates:
 
 |Report function | Description |
 |:------|:-----|
-|  | Total catch of each age group |
+| ReportAnalyticalCatchAtAge | Total catch of each age group |
+| PlotCatchAtAgeTotals | Plots catch of each age group |
 
 In addition some functions are relevant in this context, that may also be used with other estimation approaches, such as Reca:
 
 |Report function | Description |
 |:------|:-----|
-| ReportFdaSampling | Produces overview of sampling coverage. Useful for exploring cell-configurations, and checking if desired fixed-effect configurations are possible. |
+| ReportFdaSampling | Produces overview of sampling coverage. Useful for exploring sampling. |
 | ReportFdaLandings | Produces summaries of landings. |
 | ReportFdaSOP | Performs Sum-Of-Products tests, checking that the products of mean weight at age and estimated catch at age sum to total landed weight. |
 
