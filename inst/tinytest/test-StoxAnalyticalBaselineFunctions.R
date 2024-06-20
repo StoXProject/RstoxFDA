@@ -10,12 +10,22 @@ expect_equal(nrow(designParams$StratificationVariables), 1)
 expect_equal(sum(designParams$SelectionTable$HTsamplingWeight), 1)
 expect_equal(sum(designParams$SelectionTable$HHsamplingWeight), 1)
 
+designParamsFileStratified <- system.file("testresources", "lotteryParameters", "lotteryDesignNSHstrata.txt", package="RstoxFDA")
+designParamsStratified <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFileStratified)
+expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsStratified))
+expect_equal(nrow(designParamsStratified$SelectionTable), 64)
+expect_equal(nrow(designParamsStratified$SampleTable), 1)
+expect_equal(ncol(designParamsStratified$StratificationVariables), 2)
+expect_equal(nrow(designParamsStratified$StratificationVariables), 1)
+expect_equal(sum(designParamsStratified$SelectionTable$HTsamplingWeight), 1)
+expect_equal(sum(designParamsStratified$SelectionTable$HHsamplingWeight), 1)
+
 # test assignment to data
 expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "MissingAtRandom"), "Argument \'DataRecordId\' must be provided.")
 expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "Haul", "Sample", "MissingAtRandom"), "The column provided for 'DataRecordId' ")
 expect_error(RstoxFDA::AssignPSUSamplingParameters(designParams, RstoxFDA::CatchLotteryExample, "HaulKey", "Haul", "MissingAtRandom"), "The 'SamplingUnitId' ")
 ex <- RstoxFDA::CatchLotteryExample
-designParamsCorrected <- RstoxFDA::AssignPSUSamplingParameters(designParams, ex, "lotterySerialnumber", "Haul", "MissingAtRandom")
+designParamsCorrected <- RstoxFDA::AssignPSUSamplingParameters(designParams, ex, "serialnumber", "Haul", "MissingAtRandom")
 expect_equal(sum(designParamsCorrected$SelectionTable$HTsamplingWeight),1)
 expect_equal(sum(designParamsCorrected$SelectionTable$HHsamplingWeight),1)
 #HT should be approximately the same after non-response correction
@@ -274,7 +284,7 @@ ex <- RstoxFDA::CatchLotteryExample
 ex$SpeciesCategory$SpeciesCategory <- "061104"
 ex$Individual$IW <- ex$Individual$IndividualRoundWeight #for testing that covariances equal variances when appropriate
 ex$Individual$one <- 1 #for testing that variable covariance equal abundance covariance when appropriate.
-stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "lotterySerialnumber", "Haul", "MissingAtRandom")
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
 srs <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, ex, "SRS", c("IndividualAge"))
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
 popEstAgeDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)

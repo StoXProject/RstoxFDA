@@ -137,6 +137,46 @@ NULL
 #' 
 NULL
 
+#' Check if input is correctly formatted Analytical Population Estimate Data
+#' @param table \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}
+#' @return validity
+#' @concept Data types
+#' @noRd
+is.AnalyticalPopulationEstimateData <- function(AnalyticalPopulationEstimateData){
+  
+  if (!is.list(AnalyticalPopulationEstimateData)){
+    return(FALSE)
+  }
+  if (!all(c("SampleSummary", "Abundance", "Variables", "AbundanceCovariance", "VariablesCovariance", "DomainVariables", "StratificationVariables") %in% names(AnalyticalPopulationEstimateData))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum", "PSUDomain", "Samples", "PSUDomainSize", "PSURelativeDomainSize") %in% c(names(AnalyticalPopulationEstimateData$SampleSummary)))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum", "Domain", "Abundance", "Frequency") %in% names(AnalyticalPopulationEstimateData$Abundance))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum", "Domain", "Variable", "Total", "Mean") %in% names(AnalyticalPopulationEstimateData$Variables))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2", "TotalCovariance", "MeanCovariance") %in% names(AnalyticalPopulationEstimateData$VariablesCovariance))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum", "Domain1", "Domain2", "AbundanceCovariance", "FrequencyCovariance") %in% names(AnalyticalPopulationEstimateData$AbundanceCovariance))){
+    return(FALSE)
+  }
+  if (!all(c("Domain") %in% names(AnalyticalPopulationEstimateData$DomainVariables))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum") %in% names(AnalyticalPopulationEstimateData$StratificationVariables))){
+    return(FALSE)
+  }
+  domains <- nrow(AnalyticalPopulationEstimateData$DomainVariables) * nrow(AnalyticalPopulationEstimateData$StratificationVariables)
+  if (domains != nrow(AnalyticalPopulationEstimateData$Abundance)){
+    return(FALSE)
+  }
+  return(TRUE)
+}
 
 #' PSU Sampling Design Parameters
 #' 
@@ -241,7 +281,7 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
   }
   
   if (ncol(PSUSamplingParametersData$StratificationVariables) > 1){
-    stratificationVariableStrings <- apply(PSUSamplingParametersData$StratificationVariables[,.SD, .SDcol=names(PSUSamplingParametersData$StratificationVariables[names(PSUSamplingParametersData$StratificationVariables)!="Stratum"])], 1, paste, collapse="/")
+    stratificationVariableStrings <- apply(PSUSamplingParametersData$StratificationVariables[,.SD, .SDcol=names(PSUSamplingParametersData$StratificationVariables)[names(PSUSamplingParametersData$StratificationVariables)!="Stratum"]], 1, paste, collapse="/")
     duplicatedStrata <- PSUSamplingParametersData$StratificationVariables$Stratum[duplicated(stratificationVariableStrings)]
     
     if (length(duplicatedStrata)>0){
@@ -2531,6 +2571,15 @@ stoxFunctionAttributes <- list(
     )
   ),
   ReportRecaCatchAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaCatchAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9
+    )
+  ),
+  ReportAnalyticalCatchAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "ReportFdaCatchAtAgeData",

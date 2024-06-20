@@ -11,7 +11,7 @@
 data(CatchLotteryExample)
 }
 \description{
-Example of data formatted as \code{\link[RstoxData]{StoxBioticData}}, with an added column 'lotterySerialnumber' at the Haul-table and an added column 'CountryVessel' at the Station-table
+Example of data formatted as \code{\link[RstoxData]{StoxBioticData}}, with an added column 'serialnumber' at the Haul-table and an added column 'CountryVessel' at the Station-table
 which identifies the selection in the catch sampling lottery that this data was recorded for (see 'SamplingUnitId' in \code{\link[RstoxFDA]{CatchLotterySamplingExample}})
 }
 \details{
