@@ -40,6 +40,8 @@ RstoxFDA is an optional packages in StoX. In order to use the functions introduc
 
 # Analytical estimates with multi-stage sampling
 
+Below is provided an overview of which functions can be used to perform analytical estimates from fisheries dependent sampling. Detailed descriptions are found in the documentation for the individual functions. Equation rendering is not supported in all views, but is provided in the RstoxFDA pdf-manual.
+
 ## 2-stage approximation
 RstoxFDA provides a generic framework for analytical estimates of multi-stage sampling data, through a 2-stage approximation. The sampling design is conceptually divided into two steps: Selection of primary sampling units (PSUs), and selection of individuals within each sampling unit. If selection probabilities can be inferred for each of these two steps:
 
@@ -82,6 +84,7 @@ The sample are all selected from the same stratum, which is defined in terms of 
 
 ```{r inspectPSUstratification}
 head(PSUparameters$StratificationVariables)
+warning("Add better explanatio for stratification variables")
 ```
 
 We also need to know the sampling parameters for each fish at each haul. RstoxFDA provides support for calculating those for some common sampling schemes. We can infer sampling parameters for observations of individual fish within a haul with the function _RstoxFDA::DefineIndvidiualSamplingParameters_. In the case of the catch lottery sampling, we will assume that fish that are selected for measurement is a simple random sample of the catch (DefinitionMethod="SRS). Sometimes different sampling schemes are employed for different parameters, so we have to specify a set of parameter which signals that the specimen is selected. We will specify the selected inndividuals as those where either sex or age is observed, as sex and age is observed for the subsample, and specifying sex rather than just age allows us to catch missing age records (due to for instance readability):
@@ -106,10 +109,15 @@ StoxBioticData = RstoxFDA::CatchLotteryExample
 SamplingUnitId = "serialnumber"
 DataRecordId = "Haul"
 DefinitionMethod = "MissingAtRandom"
-PSUassigment = RstoxFDA::AssignPSUSamplingParameters(DefinitionMethod=DefinitionMethod, StoxBioticData=StoxBioticdata, PSUSamplingParametersData=PSUparameters, SamplingUnitId=SamplingUnitId, DataRecordId=DataRecordId)
+PSUassigment = RstoxFDA::AssignPSUSamplingParameters(DefinitionMethod=DefinitionMethod, StoxBioticData=StoxBioticData, PSUSamplingParametersData=PSUparameters, SamplingUnitId=SamplingUnitId, DataRecordId=DataRecordId)
 ```
 
 ### Estimation
+
+```{r}
+warning("Need something about domains, PSU domains and straificationVariables.")
+```
+
 
 We can then estimate abundance, frequencies, totals and means for each PSU. We need to specify the domain we want to estimate for (we provide age so that we get estimates for each age group). We also need to specify which variables we want means and totals for (we specify weight and length):
 
@@ -167,7 +175,15 @@ head(populationEstimates$AbundanceCovariance)
 
 ```
 
-We have not yet utilized the census information on landings. We can improve our estimate with a ratio estimator that corrects the abundance with the ratio between estimated total weight across all domains / age groups and the reported total landings:
+We have not yet utilized the census information on landings. We can improve our estimate with a ratio estimator that corrects the abundance with the ratio between estimated total weight across all domains / age groups and the reported total landings. The function _RstoxFDA::AnalyticalRatioEstimate_ supports this, but needs the strata or PSU-domains to be in correspondance with variables in the landings, which is why we wanted the PSUs stratification to be defined by 'Species'.
+
+```{r}
+warning("Need to explain how ratio estimate matches landing partitions to PSU domains")
+```
+
+
+
+We perform the ratio estimate:
 
 ```{r RatioEstimateTotal}
 AnalyticalPopulationEstimateData = populationEstimates
@@ -214,3 +230,4 @@ In addition some functions are relevant in this context, that may also be used w
 | ReportFdaSampling | Produces overview of sampling coverage. Useful for exploring cell-configurations, and checking if desired fixed-effect configurations are possible. |
 | ReportFdaLandings | Produces summaries of landings. |
 | ReportFdaSOP | Performs Sum-Of-Products tests, checking that the products of mean weight at age and estimated catch at age sum to total landed weight. |
+
