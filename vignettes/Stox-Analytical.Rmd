@@ -204,6 +204,49 @@ merge(ratioEst$Abundance, populationEstimates$Abundance, by=c("Stratum", "Domain
 
 The function _RstoxFDA::AnalyticalRatioEstimate_ also supports other kinds of ratio estimation based on only frequencies and mean weights, so that a total abundance estimate can be obtained even for sampling programs with less detailed information about the sampling parameters.
 
+Finally we can report the domain estimate:
+
+```{r ReportAnalyticalCatchAtAge}
+AnalyticalPopulationEstimateData = ratioEst
+PlusGroup = 9
+IntervalWidth = .9
+Decimals = 0
+caaReport <- ReportAnalyticalCatchAtAge(AnalyticalPopulationEstimateData = AnalyticalPopulationEstimateData, PlusGroup = PlusGroup, IntervalWidth = IntervalWidth, Decimals = Decimals, "10^6 individuals")
+caaReport$NbyAge
+```
+
+Note that the domain of fish with missing age is preserved and assigned the minimum age 0, and we have added a plus group with minimum age 9. This table is compatible with those produced by other estimation procedures, such as Reca, so that we can use the same plotting functions:
+
+```{r PlotCatchAtAgeTotals}
+ReportFdaCatchAtAgeData = caaReport
+PlotCatchAtAgeTotals(ReportFdaCatchAtAgeData = ReportFdaCatchAtAgeData)
+```
+
+For the sake of illustration we will redo the computation with domains that also include other variables beside age:
+
+```{r ageSexdomain}
+# Redo psu estimates with new domain definition
+DomainVariables = c("IndividualAge", "IndividualSex")
+psuEstimates <- RstoxFDA::AnalyticalPSUEstimate(StoxBioticData=StoxBioticData, IndividualSamplingParametersData = IndividualSamplingParametersData, DomainVariables=DomainVariables, Variables=Variables)
+
+# Redo population estimate
+AnalyticalPSUEstimateData = psuEstimates
+populationEstimates = RstoxFDA::AnalyticalPopulationEstimate(PSUSamplingParametersData, AnalyticalPSUEstimateData = AnalyticalPSUEstimateData)
+
+# Redo ratio estimate
+AnalyticalPopulationEstimateData = populationEstimates
+ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method)
+
+# Report
+AnalyticalPopulationEstimateData = ratioEst
+caaReport <- ReportAnalyticalCatchAtAge(AnalyticalPopulationEstimateData = AnalyticalPopulationEstimateData, PlusGroup = PlusGroup, IntervalWidth = IntervalWidth, Decimals = Decimals, "10^6 individuals")
+
+# Plot
+ReportFdaCatchAtAgeData = caaReport
+PlotCatchAtAgeTotals(ReportFdaCatchAtAgeData = ReportFdaCatchAtAgeData)
+```
+
+
 ## StoX project
 
 In summary a minimal StoX project implementing this kind of analysis, could look something like this:

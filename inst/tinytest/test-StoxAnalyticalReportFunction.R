@@ -11,8 +11,10 @@ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample,
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
 
 caaReportPG <- RstoxFDA:::ReportAnalyticalCatchAtAge(popEst, PlusGroup = 9)
-RstoxFDA::PlotCatchAtAgeTotals(caaReportPG)
+RstoxFDA:::is.ReportFdaData(caaReportPG)
+
 caaReport <- RstoxFDA:::ReportAnalyticalCatchAtAge(popEst)
+RstoxFDA:::is.ReportFdaData(caaReport)
 
 diff <- sum(caaReportPG$NbyAge$CatchAtAge) - sum(caaReportPG$NbyAge$CatchAtAge)
 expect_true(abs(diff) < 1e-6)

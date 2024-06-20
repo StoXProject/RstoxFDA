@@ -71,7 +71,8 @@ makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup,
 #' @description
 #'  Tabulates summary statistics for analytical catch at age estimate.
 #'  Summary statistics are obtained as analytical domain estimates,
-#'  and confidence intervals are calculated from a Gaussian approximation to the sampling distribution.
+#'  along with an estimate of the standard deviation of their sampling distribution (the standard error).
+#'  Confidence intervals are calculated from a Gaussian approximation to the sampling distribution.
 #'  
 #'  If AnalyticalPopulationEstimateData contains estimates for domains that include more than just age, such as
 #'  area, gear, stock, etc., summary statistics will be presented similarly.
@@ -117,7 +118,7 @@ ReportAnalyticalCatchAtAge <- function(AnalyticalPopulationEstimateData, PlusGro
   
   caa <- list()
   caa$NbyAge <- result
-  caa$GroupingVariables <- data.table::data.table(GropingVariables=GroupingVariables)
+  caa$GroupingVariables <- data.table::data.table(GroupingVariables=GroupingVariables)
   
   
   caa$NbyAge <- setUnits(caa$NbyAge, "Age", "year", "age")
