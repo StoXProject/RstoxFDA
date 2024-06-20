@@ -1,3 +1,4 @@
+# RstoxFDA v1.3-9006
 
 # RstoxFDA v1.3-9005
 * Added functions for analytical catch at age estimation (DefinePSUSamplingParameters, DefineIndividualSamplingParameters, AssignPSUSamplingParameters, AnalyticalPSUEstimate, AnalyticalPopulationEstimate, AnalyticalRatioEstimate, ReportAnalyticalCatchAtAge)
