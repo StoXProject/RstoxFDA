@@ -123,7 +123,15 @@ CatchLotteryExample <- bioData
 #fix missing catchfractionnumber
 filter <- is.na(CatchLotteryExample$Sample$CatchFractionNumber)
 CatchLotteryExample$Sample$CatchFractionNumber[filter] <- CatchLotteryExample$Sample$CatchFractionWeight[filter]*CatchLotteryExample$Sample$SampleNumber[filter] / CatchLotteryExample$Sample$SampleWeight[filter]
+CatchLotteryExample$Haul$serialnumber <- CatchLotteryExample$Haul$HaulKey
+CatchLotteryExample$Station$CountryVessel <- "NOR"
 usethis::use_data(CatchLotteryExample, overwrite = T)
 
 CatchLotterySamplingExample <- RstoxFDA::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFile)
 usethis::use_data(CatchLotterySamplingExample, overwrite = T)
+
+landings2022 <- RstoxData::readLssFile("~/landingsets/LSS/FDIR_HI_LSS_FANGST_2022_PR_2023-03-06.psv")
+herring2022 <- landings2022[landings2022$`Art FAO (kode)`=="HER" & landings2022$`Fartøynasjonalitet (kode)`=="NOR" & !is.na(landings2022$`Største lengde`) & landings2022$`Største lengde`>15,]
+NSH2022 <- herring2022[herring2022$`Art - FDIR (kode)`=="061104",]
+CatchLotteryLandingExample <- RstoxData::StoxLanding(RstoxData::convertToLandingData(NSH2022))
+usethis::use_data(CatchLotteryLandingExample, overwrite = T)

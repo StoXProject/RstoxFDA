@@ -104,7 +104,7 @@ expect_true(is.na(areaPosPost$AreaAppended[4]))
 
 #context("test-StoxBaselineFunctions: appendAreaCode wrong projection")
 
-strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("EPSG:4269"))
+strp <- RstoxFDA:::transformSpatialPolygons(strp, sf::st_crs(4269))
 RstoxFDA::appendAreaCode(areaPos, strp, "Latitude", "Longitude", "AreaAppended")
 
 #context("test-StoxBaselineFunctions: appendAreaCode non-numeric lat")
@@ -121,9 +121,11 @@ areaTabAppended <- RstoxFDA::appendPosition(areaTab, RstoxFDA::mainareaFdir2018,
 areaTabReAppended <- RstoxFDA::appendAreaCode(areaTabAppended, RstoxFDA::mainareaFdir2018, "lat", "lon", "Area2")
 expect_true(all(areaTabReAppended$Area == areaTabReAppended$Area2))
 
-#context("test-StoxBaselineFunctions: appendPosition wrong projection")
-strp <- RstoxFDA:::transformSpatialPolygons(strp, sp::CRS("+proj=merc"))
-expect_warning(RstoxFDA::appendPosition(areaTab, strp, "Area", "lat", "lon"))
+#context("test-StoxBaselineFunctions: appendPosition correcting projection")
+strp <- RstoxFDA:::transformSpatialPolygons(strp, sf::st_crs(3395))
+areaTabAppended <- RstoxFDA::appendPosition(areaTab, strp, "Area", "lat", "lon")
+areaTabReAppended <- RstoxFDA::appendAreaCode(areaTabAppended, RstoxFDA::mainareaFdir2018, "lat", "lon", "Area2")
+expect_true(all(areaTabReAppended$Area == areaTabReAppended$Area2))
 
 
 # map fdir areas to ICES areas by overlap
@@ -140,11 +142,10 @@ ICES.fdir.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::ICESareas, RstoxFDA
 expect_equal(ICES.fdir.map$'27.4.a', "42")
 
 # map fdir locations to ICES statistical rectangles, by centroids
-loc.rectangles.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::locationsFdir2018, RstoxFDA::ICESrectangles, method="centroids")
+expect_warning(loc.rectangles.map <- RstoxFDA::areaCodeConversionTable(RstoxFDA::locationsFdir2018, RstoxFDA::ICESrectangles, method="centroids"), "StoX: Overlapping polygons: Some centroids are in several polygons, area code is arbitrarily chosen.")
 expect_equal(loc.rectangles.map$'00-54', "63G5")
 expect_equal(loc.rectangles.map$'48-08', "34D9")
 expect_equal(loc.rectangles.map$'43-69', "47E0")
-
 
 selectedRects <- RstoxFDA::ICESrectangles[
             RstoxFDA::ICESrectangles$StratumName %in% RstoxFDA::catchsamples$LEstatRect,]

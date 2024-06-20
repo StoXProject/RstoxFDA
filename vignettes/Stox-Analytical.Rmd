@@ -1,0 +1,283 @@
+---
+title: "StoX-Analytical-Estimates"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{StoX-Analytical-Estimates}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r include, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include=FALSE}
+library(RstoxFDA)
+```
+
+This vignette explains how to use RstoxFDA functions in the StoX user-interface to prepare and run analytical catch-at-age estimates. Some data preparation may be necessary, and the vignette [StoX FDA data preparation (baseline)](Stox-data-preparation.html) introduces some common data-preparation tasks for catch at age estimation, with formats commonly used at the Institute of Marine Research (IMR). In order to make informed decisions on data preparation and model configuration, it will be necessary to get an overview of the fisheries and how it is covered by the available samples, for instance using the functions introduced in [Stox Fisheries overview (report)](Stox-FDA-overview.html).
+
+This document introduces some problems and tasks, and how RstoxFDA-functions may be applied to solve them. The details of how to use the functions introduced here are provided as function documentation viewable in the StoX "function description"-tab, or in an R-console via '?', e.g:
+
+```{r docfunction, echo=TRUE}
+?RstoxFDA::AnalyticalPopulationEstimate
+```
+
+Documentation for data formats are provided in the same way. E.g.:
+
+```{r docformat, echo=TRUE}
+?RstoxFDA::AnalyticalPopulationEstimateData
+```
+
+StoX is composed of several R-packages. Functions will be referred to by their package name with the notation _package::function_. In the StoX user-interface, the package that functions belong to are not visible, so the function denoted here as _package::function_, will be available as just _function_. Any data formats are similarly denoted **package::format**.
+
+## Installation
+RstoxFDA is an optional packages in StoX. In order to use the functions introduced in this vignette in the StoX user-interface, make sure RstoxFDA is installed. See installation instructions on [github: StoXProject/RstoxFDA](https://github.com/StoXProject/RstoxFDA). To install the StoX user-interface, see instructions on [github: StoXProject/StoX](https://github.com/StoXProject/StoX).
+
+### Testing (remove before release)
+For testing pre-releases of StoX, obtain the stox packages from the testing repo:
+
+```{r installTestPackages, eval=FALSE}
+install.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"), repos = c("https://stoxproject.github.io/testingRepo/"))
+```
+
+After you have finished testing, you may want to revert to the production packages. This may require explicitly uninstalling the packages first, as they have higher version numbers than production packages:
+
+```{r installProductionPackages, eval=FALSE}
+remove.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"))
+install.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"), repos = c("https://stoxproject.github.io/repo/"))
+```
+
+In order to construct StoX projects like the example below, sampling parameters must be obtained from processes outside of StoX and formatted as described in the documentation for _RstoxFDA::DefinePSUSamplingParameters_. Examples provided for testing purposes can be located internally at IMR (https://git.imr.no/pelagic/internal/fangstprovelotteriet/samplingparameters/-/tree/main/formatted_files).
+
+# Analytical estimates with multi-stage sampling
+
+Below is provided an overview of which functions can be used to perform analytical estimates from fisheries dependent sampling. Detailed descriptions are found in the documentation for the individual functions. Equation rendering is not supported in all views, but is provided in the RstoxFDA pdf-manual.
+
+## 2-stage approximation
+RstoxFDA provides a generic framework for analytical estimates of multi-stage sampling data, through a 2-stage approximation. The sampling design is conceptually divided into two steps: Selection of primary sampling units (PSUs), and selection of individuals within each sampling unit. If selection probabilities can be inferred for each of these two steps:
+
+* Abundance, Frequency, Means and Totals of any variables observed for individuals, can be estimated for each PSU. The estimation of within PSU-variance is not supported. Estimates for each PSU is provided with the function _RstoxFDA::AnalyticalPSUEstimate_ .
+* Population quantities and associated sampling variances may then be estimated with the function _RstoxFDA::AnalyticalPopulationEstimate_ .
+* Official landing statistics can be utilized to improve the estimate with the function _RstoxFDA::AnalyticalRatioEstimate_.
+
+In most circumstances, only a small fraction of the PSUs available in a stratum is actually sampled, and typically this provide a good approximation to the sampling variance, even if within-PSU variance is not accounted for.
+
+## Example
+As an example, we will demonstrate estimation with data from the catch lottery for North-sea Herring in 2022. This is an unequal probability sampling program, which selects hauls in real-time from an active fishery, with selection probabilities proportional to the first reports of catch size. The sampling frame covers Norwegian vessel larger than 15 m which has declared that they are targeting herring when leaving port, and has declared North-Sea herring in their live catch reports.
+
+### Data
+
+See the vignette [StoX FDA data preparation (baseline)](Stox-data-preparation.html) for how to read data. We use _RstoxData::ReadBiotic_ and _RstoxData::StoxBiotic_ to get the samples in the format we like. And then we use _RstoxData::AddToStoxBiotic_ to add the column 'serialnumber' which is needed for identifying which data records belong the selection read in above. The result of those operations is included as an example data set in RstoxFDA, called 'CatchLotteryExample'. Similarly, we obtain landings data with _RstoxData::ReadLanding_, _RstoxData::StoxLanding_, and _RstoxData::FilterLanding_. An example data set with landings of North Sea Herring from Norwegian vessels larger than 15 meters is included as an example data set in RstoxFDA, called 'CatchLotteryLandingExample'.
+
+### Sampling parameters
+
+We will start by reading these sampling parameters, which has been prepared outside of StoX:
+
+```{r ReadPSUsamplingParameters}
+DefinitionMethod = "ResourceFile"
+FileName = system.file("testresources", "lotteryParameters", "lotteryDesignNSHstrata.txt", package="RstoxFDA")
+PSUparameters <- RstoxFDA::DefinePSUSamplingParameters(DefinitionMethod=DefinitionMethod, FileName=FileName)
+```
+
+Note that this files contains selection and inclusion probabilites for every haul selected for sampling:
+
+```{r inspectPSUsamplingParameters}
+head(PSUparameters$SelectionTable)
+```
+
+The column 'SamplingUnitId' identifies the data records for selected hauls that have been sampled. This corresponds to 'serialnumber' in the sample data. We also have records for selected hauls that was not sampled, which gives us a basis for non-response corrections:
+
+```{r inspectPSUsamplingParametersUnsampled}
+head(PSUparameters$SelectionTable[is.na(PSUparameters$SelectionTable$SamplingUnitId),])
+```
+
+The sample are all selected from the same stratum, which is defined in terms of a species code. This will be useful later when we want to match estimates to landings. Note that the strata is encoded in the column "Stratum" and is sufficient for some kinds of estimation. The strata may be further specified by stratification variables, that allow us to document the correspondence between strata and variables in other data sources, such as landings. If landings data are not used, the stratification columns need not be specified at all. The 'Species' column is chosen here for illustration, but a more complete documentation for this program could include variables describing vessel length and target species:
+
+```{r inspectPSUstratification}
+head(PSUparameters$StratificationVariables)
+```
+
+We also need to know the sampling parameters for each fish at each haul. RstoxFDA provides support for calculating those for some common sampling schemes. We can infer sampling parameters for observations of individual fish within a haul with the function _RstoxFDA::DefineIndvidiualSamplingParameters_. In the case of the catch lottery sampling, we will assume that fish that are selected for measurement is a simple random sample of the catch (DefinitionMethod="SRS). Sometimes different sampling schemes are employed for different parameters, so we have to specify a set of parameter which signals that the specimen is selected. We will specify the selected inndividuals as those where either sex or age is observed, as sex and age is observed for the subsample, and specifying sex rather than just age allows us to catch missing age records (due to for instance readability):
+
+```{r DefineINDsamplingParameters}
+StoxBioticData = RstoxFDA::CatchLotteryExample
+DefinitionMethod = "SRS"
+Parameters = c("IndividualSex", "IndividualAge")
+indParameters <- RstoxFDA::DefineIndividualSamplingParameters(StoxBioticData = StoxBioticData, DefinitionMethod = DefinitionMethod, Parameters=Parameters)
+```
+
+Note that we have obtain sampling parameters for individual fish sampled for sex and age, the haul is identified by the column 'SampleId' that corresponds to 'Haul' in StoxBioticData, and the individual is identified by 'IndividualId' which corresponds to 'Individual' in StoxBioticData. Within-haul stratification is also inferred:
+```{r inspectIndParams}
+head(indParameters)
+```
+
+We will now put data and samples in correspondance with the function _RstoxFDA::AssignPSUsamplingParameters_. We will Identify hauls with the StoxBioticData variable Haul, which is how the PSU is identified in the specification of sampling parameters for individual fish (individualParametersData, computed above):
+
+```{r AssignPSUsamplingParameters}
+PSUSamplingParametersData = PSUparameters
+StoxBioticData = RstoxFDA::CatchLotteryExample
+SamplingUnitId = "serialnumber"
+DataRecordId = "Haul"
+DefinitionMethod = "MissingAtRandom"
+PSUassigment = RstoxFDA::AssignPSUSamplingParameters(DefinitionMethod=DefinitionMethod, StoxBioticData=StoxBioticData, PSUSamplingParametersData=PSUparameters, SamplingUnitId=SamplingUnitId, DataRecordId=DataRecordId)
+```
+
+### Estimation
+
+Since these estimators are based on the sampling design, they are generic with respect to variables of interest. For all numeric variables, they can provide an estimate of total and means by some domain definition. In addition total abundance in domain and the frequency of occurrence in domain is estimated. A domain is any defined group of fish in the catches. Of primary interest is groups defined by fish measurements and observations, such as age or length, but since they are also distinguished by fishing activity variables, such as the gear used to catch them, or the time of catch. For purposes of estimation we need to distinguish between domain variables that are exclusive to higher level selection and those that are not. Age is for example available for any fish, so estimates of abundance in an age group is backed by all samples. Gear is however exclusive to a catch so estimates of abundance in gear groups are only backed by the samples that are in that domain. In this example we will only estimate domains that are based on observations of fish, but in general this text and the documentation for functions refer to PSU domains for the domains that are exclusive to a primary sampling unit.
+
+We can estimate abundance, frequencies, totals and means for each PSU. We need to specify the domain we want to estimate for (we provide age so that we get estimates for each age group). We also need to specify which variables we want means and totals for (we specify weight and length):
+
+```{r EstimatePSU}
+StoxBioticData = RstoxFDA::CatchLotteryExample
+IndividualSamplingParametersData = indParameters
+DomainVariables = c("IndividualAge")
+Variables = c("IndividualRoundWeight", "IndividualTotalLength")
+psuEstimates <- RstoxFDA::AnalyticalPSUEstimate(StoxBioticData=StoxBioticData, IndividualSamplingParametersData = IndividualSamplingParametersData, DomainVariables=DomainVariables, Variables=Variables)
+```
+
+We now have estimates of abundance and frequency for each age group for each PSU/haul:
+
+```{r inspectAbundancePSU}
+head(psuEstimates$Abundance)
+```
+
+Note that fish with missing ages have become their own domain called 'NA':
+
+```{r inspectAbundancePSUmissing}
+head(psuEstimates$Abundance[Domain=="NA",])
+```
+
+We also have estimates of totals and means of provided variables:
+
+```{r inspectTotalsPsuEstimates}
+head(psuEstimates$Variables)
+```
+
+For domains / age groups with estimated zero abundance, totals are 0, and means are NaN.
+
+For a population estimate we use _RstoxFDA::AnalyticalPopulationEstimate_:
+
+```{r EstimatePopulation}
+PSUSamplingParametersData = PSUassigment
+AnalyticalPSUEstimateData = psuEstimates
+populationEstimates = RstoxFDA::AnalyticalPopulationEstimate(PSUSamplingParametersData, AnalyticalPSUEstimateData = AnalyticalPSUEstimateData)
+```
+
+Which gives abdunance, frequencies, means and totals for the entire population:
+
+```{r inspectPopulationAbundance}
+populationEstimates$Abundance
+```
+
+```{r inspectPopulationTotals}
+populationEstimates$Variables
+```
+
+We also have full sampling covariance matrices, which will give a basis for reporting sampling variances:
+
+```{r inspectCovarMatrix}
+
+head(populationEstimates$AbundanceCovariance)
+
+```
+
+We have not yet utilized the census information on landings. We can improve our estimate with a ratio estimator that corrects the abundance with the ratio between estimated total weight across all domains / age groups and the reported total landings. The function _RstoxFDA::AnalyticalRatioEstimate_ supports this, but needs the strata or PSU-domains to be in correspondence with variables in the landings, which is why we wanted the PSUs stratification to be defined by 'Species'. The ratio estimate function automatically recognizes identical column names between stratification columns and domain columns in the estimate and the columns available for partitioning the landings. If no corresponding column names are found, or if they have no overlapping codes, an error will be raised. In this case our PSU domain cover the entire strata, which cover the entire sampling frame. We perform the ratio estimate:
+
+```{r RatioEstimateTotal}
+AnalyticalPopulationEstimateData = populationEstimates
+StoxLandingData = RstoxFDA::CatchLotteryLandingExample
+WeightVariable = "IndividualRoundWeight"
+Method = "TotalDomainWeight"
+ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method)
+```
+
+Comparing this with the estimate above, the frequencies should be nearly identical, but some corrections are expected for the abundances:
+
+```{r insepctRatioEstimate}
+merge(ratioEst$Abundance, populationEstimates$Abundance, by=c("Stratum", "Domain"), suffix=c(".ratioEst", ".designEst"))
+```
+
+The function _RstoxFDA::AnalyticalRatioEstimate_ also supports other kinds of ratio estimation based on only frequencies and mean weights, so that a total abundance estimate can be obtained even for sampling programs with less detailed information about the sampling parameters.
+
+Finally we can report the domain estimate:
+
+```{r ReportAnalyticalCatchAtAge}
+AnalyticalPopulationEstimateData = ratioEst
+PlusGroup = 9
+IntervalWidth = .9
+Decimals = 0
+caaReport <- ReportAnalyticalCatchAtAge(AnalyticalPopulationEstimateData = AnalyticalPopulationEstimateData, PlusGroup = PlusGroup, IntervalWidth = IntervalWidth, Decimals = Decimals, "10^6 individuals")
+caaReport$NbyAge
+```
+
+Note that the domain of fish with missing age is preserved and assigned the minimum age 0, and we have added a plus group with minimum age 9. This table is compatible with those produced by other estimation procedures, such as Reca, so that we can use the same plotting functions:
+
+```{r PlotCatchAtAgeTotals}
+ReportFdaCatchAtAgeData = caaReport
+PlotCatchAtAgeTotals(ReportFdaCatchAtAgeData = ReportFdaCatchAtAgeData)
+```
+
+For the sake of illustration we will redo the computation with domains that also include other variables beside age:
+
+```{r ageSexdomain}
+# Redo psu estimates with new domain definition
+DomainVariables = c("IndividualAge", "IndividualSex")
+psuEstimates <- RstoxFDA::AnalyticalPSUEstimate(StoxBioticData=StoxBioticData, IndividualSamplingParametersData = IndividualSamplingParametersData, DomainVariables=DomainVariables, Variables=Variables)
+
+# Redo population estimate
+AnalyticalPSUEstimateData = psuEstimates
+populationEstimates = RstoxFDA::AnalyticalPopulationEstimate(PSUSamplingParametersData, AnalyticalPSUEstimateData = AnalyticalPSUEstimateData)
+
+# Redo ratio estimate
+AnalyticalPopulationEstimateData = populationEstimates
+ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method)
+
+# Report
+AnalyticalPopulationEstimateData = ratioEst
+caaReport <- ReportAnalyticalCatchAtAge(AnalyticalPopulationEstimateData = AnalyticalPopulationEstimateData, PlusGroup = PlusGroup, IntervalWidth = IntervalWidth, Decimals = Decimals, "10^6 individuals")
+
+# Plot
+ReportFdaCatchAtAgeData = caaReport
+PlotCatchAtAgeTotals(ReportFdaCatchAtAgeData = ReportFdaCatchAtAgeData)
+```
+
+
+## StoX project
+
+In summary a minimal StoX project implementing this kind of analysis, could look something like this:
+
+| Process name | Function | Description |
+|------|---------|--------|
+| ReadSamples | ReadBiotic | Reads sample data |
+| StoxBiotic | StoxBiotic | Convert sample data to StoxBiotic |
+| AddSamplingId | AddToStoxBiotic | Add serialnumber to StoxBiotic |
+| ReadPSUsamplingParameters | DefinePSUSamplingParameters | Defines sampling parameters for each PSU |
+| DefineINDsamplingParameters | DefineIndividualSamplingParameters | Defines sampling parameters for each individual, within PSU |
+| AssignPSUSamplingParameters | AssignPSUSamplingParameters |  Matches selections to data records, handles non-response corrections |
+| EstimatePSU | AnalyticalPSUEstimate |  Estimates abundance, frequencies, totals and means for each PSU |
+| EstimatePopulation | AnalyticalPopulationEstimate | Estimates abundance, frequencies, totals and means for the population of interest |
+| RatioEstimateTotal | AnalyticalRatioEstimate |  Improves estimates with census information. |
+
+
+## Reports
+
+The following functions provides reporting from analytical estimates:
+
+|Report function | Description |
+|:------|:-----|
+| ReportAnalyticalCatchAtAge | Total catch of each age group |
+| PlotCatchAtAgeTotals | Plots catch of each age group |
+
+In addition some functions are relevant in this context, that may also be used with other estimation approaches, such as Reca:
+
+|Report function | Description |
+|:------|:-----|
+| ReportFdaSampling | Produces overview of sampling coverage. Useful for exploring sampling. |
+| ReportFdaLandings | Produces summaries of landings. |
+| ReportFdaSOP | Performs Sum-Of-Products tests, checking that the products of mean weight at age and estimated catch at age sum to total landed weight. |
+

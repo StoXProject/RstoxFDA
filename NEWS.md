@@ -1,3 +1,14 @@
+
+# RstoxFDA v1.3-9005
+* Added functions for analytical catch at age estimation (DefinePSUSamplingParameters, DefineIndividualSamplingParameters, AssignPSUSamplingParameters, AnalyticalPSUEstimate, AnalyticalPopulationEstimate, AnalyticalRatioEstimate, ReportAnalyticalCatchAtAge)
+* Converted area code resources from sp SpatialPolygons to sf data.frames, reflecting changes in RstoxBase v 2. Breaks compatibility with RstoxBase < 2.
+* Changed ReadLandingFDA to use ForceUnique as implemented in RstoxData v 2. Breaks compatibility with RstoxData < 2
+* Made definition of coordinates used for appendAreaCodes and DefineAreaPosition stricter (now always centroids)
+* Made appendAreaCodes and DefineAreaPosition look for intersects in mercator projection
+* Changed the signature of mergePolygons to work with sf data.frames rather than sp SpatialPolygons.
+* Changed the definition neighbours in DefineCarNeighbours from polygons touching to polygons within 1 metre distance in mercator projection.
+* Changed areaCodeConversionTable to work with provided area definitions in mercator projection
+
 # RstoxFDA v1.3-9002
 * Fixed issue with PlotMeanWeightAtAge and PlotMeanLengthAtAge that would not plot mean values for configurations with no grouping variables
 

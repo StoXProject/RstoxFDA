@@ -17,7 +17,7 @@
 #' @param latCol character() identifing column in 'data' that specify latitudes (WGS84)
 #' @param lonCol character() identifing column in 'data' that specify longitudes (WGS84)
 #' @param groupCol character() identifying column in 'daat' that specify grouping of points
-#' @param areaDef \code{\link[sp]{SpatialPolygonsDataFrame}}
+#' @param areaDef \code{\link[sf]{sf}} data.frame
 #' @param areaNameCol identifies column in 'areaDef' with label names for the areas
 #' @param areaLabels logical whether to plot area labels
 #' @param xlim x axis limits in degrees longitude
@@ -145,8 +145,8 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 #'  Colors can be specified as understood by ggplot2. E.g. one of those listed by \code{\link[grDevices]{colors}}.
 #'  Linetypes can be specified as understood by ggplot2. E.g: "solid", "dashed", "dotted", "dotdash", "longdash", or "twodash".
 #'  
-#' @param areaDef1 A \code{\link[sp]{SpatialPolygonsDataFrame}}. The area definition to be plotted first ("behind" the other one)
-#' @param areaDef2 A \code{\link[sp]{SpatialPolygonsDataFrame}}. The area definition to be plotted second ("on top of" the other one)
+#' @param areaDef1 A \code{\link[sf]{sf}} data.frame. The area definition to be plotted first ("behind" the other one)
+#' @param areaDef2 A \code{\link[sf]{sf}} data.frame. The area definition to be plotted second ("on top of" the other one)
 #' @param areaNameCol1 The column in areaDef1 that provides the names to be used for any labeling of areas
 #' @param areaNameCol2 The column in areaDef2 that provides the names to be used for any labeling of areas
 #' @param areaLabels1 logical, specifying whether labels should be plotted for areaDef1. These are plotted first ("behind" any labels plotted for areaDef2)
@@ -233,7 +233,7 @@ plotAreaComparison <- function(areaDef1, areaDef2, areaNameCol1="StratumName", a
 #' @param data data.frame with quantities to be plotted
 #' @param areaCol character() identifing column in 'data' that specify area codes, must correspond to 'areaNameCol'
 #' @param quantityCol character() identifing column in 'data' that specify quantities to be plotted
-#' @param areaDef \code{\link[sp]{SpatialPolygonsDataFrame}}
+#' @param areaDef \code{\link[sf]{sf}} data.frame
 #' @param areaNameCol identifies column in 'areaDef' with label names for the areas, must correspond to 'areaCol'
 #' @param legendTitle title for the legend (explains what the quantities are)
 #' @param areaLabels logical whether to plot area labels
@@ -338,8 +338,8 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="Stra
 
 #' Writes shape files as WKT files
 #' @description
-#'  Writes \code{\link[sp]{SpatialPolygonsDataFrame}}, such as \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)
-#' @param shape \code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert
+#'  Writes \code{\link[sp]{SpatialPolygonsDataFrame}} or \code{\link[sf]{sf}} data.frames, such as \code{\link[RstoxBase]{StratumPolygon}} as Stox-WKT files (stratafiles)
+#' @param shape \code{\link[sp]{SpatialPolygonsDataFrame}} or \code{\link[sf]{sf}} data.frame stratadefinition to convert
 #' @param output filename to save output to
 #' @param namecol name of column in 'shape' that are to be used as strata names. Defaults to 'StratumName' pr the definition of \code{\link[RstoxBase]{StratumPolygon}}
 #' @concept spatial coding functions
@@ -351,7 +351,7 @@ writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
   }
   
   obj <- sf::st_as_sf(shape)
-  trans <- sf::st_transform(obj, sp::CRS("EPSG:4326"))
+  trans <- sf::st_transform(obj, sf::st_crs(4326))
   
   f<-file(output, open="w")
   
@@ -366,40 +366,30 @@ writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
 
 #' Merges polygons
 #' @description
-#'  Merge \code{\link[sp]{SpatialPolygonsDataFrame}}, such as \code{\link[RstoxBase]{StratumPolygon}}
+#'  Merge \code{\link[sf]{sf}} data table, such as \code{\link[RstoxBase]{StratumPolygon}}
 #' @details 
 #'  All columns must have the same value for all polygons that are to be merged. If columns are not consistent in this regard, an error is raised.
-#' @param shape \code{\link[sp]{SpatialPolygonsDataFrame}} stratadefinition to convert
+#' @param shape \code{\link[sf]{sf}} data.table with stratadefinition to convert
 #' @param mergeCol name of column that should be used for merging, all polygons with the same value in this column will be merged into one.
-#' @return \code{\link[sp]{SpatialPolygonsDataFrame}} with polygons merged
+#' @return \code{\link[sf]{sf}} with polygons merged
 #' @concept spatial coding functions
 #' @export
 mergePolygons <- function(shape, mergeCol){
-  
-  if (nrow(unique(shape@data)) != length(unique(shape@data[[mergeCol]]))){
+  shape <- sf::st_as_sf(shape)
+  if (nrow(unique(sf::st_drop_geometry(shape))) != length(unique(shape[[mergeCol]]))){
     stop("All columns must have the same value for polygons that are to be merged")
   }
   
-  dd<-sf::st_as_sf(shape)
-  newPolygons <- NULL
-  for (newName in unique(shape@data[[mergeCol]])){
-    ff <- sf::st_union(dd[dd[[mergeCol]]==newName,])
-    if (!any(is.na(sf::st_dimension(ff)))){
-      spat <- sf::as_Spatial(ff)
-      stopifnot(length(spat@polygons)==1)
-      spat@polygons[[1]]@ID <- newName
-      
-      if (is.null(newPolygons)){
-        newPolygons <- spat
-      }
-      else{
-        newPolygons <- rbind(newPolygons, spat)      
-      }      
-    }
 
+  newPolygons <- NULL
+  for (newName in unique(shape[[mergeCol]])){
+    ff <- sf::st_union(shape[shape[[mergeCol]]==newName,])
+    cols <- sf::st_drop_geometry(shape[shape[[mergeCol]]==newName,])[1,]
+    ff <- cbind(cols, ff)
+    newPolygons <- rbind(newPolygons, ff)
   }
   
-  newPolygons <- sp::SpatialPolygonsDataFrame(newPolygons, shape[!duplicated(shape[[mergeCol]]),]@data, match.ID = mergeCol)
+  newPolygons <- sf::st_as_sf(newPolygons)
   
   return(newPolygons)
   

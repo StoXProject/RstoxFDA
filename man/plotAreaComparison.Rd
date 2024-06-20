@@ -23,9 +23,9 @@ plotAreaComparison(
 )
 }
 \arguments{
-\item{areaDef1}{A \code{\link[sp]{SpatialPolygonsDataFrame}}. The area definition to be plotted first ("behind" the other one)}
+\item{areaDef1}{A \code{\link[sf]{sf}} data.frame. The area definition to be plotted first ("behind" the other one)}
 
-\item{areaDef2}{A \code{\link[sp]{SpatialPolygonsDataFrame}}. The area definition to be plotted second ("on top of" the other one)}
+\item{areaDef2}{A \code{\link[sf]{sf}} data.frame. The area definition to be plotted second ("on top of" the other one)}
 
 \item{areaNameCol1}{The column in areaDef1 that provides the names to be used for any labeling of areas}
 

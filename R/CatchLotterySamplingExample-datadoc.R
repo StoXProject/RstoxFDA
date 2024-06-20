@@ -10,7 +10,7 @@
 #'
 #' @usage data(CatchLotterySamplingExample)
 #'
-#' @format \code{\link[RstoxData]{StoxBioticData}}
+#' @format \code{\link[RstoxFDA]{PSUSamplingParametersData}}
 #'
 #' @keywords datasets
 #' @concept Analytical estimation

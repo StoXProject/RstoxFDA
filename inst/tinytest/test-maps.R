@@ -64,14 +64,10 @@ iasf <- sf::st_transform(iasf, "+proj=eqc")
 iasf <- sf::st_simplify(iasf, dTolerance=.4)
 iasf <- sf::st_buffer(iasf, dist = .03)
 iasf <- sf::st_transform(iasf, "+proj=latlon")
-ia <- sf::as_Spatial(iasf)
 
-ia$StratumName <- paste(ia$Major_FA, ia$SubArea, sep=".")
-ia@data <- ia@data[,c("StratumName","Major_FA")]
-
-merged <- RstoxFDA::mergePolygons(ia, "StratumName")
-expect_true("SpatialPolygonsDataFrame" %in% class(merged))
-expect_equal(length(merged), length(unique(ia$StratumName)))
+merged <- RstoxFDA::mergePolygons(iasf, "StratumName")
+expect_true("sf" %in% class(merged))
+expect_equal(nrow(merged), length(unique(ia$StratumName)))
 
 # plot area comparison
 plotAreaComparison(RstoxFDA::mainareaFdir2017, RstoxFDA::mainareaFdir2018, xlim=c(0,12), ylim=c(54,60), areaLabels2 = T, projection = "+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
