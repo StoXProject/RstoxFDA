@@ -37,7 +37,7 @@ StoX is composed of several R-packages. Functions will be referred to by their p
 ## Installation
 RstoxFDA is an optional packages in StoX. In order to use the functions introduced in this vignette in the StoX user-interface, make sure RstoxFDA is installed. See installation instructions on [github: StoXProject/RstoxFDA](https://github.com/StoXProject/RstoxFDA). To install the StoX user-interface, see instructions on [github: StoXProject/StoX](https://github.com/StoXProject/StoX).
 
-### Testing
+### Testing (remove before release)
 For testing pre-releases of StoX, obtain the stox packages from the testing repo:
 
 ```{r installTestPackages, eval=FALSE}
@@ -51,6 +51,7 @@ remove.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"))
 install.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"), repos = c("https://stoxproject.github.io/repo/"))
 ```
 
+In order to construct StoX projects like the example below, sampling parameters must be obtained from processes outside of StoX and formatted as described in the documentation for _RstoxFDA::DefinePSUSamplingParameters_. Examples provided for testing purposes can be located internally at IMR (https://git.imr.no/pelagic/internal/fangstprovelotteriet/samplingparameters/-/tree/main/formatted_files).
 
 # Analytical estimates with multi-stage sampling
 
@@ -217,7 +218,7 @@ In summary a minimal StoX project implementing this kind of analysis, could look
 | AssignPSUSamplingParameters | AssignPSUSamplingParameters |  Matches selections to data records, handles non-response corrections |
 | EstimatePSU | AnalyticalPSUEstimate |  Estimates abundance, frequencies, totals and means for each PSU |
 | EstimatePopulation | AnalyticalPopulationEstimate | Estimates abundance, frequencies, totals and means for the population of interest |
-| RatioEstimateTotal | AnalyticalRatioEstimate |  Improves estimates with census information. Provides Abundance and totals when only frequencies and means have been estimated in earlier steps. |
+| RatioEstimateTotal | AnalyticalRatioEstimate |  Improves estimates with census information. |
 
 
 ## Reports
