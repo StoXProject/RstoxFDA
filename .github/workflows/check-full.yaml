@@ -81,14 +81,6 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
-          rtools-version: ${{ matrix.config.rtools }}
-          http-user-agent: ${{ matrix.config.http-user-agent }}
-
-      - name: Anticipate Bintray shutdown
-        if: runner.os == 'macOS'
-        run: |
-          brew update
-        shell: bash
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -115,7 +107,7 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
 
-      - name: Install MacOS dependencies
+      - name: Install MacOS system dependencies
         if: runner.os == 'macOS'
         run: |
           rm -f '/usr/local/bin/gfortran'
@@ -172,9 +164,12 @@ jobs:
 
       - name: Install CRANdependencies
         run: |
-          remotes::install_cran("rcmdcheck")
-          remotes::install_cran("drat")
-          remotes::install_cran("sessioninfo")
+          install.packages(c("rcmdcheck", "git2r", "sessioninfo", "knitr", "remotes"))
+          
+          # Using the latest drat that supports big sur (after inputs from us). 
+          # When the next drat appears on CRAN this can be changed to install from CRAN:
+          remotes::install_github(repo = 'eddelbuettel/drat', dependencies = FALSE)
+            
         shell: Rscript {0}
         
         #
@@ -235,17 +230,21 @@ jobs:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
 
-      - name: Build package source archive
-        if: runner.os == 'Linux' && matrix.config.r == '4.1' && github.event_name == 'push' && github.ref == 'refs/heads/master'
+      - name: Build package source archive from branches develop, testing and master
+        if: runner.os == 'Linux' && matrix.config.r == '4.1' && github.event_name == 'push' && (github.ref_name == 'master' || github.ref_name == 'testing' || github.ref_name == 'develop')
         run: |
           pkgbuild::build(".", dest_path = ".", binary = FALSE)
           system(paste0("PKG_FREL=", Sys.getenv("PKG_FILE"), " >> ", Sys.getenv("GITHUB_ENV")))
         shell: Rscript {0}
 
-      - name: Build package binary archive
-        if: (runner.os == 'Windows' || runner.os == 'macOS') && github.event_name == 'push' && github.ref == 'refs/heads/master'
+      - name: Build package binary archive from branches develop, testing and master for Windows and macOS (this builds also on matrix.config.r = release, which can or can not be a duplicate)
+        if: (runner.os == 'Windows' || runner.os == 'macOS') && github.event_name == 'push' && (github.ref_name == 'master' || github.ref_name == 'testing' || github.ref_name == 'develop')
         run: |
           pkgbuild::build(".", dest_path = ".", binary = TRUE)
+          print("PKG_FILE")
+          print(Sys.getenv("PKG_FILE"))
+          print("PKG_FREL")
+          print(Sys.getenv("PKG_FREL"))
           file.copy(Sys.getenv("PKG_FILE"), Sys.getenv("PKG_FREL"))
         shell: Rscript {0}
 
