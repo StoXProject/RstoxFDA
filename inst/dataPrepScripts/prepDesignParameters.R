@@ -119,7 +119,11 @@ saveDesignTable(designParamsFile, designParams)
 
 #remove potential vessel identifying information
 bioData$Station$CatchPlatform <- as.character(NA)
+filter <- list()
+filter$Haul<-"HaulKey != '38449'"
+bioData <- RstoxData::FilterStoxBiotic(bioData, filter, T)
 CatchLotteryExample <- bioData
+
 #fix missing catchfractionnumber
 filter <- is.na(CatchLotteryExample$Sample$CatchFractionNumber)
 CatchLotteryExample$Sample$CatchFractionNumber[filter] <- CatchLotteryExample$Sample$CatchFractionWeight[filter]*CatchLotteryExample$Sample$SampleNumber[filter] / CatchLotteryExample$Sample$SampleWeight[filter]
