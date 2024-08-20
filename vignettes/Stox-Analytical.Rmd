@@ -44,6 +44,8 @@ For testing pre-releases of StoX, obtain the stox packages from the testing repo
 install.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"), repos = c("https://stoxproject.github.io/testingRepo/"))
 ```
 
+This will install latest pre-release available for you version of R and operating system. Make sure you have R 4.2 or 4.3 if testing on Mac or Windows.
+
 After you have finished testing, you may want to revert to the production packages. This may require explicitly uninstalling the packages first, as they have higher version numbers than production packages:
 
 ```{r installProductionPackages, eval=FALSE}
@@ -101,7 +103,7 @@ The sample are all selected from the same stratum, which is defined in terms of 
 head(PSUparameters$StratificationVariables)
 ```
 
-We also need to know the sampling parameters for each fish at each haul. RstoxFDA provides support for calculating those for some common sampling schemes. We can infer sampling parameters for observations of individual fish within a haul with the function _RstoxFDA::DefineIndvidiualSamplingParameters_. In the case of the catch lottery sampling, we will assume that fish that are selected for measurement is a simple random sample of the catch (DefinitionMethod="SRS). Sometimes different sampling schemes are employed for different parameters, so we have to specify a set of parameter which signals that the specimen is selected. We will specify the selected inndividuals as those where either sex or age is observed, as sex and age is observed for the subsample, and specifying sex rather than just age allows us to catch missing age records (due to for instance readability):
+We also need to know the sampling parameters for each fish at each haul. RstoxFDA provides support for calculating those for some common sampling schemes. We can infer sampling parameters for observations of individual fish within a haul with the function _RstoxFDA::DefineIndvidiualSamplingParameters_. In the case of the catch lottery sampling, we will assume that fish that are selected for measurement is a simple random sample of the catch (DefinitionMethod="SRS"). Sometimes different sampling schemes are employed for different parameters, so we have to specify a set of parameter which signals that the specimen is selected. We will specify the selected individuals as those where either sex or age is observed, as sex and age is observed for the subsample, and specifying sex rather than just age allows us to catch missing age records (due to for instance readability):
 
 ```{r DefineINDsamplingParameters}
 StoxBioticData = RstoxFDA::CatchLotteryExample
@@ -261,6 +263,8 @@ In summary a minimal StoX project implementing this kind of analysis, could look
 | AssignPSUSamplingParameters | AssignPSUSamplingParameters |  Matches selections to data records, handles non-response corrections |
 | EstimatePSU | AnalyticalPSUEstimate |  Estimates abundance, frequencies, totals and means for each PSU |
 | EstimatePopulation | AnalyticalPopulationEstimate | Estimates abundance, frequencies, totals and means for the population of interest |
+| ReadLandings | ReadLandings | Reads census information |
+| StoxLanding | StoxLanding | Convert census data to StoxLanding |
 | RatioEstimateTotal | AnalyticalRatioEstimate |  Improves estimates with census information. |
 
 

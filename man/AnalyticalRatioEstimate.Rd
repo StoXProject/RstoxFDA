@@ -46,6 +46,7 @@ The function obtains a ratio estimate of total abundance in landings by one of t
 When 'Method' is 'TotalDomainWeight', the 'Abundance' will be estimated as \eqn{\widehat{rN}^{(s,d)}}, the 'Frequency' as \eqn{\widehat{rf}^{(s,d)}}, the 'Total' as \eqn{\widehat{rt}^{(s,d,v}}, and the 'Mean' as \eqn{\widehat{r\mu}^{(s,d,v)}}.
 These estimators and their corresponding variances ('AbundanceCovariance', 'FrequencyCovariance', 'TotalCovariance', and 'MeanCovariance') are given below.
 This method requires Abundance and Total individual weight to be estimated for each domain.
+Note that no revised estimate for means are provided with this method. 'Mean' and MeanCovariance' is unchanged.
 The estimates are based on the ratio:
 \deqn{\hat{R}^{(s,d)}=\frac{W^{(L)}}{\hat{t}^{(L,\mathrm{w})}}}
 where \eqn{L=part(s,d)} is a partition of the landings containing the domain, \eqn{W^{(L)}} is the total landed weight in this partition (as reported in 'StoxLandingData') and \eqn{\hat{t}^{(L,\mathrm{w})}} is the estimated total weight in this partition (As reported by the Variable 'WeightVariable' in 'AnalyticalPopulationEstimateData).
@@ -64,15 +65,12 @@ The totals are estimated as:
 And covariances are estimated as:
 \deqn{\widehat{CoVar}(\widehat{rt}^{(s,d_{1},v_{1})}, \widehat{rt}^{(s,d_{2},v_{2})}) = \hat{R}^{(s,d_{1})}\hat{R}^{(s,d_{2})}\widehat{CoVar}(\hat{t}^{(s,d_{1},v_{1})}, \hat{t}^{(s,d_{2},v_{2})})}
 ignoring the error in \eqn{\hat{R}^{(s,d)}}.
-The means are estimated as:
-\deqn{\widehat{r\mu}^{(s,d,v)}=\frac{\widehat{rt}^{(s,d,v)}}{\widehat{rN}^{(s,d)}}}
-And covariances are estimated as:
-\deqn{\widehat{CoVar}(\widehat{r\mu}^{(s,d_{1},v_{1})}, \widehat{r\mu}^{(s,d_{2},v_{2})}) = \widehat{rN}^{(s,d_{1})}\widehat{rN}^{(s,d_{2})}\widehat{CoVar}(\widehat{rt}^{(s,d_{1},v_{1})}, \widehat{rt}^{(s,d_{2},v_{2})})}
 
 }
 \item{MeanDomainWeight}{
 When 'Method' is 'MeanDomainWeight', 'Abundance' will be estimated as \eqn{\widehat{qN}^{(s,d)}}, the variable 'Frequency' as \eqn{\widehat{qf}^{(s,d)}}, and the variable 'Total' as \eqn{\widehat{qt}^{(s,d,v)}}.
-These estimators and their corresponding variances ('AbundanceCovariance', 'FrequencyCovariance', and 'TotalCovariance') are given below. #'     Note that no revised estimate for means are provided with this method. 'Mean' and MeanCovariance' is unchanged.
+These estimators and their corresponding variances ('AbundanceCovariance', 'FrequencyCovariance', and 'TotalCovariance') are given below.
+Note that no revised estimate for means are provided with this method. 'Mean' and MeanCovariance' is unchanged.
 The estimates are based on estimated frequencies and ratio of of total landings in each landing partition to the estimated mean individual weight ('WeightVariable'):
 \deqn{\hat{Q}^{(s,d)}=\frac{W^{(L)}}{\sum_{(s',d') \in L}\hat{f}^{(s',d')}\hat{\mu}^{(s',d',\mathrm{w})}}}
 where \eqn{L=part(s,d)} is a partition of the landings containing the domain.

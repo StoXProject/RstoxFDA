@@ -33,7 +33,7 @@ makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup,
     AnalyticalPopulationEstimateData$Variables <- merge(AnalyticalPopulationEstimateData$Variables, domainMap, by="Domain")
     AnalyticalPopulationEstimateData$Variables <- merge(AnalyticalPopulationEstimateData$Variables, AnalyticalPopulationEstimateData$Abundance, by=c("Stratum", "Domain"))
     AnalyticalPopulationEstimateData$Variables$Domain <- AnalyticalPopulationEstimateData$Variables$Domain.new
-    AnalyticalPopulationEstimateData$Variables <- AnalyticalPopulationEstimateData$Variables[,list(Total=sum(Total), Mean=sum(Mean*Abundance)/(sum(Abundance))), by=c("Stratum", "Domain", "Variable")]
+    AnalyticalPopulationEstimateData$Variables <- AnalyticalPopulationEstimateData$Variables[,list(Total=sum(get("Total")), Mean=sum(get("Mean")*get("Abundance"))/(sum(get("Abundance")))), by=c("Stratum", "Domain", "Variable")]
     
     #Annotate and aggregate total and mean covariance
     AnalyticalPopulationEstimateData$VariablesCovariance <- merge(AnalyticalPopulationEstimateData$VariablesCovariance, domainMap, by.x="Domain1", by.y="Domain")
@@ -42,22 +42,22 @@ makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup,
     AnalyticalPopulationEstimateData$VariablesCovariance <- merge(AnalyticalPopulationEstimateData$VariablesCovariance, AnalyticalPopulationEstimateData$Abundance, by.x=c("Stratum", "Domain2"), by.y=c("Stratum", "Domain"), suffixes = c("Domain1", "Domain2"))
     AnalyticalPopulationEstimateData$VariablesCovariance$Domain1 <- AnalyticalPopulationEstimateData$VariablesCovariance$Domain.newDomain1
     AnalyticalPopulationEstimateData$VariablesCovariance$Domain2 <- AnalyticalPopulationEstimateData$VariablesCovariance$Domain.newDomain2
-    AnalyticalPopulationEstimateData$VariablesCovariance <- AnalyticalPopulationEstimateData$VariablesCovariance[,list(TotalCovariance=sum(TotalCovariance), MeanCovariance=sum(MeanCovariance*AbundanceDomain1*AbundanceDomain2)/(sum(AbundanceDomain1)*sum(AbundanceDomain2))), by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2")]
+    AnalyticalPopulationEstimateData$VariablesCovariance <- AnalyticalPopulationEstimateData$VariablesCovariance[,list(TotalCovariance=sum(get("TotalCovariance")), MeanCovariance=sum(get("MeanCovariance")*get("AbundanceDomain1")*get("AbundanceDomain2"))/(sum(get("AbundanceDomain1"))*sum(get("AbundanceDomain2")))), by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2")]
 
     #Annotate and aggregate abundance and frquencies
     AnalyticalPopulationEstimateData$Abundance <- merge(AnalyticalPopulationEstimateData$Abundance, domainMap, by="Domain")
     AnalyticalPopulationEstimateData$Abundance$Domain <- AnalyticalPopulationEstimateData$Abundance$Domain.new
-    AnalyticalPopulationEstimateData$Abundance <- AnalyticalPopulationEstimateData$Abundance[,list(Abundance=sum(Abundance), Frequency=sum(Frequency)), by=c("Stratum", "Domain")]
+    AnalyticalPopulationEstimateData$Abundance <- AnalyticalPopulationEstimateData$Abundance[,list(Abundance=sum(get("Abundance")), Frequency=sum(get("Frequency"))), by=c("Stratum", "Domain")]
     
     #Annotate and aggregate abundance and frequency covariance
     AnalyticalPopulationEstimateData$AbundanceCovariance <- merge(AnalyticalPopulationEstimateData$AbundanceCovariance, domainMap, by.x="Domain1", by.y="Domain")
     AnalyticalPopulationEstimateData$AbundanceCovariance <- merge(AnalyticalPopulationEstimateData$AbundanceCovariance, domainMap, by.x="Domain2", by.y="Domain",  suffixes = c("Domain1", "Domain2"))
     AnalyticalPopulationEstimateData$AbundanceCovariance$Domain1 <- AnalyticalPopulationEstimateData$AbundanceCovariance$Domain.newDomain1
     AnalyticalPopulationEstimateData$AbundanceCovariance$Domain2 <- AnalyticalPopulationEstimateData$AbundanceCovariance$Domain.newDomain2
-    AnalyticalPopulationEstimateData$AbundanceCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance[,list(AbundanceCovariance=sum(AbundanceCovariance), FrequencyCovariance=sum(FrequencyCovariance)), by=c("Stratum", "Domain1", "Domain2")]
+    AnalyticalPopulationEstimateData$AbundanceCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance[,list(AbundanceCovariance=sum(get("AbundanceCovariance")), FrequencyCovariance=sum(get("FrequencyCovariance"))), by=c("Stratum", "Domain1", "Domain2")]
     
     #update domainVariables
-    AnalyticalPopulationEstimateData$DomainVariables <- newDomains[!duplicated(Domain.new),]
+    AnalyticalPopulationEstimateData$DomainVariables <- newDomains[!duplicated(get("Domain.new")),]
     AnalyticalPopulationEstimateData$DomainVariables$Domain <- AnalyticalPopulationEstimateData$DomainVariables$Domain.new
     AnalyticalPopulationEstimateData$DomainVariables$Domain.new <- NULL
     
@@ -114,7 +114,7 @@ ReportAnalyticalCatchAtAge <- function(AnalyticalPopulationEstimateData, PlusGro
   tab$Age <- tab[[AgeDomainVar]]
   
   alpha <- (1-IntervalWidth)/2.0
-  result <- tab[,list(CatchAtAge=Abundance, SD=sqrt(AbundanceCovariance), Low=max(qnorm(alpha,mean=Abundance, sd=sqrt(AbundanceCovariance)),0), High=qnorm(1-alpha,mean=Abundance, sd=sqrt(AbundanceCovariance))), by=c(GroupingVariables, "AgeGroup", "Age")]
+  result <- tab[,list(CatchAtAge=get("Abundance"), SD=sqrt(get("AbundanceCovariance")), Low=max(stats::qnorm(alpha,mean=get("Abundance"), sd=sqrt(get("AbundanceCovariance"))),0), High=stats::qnorm(1-alpha,mean=get("Abundance"), sd=sqrt(get("AbundanceCovariance")))), by=c(GroupingVariables, "AgeGroup", "Age")]
   
   caa <- list()
   caa$NbyAge <- result
