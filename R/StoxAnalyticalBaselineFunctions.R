@@ -900,11 +900,11 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
                                    MeanCovariance=(1/get("Freq1")**2)*get("MeanSOP")/(get("n")*(get("n")-1))), 
                              by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2")]
       
-      if (!MeanOfMeans){
-        m1 <- match(paste(covar$Stratum, covar$Domain1), paste(Abundance$Stratum, Abundance$Domain))
-        m2 <- match(paste(covar$Stratum, covar$Domain2), paste(Abundance$Stratum, Abundance$Domain))
-        covar$MeanCovariance <- covar$TotalCovariance * (1/Abundance$Abundance[m1]) * (1/Abundance$Abundance[m2])
-      }
+      #if (!MeanOfMeans){
+      #  m1 <- match(paste(covar$Stratum, covar$Domain1), paste(Abundance$Stratum, Abundance$Domain))
+      #  m2 <- match(paste(covar$Stratum, covar$Domain2), paste(Abundance$Stratum, Abundance$Domain))
+      #  covar$MeanCovariance <- covar$TotalCovariance * (1/Abundance$Abundance[m1]) * (1/Abundance$Abundance[m2])
+      #}
 
       
       covars <- rbind(covars, covar)    
@@ -1026,17 +1026,13 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'   \item{Mean:}{
 #'   The estimate of the mean value of some variable \eqn{v} in domain \eqn{d} and stratum \eqn{s}, when MeanOfMeans is false:
 #'   \deqn{\hat{\mu}^{(s,d,v)} = \frac{\hat{t}^{(s,d,v)}}{\hat{N}^{(s,d)}}}
-#'   with co-variance:
-#'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1},v_{1})}, \hat{\mu}^{(s,d_{2},v_{2})}) = \frac{1}{\hat{N}^{(s,d_{1})} \hat{N}^{(s,d_{2})}}\widehat{CoVar}(\hat{t}^{(s,d_{1},v_{1})}, \hat{t}^{(s,d_{2},v_{2})})}
-#'   These are ratio estimates depending on the ratio to the estimated value \eqn{\hat{N}^{(s,d)}}, and the error in this estimate is ignored.
-#'   In addition, the estimate may depend on a ratio estimate for \eqn{\hat{t}^{(s,d,v)}} and \eqn{\hat{t}^{(s,d,v)}_{i}}, as explained for 'Abundance'
-#'   and in \code{\link[RstoxFDA]{AnalyticalPSUEstimate}}.
 #'   }
-#'   
 #'   \item{Mean, Mean of Means:}{
 #'   The estimate of the mean value of some variable in domain \eqn{d} and stratum \eqn{s}, when MeanOfMeans is true:
 #'   \deqn{\hat{\mu}^{(s,d,v)}=\sum_{i=1}^{n}\frac{w_{i}}{\hat{d}^{(s,d)}}\hat{\mu}_{i}I^{(s,d,v)}_{i}H(\hat{N}^{(s,d)}_{i})}
-#'   with co-variance:
+#'   }
+#'   \item{Mean, Covariance:}{
+#'   In either case, the covariance of means are estimated as:
 #'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s,d_{1},v_{1})}, \hat{\mu}^{(s,d_{2},v_{2})}) = \frac{1}{(\hat{d}^{(s,d_{1} \cap d_{2})})^{2}}\frac{1}{n^{(s)}(n^{(s)}-1)} \sum_{i=1}^{n} 
 #'   I^{(s,d_{1})}_{i} I^{(s,d_{2})}_{i} z_{i}^{(s,d_{1},v_{1})} z_{i}^{(s,d_{2},v_{2})}}
 #'   \deqn{z_{i}^{(s,d,v)} = H(\hat{f}^{(s,d)}_{i}) (\hat{\mu}^{(s,d,v)}_{i} - \hat{\mu}^{(s,d,v)})}
@@ -1044,7 +1040,6 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'   These are ratio estimates depending on the ratio ratio estimation of \eqn{\hat{d}^{(s,d)}}, \eqn{\hat{d}^{(s,d_{1} \cap d_{2})}} and \eqn{\hat{\mu}^{(s,d,v)}_{i}}, and the error in these estimates are ignored.
 #'  }
 #'  }
-#'  
 #'  Vocabulary for notation used above:
 #'  \describe{
 #'    \item{\eqn{H(x)}}{A step function which is 1 when \eqn{x>0}, otherwise it is zero.}

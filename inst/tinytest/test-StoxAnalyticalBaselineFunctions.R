@@ -364,8 +364,8 @@ expect_true(all(abs(ratioEst$Abundance$Frequency - popEstDomain$Abundance$Freque
 expect_true(!all(ratioEst$Abundance$Frequency == popEstDomain$Abundance$Frequency))
 expect_true(all(abs(ratioEst$AbundanceCovariance$FrequencyCovariance - popEstDomain$AbundanceCovariance$FrequencyCovariance)<1e-6))
 expect_true(!all(ratioEst$AbundanceCovariance$FrequencyCovariance == popEstDomain$AbundanceCovariance$FrequencyCovariance))
-
-expect_true(all(abs(ratioEst$VariableratioEst$Variables$Mean == popEstDomain$Variables$Mean - popEstDomain$Variable$Mean)<1e-6))
+browser()
+expect_true(all(abs(ratioEst$Variables$Mean - popEstDomain$Variables$Mean) / popEstDomain$Variables$Mean<1e-4))
 expect_true(!all(ratioEst$Variables$Mean == popEstDomain$Variables$Mean))
 expect_true(all(abs(ratioEst$VariablesCovariance$MeanCovariance - popEstDomain$VariablesCovariance$MeanCovariance)<1e-6))
 expect_true(!all(ratioEst$VariablesCovariance$MeanCovariance == popEstDomain$VariablesCovariance$MeanCovariance))
