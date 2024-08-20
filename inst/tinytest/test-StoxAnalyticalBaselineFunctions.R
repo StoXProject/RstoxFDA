@@ -359,16 +359,15 @@ expect_true(all((abs(ratioEst$Variables$Total - popEstDomain$Variables$Total)/ra
 expect_true(all(abs(ratioEst$VariablesCovariance$TotalCovariance - popEstDomain$VariablesCovariance$TotalCovariance)/ratioEst$VariablesCovariance$TotalCovariance - 
                   ((sum(land$Landing$RoundWeight)*1000)**2 - popEst$Variables$Total**2)/((sum(land$Landing$RoundWeight)*1000)**2) < 1e-6))
 
-#frequencies and means should be recalculated, but have barely changed when all landings is one stratum
+#frequencies should be recalculated, but have barely changed when all landings is one stratum
 expect_true(all(abs(ratioEst$Abundance$Frequency - popEstDomain$Abundance$Frequency)<1e-6))
 expect_true(!all(ratioEst$Abundance$Frequency == popEstDomain$Abundance$Frequency))
 expect_true(all(abs(ratioEst$AbundanceCovariance$FrequencyCovariance - popEstDomain$AbundanceCovariance$FrequencyCovariance)<1e-6))
 expect_true(!all(ratioEst$AbundanceCovariance$FrequencyCovariance == popEstDomain$AbundanceCovariance$FrequencyCovariance))
-browser()
-expect_true(all(abs(ratioEst$Variables$Mean - popEstDomain$Variables$Mean) / popEstDomain$Variables$Mean<1e-4))
-expect_true(!all(ratioEst$Variables$Mean == popEstDomain$Variables$Mean))
-expect_true(all(abs(ratioEst$VariablesCovariance$MeanCovariance - popEstDomain$VariablesCovariance$MeanCovariance)<1e-6))
-expect_true(!all(ratioEst$VariablesCovariance$MeanCovariance == popEstDomain$VariablesCovariance$MeanCovariance))
+
+#means should be exactly as before
+expect_true(all(ratioEst$Variables$Mean == popEstDomain$Variables$Mean))
+expect_true(all(ratioEst$VariablesCovariance$MeanCovariance[!is.nan(ratioEst$VariablesCovariance$MeanCovariance)] == popEstDomain$VariablesCovariance$MeanCovariance[!is.nan(popEstDomain$VariablesCovariance$MeanCovariance)]))
 
 
 #
@@ -471,7 +470,7 @@ expect_true(min(CVs$CV)<.2)
 
 #check that Means and Covariances are unchanged
 expect_true(all(ratioEstMDW$Variables$Mean == popEstDomain$Variables$Mean))
-expect_true(all(ratioEstMDW$VariablesCovariance$MeanCovariance == popEstDomain$VariablesCovariance$MeanCovariance))
+expect_true(all(ratioEstMDW$VariablesCovariance$MeanCovariance[!is.nan(ratioEstMDW$VariablesCovariance$MeanCovariance)] == popEstDomain$VariablesCovariance$MeanCovariance[!is.nan(popEstDomain$VariablesCovariance$MeanCovariance)]))
 
 
 #
