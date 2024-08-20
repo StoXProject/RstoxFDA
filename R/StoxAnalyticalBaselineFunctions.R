@@ -135,7 +135,8 @@ parseDesignParameters <- function(filename){
 #'  \code{\link[RstoxFDA]{PSUSamplingParametersData}}. The data is provided as one table, so that the information in 'sampleTable' is repeated for each entry in 'selectionTable'.
 #'  Any columns not named in \code{\link[RstoxFDA]{PSUSamplingParametersData}} are assumed to be stratification variables.
 #'  The conditions listed for the variables in \code{\link[RstoxFDA]{PSUSamplingParametersData}} are checked upon reading the data, and
-#'  execution halts with error if any are violated.
+#'  execution halts with error if any are violated. Consult the examples in this documentation to see how the resource is formatted
+#'  with ae stratification variable 'Species'.
 #'  
 #'  The DefinitionMethod 'AdHocStoxBiotic' constructs Sampling Design Parameters from data, 
 #'  assuming equal probability sampling with fixed sample size, selection with replacement and complete response.
@@ -150,6 +151,18 @@ parseDesignParameters <- function(filename){
 #' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling.
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{PSUSamplingParametersData}}
+#' @examples
+#'  # embedded example file:
+#'  exampleFile <- system.file("testresources", 
+#'                         "lotteryParameters", 
+#'                         "lotteryDesignNSHstrata.txt", package="RstoxFDA")
+#'  
+#'  # Read example file with StoX
+#'  PSUSamplingParametersData <- RstoxFDA::DefinePSUSamplingParameters(DefinitionMethod="ResourceFile", FileName=exampleFile)
+#'  
+#'  # Read example file as flat table, to illustrate formatting
+#'  FlatSamplingParametersData <- read.csv(exampleFile, sep="\t")
+#' 
 #' @export
 #' @concept StoX-functions
 #' @concept Analytical estimation
