@@ -40,13 +40,27 @@ The DefintionMethod 'ResourceFile' reads sampling parameters from a tab delimite
 \code{\link[RstoxFDA]{PSUSamplingParametersData}}. The data is provided as one table, so that the information in 'sampleTable' is repeated for each entry in 'selectionTable'.
 Any columns not named in \code{\link[RstoxFDA]{PSUSamplingParametersData}} are assumed to be stratification variables.
 The conditions listed for the variables in \code{\link[RstoxFDA]{PSUSamplingParametersData}} are checked upon reading the data, and
-execution halts with error if any are violated.
+execution halts with error if any are violated. Consult the examples in this documentation to see how the resource is formatted
+with ae stratification variable 'Species'.
 
 The DefinitionMethod 'AdHocStoxBiotic' constructs Sampling Design Parameters from data,
 assuming equal probability sampling with fixed sample size, selection with replacement and complete response.
 These is a reasonable approximation if within-strata sampling is approximately simple random selections,
 the sample intensitiy is low (only a small fraction of the population is sampled),
 and non-response is believed to be at random.
+}
+\examples{
+ # embedded example file:
+ exampleFile <- system.file("testresources", 
+                        "lotteryParameters", 
+                        "lotteryDesignNSHstrata.txt", package="RstoxFDA")
+ 
+ # Read example file with StoX
+ PSUSamplingParametersData <- RstoxFDA::DefinePSUSamplingParameters(DefinitionMethod="ResourceFile", FileName=exampleFile)
+ 
+ # Read example file as flat table, to illustrate formatting
+ FlatSamplingParametersData <- read.csv(exampleFile, sep="\t")
+
 }
 \concept{Analytical estimation}
 \concept{StoX-functions}
