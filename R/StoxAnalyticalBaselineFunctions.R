@@ -158,7 +158,8 @@ parseDesignParameters <- function(filename){
 #'                         "lotteryDesignNSHstrata.txt", package="RstoxFDA")
 #'  
 #'  # Read example file with StoX
-#'  PSUSamplingParametersData <- RstoxFDA::DefinePSUSamplingParameters(DefinitionMethod="ResourceFile", FileName=exampleFile)
+#'  PSUSamplingParametersData <- RstoxFDA::DefinePSUSamplingParameters(DefinitionMethod="ResourceFile", 
+#'                           FileName=exampleFile)
 #'  
 #'  # Read example file as flat table, to illustrate formatting
 #'  FlatSamplingParametersData <- read.csv(exampleFile, sep="\t")
