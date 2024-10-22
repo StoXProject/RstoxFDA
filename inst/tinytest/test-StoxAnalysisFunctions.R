@@ -339,13 +339,15 @@ if (nchar(system.file(package="Reca"))>0){
   
   StoxBioticData$Station$Area <- c(rep(StoxLandingData$Landing$Area[10], 20), rep(StoxLandingData$Landing$Area[20], 25))
   StoxBioticData$Station$GG <- c(rep(StoxLandingData$Landing$Gear[10], 20), rep(StoxLandingData$Landing$Gear[20], 25))
+  StoxBioticData$Station$GG[1:2] <- c("11", "11")
+  StoxBioticData$Station$Area[1:2] <- c("08","08")
   StoxLandingData$Landing$GG <- StoxLandingData$Landing$Gear
   
   prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area"))
   expect_true("Area" %in% names(prep$Landings$AgeLengthCov))
   
   #context("test-StoxAnalysisFunctions: PrepareRecaEstimate cellEffect")
-  prepCell <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c("Area", "GG"), CellEffect = "All")
+  prepCell <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c("GG"), RandomEffects = c("Area"), CellEffect = "All")
   expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covariate=="Area"], 1)
   expect_equal(prepCell$AgeLength$info$interaction[prepCell$AgeLength$info$covariate=="GG"], 1)
   
