@@ -369,27 +369,59 @@ writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
 #'  Merge \code{\link[sf]{sf}} data table, such as \code{\link[RstoxBase]{StratumPolygon}}
 #' @details 
 #'  All columns must have the same value for all polygons that are to be merged. If columns are not consistent in this regard, an error is raised.
-#' @param shape \code{\link[sf]{sf}} data.table with stratadefinition to convert
+#' @param shape \code{\link[sf]{sf}} data.table with polygons to convert
 #' @param mergeCol name of column that should be used for merging, all polygons with the same value in this column will be merged into one.
+#' @param tolerance parameter passed to \code{\link[sf]{st_snap}}, a value of 0 correspond to no snapping
+#' @param snapProjection projection to perform snapping
+#' @details
+#'  In order to deal with any inaccuracies in polygon definitions, polygons are snapped to a common grid before merging
+#'  This has to be done in planar coordinates, the projection used is controlled by 'snapProjection'
+#'  The resolution of the grid is controlled by the parameter 'tolerance', which can be either a units object, 
+#'  or a numerical value passed to \code{\link[sf]{st_snap}}.
+#'  The interpretation of tolerance as a numerical value is defined in sf, but visual inspection of results is always adviced.
 #' @return \code{\link[sf]{sf}} with polygons merged
+#' @examples
+#'   #merge ICES area-definitions by division
+#'   library(sf)
+#'   division <- RstoxFDA::ICESareas
+#'   division$StratumName <- paste(division$Major_FA, 
+#'       division$SubArea, division$Division, sep=".")
+#'   merged <- mergePolygons(division["StratumName"], "StratumName", tolerance=.001)
+#'   #compare original area definition with merged
+#'   RstoxFDA::plotAreaComparison(RstoxFDA::ICESareas, merged, ylim=c(30,80), areaLabels2 = TRUE)
 #' @concept spatial coding functions
 #' @export
-mergePolygons <- function(shape, mergeCol){
+mergePolygons <- function(shape, mergeCol, tolerance=0, snapProjection = "EPSG:3857"){
   shape <- sf::st_as_sf(shape)
   if (nrow(unique(sf::st_drop_geometry(shape))) != length(unique(shape[[mergeCol]]))){
     stop("All columns must have the same value for polygons that are to be merged")
   }
-  
+
+  proj <- sf::st_crs(shape)
+  shape <- sf::st_transform(shape, snapProjection)
 
   newPolygons <- NULL
   for (newName in unique(shape[[mergeCol]])){
-    ff <- sf::st_union(shape[shape[[mergeCol]]==newName,])
-    cols <- sf::st_drop_geometry(shape[shape[[mergeCol]]==newName,])[1,]
-    ff <- cbind(cols, ff)
-    newPolygons <- rbind(newPolygons, ff)
+    mergePol <- shape[shape[[mergeCol]]==newName,]
+    for (i in 1:nrow(mergePol)){
+      mergePol[i,] <- sf::st_snap(mergePol[i,], mergePol[1,], tolerance=tolerance)
+    }
+    geometry <- sf::st_cast(sf::st_union(sf::st_combine(mergePol), by_feature = T), to="POLYGON")
+    if (ncol(shape)>2){
+      cols <- sf::st_drop_geometry(shape[shape[[mergeCol]]==newName,])[1,]
+      geometry <- cbind(cols, geometry)
+    }
+    else{ #if mergeCol is the only non-geomtry column
+      col <- sf::st_drop_geometry(shape[shape[[mergeCol]]==newName,])[1,]
+      colList <- as.list(col)
+      names(colList) <- mergeCol
+      geometry <- cbind(geometry, data.table::as.data.table(colList))
+    }
+    newPolygons <- rbind(newPolygons, geometry)
   }
   
   newPolygons <- sf::st_as_sf(newPolygons)
+  newPolygons <- sf::st_transform(newPolygons, proj)
   
   return(newPolygons)
   

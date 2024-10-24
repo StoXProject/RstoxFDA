@@ -20,7 +20,7 @@ various report functions that invoke \code{\link[Reca]{eca.predict}}.
  }
  
  In addition to configurable covariates, the models always contain a constant effect (named 'constant'),
- a catch or haul effect (named 'catchSample') and effects for fish measurments (named 'fish'). 
+ a catch or haul effect (named 'catchSample') and effects for fish measurements (named 'fish'). 
  Where relevant the following parameters may be tabulated for each effect:
  \describe{
  \item{Age}{Identifying the age the effect applies to}
