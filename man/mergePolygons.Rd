@@ -4,12 +4,16 @@
 \alias{mergePolygons}
 \title{Merges polygons}
 \usage{
-mergePolygons(shape, mergeCol)
+mergePolygons(shape, mergeCol, tolerance = 0, snapProjection = "EPSG:3857")
 }
 \arguments{
-\item{shape}{\code{\link[sf]{sf}} data.table with stratadefinition to convert}
+\item{shape}{\code{\link[sf]{sf}} data.table with polygons to convert}
 
 \item{mergeCol}{name of column that should be used for merging, all polygons with the same value in this column will be merged into one.}
+
+\item{tolerance}{parameter passed to \code{\link[sf]{st_snap}}, a value of 0 correspond to no snapping}
+
+\item{snapProjection}{projection to perform snapping}
 }
 \value{
 \code{\link[sf]{sf}} with polygons merged
@@ -19,5 +23,21 @@ Merge \code{\link[sf]{sf}} data table, such as \code{\link[RstoxBase]{StratumPol
 }
 \details{
 All columns must have the same value for all polygons that are to be merged. If columns are not consistent in this regard, an error is raised.
+
+In order to deal with any inaccuracies in polygon definitions, polygons are snapped to a common grid before merging
+ This has to be done in planar coordinates, the projection used is controlled by 'snapProjection'
+ The resolution of the grid is controlled by the parameter 'tolerance', which can be either a units object, 
+ or a numerical value passed to \code{\link[sf]{st_snap}}.
+ The interpretation of tolerance as a numerical value is defined in sf, but visual inspection of results is always adviced.
+}
+\examples{
+  #merge ICES area-definitions by division
+  library(sf)
+  division <- RstoxFDA::ICESareas
+  division$StratumName <- paste(division$Major_FA, 
+      division$SubArea, division$Division, sep=".")
+  merged <- mergePolygons(division["StratumName"], "StratumName", tolerance=.001)
+  #compare original area definition with merged
+  RstoxFDA::plotAreaComparison(RstoxFDA::ICESareas, merged, ylim=c(30,80), areaLabels2 = T)
 }
 \concept{spatial coding functions}

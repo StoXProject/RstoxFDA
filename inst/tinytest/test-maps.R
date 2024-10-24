@@ -70,6 +70,24 @@ expect_true("sf" %in% class(merged))
 expect_equal(nrow(merged), length(unique(ia$StratumName)))
 
 # plot area comparison
-plotAreaComparison(RstoxFDA::mainareaFdir2017, RstoxFDA::mainareaFdir2018, xlim=c(0,12), ylim=c(54,60), areaLabels2 = T, projection = "+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
+RstoxFDA::plotAreaComparison(RstoxFDA::mainareaFdir2017, RstoxFDA::mainareaFdir2018, xlim=c(0,12), ylim=c(54,60), areaLabels2 = T, projection = "+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 
          +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 
+
+#try merge on division
+division <- iasf
+division$StratumName <- paste(division$Major_FA, division$SubArea, division$Division, sep=".")
+division <- division[c("StratumName", "Major_FA", "SubArea", "Division")]
+merged <- RstoxFDA::mergePolygons(division, "StratumName")
+expect_true("sf" %in% class(merged))
+expect_equal(nrow(merged), length(unique(division$StratumName)))
+expect_true(nrow(merged)<nrow(division))
+
+#try merge with only once column
+division <- iasf
+division$StratumName <- paste(division$Major_FA, division$SubArea, division$Division, sep=".")
+division <- division["StratumName"]
+merged <- RstoxFDA::mergePolygons(division, "StratumName")
+expect_true("sf" %in% class(merged))
+expect_equal(nrow(merged), length(unique(division$StratumName)))
+expect_true(nrow(merged)<nrow(division))
