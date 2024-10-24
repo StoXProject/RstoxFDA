@@ -38,6 +38,6 @@ In order to deal with any inaccuracies in polygon definitions, polygons are snap
       division$SubArea, division$Division, sep=".")
   merged <- mergePolygons(division["StratumName"], "StratumName", tolerance=.001)
   #compare original area definition with merged
-  RstoxFDA::plotAreaComparison(RstoxFDA::ICESareas, merged, ylim=c(30,80), areaLabels2 = T)
+  RstoxFDA::plotAreaComparison(RstoxFDA::ICESareas, merged, ylim=c(30,80), areaLabels2 = TRUE)
 }
 \concept{spatial coding functions}
