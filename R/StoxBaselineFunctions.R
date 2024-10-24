@@ -211,11 +211,11 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVa
   if (LocationVariable == "None"){
     
     if (!all(StoxLandingData$Landing$Area %in% AreaPosition$Area)){
-      missing <- StoxLandingData$Landing$Area[!(StoxLandingData$Landing$Area %in% AreaPosition$Area)]
+      missing <- unique(StoxLandingData$Landing$Area[!(StoxLandingData$Landing$Area %in% AreaPosition$Area)])
       stop(paste("Positions not provided for all Areas in StoxLandingData. Missing: ", paste(missing, collapse=",")))
     }
     if (!all(StoxLandingData$Landing$Area %in% AreaPosition$Area[is.na(AreaPosition$Location)])){
-      missing <- StoxLandingData$Landing$Area[!(StoxLandingData$Landing$Area %in% AreaPosition$Area[is.na(AreaPosition$Location)])]
+      missing <- unique(StoxLandingData$Landing$Area[!(StoxLandingData$Landing$Area %in% AreaPosition$Area[is.na(AreaPosition$Location)])])
       stop(paste("Positions is not provided for the case of missing Location for some Areas in StoxLandingData: ", paste(missing, collapse=",")))
     }
     AreaPosition <- AreaPosition[is.na(AreaPosition$Location),c("Area", latColName, lonColName), with=F]
@@ -229,7 +229,7 @@ AddAreaPositionStoxLanding <- function(StoxLandingData, AreaPosition, LocationVa
     arealocdata <- paste(StoxLandingData$Landing$Area, StoxLandingData$Landing[[LocationVariable]], sep="-")
     arealocresource <- paste(AreaPosition$Area, AreaPosition$Location, sep="-")
     if (!all(arealocdata %in% arealocresource)){
-      missing <- arealocdata[!(arealocdata %in% arealocresource)]
+      missing <- unique(arealocdata[!(arealocdata %in% arealocresource)])
       stop(paste("Positions not provided for all Areas and Locations in StoxLandingData Missing: ", paste(missing, collapse=",")))
     }
     AreaPosition <- AreaPosition[,c("Area", "Location", latColName, lonColName), with=F]

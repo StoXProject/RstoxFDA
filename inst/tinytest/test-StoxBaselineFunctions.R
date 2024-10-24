@@ -697,6 +697,10 @@ landingH <- RstoxData::ReadLanding(system.file("testresources","landing.xml", pa
 stoxLandingPre <- RstoxData:::StoxLanding(landingH)
 landingWpos <- RstoxFDA::AddAreaPositionStoxLanding(stoxLandingPre, areaPos)
 
+areaPosReduced <- areaPos[!(Area %in% c("48", "57")),]
+stoxLandingPre$Landing <- stoxLandingPre$Landing[order(stoxLandingPre$Landing$Area),]
+expect_error(RstoxFDA::AddAreaPositionStoxLanding(stoxLandingPre, areaPosReduced), "Positions not provided for all Areas in StoxLandingData. Missing:  48,57")
+
 landingPost <- RstoxFDA::AddStratumStoxLanding(landingWpos, strp)
 expect_true(all(as.integer(landingPost$Landing$Stratum)==as.integer(landingPost$area)))
 expect_equal(ncol(landingWpos$Landing)+1, ncol(landingPost$Landing))
