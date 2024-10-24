@@ -19,6 +19,7 @@ if (nchar(system.file(package="Reca"))>0){
   prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
   fpath <- RstoxFDA:::makeTempDirReca()
   paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=99)
+  
   expect_error(pred <- RstoxFDA::RunRecaModels(paramOut, StoxLandingData,GroupingVariables = c("")), "All 'GroupingVariables' must be column in 'StoxLandingData', the following are not: ")
   RstoxFDA:::removeTempDirReca(fpath)
   
