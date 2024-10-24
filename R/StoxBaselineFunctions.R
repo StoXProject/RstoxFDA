@@ -73,7 +73,7 @@ check_landing_duplicates <- function(LandingData, warn=T, fix=F){
 #'  Occasionally landing sets contain data that where rows are not uniquely identified by the key columns in that format.
 #'  In these cases a warning is issued, and it is important to handle those duplicates to avoid problems in later processing.
 #'  Uniqueness of keys are checked for in some typical downstream StoX processes, such as \code{\link[RstoxData]{StoxLanding}},
-#'  so the problem may potentially disappear after filtering. Otherways, the parameter 'ForceUnique' may be considered, if
+#'  so the problem may potentially disappear after filtering. Otherwise, the parameter 'ForceUnique' may be considered, if
 #'  one is confident these records does in fact represent separate landings.
 #' 
 #'  Formats may be one of the following
@@ -85,7 +85,7 @@ check_landing_duplicates <- function(LandingData, warn=T, fix=F){
 #'  
 #'  Files in the format 'landingerv2' and 'lss' may be obtained from the NMD landings API at IMR.
 #'  
-#'  The lss format has been using various naming conventions. Data is read by colmn index, and strict checking of column names is not performed.
+#'  The lss format has been using various naming conventions. Data is read by column index, and strict checking of column names is not performed.
 #'  
 #' @param FileNames The paths of the landing files.
 #' @param Format The file format of the landing files.
@@ -115,7 +115,6 @@ ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"
     
     output <- RstoxData::ReadLanding(FileNames=FileNames, ForceUnique = ForceUnique)
     
-    return(output)
   }
   else if (Format == "lss"){
     if (FileEncoding == "Default"){
@@ -137,7 +136,6 @@ ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"
       check_landing_duplicates(output, warn=T, fix=F)  
     }
     
-    return(output)
   }
   else if (Format == "FDIR.2021"){
     if (FileEncoding == "Default"){
@@ -159,14 +157,21 @@ ReadLandingFDA <- function(FileNames, Format=c("landingerv2", "lss", "FDIR.2021"
     else{
       check_landing_duplicates(output, warn=T, fix=F)  
     }
-    
-    return(output)
           
   }
   else{
     stop(paste("Format", Format, "not recognized."))
   }
   
+  # add metadata corresponding to xml-input for non-xml files
+  for (f in FileNames){
+    l <- basename(f)
+    if (is.null(output[[l]]$metadata)){
+      output[[l]]$metadata <- data.table::data.table(useXsd="landingerv2", file=f)
+    }
+  }
+  
+  return(output)
 }
 
 #' Append position to landings data

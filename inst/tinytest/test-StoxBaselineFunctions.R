@@ -28,6 +28,20 @@ example <- system.file("testresources","landing.xml", package="RstoxFDA")
 example_duplicates <- system.file("testresources", "landingsvariants", "landing_duplicates.xml", package="RstoxFDA")
 example_duplicates_several <- system.file("testresources", "landingsvariants", "landing_duplicates_several.xml", package="RstoxFDA")
 
+# check that converted data works with RstoxData-filters
+filterExpr <- list()
+filterExpr[["lss_2005.psv"]] <- list()
+filterExpr[["lss_2005.psv"]]$Art <- "ArtFAO_kode == 'COD'"
+filteredLss1 <- RstoxData::FilterLanding(lss1read, filterExpr, FilterUpwards = T)
+expect_true(nrow(filteredLss1$lss_2005.psv$Seddellinje) > 0)
+expect_true(nrow(filteredLss1$lss_2005.psv$Seddellinje) < nrow(lss1read$lss_2005.psv$Seddellinje))
+
+filterExpr <- list()
+filterExpr[["openfdir.2021.csv"]] <- list()
+filterExpr[["openfdir.2021.csv"]]$Art <- "ArtFAO_kode == 'COD'"
+openFdirReadFiltered <- RstoxData::FilterLanding(openFdirRead, filterExpr, FilterUpwards = T)
+expect_true(nrow(openFdirReadFiltered$openfdir.2021.csv$Seddellinje) > 0)
+expect_true(nrow(openFdirReadFiltered$openfdir.2021.csv$Seddellinje) < nrow(openFdirRead$openfdir.2021.csv$Seddellinje))
 
 #check that duplicates give warning
 expect_warning(landDup <- RstoxFDA:::ReadLandingFDA(FileNames = example_duplicates), "Landings in landing_duplicates.xml contain duplicate key records. Consider the option ForceUnique or correct this in some other way.")
