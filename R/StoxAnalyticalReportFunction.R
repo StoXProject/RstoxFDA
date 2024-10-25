@@ -90,7 +90,7 @@ makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup,
 #' @seealso \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}} and \code{\link[RstoxFDA]{AnalyticalRatioEstimate}} for obtaining analytical estimates.
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
-#' @noRD
+#' @noRd
 ReportAnalyticalCatchAtAge <- function(AnalyticalPopulationEstimateData, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
   AgeDomainVar = "IndividualAge"
 
