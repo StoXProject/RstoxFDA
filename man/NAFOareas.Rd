@@ -26,6 +26,7 @@ Polygons are defined in WGS84 coordinates (unprojected).
 }
 \examples{
  # combine NAFO and mainarea and plot
+ library(sf) #use sfs rbind
  combo <- rbind(RstoxFDA::NAFOareas[,"StratumName"], 
     RstoxFDA::mainareaFdir2018[,"StratumName"])
  RstoxFDA::plotArea(areaDef = combo)

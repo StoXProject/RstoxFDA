@@ -47,10 +47,12 @@ The selection methods available for 'SelectionMethod' are explained here:
  \item{FSWOR}{Fixed sample size without replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection could be specified in the 'selectionTable'}
 }
 
-The SelectionProbability is defined as: The probability of selecting the sampling unit when it was selected from the population.
-The HHsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sampled unit when estimating with the Hansen-Hurwitz strategy: 1 / (SelectionProbability*Q) , where Q is the sum of the reciprocal of the SelectionProbabilites for the sampled units. For equal probability sampling with replacement, this is simply 1/n, where n i sample size.
-The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
-The HTsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sample when estimating with the Horvitz-Thompson strategy: 1 / (InclusionProbability*P), where P is the sum of the reciprocal of the InclusionProbabilites for the sampled units. For equal probability sampling without replacement, this is simply 1/n, where n is sample size.
+\describe{
+  \item{The SelectionProbability is defined as:}{The probability of selecting the sampling unit when it was selected from the population.} 
+  \item{The HHsamplingWeight:}{The normalized sampling weight, or the fraction of the stratum represented by the sampled unit when estimating with the Hansen-Hurwitz strategy: 1 / (SelectionProbability*Q) , where Q is the sum of the reciprocal of the SelectionProbabilites for the sampled units. For equal probability sampling with replacement, this is simply 1/n, where n i sample size.}
+  \item{The InclusionProbability is defined as:}{The probability of the sampling unit being included in the sample.}
+  \item{The HTsamplingWeight:}{The normalized sampling weight, or the fraction of the stratum represented by the sample when estimating with the Horvitz-Thompson strategy: 1 / (InclusionProbability*P), where P is the sum of the reciprocal of the InclusionProbabilites for the sampled units. For equal probability sampling without replacement, this is simply 1/n, where n is sample size.}
+}
 }
 \concept{Analytical estimation}
 \concept{Data types}

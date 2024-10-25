@@ -38,4 +38,4 @@ Suggests:
     tinytest
 Additional_repositories: 
     https://stoxproject.github.io/repo
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

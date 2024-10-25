@@ -36,7 +36,7 @@ Norwegian sales-notes data are archived and curated by the Norwegian Directorate
  Occasionally landing sets contain data that where rows are not uniquely identified by the key columns in that format.
  In these cases a warning is issued, and it is important to handle those duplicates to avoid problems in later processing.
  Uniqueness of keys are checked for in some typical downstream StoX processes, such as \code{\link[RstoxData]{StoxLanding}},
- so the problem may potentially disappear after filtering. Otherways, the parameter 'ForceUnique' may be considered, if
+ so the problem may potentially disappear after filtering. Otherwise, the parameter 'ForceUnique' may be considered, if
  one is confident these records does in fact represent separate landings.
 
  Formats may be one of the following
@@ -48,7 +48,7 @@ Norwegian sales-notes data are archived and curated by the Norwegian Directorate
  
  Files in the format 'landingerv2' and 'lss' may be obtained from the NMD landings API at IMR.
  
- The lss format has been using various naming conventions. Data is read by colmn index, and strict checking of column names is not performed.
+ The lss format has been using various naming conventions. Data is read by column index, and strict checking of column names is not performed.
 }
 \concept{IO functions}
 \concept{StoX-functions}
