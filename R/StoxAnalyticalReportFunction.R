@@ -131,5 +131,8 @@ ReportAnalyticalCatchAtAge <- function(AnalyticalPopulationEstimateData, PlusGro
     caa$NbyAge <- setDecimals(caa$NbyAge, c("CatchAtAge", "SD", "Low", "High"), Decimals)
   }
   
+  #order by age
+  caa$NbyAge <- caa$NbyAge[order(caa$NbyAge$Age),]
+  
   return(caa)
 }
