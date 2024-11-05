@@ -164,7 +164,7 @@ parseDesignParameters <- function(filename){
 #'  # Read example file as flat table, to illustrate formatting
 #'  FlatSamplingParametersData <- read.csv(exampleFile, sep="\t")
 #' 
-#' @export
+#' @noRd
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
@@ -356,7 +356,7 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
 #' @param StratificationColumns names of columns in the Individual table of StoxBioticData that identify strata for Stratified selection (DefinitionMethod 'Stratified').
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}} where SampleId refers to the variable 'Haul' on the 'Haul' table in StoxBioticData, and IndividualId refers to the variable 'Individual' on the 'Individual' table of StoxBioticData.
-#' @export
+#' @noRd
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
@@ -452,7 +452,7 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}}
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 DefineSamplingHierarchy <- function(StoxBioticData, IndividualSamplingParametersData, Hierarchy=character(), Stratification=character(), StrataSizes=character(), SelectionMethod=character()){
   stop("Not Implemented")
 }
@@ -494,7 +494,7 @@ DefineSamplingHierarchy <- function(StoxBioticData, IndividualSamplingParameters
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticData, SamplingUnitId=character(), DataRecordId=character(), DefinitionMethod=c("MissingAtRandom")){
   checkMandatory(PSUSamplingParametersData, "PSUSamplingParametersData")
   checkMandatory(StoxBioticData, "StoxBioticData")
@@ -630,7 +630,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #' @return \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for each PSU of abundance, frequencies, totals and means by stratum and domain.
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, Variables=character(), DomainVariables=character(), PSUDomainVariables=character()){
 
   checkMandatory(StoxBioticData, "StoxBioticData")
@@ -763,7 +763,7 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}} with simplified stratification
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 CollapseStrata <- function(IndividualSamplingParametersData, RetainStrata=character()){
   
   checkMandatory(IndividualSamplingParametersData, "IndividualSamplingParametersData")
@@ -796,7 +796,7 @@ CollapseStrata <- function(IndividualSamplingParametersData, RetainStrata=charac
 #' @return \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with zeroes and NaNs inferred for strata that have zero abundance in a PSU.
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 LiftStrata <- function(AnalyticalPSUEstimateData){
 
   allStrata <- data.table::CJ(SampleId=AnalyticalPSUEstimateData$StratificationVariables$SampleId, Stratum=AnalyticalPSUEstimateData$StratificationVariables$Stratum, unique = T)
@@ -1112,7 +1112,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'  abundance <- abundance[order(as.numeric(abundance$Domain)),]
 #'  abundance
 #' @concept Analytical estimation
-#' @export
+#' @noRd
 #' @md
 AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPSUEstimateData, MeanOfMeans=F){
 
@@ -1374,7 +1374,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'                                         "TotalDomainWeight")
 #'  
 #' @concept Analytical estimation
-#' @export
+#' @noRd
 #' @md
 AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, WeightVariable=character(), Method=c("TotalDomainWeight", "MeanDomainWeight")){
   
