@@ -223,10 +223,12 @@ is.AnalyticalPopulationEstimateData <- function(AnalyticalPopulationEstimateData
 #'  \item{FSWOR}{Fixed sample size without replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection could be specified in the 'selectionTable'}
 #' }
 #' 
-#' The SelectionProbability is defined as: The probability of selecting the sampling unit when it was selected from the population.
-#' The HHsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sampled unit when estimating with the Hansen-Hurwitz strategy: 1 / (SelectionProbability*Q) , where Q is the sum of the reciprocal of the SelectionProbabilites for the sampled units. For equal probability sampling with replacement, this is simply 1/n, where n i sample size.
-#' The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
-#' The HTsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sample when estimating with the Horvitz-Thompson strategy: 1 / (InclusionProbability*P), where P is the sum of the reciprocal of the InclusionProbabilites for the sampled units. For equal probability sampling without replacement, this is simply 1/n, where n is sample size.
+#' \describe{
+#'   \item{The SelectionProbability is defined as:}{The probability of selecting the sampling unit when it was selected from the population.} 
+#'   \item{The HHsamplingWeight:}{The normalized sampling weight, or the fraction of the stratum represented by the sampled unit when estimating with the Hansen-Hurwitz strategy: 1 / (SelectionProbability*Q) , where Q is the sum of the reciprocal of the SelectionProbabilites for the sampled units. For equal probability sampling with replacement, this is simply 1/n, where n i sample size.}
+#'   \item{The InclusionProbability is defined as:}{The probability of the sampling unit being included in the sample.}
+#'   \item{The HTsamplingWeight:}{The normalized sampling weight, or the fraction of the stratum represented by the sample when estimating with the Horvitz-Thompson strategy: 1 / (InclusionProbability*P), where P is the sum of the reciprocal of the InclusionProbabilites for the sampled units. For equal probability sampling without replacement, this is simply 1/n, where n is sample size.}
+#' }
 #' 
 #' @name PSUSamplingParametersData
 #' @concept Data types
@@ -340,10 +342,12 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
 #'  \item{FSWOR}{Fixed sample size without replacement. A random selection of a fixed sample size 'n' is chosen without replacement. Order of selection should be specified in the 'selectionTable'}
 #' }
 #' 
-#' The SelectionProbability is defined as: The probability of selecting the sampling unit when it was selected from the population.
-#' The HHsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sampled unit when estimating with the Hansen-Hurwitz strategy: 1 / (SelectionProbability*Q) , where Q is the sum of the reciprocal of the SelectionProbabilites for the sampled units. For equal probability sampling with replacement, this is simply 1/n, where n i sample size.
-#' The InclusionProbability is defined as: The probability of the sampling unit being included in the sample.
-#' The HTsamplingWeight: The normalized sampling weight, or the fraction of the stratum represented by the sample when estimating with the Horvitz-Thompson strategy: 1 / (InclusionProbability*P), where P is the sum of the reciprocal of the InclusionProbabilites for the sampled units. For equal probability sampling without replacement, this is simply 1/n, where n is sample size.
+#' \describe{
+#'  \item{The SelectionProbability is defined as:}{The probability of selecting the sampling unit when it was selected from the population.}
+#'  \item{The HHsamplingWeight:}{The normalized sampling weight, or the fraction of the stratum represented by the sampled unit when estimating with the Hansen-Hurwitz strategy: 1 / (SelectionProbability*Q) , where Q is the sum of the reciprocal of the SelectionProbabilites for the sampled units. For equal probability sampling with replacement, this is simply 1/n, where n i sample size.}
+#'  \item{The InclusionProbability is defined as:}{The probability of the sampling unit being included in the sample.}
+#'  \item{The HTsamplingWeight:}{The normalized sampling weight, or the fraction of the stratum represented by the sample when estimating with the Horvitz-Thompson strategy: 1 / (InclusionProbability*P), where P is the sum of the reciprocal of the InclusionProbabilites for the sampled units. For equal probability sampling without replacement, this is simply 1/n, where n is sample size.}
+#' }
 #' 
 #' @name IndividualSamplingParametersData
 #' @concept Data types
@@ -1568,7 +1572,7 @@ is.RecaData <- function(RecaData){
 #'  }
 #'  
 #'  In addition to configurable covariates, the models always contain a constant effect (named 'constant'),
-#'  a catch or haul effect (named 'catchSample') and effects for fish measurments (named 'fish'). 
+#'  a catch or haul effect (named 'catchSample') and effects for fish measurements (named 'fish'). 
 #'  Where relevant the following parameters may be tabulated for each effect:
 #'  \describe{
 #'  \item{Age}{Identifying the age the effect applies to}
@@ -2371,107 +2375,6 @@ stoxFunctionAttributes <- list(
       ColumnName = "Period"
     )
   ),
-  DefineIndividualSamplingParameters = list(
-    functionType = "processData", 
-    functionCategory = "baseline", 
-    functionOutputDataType = "IndividualSamplingParametersData",
-    functionParameterFormat = list(
-      Parameters = "individualparameters",
-      StratificationColumns = "individualstratificationcolumns"
-    ),
-    functionArgumentHierarchy = list(
-      DefinitionMethod = list(
-        UseProcessData = FALSE
-      ),
-      StoxBioticData = list(
-        UseProcessData = FALSE
-      ),
-      Parameters = list(
-        UseProcessData = FALSE
-      ),
-      LengthInterval = list(
-        DefinitionMethod = "LengthStratified",
-        UseProcessData = FALSE
-      ),
-      StratificationColumns = list(
-        DefinitionMethod = "Stratified",
-        UseProcessData = FALSE
-      )
-    )
-  ),
-  DefinePSUSamplingParameters = list(
-    functionType = "processData", 
-    functionCategory = "baseline", 
-    functionOutputDataType = "PSUSamplingParametersData",
-    functionParameterFormat = list(
-      FileName = "filePath",
-      SamplingUnitId = "samplingunitid",
-      StratificationColumns = "stratificationcolumns"
-      ),
-    functionParameterDefaults = list(
-      DefinitionMethod = "ResourceFile"
-    ),
-    functionArgumentHierarchy = list(
-      DefinitionMethod = list(
-        UseProcessData = FALSE
-      ),
-      FileName = list(
-        DefinitionMethod = "ResourceFile",
-        UseProcessData = FALSE
-      ),
-      StoxBioticData = list(
-        DefinitionMethod = "AdHocStoxBiotic",
-        UseProcessData = FALSE
-      ),
-      SamplingUnitId = list(
-        DefinitionMethod = "AdHocStoxBiotic",
-        UseProcessData = FALSE
-      ),
-      StratificationColumns = list(
-        DefinitionMethod = "AdHocStoxBiotic",
-        UseProcessData = FALSE
-      )
-    )
-  ),
-  AssignPSUSamplingParameters = list(
-    functionType = "modelData", 
-    functionCategory = "baseline", 
-    functionOutputDataType = "PSUSamplingParametersData",
-    functionParameterFormat = list(
-      SamplingUnitId = "samplingunitid",
-      DataRecordId = "datarecordid"
-    ),
-    functionParameterDefaults = list(
-      DefinitionMethod = "MissingAtRandom"
-    )
-  ),
-  AnalyticalPSUEstimate = list(
-    functionType = "modelData", 
-    functionCategory = "baseline", 
-    functionOutputDataType = "AnalyticalPSUEstimateData",
-    functionParameterFormat = list(
-      Variables = "individualnumericvariables",
-      DomainVariables = "individualdomainvariables",
-      PSUDomainVariables = "psudomainvariables"
-    )
-  ),
-  AnalyticalPopulationEstimate = list(
-    functionType = "modelData", 
-    functionCategory = "baseline", 
-    functionOutputDataType = "AnalyticalPopulationEstimateData"
-  ),
-  AnalyticalRatioEstimate = list(
-    functionType = "modelData", 
-    functionCategory = "baseline", 
-    functionOutputDataType = "AnalyticalPopulationEstimateData",
-    functionParameterDefaults = list(
-      Method = "TotalDomainWeight",
-      WeightVariable = "IndividualRoundWeight"
-    ),
-    functionParameterFormat = list(
-      WeightVariable = "weightvariableratioestimate"
-    )
-  ),
   
   ListBioticDifference = list(
     functionType = "modelData", 
@@ -2571,15 +2474,6 @@ stoxFunctionAttributes <- list(
     )
   ),
   ReportRecaCatchAtAge = list(
-    functionType = "modelData",
-    functionCategory = "report",
-    functionOutputDataType = "ReportFdaCatchAtAgeData",
-    functionParameterDefaults = list(
-      Decimals = 0,
-      IntervalWidth = 0.9
-    )
-  ),
-  ReportAnalyticalCatchAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "ReportFdaCatchAtAgeData",

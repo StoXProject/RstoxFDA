@@ -158,12 +158,13 @@ parseDesignParameters <- function(filename){
 #'                         "lotteryDesignNSHstrata.txt", package="RstoxFDA")
 #'  
 #'  # Read example file with StoX
-#'  PSUSamplingParametersData <- RstoxFDA::DefinePSUSamplingParameters(DefinitionMethod="ResourceFile", FileName=exampleFile)
+#'  PSUSamplingParametersData <- RstoxFDA::DefinePSUSamplingParameters(DefinitionMethod="ResourceFile", 
+#'                           FileName=exampleFile)
 #'  
 #'  # Read example file as flat table, to illustrate formatting
 #'  FlatSamplingParametersData <- read.csv(exampleFile, sep="\t")
 #' 
-#' @export
+#' @noRd
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
@@ -321,7 +322,7 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
 #'  Define approximate sampling parameters for the selection of individuals from a haul. Design parameters are inferred from data provided in ~\code{\link[RstoxData]{StoxBioticData}},
 #'  and specify how a set of individuals recorded on the Individual table were selected for observation/measurement from a Haul (the table Haul in StoxBioticData).
 #' @details 
-#'  StoxBioticData represents sorting of species as a separate level in the hierarchy (SpeciesCategory) and Samples are selected in Stratified from the species categories.
+#'  StoxBioticData represents sorting of species as a separate level in the hierarchy (SpeciesCategory) and Samples are selected stratified by the species categories.
 #'  This represent sampling stratified on taxons in addition to some additional stratification criteria in the cases where more than one sample is present for
 #'  a species-category in a Haul. The exact criteria for stratification is not important for the calculation of sampling parameters, but only clearly encoded criteria can be used
 #'  in subsequent analysis, so sampling parameters are reported stratified only on SpeciesCategory. Any other stratification has been incorporated into selection or inclusion probabilities.
@@ -332,6 +333,12 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
 #'  Individuals with a non-missing value for any of the parameters in 'Parameters' are treated as selected for observation.
 #'  In this way selection of individuals may be specified differently for different parameters.
 #'  For instance one may define one design for length-measurements and another for length-stratified age, weight and sex observations.
+#'  
+#'  The sample size 'n' is in all cases inferred by counting the total number of fish in the sample that meets the selection criteria (non-missing value for at least one of the 'Parameters')
+#'  The total number of fish in the catch sampled, 'N' is the CatchFractionNumber in StoxBioticData.
+#'  When fish selection is stratified by fish-properties (e.g. DefinitionMethod 'Stratified' or 'LengthStratified), the fraction in the stratum, 'f' is estimated by the fraction of fish in that stratum in the sample.
+#'  
+#'  Inclusion probabilities are then set to n*f/N, and Normalized Horvitz-Thompson sampling weights are calculated (see \code{\link[RstoxFDA]{IndividualSamplingParametersData}}). 
 #'  
 #'  The available DefinitionMethods specifies how Individuals are selected from a Sample, and are:
 #'  \describe{
@@ -349,7 +356,7 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
 #' @param StratificationColumns names of columns in the Individual table of StoxBioticData that identify strata for Stratified selection (DefinitionMethod 'Stratified').
 #' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}} where SampleId refers to the variable 'Haul' on the 'Haul' table in StoxBioticData, and IndividualId refers to the variable 'Individual' on the 'Individual' table of StoxBioticData.
-#' @export
+#' @noRd
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
@@ -445,7 +452,7 @@ DefineIndividualSamplingParameters <- function(processData, StoxBioticData, Defi
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}}
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 DefineSamplingHierarchy <- function(StoxBioticData, IndividualSamplingParametersData, Hierarchy=character(), Stratification=character(), StrataSizes=character(), SelectionMethod=character()){
   stop("Not Implemented")
 }
@@ -487,7 +494,7 @@ DefineSamplingHierarchy <- function(StoxBioticData, IndividualSamplingParameters
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticData, SamplingUnitId=character(), DataRecordId=character(), DefinitionMethod=c("MissingAtRandom")){
   checkMandatory(PSUSamplingParametersData, "PSUSamplingParametersData")
   checkMandatory(StoxBioticData, "StoxBioticData")
@@ -623,7 +630,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #' @return \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for each PSU of abundance, frequencies, totals and means by stratum and domain.
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, Variables=character(), DomainVariables=character(), PSUDomainVariables=character()){
 
   checkMandatory(StoxBioticData, "StoxBioticData")
@@ -756,7 +763,7 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}} with simplified stratification
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 CollapseStrata <- function(IndividualSamplingParametersData, RetainStrata=character()){
   
   checkMandatory(IndividualSamplingParametersData, "IndividualSamplingParametersData")
@@ -789,7 +796,7 @@ CollapseStrata <- function(IndividualSamplingParametersData, RetainStrata=charac
 #' @return \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with zeroes and NaNs inferred for strata that have zero abundance in a PSU.
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 LiftStrata <- function(AnalyticalPSUEstimateData){
 
   allStrata <- data.table::CJ(SampleId=AnalyticalPSUEstimateData$StratificationVariables$SampleId, Stratum=AnalyticalPSUEstimateData$StratificationVariables$Stratum, unique = T)
@@ -1105,7 +1112,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'  abundance <- abundance[order(as.numeric(abundance$Domain)),]
 #'  abundance
 #' @concept Analytical estimation
-#' @export
+#' @noRd
 #' @md
 AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPSUEstimateData, MeanOfMeans=F){
 
@@ -1367,7 +1374,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'                                         "TotalDomainWeight")
 #'  
 #' @concept Analytical estimation
-#' @export
+#' @noRd
 #' @md
 AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, WeightVariable=character(), Method=c("TotalDomainWeight", "MeanDomainWeight")){
   
