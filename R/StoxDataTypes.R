@@ -2375,6 +2375,107 @@ stoxFunctionAttributes <- list(
       ColumnName = "Period"
     )
   ),
+  DefineIndividualSamplingParameters = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "IndividualSamplingParametersData",
+    functionParameterFormat = list(
+      Parameters = "individualparameters",
+      StratificationColumns = "individualstratificationcolumns"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ),
+      StoxBioticData = list(
+        UseProcessData = FALSE
+      ),
+      Parameters = list(
+        UseProcessData = FALSE
+      ),
+      LengthInterval = list(
+        DefinitionMethod = "LengthStratified",
+        UseProcessData = FALSE
+      ),
+      StratificationColumns = list(
+        DefinitionMethod = "Stratified",
+        UseProcessData = FALSE
+      )
+    )
+  ),
+  DefinePSUSamplingParameters = list(
+    functionType = "processData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "PSUSamplingParametersData",
+    functionParameterFormat = list(
+      FileName = "filePath",
+      SamplingUnitId = "samplingunitid",
+      StratificationColumns = "stratificationcolumns"
+      ),
+    functionParameterDefaults = list(
+      DefinitionMethod = "ResourceFile"
+    ),
+    functionArgumentHierarchy = list(
+      DefinitionMethod = list(
+        UseProcessData = FALSE
+      ),
+      FileName = list(
+        DefinitionMethod = "ResourceFile",
+        UseProcessData = FALSE
+      ),
+      StoxBioticData = list(
+        DefinitionMethod = "AdHocStoxBiotic",
+        UseProcessData = FALSE
+      ),
+      SamplingUnitId = list(
+        DefinitionMethod = "AdHocStoxBiotic",
+        UseProcessData = FALSE
+      ),
+      StratificationColumns = list(
+        DefinitionMethod = "AdHocStoxBiotic",
+        UseProcessData = FALSE
+      )
+    )
+  ),
+  AssignPSUSamplingParameters = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "PSUSamplingParametersData",
+    functionParameterFormat = list(
+      SamplingUnitId = "samplingunitid",
+      DataRecordId = "datarecordid"
+    ),
+    functionParameterDefaults = list(
+      DefinitionMethod = "MissingAtRandom"
+    )
+  ),
+  AnalyticalPSUEstimate = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPSUEstimateData",
+    functionParameterFormat = list(
+      Variables = "individualnumericvariables",
+      DomainVariables = "individualdomainvariables",
+      PSUDomainVariables = "psudomainvariables"
+    )
+  ),
+  AnalyticalPopulationEstimate = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPopulationEstimateData"
+  ),
+  AnalyticalRatioEstimate = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPopulationEstimateData",
+    functionParameterDefaults = list(
+      Method = "TotalDomainWeight",
+      WeightVariable = "IndividualRoundWeight"
+    ),
+    functionParameterFormat = list(
+      WeightVariable = "weightvariableratioestimate"
+    )
+  ),
   
   ListBioticDifference = list(
     functionType = "modelData", 
@@ -2474,6 +2575,15 @@ stoxFunctionAttributes <- list(
     )
   ),
   ReportRecaCatchAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaCatchAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9
+    )
+  ),
+  ReportAnalyticalCatchAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
     functionOutputDataType = "ReportFdaCatchAtAgeData",
