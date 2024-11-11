@@ -28,10 +28,9 @@ The preferred way to communicate problems is by raising an issue on the RstoxFDA
 When reporting bugs, please report the versions your were using of R, RstoxFDA, and operating system. Please also report any error messages, and if possible include instructions for how to reproduce the problem.
 
 ## Reca
-Reca is a library for estimating total catch at age from commerical catches. RstoxFDA contains functions for adapting data to Reca, running estimates, and plotting or tabulating results. These functions are availble in the StoX user interface. In addition some functions are provided for adapting Reca to other data formats than just the ones supported by Stox.
+Reca is a library for estimating total catch at age from commerical catches. RstoxFDA contains functions for adapting data to Reca, running estimates, and plotting or tabulating results. These functions are available in the StoX user interface. In addition some functions are provided for adapting Reca to other data formats than just the ones supported by Stox. RstoxFDA development is otherwise independent of development of Reca, and Reca is only a suggested dependency. That means that RstoxFDA may be available for platforms (operating systems or R-versions) where Reca is not available, and functions dependent on Reca will not work in these cases.
 
 Reca is primarily available at: https://github.com/NorskRegnesentral/Reca.
-
 
 One may also consider installing from the fork at https://github.com/StoXProject/reca or from the StoX repository at https://stoxproject.github.io/repo/, but these resources should be considered experimental, and they are not backed by a maintenance policy: 
 
@@ -60,7 +59,8 @@ We are still in the process of developing a policy for exactly which versions of
 
 Currently the latest release/pre-release of RstoxFDA is being tested for the following R versions:
 
-* R 4.0 (mac, linux, windows)
-* R 4.1 (mac, linux, windows)
-* R 4.2 (mac, linux, windows)
-* R 4.3 (windows)
+* R 4.3 (mac, linux, windows)
+
+and is tested with Reca for the following R versions:
+
+* R 4.3 (linux, windows)

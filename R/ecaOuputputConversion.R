@@ -58,7 +58,7 @@ convertCovariateMap2PrepReca <- function(stoxObj){
 
 #' @noRd
 packCMlist <- function(member, name){
-  if (class(member) != "list" | is.null(names(member))){
+  if (!("list" %in% class(member)) | is.null(names(member))){
     res <- list()
     res[[name]] <- member
     return(res)
@@ -80,7 +80,7 @@ convertCovariateMap2Stox <- function(prepObj){
   newMap <- list()
   CovariateMap <- packCMlist(prepObj$CovariateMaps, "CovariateMaps")
   for (n in names(CovariateMap)){
-    if (class(CovariateMap[[n]]) != "list"){
+    if (!("list" %in% class(CovariateMap[[n]]))){
       newMap[[n]] <- data.table::data.table(names=1:length(CovariateMap[[n]]), values=CovariateMap[[n]])
     }
     else{
@@ -160,12 +160,16 @@ convertModelFit <- function(modelfit, covariateMaps, model){
       fit$Level <- paste("LevelIndex",fit$LevelIndex,sep="_")
     }
     
-    if (co == "contsant"){
+    if (co == "constant"){
       fit$Level <- fit$LevelIndex
     }
     
     first <- c("Age", "Level", "Iteration")
     order <- c(first, names(fit)[!(names(fit) %in% first)])
+    
+    if (!(model=="ProportionAtAge")){
+      order <- order[!(order %in% c("Age", "AgeIndex"))]
+    }
     
     output[[co]] <- fit[, order, with=F]
     
@@ -203,16 +207,32 @@ convertModelFit2eca <- function(stoxfit, propatage=F){
   for (cov in names(stoxfit)[!(names(stoxfit) %in% exclude)]){
     
     # add intercept
-    intercept <- stoxfit[[cov]][,c("AgeIndex", "LevelIndex", "Iteration", "Intercept")]
-    intercept <- intercept[order(intercept$Iteration, intercept$LevelIndex, intercept$AgeIndex),]
-    intercepts[[cov]] <- array(intercept$Intercept, dim = c(length(unique(intercept$AgeIndex)), length(unique(intercept$LevelIndex)), length(unique(intercept$Iteration))))
+    if (propatage){
+      intercept <- stoxfit[[cov]][,c("AgeIndex", "LevelIndex", "Iteration", "Intercept")]      
+      intercept <- intercept[order(intercept$Iteration, intercept$LevelIndex, intercept$AgeIndex),]
+      intercepts[[cov]] <- array(intercept$Intercept, dim = c(length(unique(intercept$AgeIndex)), length(unique(intercept$LevelIndex)), length(unique(intercept$Iteration))))
+    }
+    else{
+      intercept <- stoxfit[[cov]][,c("LevelIndex", "Iteration", "Intercept")]
+      intercept <- intercept[order(intercept$Iteration, intercept$LevelIndex),]
+      intercepts[[cov]] <- array(intercept$Intercept, dim = c(1, length(unique(intercept$LevelIndex)), length(unique(intercept$Iteration))))
+    }
+
+
     
     # add slope
     if ("Slope" %in% names(stoxfit[[cov]])){
-      slope <- stoxfit[[cov]][,c("AgeIndex", "LevelIndex", "Iteration", "Slope")]
-      slope <- slope[order(slope$Iteration, slope$LevelIndex, slope$AgeIndex),]
-      slopes[[cov]] <- array(slope$Slope, dim = c(length(unique(slope$AgeIndex)), length(unique(slope$LevelIndex)), length(unique(slope$Iteration))))
-      
+      if (propatage){
+        slope <- stoxfit[[cov]][,c("AgeIndex", "LevelIndex", "Iteration", "Slope")]        
+        slope <- slope[order(slope$Iteration, slope$LevelIndex, slope$AgeIndex),]
+        slopes[[cov]] <- array(slope$Slope, dim = c(length(unique(slope$AgeIndex)), length(unique(slope$LevelIndex)), length(unique(slope$Iteration))))
+      }
+      else{
+        slope <- stoxfit[[cov]][,c("LevelIndex", "Iteration", "Slope")]        
+        slope <- slope[order(slope$Iteration, slope$LevelIndex),]
+        slopes[[cov]] <- array(slope$Slope, dim = c(1, length(unique(slope$LevelIndex)), length(unique(slope$Iteration))))
+      }
+
       # add tau slope
       if (any(!is.na(stoxfit[[cov]]$tau_Slope))){
         tau_int <- stoxfit[[cov]][,c("Iteration", "tau_Slope")]
@@ -465,6 +485,7 @@ convertCarNeighbours2reca <- function(stoxCar, covariateMap){
 #' reformats CarNeigbours, does not translate covariate names
 #' @noRd
 convertPrepReca2stox <- function(prepRecaOutput){
+  
   prepRecaOutput$AgeLength$DataMatrix <- data.table::as.data.table(prepRecaOutput$AgeLength$DataMatrix)
   prepRecaOutput$AgeLength$CovariateMatrix <- data.table::as.data.table(prepRecaOutput$AgeLength$CovariateMatrix)
   

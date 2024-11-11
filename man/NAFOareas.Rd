@@ -5,7 +5,7 @@
 \alias{NAFOareas}
 \title{NAFO areas}
 \format{
-\code{\link[sp]{SpatialPolygonsDataFrame}} with location names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+\code{\link[sf]{sf}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}} (v.2).
 }
 \usage{
 data(NAFOareas)
@@ -26,12 +26,13 @@ Polygons are defined in WGS84 coordinates (unprojected).
 }
 \examples{
  # combine NAFO and mainarea and plot
+ library(sf) #use sfs rbind
  combo <- rbind(RstoxFDA::NAFOareas[,"StratumName"], 
     RstoxFDA::mainareaFdir2018[,"StratumName"])
  RstoxFDA::plotArea(areaDef = combo)
 
  # conversion table Norwegian and international convention
- RstoxFDA::NAFOareas@data[,c("homr", "nafo_names")]
+ sf::st_drop_geometry(RstoxFDA::NAFOareas[,c("homr", "nafo_names")])
 }
 \concept{area code polygons}
 \keyword{datasets}

@@ -131,3 +131,13 @@ deprecationWarning <- function(functionName, deprecationTime, message=NULL){
   }
   stoxWarning(warningstring)
 }
+
+#' Construct string as a comma sperated truncated vector of strings with all elements more than maxsize replaced by a single character  "..."
+#' @noRd
+truncateStringVector <- function(missing, maxsize=5){
+  
+  if (length(missing)>maxsize){
+    missing <- c(missing[1:maxsize], "...")
+  }
+  return(paste(missing, collapse=", "))
+}

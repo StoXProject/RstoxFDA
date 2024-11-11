@@ -12,7 +12,7 @@
 #'
 #' @usage data(ICESsubDivision)
 #'
-#' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+#' @format \code{\link[sf]{sf}} data.frame with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
 #'
 #' @concept area code polygons
 #' @keywords datasets

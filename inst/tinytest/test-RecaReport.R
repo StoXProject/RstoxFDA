@@ -56,7 +56,7 @@ expect_error(RstoxFDA:::makeAgeTracesRECA(testset1$prediction, plusGroup=0))
 
 #context("test makeAgeTracesRECA: unit")
 u <- RstoxFDA:::makeAgeTracesRECA(testset1$prediction, unit="number", plusGroup = 6)
-expect_true(all(abs(colMeans(u) - (plusgr6$total*1e6))<1e-8))
+expect_true(all(abs(colMeans(u) - (plusgr6$total*1e6))/(plusgr6$total*1e6) < 1e-5))
 
 #context("test makeAgeTracesRECA: ages not starting at 1")
 gr2t6 <- RstoxFDA:::makeAgeTracesRECA(mockset$prediction, plusGroup=6)

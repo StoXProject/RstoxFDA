@@ -32,7 +32,7 @@ plotArea(
 
 \item{groupCol}{character() identifying column in 'daat' that specify grouping of points}
 
-\item{areaDef}{\code{\link[sp]{SpatialPolygonsDataFrame}}}
+\item{areaDef}{\code{\link[sf]{sf}} data.frame}
 
 \item{areaNameCol}{identifies column in 'areaDef' with label names for the areas}
 

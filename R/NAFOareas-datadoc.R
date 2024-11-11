@@ -16,17 +16,18 @@
 #'
 #' @usage data(NAFOareas)
 #'
-#' @format \code{\link[sp]{SpatialPolygonsDataFrame}} with location names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}}.
+#' @format \code{\link[sf]{sf}} with area names identified in the column 'StratumName'. See \code{\link[RstoxBase]{StratumPolygon}} (v.2).
 #'
 #' @concept area code polygons
 #' @keywords datasets
 #'
 #' @examples
 #'  # combine NAFO and mainarea and plot
+#'  library(sf) #use sfs rbind
 #'  combo <- rbind(RstoxFDA::NAFOareas[,"StratumName"], 
 #'     RstoxFDA::mainareaFdir2018[,"StratumName"])
 #'  RstoxFDA::plotArea(areaDef = combo)
 #'
 #'  # conversion table Norwegian and international convention
-#'  RstoxFDA::NAFOareas@data[,c("homr", "nafo_names")]
+#'  sf::st_drop_geometry(RstoxFDA::NAFOareas[,c("homr", "nafo_names")])
 "NAFOareas"
