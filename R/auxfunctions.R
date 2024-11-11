@@ -134,7 +134,11 @@ deprecationWarning <- function(functionName, deprecationTime, message=NULL){
 
 #' Construct string as a comma sperated truncated vector of strings with all elements more than maxsize replaced by a single character  "..."
 #' @noRd
-truncateStringVector <- function(missing, maxsize=5){
+truncateStringVector <- function(missing, maxsize=5, uniq=T){
+  
+  if (uniq){
+    missing <- unique(missing)
+  }
   
   if (length(missing)>maxsize){
     missing <- c(missing[1:maxsize], "...")

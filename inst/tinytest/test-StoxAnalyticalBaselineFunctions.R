@@ -337,6 +337,8 @@ ll$Landing$IndividualSex <- "M"
 expect_error(RstoxFDA:::AnalyticalRatioEstimate(popBySex, ll, "IndividualRoundWeight", "TotalDomainWeight"), "Not all of the estimated domains ")
 ll <- land
 ll$Landing$SpeciesCategory[1] <- 1
+ll$Landing$SpeciesCategory[2] <- 1
+
 expect_error(RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, ll, "IndividualRoundWeight", "TotalDomainWeight"), "Not all of the landing partitions ")
 ll <- land
 ll$Landing$SpeciesCategory <- NULL
