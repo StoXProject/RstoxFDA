@@ -1,8 +1,4 @@
-# RstoxFDA v1.3-9006
-* Changed analytical variance estimator of means to a less conservative one.
-
-# RstoxFDA v1.3-9005
-* Added functions for analytical catch at age estimation (DefinePSUSamplingParameters, DefineIndividualSamplingParameters, AssignPSUSamplingParameters, AnalyticalPSUEstimate, AnalyticalPopulationEstimate, AnalyticalRatioEstimate, ReportAnalyticalCatchAtAge)
+# RstoxFDA v1.4
 * Converted area code resources from sp SpatialPolygons to sf data.frames, reflecting changes in RstoxBase v 2. Breaks compatibility with RstoxBase < 2.
 * Changed ReadLandingFDA to use ForceUnique as implemented in RstoxData v 2. Breaks compatibility with RstoxData < 2
 * Made definition of coordinates used for appendAreaCodes and DefineAreaPosition stricter (now always centroids)
@@ -10,14 +6,10 @@
 * Changed the signature of mergePolygons to work with sf data.frames rather than sp SpatialPolygons.
 * Changed the definition neighbours in DefineCarNeighbours from polygons touching to polygons within 1 metre distance in mercator projection.
 * Changed areaCodeConversionTable to work with provided area definitions in mercator projection
-
-# RstoxFDA v1.3-9002
 * Fixed issue with PlotMeanWeightAtAge and PlotMeanLengthAtAge that would not plot mean values for configurations with no grouping variables
-
-# RstoxFDA v1.2.1-9001
 * Fixed issue where the DefineCarNeighbours would format column headers differently depending on the chosen DefinitionMethods. The column header 'CarValue' is now consistently written in the singular form, which means that output from the DefinitionMethod 'StratumPolygon' has changed, and the json schema for CarNeighbours has changed.
 * Fixed the behavior of AddStratumStoxLanding so that it assigns area NA, rather than halting with error, when positions cannot be assigned to an area.
-* Fixed the behaviour of ReportFdaSampling to count catches as unique hauls (column Haul on StoxBiotic$Haul), rather than stations. Improved documentation for the same function.
+* Fixed the behavior of ReportFdaSampling to count catches as unique hauls (column Haul on StoxBiotic$Haul), rather than stations. Improved documentation for the same function.
 * Added checking on the validity of IntervalWidths in report functions that report Reca-credible intervals
 * Clarified various warnings and error messages.
 * Made provision of area definition optional in PlotArea, so that the function can be used to examine the spatial distribution of data without providing a spatial coding system, or to just make maps without providing either data or area definitions.

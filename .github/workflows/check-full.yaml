@@ -27,12 +27,9 @@ jobs:
         
           - {os: macOS-latest,   r: 'next', pkgext: '.tgz'} # will be tested without suggests
           - {os: macOS-latest,   r: '4.3', pkgext: '.tgz'} # will be tested without suggests
-          - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'} # will be tested without suggests
-          
+
           - {os: windows-latest, r: 'next', pkgext: '.zip'} 
           - {os: windows-latest, r: '4.3', pkgext: '.zip'}
-          - {os: windows-latest, r: '4.2', pkgext: '.zip'}
-          
 
           - {os: ubuntu-latest,  r: 'next', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-22.04,   r: '4.3',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
