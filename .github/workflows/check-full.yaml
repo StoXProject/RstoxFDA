@@ -27,13 +27,16 @@ jobs:
         
           - {os: macOS-latest,   r: 'next', pkgext: '.tgz'} # will be tested without suggests
           - {os: macOS-latest,   r: '4.3', pkgext: '.tgz'} # will be tested without suggests
+          - {os: macOS-latest,   r: '4.4', pkgext: '.tgz'} # will be tested without suggests
 
           - {os: windows-latest, r: 'next', pkgext: '.zip'} 
           - {os: windows-latest, r: '4.3', pkgext: '.zip'}
+          - {os: windows-latest, r: '4.4', pkgext: '.zip'}
 
           - {os: ubuntu-latest,  r: 'next', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           # 4.3 is pushed to drat repo on merge to master for ubunutu (except pre-release builds), update script if 4.3 is taken out
           - {os: ubuntu-22.04,   r: '4.3',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          - {os: ubuntu-22.04,   r: '4.4',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
