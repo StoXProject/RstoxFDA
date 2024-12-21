@@ -4,7 +4,7 @@
 #' @noRd
 makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup, AgeDomainVar){
   
-  AnalyticalPopulationEstimateData$DomainVariables$AgeGroup <- as.character(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]])
+  AnalyticalPopulationEstimateData$DomainVariables$AgeGroup <- paste("Age", as.character(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]]))
   AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]][is.na(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]])] <- 0
   if (isGiven(PlusGroup)){
     if (PlusGroup > max(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]], na.rm=T)){
@@ -22,7 +22,7 @@ makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup,
     
     newDomains <- AnalyticalPopulationEstimateData$DomainVariables[!mask |  AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]] == minAgePlusGroup,]
     newDomains$Domain[newDomains[[AgeDomainVar]]==minAgePlusGroup] <- paste(newDomains$Domain[newDomains[[AgeDomainVar]]==minAgePlusGroup], "+")
-    newDomains$AgeGroup[newDomains[[AgeDomainVar]]>=PlusGroup] <- paste(PlusGroup, "+")
+    newDomains$AgeGroup[newDomains[[AgeDomainVar]]>=PlusGroup] <- paste0("Age ", PlusGroup, "+")
     keys <- names(oldDomains)[!(names(oldDomains) %in%  c("Domain", "AgeGroup"))]
     
     newDomains <- merge(oldDomains, newDomains, by=keys, suffix=c("", ".new"))

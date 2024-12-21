@@ -14,6 +14,7 @@ caaReportPG <- RstoxFDA:::ReportAnalyticalCatchAtAge(popEst, PlusGroup = 9)
 RstoxFDA:::is.ReportFdaData(caaReportPG)
 
 caaReport <- RstoxFDA:::ReportAnalyticalCatchAtAge(popEst)
+
 #check that report is ordered by age
 expect_true(all(order(caaReport$NbyAge$Age) == 1:max(caaReport$NbyAge$Age)))
 RstoxFDA:::is.ReportFdaData(caaReport)
