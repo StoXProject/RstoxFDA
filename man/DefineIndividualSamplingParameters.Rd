@@ -45,9 +45,17 @@ in subsequent analysis, so sampling parameters are reported stratified only on S
 Sampling parameters are approximately inferred, assuming that all selected individuals are recorded, and based on some user-controllable assumptions about the selection process,
 specified by the appropriate 'DefinitionMethod'.
 
-Individuals with a non-missing value for any of the parameters in 'Parameters' are treated as selected for observation.
-In this way selection of individuals may be specified differently for different parameters.
-For instance one may define one design for length-measurements and another for length-stratified age, weight and sex observations.
+Individuals with a non-missing value for any of the parameters in 'Parameters' are treated as selected for observation,
+and their sampling probabilities are calculated in accordance with assumptions encoded in 'DefinitionMethod'.
+In this way selection of individuals may be specified differently for different parameters. One could for instance compute
+one \code{\link[RstoxFDA]{IndividualSamplingParametersData}} reflecting the probability of selecting individuals for length-measurment,
+and another for selecting more detailed measurements, e.g. weight, age, sex, and maturity. The individual is identified as selected for measurement
+if ANY of the parameters in 'Parameters' has a value. This allows for approximate inference of missing observations; as long as
+one of the variables selected for observation is recorded, missing values in any of the other is inferred.
+An assumption that a certain variable is missing at random can be encoded by only specifying this variable in 'Parameters'.
+For instance for catch-at-age estimation, if only the variable 'IndividualAge' is specified in 'Parameters', individuals with missing ages
+will not be assigned sampling parameters, and implicitly be assumed to be missing at random. Subsequent analysis will then not have
+NA-age groups or NAs in mean age estimates.
 
 The sample size 'n' is in all cases inferred by counting the total number of fish in the sample that meets the selection criteria (non-missing value for at least one of the 'Parameters')
 The total number of fish in the catch sampled, 'N' is the CatchFractionNumber in StoxBioticData.
