@@ -28,6 +28,7 @@
 #' 
 #' @concept area code polygons
 #' @keywords datasets
+#' @import RstoxBase
 #' 
 #' @seealso \code{\link[RstoxFDA]{ICESsubArea}}, \code{\link[RstoxFDA]{ICESdivision}}, \code{\link[RstoxFDA]{ICESsubDivision}}, and \code{\link[RstoxFDA]{ICESunit}}
 #' for polygon files separating the different levels of ICES areas.

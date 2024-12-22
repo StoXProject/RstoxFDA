@@ -738,6 +738,7 @@ NULL
 #'  
 #' @name KommunePolygons
 #' @concept Data types
+#' @import RstoxBase
 #' 
 NULL
 
