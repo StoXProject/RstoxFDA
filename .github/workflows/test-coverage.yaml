@@ -4,6 +4,7 @@ on:
       - master
       - testing
       - develop
+      - catchLotteryStox4
 
 name: test-coverage
 
