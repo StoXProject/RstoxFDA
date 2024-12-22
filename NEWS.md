@@ -1,3 +1,8 @@
+# 1.5.0-9003
+* Fixed naming of age groups in reports from analytical estimates (#145)
+* Fixed documentation for handling NA age groups (#151)
+* Fixed issue with using integer columns in landings as stratification column in ratio estimates (#133)
+
 # 1.5.0-9002
 * Fixed ordering of age groups in ReportAnalyticalCatchAtAge (#134)
 * Improved Error messages in AnalyticalRatioEstimate (#131)
