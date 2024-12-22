@@ -1,4 +1,5 @@
 # 1.5.0-9003
+* Added documentation for ECA convergence analsysis (#153)
 * Fixed naming of age groups in reports from analytical estimates (#145)
 * Fixed documentation for handling NA age groups (#151)
 * Fixed issue with using integer columns in landings as stratification column in ratio estimates (#133)
