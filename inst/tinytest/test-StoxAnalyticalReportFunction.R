@@ -21,3 +21,11 @@ RstoxFDA:::is.ReportFdaData(caaReport)
 
 diff <- sum(caaReportPG$NbyAge$CatchAtAge) - sum(caaReportPG$NbyAge$CatchAtAge)
 expect_true(abs(diff) < 1e-6)
+
+
+# test without IndividualAge as variable
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 
+                                           individualSamplingParameters, 
+                                           c("IndividualRoundWeight"), c("IndividualSex"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
+expect_error(RstoxFDA:::ReportAnalyticalCatchAtAge(popEst), "Catch-at-age reporting, requires the StoxBiotic variable 'IndividualAge' to be among the domain variables of 'AnalyticalPopulationEstimateData'.")

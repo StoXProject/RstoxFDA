@@ -2,6 +2,7 @@
 * Fixed naming of age groups in reports from analytical estimates (#145)
 * Fixed documentation for handling NA age groups (#151)
 * Fixed issue with using integer columns in landings as stratification column in ratio estimates (#133)
+* Fixed error message when analytical catch at age reports are attempted without 'IndividualAge' in the domain definition (#126).
 
 # 1.5.0-9002
 * Fixed ordering of age groups in ReportAnalyticalCatchAtAge (#134)
