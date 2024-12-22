@@ -344,6 +344,13 @@ ll <- land
 ll$Landing$SpeciesCategory <- NULL
 expect_error(RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, ll, "IndividualRoundWeight", "TotalDomainWeight"), "None of the variables in 'StoxLandingData' are available as StratificationColumns or DomainVariables in 'AnalyticalPopulationEstimateData")
 
+
+# Test year as stratification variable
+popEstDomainYear <- popEstDomain
+popEstDomainYear$StratificationVariables$Year <- "2022"
+result <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomainYear, ll, "IndividualRoundWeight", "TotalDomainWeight")
+expect_true(all(result$StratificationVariables$Year == "2022"))
+
 #
 # Calculations TotalDomainWeight
 #

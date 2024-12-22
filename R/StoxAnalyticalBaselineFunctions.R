@@ -1440,6 +1440,12 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     estTotalBylandingsPartition <- totals[,list(TotalWeightKg=sum(get("Total"))/1000),by=landingsPartition]
     
     landingsByStratum <- StoxLandingData$Landing[,list(LandingsWeightKg=sum(get("RoundWeight"))), by=landingsPartition]
+    
+    #Stratification columns are always character, coerce landings
+    for (coln in landingsPartition){
+      landingsByStratum[[coln]] <- as.character(landingsByStratum[[coln]])
+    }
+    
     totalByStratum <- merge(estTotalBylandingsPartition, landingsByStratum)
     
     domainPartitionMap <- data.table::CJ(Stratum=AnalyticalPopulationEstimateData$StratificationVariables$Stratum, Domain=AnalyticalPopulationEstimateData$DomainVariables$Domain, unique = T)
