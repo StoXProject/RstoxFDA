@@ -2377,35 +2377,16 @@ stoxFunctionAttributes <- list(
     )
   ),
   ComputeIndividualSamplingParameters = list(
-    functionType = "processData", 
+    functionType = "modelData", 
     functionCategory = "baseline", 
     functionOutputDataType = "IndividualSamplingParametersData",
     functionParameterFormat = list(
       Parameters = "individualparameters",
       StratificationColumns = "individualstratificationcolumns"
-    ),
-    functionArgumentHierarchy = list(
-      DefinitionMethod = list(
-        UseProcessData = FALSE
-      ),
-      StoxBioticData = list(
-        UseProcessData = FALSE
-      ),
-      Parameters = list(
-        UseProcessData = FALSE
-      ),
-      LengthInterval = list(
-        DefinitionMethod = "LengthStratified",
-        UseProcessData = FALSE
-      ),
-      StratificationColumns = list(
-        DefinitionMethod = "Stratified",
-        UseProcessData = FALSE
-      )
     )
   ),
-  DefinePSUSamplingParameters = list(
-    functionType = "processData", 
+  ComputePSUSamplingParameters = list(
+    functionType = "modelData", 
     functionCategory = "baseline", 
     functionOutputDataType = "PSUSamplingParametersData",
     functionParameterFormat = list(
@@ -2414,30 +2395,9 @@ stoxFunctionAttributes <- list(
       StratificationColumns = "stratificationcolumns"
       ),
     functionParameterDefaults = list(
-      DefinitionMethod = "ResourceFile"
-    ),
-    functionArgumentHierarchy = list(
-      DefinitionMethod = list(
-        UseProcessData = FALSE
-      ),
-      FileName = list(
-        DefinitionMethod = "ResourceFile",
-        UseProcessData = FALSE
-      ),
-      StoxBioticData = list(
-        DefinitionMethod = "AdHocStoxBiotic",
-        UseProcessData = FALSE
-      ),
-      SamplingUnitId = list(
-        DefinitionMethod = "AdHocStoxBiotic",
-        UseProcessData = FALSE
-      ),
-      StratificationColumns = list(
-        DefinitionMethod = "AdHocStoxBiotic",
-        UseProcessData = FALSE
-      )
+      DefinitionMethod = "AdHocStoxBiotic"
     )
-  ),
+    ),
   AssignPSUSamplingParameters = list(
     functionType = "modelData", 
     functionCategory = "baseline", 

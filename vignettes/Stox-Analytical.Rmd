@@ -67,7 +67,7 @@ A minimal StoX project implementing analytical catch at age estimates with catch
 | ReadSamples | ReadBiotic | Reads sample data |
 | StoxBiotic | StoxBiotic | Convert sample data to StoxBiotic |
 | AddSamplingId | AddToStoxBiotic | Add serialnumber to StoxBiotic |
-| ReadPSUsamplingParameters | DefinePSUSamplingParameters | Read sampling parameters for each haul. These ar provided from the catch lottery. |
+| ReadPSUsamplingParameters | ReadPSUSamplingParameters | Read sampling parameters for each haul. These ar provided from the catch lottery. |
 | ComputeINDsamplingParameters | ComputeIndividualSamplingParameters | Defines sampling parameters for each individual, within haul. Parameters are inferred from data with configurable assumptions. |
 | AssignPSUSamplingParameters | AssignPSUSamplingParameters |  Matches selections to data records, handles non-response corrections |
 | EstimatePSU | AnalyticalPSUEstimate |  Estimates abundance, frequencies, totals and means for each haul |
@@ -119,7 +119,7 @@ We will start by reading these sampling parameters, which has been prepared outs
 ```{r ReadPSUsamplingParameters}
 DefinitionMethod = "ResourceFile"
 FileName = system.file("testresources", "lotteryParameters", "lotteryDesignNSHstrata.txt", package="RstoxFDA")
-PSUparameters <- RstoxFDA::DefinePSUSamplingParameters(DefinitionMethod=DefinitionMethod, FileName=FileName)
+PSUparameters <- RstoxFDA::ReadPSUSamplingParameters(FileName)
 ```
 
 Note that these files contains selection and inclusion probabilites for every haul selected for sampling:

@@ -1,7 +1,7 @@
 designParamsFile <- system.file("testresources", "lotteryParameters", "lotteryDesignNSH.txt", package="RstoxFDA")
 
 #regular read:
-designParams <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFile)
+designParams <- RstoxFDA:::ReadPSUSamplingParameters( designParamsFile)
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParams))
 expect_equal(nrow(designParams$SelectionTable), 64)
 expect_equal(nrow(designParams$SampleTable), 1)
@@ -11,7 +11,7 @@ expect_equal(sum(designParams$SelectionTable$HTsamplingWeight), 1)
 expect_equal(sum(designParams$SelectionTable$HHsamplingWeight), 1)
 
 designParamsFileStratified <- system.file("testresources", "lotteryParameters", "lotteryDesignNSHstrata.txt", package="RstoxFDA")
-designParamsStratified <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFileStratified)
+designParamsStratified <- RstoxFDA:::ReadPSUSamplingParameters(designParamsFileStratified)
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsStratified))
 expect_equal(nrow(designParamsStratified$SelectionTable), 64)
 expect_equal(nrow(designParamsStratified$SampleTable), 1)
@@ -35,9 +35,9 @@ expect_true(abs((mean(1/designParamsCorrected$SelectionTable$InclusionProbabilit
 
 #define from data
 suppressWarnings(StoxBioticData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic(system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA"))))
-designParamsSB <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
+designParamsSB <- RstoxFDA:::ComputePSUSamplingParameters(StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsSB))
-#compare names of output with stratification variables to output withoutsss
+#compare names of output with stratification variables to output without
 
 expect_true(all(!is.na(designParamsSB$SelectionTable$HHsamplingWeight)))
 expect_true(all(designParamsSB$SampleTable$SelectionMethod=="FSWR"))
@@ -216,7 +216,7 @@ expect_true(nrow(psuEstLifted$StratificationVariables)==length(unique(sexStrat$S
 #
 # Test AnalyticalPopulationEstimate
 #
-stationDesign <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData = ss, SamplingUnitId = "Haul", StratificationColumns = "Gear")
+stationDesign <- RstoxFDA:::ComputePSUSamplingParameters(StoxBioticData = ss, SamplingUnitId = "Haul", StratificationColumns = "Gear")
 sexStrat <-  RstoxFDA:::ComputeIndividualSamplingParameters(ss, "Stratified", c("IndividualAge"), StratificationColumns = "IndividualSex")
 expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
 psuEst <- RstoxFDA:::LiftStrata(psuEst)
@@ -257,7 +257,7 @@ expect_true(nrow(zeroAbund)==nrow(NaNMeans))
 # Test unsampled PSU strata
 #
 
-stationDesign <- RstoxFDA:::DefinePSUSamplingParameters(NULL, "AdHocStoxBiotic", StoxBioticData = ss, SamplingUnitId = "Haul", StratificationColumns = "Gear")
+stationDesign <- RstoxFDA:::ComputePSUSamplingParameters(StoxBioticData = ss, SamplingUnitId = "Haul", StratificationColumns = "Gear")
 stationDesign$SampleTable$n[stationDesign$SampleTable$Stratum==40]<-0
 stationDesign$SelectionTable <- stationDesign$SelectionTable[Stratum!="40",]
 sexStrat <-  RstoxFDA:::ComputeIndividualSamplingParameters(ss, "Stratified", c("IndividualAge"), StratificationColumns = "IndividualSex")

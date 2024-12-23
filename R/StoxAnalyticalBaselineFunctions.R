@@ -127,29 +127,18 @@ parseDesignParameters <- function(filename){
   return(designParameters)
 }
 
-#' Define PSU Sampling Design Parameters
+#' Read PSU Sampling Design Parameters
 #' @description 
-#'  Define sampling parameters for Primary Sampling Units in multi-stage sampling.
+#'  Read sampling parameters for Primary Sampling Units in multi-stage sampling.
 #' @details 
-#'  The DefintionMethod 'ResourceFile' reads sampling parameters from a tab delimited file with headers corresponding to those listed in 
-#'  \code{\link[RstoxFDA]{PSUSamplingParametersData}}. The data is provided as one table, so that the information in 'sampleTable' is repeated for each entry in 'selectionTable'.
+#'  Reads sampling parameters from a tab delimited file with headers corresponding to those listed in 
+#'  \code{\link[RstoxFDA]{PSUSamplingParametersData}}. The file format provide the data as one table, so that the information in 'sampleTable' is repeated for each entry in 'selectionTable'.
 #'  Any columns not named in \code{\link[RstoxFDA]{PSUSamplingParametersData}} are assumed to be stratification variables.
 #'  The conditions listed for the variables in \code{\link[RstoxFDA]{PSUSamplingParametersData}} are checked upon reading the data, and
 #'  execution halts with error if any are violated. Consult the examples in this documentation to see how the resource is formatted
-#'  with ae stratification variable 'Species'.
+#'  with a stratification variable 'Species'.
 #'  
-#'  The DefinitionMethod 'AdHocStoxBiotic' constructs Sampling Design Parameters from data, 
-#'  assuming equal probability sampling with fixed sample size, selection with replacement and complete response.
-#'  These is a reasonable approximation if within-strata sampling is approximately simple random selections,
-#'  the sample intensitiy is low (only a small fraction of the population is sampled),
-#'  and non-response is believed to be at random.
-#' @param processData \code{\link[RstoxFDA]{PSUSamplingParametersData}} as returned from this function.
-#' @param DefinitionMethod 'ResourceFile' or 'AdHocStoxBiotic'
-#' @param FileName path to resource file
-#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} Sample data to construct design parameters from
-#' @param SamplingUnitId name of column in 'StoxBioticData' that identifies the Primary Sampling Unit the design is constructed for.
-#' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling.
-#' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
+#' @param FileName path to sampling parameters
 #' @return \code{\link[RstoxFDA]{PSUSamplingParametersData}}
 #' @examples
 #'  # embedded example file:
@@ -158,7 +147,7 @@ parseDesignParameters <- function(filename){
 #'                         "lotteryDesignNSHstrata.txt", package="RstoxFDA")
 #'  
 #'  # Read example file with StoX
-#'  PSUSamplingParametersData <- RstoxFDA::DefinePSUSamplingParameters(DefinitionMethod="ResourceFile", 
+#'  PSUSamplingParametersData <- RstoxFDA::ReadPSUSamplingParameters( 
 #'                           FileName=exampleFile)
 #'  
 #'  # Read example file as flat table, to illustrate formatting
@@ -168,20 +157,42 @@ parseDesignParameters <- function(filename){
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
-DefinePSUSamplingParameters <- function(processData, DefinitionMethod=c("ResourceFile", "AdHocStoxBiotic"), FileName=character(), StoxBioticData, SamplingUnitId=character(), StratificationColumns=character(), UseProcessData=F){
+ReadPSUSamplingParameters <- function(FileName){
+  return(parseDesignParameters(FileName))
+}
 
-  if (UseProcessData){
-    return(processData)
-  }
+#' Compute PSU Sampling Design Parameters
+#' @description 
+#'  Compute sampling parameters for Primary Sampling Units in multi-stage sampling.
+#' @details 
+#'  Computes Sampling Design Parameters from data, given some assumptions specified by the 'DefinitionMethod'.
+#'   
+#'  If 'DefinitionMethod' is 'AdHocStoxBiotic', equal probability sampling with fixed sample size will be assumed, as well as
+#'  selection with replacement and complete response.
+#'  This is a reasonable approximation if within-strata sampling is approximately simple random selections,
+#'  the sample intensitiy is low (only a small fraction of the population is sampled),
+#'  and non-response is believed to be random.
+#' @param DefinitionMethod 'AdHocStoxBiotic'
+#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} Sample data to construct design parameters from
+#' @param SamplingUnitId name of column in 'StoxBioticData' that identifies the Primary Sampling Unit the design is constructed for.
+#' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling.
+#' @return \code{\link[RstoxFDA]{PSUSamplingParametersData}}
+#' @examples
+#'  # parameters for simpler random haul-selection, stratified by GearGroup
+#'  PSUparams <- ComputePSUSamplingParameters(RstoxFDA::StoxBioticDataExample, 
+#'   "AdHocStoxBiotic", 
+#'   "Haul", 
+#'   "GearGroup")
+#' 
+#' @export
+#' @concept StoX-functions
+#' @concept Analytical estimation
+#' @md
+ComputePSUSamplingParameters <- function(StoxBioticData, DefinitionMethod=c("AdHocStoxBiotic"), SamplingUnitId=character(), StratificationColumns=character()){
+
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("AdHocStoxBiotic"))
   
-  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("ResourceFile", "AdHocStoxBiotic"))
-  
-  if (DefinitionMethod == "ResourceFile"){
-    return(parseDesignParameters(FileName))
-  }
-  if (DefinitionMethod == "AdHocStoxBiotic"){
-    return(assumeDesignParametersStoxBiotic(StoxBioticData, SamplingUnitId, StratificationColumns))
-  }
+  return(assumeDesignParametersStoxBiotic(StoxBioticData, SamplingUnitId, StratificationColumns))
 }
 
 #' collapse strata, recalulate n/N and sampling weights
