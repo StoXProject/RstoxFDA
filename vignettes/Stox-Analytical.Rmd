@@ -122,6 +122,8 @@ FileName = system.file("testresources", "lotteryParameters", "lotteryDesignNSHst
 PSUparameters <- RstoxFDA::ReadPSUSamplingParameters(FileName)
 ```
 
+These sampling variables are design variables for the biological records, and should conventionally be archived in the "biotic" folder in StoX-project folder structure.
+
 Note that these files contains selection and inclusion probabilites for every haul selected for sampling:
 ```{r inspectPSUsamplingParameters}
 head(PSUparameters$SelectionTable)
