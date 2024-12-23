@@ -2376,7 +2376,7 @@ stoxFunctionAttributes <- list(
       ColumnName = "Period"
     )
   ),
-  DefineIndividualSamplingParameters = list(
+  ComputeIndividualSamplingParameters = list(
     functionType = "processData", 
     functionCategory = "baseline", 
     functionOutputDataType = "IndividualSamplingParametersData",

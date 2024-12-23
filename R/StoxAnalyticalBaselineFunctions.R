@@ -317,9 +317,9 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
   return(designParams)
 }
 
-#' Define Sampling Parameters for Individuals
+#' Compute Sampling Parameters for Individuals
 #' @description 
-#'  Define approximate sampling parameters for the selection of individuals from a haul. Design parameters are inferred from data provided in ~\code{\link[RstoxData]{StoxBioticData}},
+#'  Compute approximate sampling parameters for the selection of individuals from a haul. Design parameters are inferred from data provided in ~\code{\link[RstoxData]{StoxBioticData}},
 #'  and specify how a set of individuals recorded on the Individual table were selected for observation/measurement from a Haul (the table Haul in StoxBioticData).
 #' @details 
 #'  StoxBioticData represents sorting of species as a separate level in the hierarchy (SpeciesCategory) and Samples are selected stratified by the species categories.
@@ -356,26 +356,21 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
 #'  }
 #'  
 #'  
-#' @param processData \code{\link[RstoxFDA]{IndividualSamplingParametersData}} as returned from this function.
 #' @param StoxBioticData Data to define individual sampling parameters for
 #' @param DefinitionMethod Method to infer sampling parameters, 'SRS', 'Stratified' or 'LengthStratified'. See details.
 #' @param Parameters Measurements / observations of individuals included in the design specification. Must all be columns on the Individual-table of StoxBioticData. 
 #' @param LengthInterval width of length strata in cm. Specifies left closed intervals used for Length Stratified selection (DefinitionMethod 'Stratified'). A value of 5 indicates that observation are selected stratified on length groups [0 cm,5 cm>, [5 cm, 10 cm>, and so on.
 #' @param StratificationColumns names of columns in the Individual table of StoxBioticData that identify strata for Stratified selection (DefinitionMethod 'Stratified').
-#' @param UseProcessData If TRUE, bypasses execution of function and returns existing 'processData'
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}} where SampleId refers to the variable 'Haul' on the 'Haul' table in StoxBioticData, and IndividualId refers to the variable 'Individual' on the 'Individual' table of StoxBioticData.
 #' @export
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
-DefineIndividualSamplingParameters <- function(processData, StoxBioticData, DefinitionMethod=c("SRS", "Stratified", "LengthStratified"), Parameters=character(), LengthInterval=numeric(), StratificationColumns=character(), UseProcessData=FALSE){
+ComputeIndividualSamplingParameters <- function(StoxBioticData, DefinitionMethod=c("SRS", "Stratified", "LengthStratified"), Parameters=character(), LengthInterval=numeric(), StratificationColumns=character()){
 
   #May want to expose this option if DefinitionMethods are added that only provides relative selection probabilities.
   CollapseStrata=FALSE
   
-  if (UseProcessData){
-    return(processData)
-  }
   DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("SRS", "Stratified", "LengthStratified"))
   checkMandatory(StoxBioticData, "StoxBioticData")
   checkMandatory(Parameters, "Parameters")
@@ -578,7 +573,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #'  PSU domains has no effect on estimation, but are merely annotated on the results for further processing or reporting.
 #'  
 #'  Sampling parameters for the selection of individuals from a catch can be inferred for some common sub-sampling techniques
-#'  with the function \code{\link[RstoxFDA]{DefineIndividualSamplingParameters}}. If samples of Individuals are not directly sampled from each
+#'  with the function \code{\link[RstoxFDA]{ComputeIndividualSamplingParameters}}. If samples of Individuals are not directly sampled from each
 #'  PSU, any intermediate sampling levels can be incorporated with the function \code{\link[RstoxFDA]{DefineSamplingHierarchy}}
 #' 
 #'  If any strata are specified in the SampleTable of 'IndividualSamplingParametersData' but are not sampled per the SelectionTable
@@ -1100,7 +1095,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'                                        RstoxFDA::CatchLotterySamplingExample, 
 #'                                        RstoxFDA::CatchLotteryExample, 
 #'                                        "serialnumber", "Haul", "MissingAtRandom")
-#'  individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
+#'  individualSamplingParameters <-  RstoxFDA:::ComputeIndividualSamplingParameters(
 #'                                        RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
 #'                                        
 #'  psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 
@@ -1365,7 +1360,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'                                        RstoxFDA::CatchLotterySamplingExample, 
 #'                                        RstoxFDA::CatchLotteryExample, 
 #'                                        "serialnumber", "Haul", "MissingAtRandom")
-#'  individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
+#'  individualSamplingParameters <-  RstoxFDA:::ComputeIndividualSamplingParameters(
 #'                                        RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
 #'  
 #'  # Estimate for the domain 'CountryVessel'                                      

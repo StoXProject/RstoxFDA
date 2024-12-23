@@ -68,7 +68,7 @@ A minimal StoX project implementing analytical catch at age estimates with catch
 | StoxBiotic | StoxBiotic | Convert sample data to StoxBiotic |
 | AddSamplingId | AddToStoxBiotic | Add serialnumber to StoxBiotic |
 | ReadPSUsamplingParameters | DefinePSUSamplingParameters | Read sampling parameters for each haul. These ar provided from the catch lottery. |
-| DefineINDsamplingParameters | DefineIndividualSamplingParameters | Defines sampling parameters for each individual, within haul. Parameters are inferred from data with configurable assumptions. |
+| ComputeINDsamplingParameters | ComputeIndividualSamplingParameters | Defines sampling parameters for each individual, within haul. Parameters are inferred from data with configurable assumptions. |
 | AssignPSUSamplingParameters | AssignPSUSamplingParameters |  Matches selections to data records, handles non-response corrections |
 | EstimatePSU | AnalyticalPSUEstimate |  Estimates abundance, frequencies, totals and means for each haul |
 | EstimatePopulation | AnalyticalPopulationEstimate | Estimates abundance, frequencies, totals and means for the population of interest. This estimate is based only on samples, no information about total landings have been included at this point. |
@@ -149,7 +149,7 @@ We also need to know the sampling parameters for each fish in each haul. RstoxFD
 StoxBioticData = RstoxFDA::CatchLotteryExample
 DefinitionMethod = "SRS"
 Parameters = c("IndividualSex", "IndividualAge")
-indParameters <- RstoxFDA::DefineIndividualSamplingParameters(StoxBioticData = StoxBioticData, DefinitionMethod = DefinitionMethod, Parameters=Parameters)
+indParameters <- RstoxFDA::ComputeIndividualSamplingParameters(StoxBioticData = StoxBioticData, DefinitionMethod = DefinitionMethod, Parameters=Parameters)
 ```
 
 Note that we have obtained sampling parameters for individual fish sampled for sex or age, the haul is identified by the column 'SampleId' that corresponds to 'Haul' in StoxBioticData, and the individual is identified by 'IndividualId' which corresponds to 'Individual' in StoxBioticData. Within-haul stratification is also inferred:
@@ -159,13 +159,13 @@ head(indParameters$SelectionTable)
 
 ##### NA-domains and non-response assumptions
 
-Missing observations of individuals results in domains with the value NA, when these variables are used in domain definitions. For instance the example above has fish where sex is recorded, but not age. This will show up later as age groups with the value NA, and (minimum) Age 0. If 'DefineIndividualSamplingParameters had instead been defined with only the argument "IndividualAge" for 'Parameters', no sampling parameters would be provided for these individuals. That would correspond to an assumption that they where missing at random:
+Missing observations of individuals results in domains with the value NA, when these variables are used in domain definitions. For instance the example above has fish where sex is recorded, but not age. This will show up later as age groups with the value NA, and (minimum) Age 0. If 'ComputeIndividualSamplingParameters had instead been defined with only the argument "IndividualAge" for 'Parameters', no sampling parameters would be provided for these individuals. That would correspond to an assumption that they where missing at random:
 
 ```{r DefineINDsamplingParametersNoNa}
 StoxBioticData = RstoxFDA::CatchLotteryExample
 DefinitionMethod = "SRS"
 Parameters = c("IndividualAge")
-indParametersNoNA <- RstoxFDA::DefineIndividualSamplingParameters(StoxBioticData = StoxBioticData, DefinitionMethod = DefinitionMethod, Parameters=Parameters)
+indParametersNoNA <- RstoxFDA::ComputeIndividualSamplingParameters(StoxBioticData = StoxBioticData, DefinitionMethod = DefinitionMethod, Parameters=Parameters)
 ```
 
 Note that some individuals are now left out of the table of sampling parameters, and hence of subsequent computations:

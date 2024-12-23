@@ -172,7 +172,7 @@ Vocabulary for notation used above:
                                        RstoxFDA::CatchLotterySamplingExample, 
                                        RstoxFDA::CatchLotteryExample, 
                                        "serialnumber", "Haul", "MissingAtRandom")
- individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
+ individualSamplingParameters <-  RstoxFDA:::ComputeIndividualSamplingParameters(
                                        RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
                                        
  psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 

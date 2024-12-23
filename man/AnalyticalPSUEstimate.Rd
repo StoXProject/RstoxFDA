@@ -40,7 +40,7 @@ reason it is also possible to provide groups of PSUs to be annotated on the outp
 PSU domains has no effect on estimation, but are merely annotated on the results for further processing or reporting.
 
 Sampling parameters for the selection of individuals from a catch can be inferred for some common sub-sampling techniques
-with the function \code{\link[RstoxFDA]{DefineIndividualSamplingParameters}}. If samples of Individuals are not directly sampled from each
+with the function \code{\link[RstoxFDA]{ComputeIndividualSamplingParameters}}. If samples of Individuals are not directly sampled from each
 PSU, any intermediate sampling levels can be incorporated with the function \code{\link[RstoxFDA]{DefineSamplingHierarchy}}
 
 If any strata are specified in the SampleTable of 'IndividualSamplingParametersData' but are not sampled per the SelectionTable
