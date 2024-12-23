@@ -2390,7 +2390,6 @@ stoxFunctionAttributes <- list(
     functionCategory = "baseline", 
     functionOutputDataType = "PSUSamplingParametersData",
     functionParameterFormat = list(
-      FileName = "filePath",
       SamplingUnitId = "samplingunitid",
       StratificationColumns = "stratificationcolumns"
       ),
@@ -2398,6 +2397,14 @@ stoxFunctionAttributes <- list(
       DefinitionMethod = "AdHocStoxBiotic"
     )
     ),
+  ReadPSUSamplingParameters = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "PSUSamplingParametersData",
+    functionParameterFormat = list(
+      FileName = "filePath"
+    )
+  ),
   AssignPSUSamplingParameters = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
