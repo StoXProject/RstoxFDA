@@ -12,6 +12,7 @@
 #'
 #' @concept area code polygons
 #' @keywords datasets
+#' @import RstoxBase
 #'
 #' @examples
 #'  RstoxFDA::plotArea(areaDef = RstoxFDA::mainareaFdir2018)

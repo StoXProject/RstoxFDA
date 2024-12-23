@@ -131,7 +131,7 @@ CatchLotteryExample$Haul$serialnumber <- CatchLotteryExample$Haul$HaulKey
 CatchLotteryExample$Station$CountryVessel <- "NOR"
 usethis::use_data(CatchLotteryExample, overwrite = T)
 
-CatchLotterySamplingExample <- RstoxFDA::DefinePSUSamplingParameters(NULL, "ResourceFile", designParamsFile)
+CatchLotterySamplingExample <- RstoxFDA::ReadPSUSamplingParameters(designParamsFile)
 usethis::use_data(CatchLotterySamplingExample, overwrite = T)
 
 landings2022 <- RstoxData::readLssFile("~/landingsets/LSS/FDIR_HI_LSS_FANGST_2022_PR_2023-03-06.psv")

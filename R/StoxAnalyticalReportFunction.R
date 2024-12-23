@@ -4,7 +4,7 @@
 #' @noRd
 makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup, AgeDomainVar){
   
-  AnalyticalPopulationEstimateData$DomainVariables$AgeGroup <- as.character(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]])
+  AnalyticalPopulationEstimateData$DomainVariables$AgeGroup <- paste("Age", as.character(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]]))
   AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]][is.na(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]])] <- 0
   if (isGiven(PlusGroup)){
     if (PlusGroup > max(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]], na.rm=T)){
@@ -22,7 +22,7 @@ makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup,
     
     newDomains <- AnalyticalPopulationEstimateData$DomainVariables[!mask |  AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]] == minAgePlusGroup,]
     newDomains$Domain[newDomains[[AgeDomainVar]]==minAgePlusGroup] <- paste(newDomains$Domain[newDomains[[AgeDomainVar]]==minAgePlusGroup], "+")
-    newDomains$AgeGroup[newDomains[[AgeDomainVar]]>=PlusGroup] <- paste(PlusGroup, "+")
+    newDomains$AgeGroup[newDomains[[AgeDomainVar]]>=PlusGroup] <- paste0("Age ", PlusGroup, "+")
     keys <- names(oldDomains)[!(names(oldDomains) %in%  c("Domain", "AgeGroup"))]
     
     newDomains <- merge(oldDomains, newDomains, by=keys, suffix=c("", ".new"))
@@ -81,7 +81,7 @@ makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup,
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 #' 
 #'  The units considered valid for catch at age in numbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
-#' @param AnalyticalPopulationEstimateData Results from analytical estimates (\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}).
+#' @param AnalyticalPopulationEstimateData Results from analytical estimates (\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}). The StoxBiotic variable 'IndividualAge' must be among the DomainVariables.
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
 #' @param IntervalWidth The width of the reported confidence interval. A value of 0.9 gives 90 per cent confidence intervals. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportAnalyticalCatchAtAge$functionParameterDefaults$IntervalWidth`
 #' @param Decimals integer specifying the number of decimals to report for 'CatchAtAge', 'SD', 'Low' and 'High'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportAnalyticalCatchAtAge$functionParameterDefaults$Decimals`.
@@ -93,7 +93,11 @@ makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup,
 #' @export
 ReportAnalyticalCatchAtAge <- function(AnalyticalPopulationEstimateData, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
   AgeDomainVar = "IndividualAge"
-
+  
+  if (!(AgeDomainVar %in% names(AnalyticalPopulationEstimateData$DomainVariables))){
+    stop(paste("Catch-at-age reporting, requires the StoxBiotic variable 'IndividualAge' to be among the domain variables of 'AnalyticalPopulationEstimateData'."))
+  }
+  
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   stopifnot(is.AnalyticalPopulationEstimateData(AnalyticalPopulationEstimateData))
 

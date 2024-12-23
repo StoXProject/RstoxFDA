@@ -15,6 +15,7 @@
 #'
 #' @concept area code polygons
 #' @keywords datasets
+#' @import RstoxBase
 #'
 #' @examples
 #'  # plot ICES areas

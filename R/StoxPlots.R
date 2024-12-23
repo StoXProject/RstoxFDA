@@ -97,6 +97,7 @@ PlotFisheriesOverviewTemporal <- function(ReportFdaLandingData){
 #'        RstoxFDA::StoxLandingDataExample, c("Area")
 #'        )
 #'  RstoxFDA::PlotFisheriesOverviewSpatial(landingsReport, RstoxFDA::mainareaFdir2018)
+# '@import RstoxBase
 #' @export
 PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, AreaLabels=F){
   

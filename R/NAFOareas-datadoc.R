@@ -20,6 +20,7 @@
 #'
 #' @concept area code polygons
 #' @keywords datasets
+#' @import RstoxBase
 #'
 #' @examples
 #'  # combine NAFO and mainarea and plot

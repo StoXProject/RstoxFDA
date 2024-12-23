@@ -11,6 +11,7 @@
 #'
 #' @concept area code polygons
 #' @keywords datasets
+#' @import RstoxBase
 #'
 #' @examples
 #'  # compare locations and ICES rectangles in Barents Sea

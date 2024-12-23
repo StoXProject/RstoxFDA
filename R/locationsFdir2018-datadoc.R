@@ -12,6 +12,7 @@
 #'
 #' @concept area code polygons
 #' @keywords datasets
+#' @import RstoxBase
 #'
 #' @examples
 #'  RstoxFDA::plotAreaComparison(RstoxFDA::mainareaFdir2017, 
