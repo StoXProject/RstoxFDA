@@ -1282,12 +1282,15 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'  
 #'  Landings are partitioned and assigned to domains in 'AnalyticalPopulationEstimateData' by matching column names.
 #'  Column names in 'StoxLandingData' that are also either Stratification Columns or Domain Columns in 'AnalyticalPopulationEstimateData'
-#'  are used to construct the landings partitions that provide total weigts for the ratio estimates.
+#'  can be used to construct the landings partitions that provide total weigths for the ratio estimates.
+#'  
+#'  If estimates are not provided for all domains in the landing data, these domains will be added to \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} 
+#'  with NA for all estimates.
 #'  
 #'  Ratio estimation of abundance may either improve an estimate of abundance obtained by other means, or provide an estimate of abundance
 #'  when only proportions in domains are known. When only proprotions (frequencies) are known, the Method 'MeanDomainWeight'
 #'  must be used. This requires that landing partitions are not covering more than one strata, although they may cover less.
-#'  That is all Stratification columns in 'AnalyticalPopulationEstimateData' must have a corresponding column in 'StoxLandingData'
+#'  That is the Stratification columns in 'StratificationColumns' must identify strata in 'AnalyticalPopulationEstimateData'
 #'  
 #'  The function obtains a ratio estimate of total abundance in landings by one of the following methods (provided in the argument 'Method'):
 #'  \describe{
@@ -1364,6 +1367,8 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} with census data on total weight in each stratum
 #' @param WeightVariable character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals in grams.
 #' @param Method The method of ratio estimation to use. 'TotalDomainWeight' or 'MeanDomainWeight'. See details 
+#' @param StratificationColumns vector of stratification columns to include when matching estimates to landings.
+#' @param DomainColumns vector of domain columns to include when matching estimates to landings. 
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance and frequency.
 #' @examples 
 #' 
@@ -1390,7 +1395,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #' @concept Analytical estimation
 #' @export
 #' @md
-AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, WeightVariable=character(), Method=c("TotalDomainWeight", "MeanDomainWeight")){
+AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, WeightVariable=character(), Method=c("TotalDomainWeight", "MeanDomainWeight"), StratificationVariables=character(), DomainVariables=character()){
   
   if (!(WeightVariable %in% AnalyticalPopulationEstimateData$Variables$Variable)){
     stop(paste("'WeightVariable'", WeightVariable, "is not estimated in 'AnalyticalPopulationEstimateData'"))
@@ -1400,46 +1405,38 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     stop("The names 'Stratum' or 'Domain' may not be used for stratification variables in 'StoxLandingData'")
   }
   
-  if (!any(names(StoxLandingData$Landing) %in% c(names(AnalyticalPopulationEstimateData$StratificationVariables), names(AnalyticalPopulationEstimateData$DomainVariables)))){
-    stop("None of the variables in 'StoxLandingData' are available as StratificationColumns or DomainVariables in 'AnalyticalPopulationEstimateData'")
-  }
-  
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")
   checkMandatory(WeightVariable, "WeightVariable")
   checkOptions(Method, "Method", c("TotalDomainWeight", "MeanDomainWeight"))
+  checkMandatory(StratificationVariables, "StratificationVariables")
+
+  potentialNames <- c(StratificationVariables, DomainVariables)
+  missing <- potentialNames[!(potentialNames %in% names(StoxLandingData$Landing))]
+  if (length(missing)>0){
+    stop(paste("Some Stratification Variables or Domain Variables could not be matched with landings:", paste(missing, collapse = ",")))
+  }
+  landingsPartition <- potentialNames
   
+
   if (Method == "TotalDomainWeight"){
 
-    potentialNames <- c(names(AnalyticalPopulationEstimateData$StratificationVariables), names(AnalyticalPopulationEstimateData$DomainVariables))
-    landingsPartition <- potentialNames[potentialNames %in% names(StoxLandingData$Landing)]
-
-    if (length(landingsPartition)==0){
-      stop("None of the Domain Variables or Stratification Variables are columns in 'StoxLandingData'")
-    }
-    
     totals <- merge(AnalyticalPopulationEstimateData$Variables[get("Variable")==WeightVariable,.SD,.SDcol=c("Stratum", "Domain", "Total")], AnalyticalPopulationEstimateData$StratificationVariables, by="Stratum")
     totals <- merge(totals, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
-  
+    
     domainsLandings <- apply(StoxLandingData$Landing[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
     domainsEstimates <- apply(totals[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
-
+    
     #
     # Check matches
     #
     
-    if (!any(domainsEstimates %in% domainsLandings)){
-      stop(paste("None of the landing partitions (", paste(landingsPartition, collapse = ","), ") in 'StoxLandingData' have corresponding domains in 'AnalyticalPopulationEstimateData'", sep=""))
-    }
-    missingLandings <- domainsLandings[!(domainsLandings %in% domainsEstimates)]
-    if (length(missingLandings)>0){
-      stop(paste("Not all of the landing partitions (", paste(landingsPartition, collapse = ","), ") in 'StoxLandingData' have corresponding domains in 'AnalyticalPopulationEstimateData'. Missing for: ", truncateStringVector(missingLandings), sep=""))
-    }
     missingEstimates <- domainsEstimates[!(domainsEstimates %in% domainsLandings)]
     if (length(missingEstimates)>0){
       stop(paste("Not all of the estimated domains (", paste(landingsPartition, collapse = ","), ") in 'AnalyticalPopulationEstimateData' have corresponding landing partitions in 'StoxLandingData'. Missing for: ", truncateStringVector(missingEstimates), sep=""))
     }
-    
+    missingLandings <- domainsLandings[!(domainsLandings %in% domainsEstimates)]
+
     #
     # calculate total weights
     #
@@ -1497,19 +1494,15 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
   
   if (Method == "MeanDomainWeight"){
     
-    stratificationVariables <- names(AnalyticalPopulationEstimateData$StratificationVariables)
-    stratificationVariables <- stratificationVariables[stratificationVariables != "Stratum"]
-    if (!all(stratificationVariables %in% names(StoxLandingData$Landing))){
-      stop("The ratio estimation method 'MeanDomainWeight' can only be used if landings can be identified for all strata. All stratification variables in 'AnalyticalPopulationEstimate, must be columns in 'StoxLandingData'")
+    #check that strata are OK for application of frequencies
+    strataCheck <- AnalyticalPopulationEstimateData$StratificationVariables
+    landingsPart <- apply(strataCheck[,.SD,.SDcols = StratificationVariables], 1, FUN=paste, collapse="/")
+    strataCount <- strataCheck[,list(nStrata=length(unique(Stratum))), by=list(landingsPart=landingsPart)]
+    strataCount <- strataCount[nStrata>1,]
+    if (nrow(strataCount)>0){
+      stop("The specified Stratification Variables does not identify strata. More than one strata found for landings partitions: ", paste(strataCount$landingsPart, collapse=","))
     }
-    
-    potentialNames <- c(names(AnalyticalPopulationEstimateData$StratificationVariables), names(AnalyticalPopulationEstimateData$DomainVariables))
-    landingsPartition <- potentialNames[potentialNames %in% names(StoxLandingData$Landing)]
-    
-    if (length(landingsPartition)==0){
-      stop("None of the Domain Variables or Stratification Variables are columns in 'StoxLandingData'")
-    }
-    
+
     frequencies <- AnalyticalPopulationEstimateData$Abundance[,.SD,.SDcol=c("Stratum", "Domain", "Frequency")]
     frequencies <- merge(frequencies, AnalyticalPopulationEstimateData$StratificationVariables, by="Stratum")
     frequencies <- merge(frequencies, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
@@ -1521,7 +1514,6 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     # normalize frequencies to landingsPartition within samplingstrata
     totalFrequencies <- frequencies[,list(totalFreq=sum(get("Frequency")*get("Mean"))), by=c("Stratum", landingsPartition)]
     
-    
     domainsLandings <- apply(StoxLandingData$Landing[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
     domainsEstimates <- apply(totalFrequencies[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
     
@@ -1532,10 +1524,7 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     if (!any(domainsEstimates %in% domainsLandings)){
       stop(paste("None of the landing partitions (", paste(landingsPartition, collapse = ","), ") in 'StoxLandingData' have corresponding domains in 'AnalyticalPopulationEstimateData'", sep=""))
     }
-    missingLandings <- domainsLandings[!(domainsLandings %in% domainsEstimates)]
-    if (length(missingLandings)>0){
-      stop(paste("Not all of the landing partitions (", paste(landingsPartition, collapse = ","), ") in 'StoxLandingData' have corresponding domains in 'AnalyticalPopulationEstimateData'. Missing for: ", truncateStringVector(missingLandings), sep=""))
-    }
+
     missingEstimates <- domainsEstimates[!(domainsEstimates %in% domainsLandings)]
     if (length(missingEstimates)>0){
       stop(paste("Not all of the estimated domains (", paste(landingsPartition, collapse = ","), ") in 'AnalyticalPopulationEstimateData' have corresponding landing partitions in 'StoxLandingData'. Missing for: ", truncateStringVector(missingEstimates), sep=""))
@@ -1588,6 +1577,13 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     return(AnalyticalPopulationEstimateData)
   }
 
+}
+
+#' Extend estimates to target population
+#' Strict: NAs unless estimated
+#' PartitionMean: based on means and frequencies in the least coarse partition available.
+#' @noRd
+ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, StoxLandingData, LandingPartition, Method=c("Strict", "PartitionMean")){
   
 }
 

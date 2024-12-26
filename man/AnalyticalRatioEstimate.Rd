@@ -8,7 +8,10 @@ AnalyticalRatioEstimate(
   AnalyticalPopulationEstimateData,
   StoxLandingData,
   WeightVariable = character(),
-  Method = c("TotalDomainWeight", "MeanDomainWeight")
+  Method = c("TotalDomainWeight", "MeanDomainWeight"),
+  IgnoreStratification = FALSE,
+  IgnoreStratificationColumns = character(),
+  IgnoreDomainColumns = character()
 )
 }
 \arguments{
@@ -19,6 +22,12 @@ AnalyticalRatioEstimate(
 \item{WeightVariable}{character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals in grams.}
 
 \item{Method}{The method of ratio estimation to use. 'TotalDomainWeight' or 'MeanDomainWeight'. See details}
+
+\item{IgnoreStratification}{logical indicating wheter some (or all) stratification columns in the design should be ignored when matching estimates and landings}
+
+\item{IgnoreStratificationColumns}{vector of stratification columns to ignore when matching estimates to landings.}
+
+\item{IgnoreDomainColumns}{vector of domain columns to ignore when matching estimates to landings.}
 }
 \value{
 \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance and frequency.
@@ -33,7 +42,7 @@ Ratio estimation generally incurs some bias in estimation, and analytical expres
 
 Landings are partitioned and assigned to domains in 'AnalyticalPopulationEstimateData' by matching column names.
 Column names in 'StoxLandingData' that are also either Stratification Columns or Domain Columns in 'AnalyticalPopulationEstimateData'
-are used to construct the landings partitions that provide total weigts for the ratio estimates.
+are used to construct the landings partitions that provide total weigths for the ratio estimates.
 
 Ratio estimation of abundance may either improve an estimate of abundance obtained by other means, or provide an estimate of abundance
 when only proportions in domains are known. When only proprotions (frequencies) are known, the Method 'MeanDomainWeight'
