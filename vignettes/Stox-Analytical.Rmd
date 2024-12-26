@@ -269,14 +269,14 @@ head(populationEstimates$AbundanceCovariance)
 
 #### Landings-ratio-estimation
 
-We have not yet utilized the census information on landings. We can improve our estimate with a ratio estimator that corrects the abundance with the ratio between estimated total weight across all domains / age groups and the reported total landings. The function _RstoxFDA::AnalyticalRatioEstimate_ supports this, but needs the strata or PSU-domains to be in correspondence with variables in the landings, which is why we wanted the PSUs stratification to be defined by 'Species'. The ratio estimate function automatically recognizes identical column names between stratification columns and domain columns in the estimate and the columns available for partitioning the landings. If no corresponding column names are found, or if they have no overlapping codes, an error will be raised. In this case our PSU domain cover the entire strata, which cover the entire sampling frame. We perform the ratio estimate:
+We have not yet utilized the census information on landings. We can improve our estimate with a ratio estimator that corrects the abundance with the ratio between estimated total weight across all domains / age groups and the reported total landings. The function _RstoxFDA::AnalyticalRatioEstimate_ supports this, but needs the strata or PSU-domains to be in correspondence with variables in the landings, which is why we wanted the PSUs stratification to be defined by 'Species'. We perform the ratio estimate, and indicate in the argument 'StratificationVariables' that we want to match to landings by the column 'Species':
 
 ```{r RatioEstimateTotal}
 AnalyticalPopulationEstimateData = populationEstimates
 StoxLandingData = RstoxFDA::CatchLotteryLandingExample
 WeightVariable = "IndividualRoundWeight"
 Method = "TotalDomainWeight"
-ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method)
+ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method, StratificationVariables = "Species")
 ```
 
 Comparing this with the estimate above, the frequencies should be nearly identical, but some corrections are expected for the abundances:
@@ -298,7 +298,7 @@ caaReport <- ReportAnalyticalCatchAtAge(AnalyticalPopulationEstimateData = Analy
 caaReport$NbyAge
 ```
 
-Note that the domain of fish with missing age is preserved and assigned the minimum age 0, and we have added a plus group with minimum age 9. Downstream use may not support undefined age groups, and NAs may have to be dealt with. RstoxFDA have limited support for this. The easiest is to remove NA individuals, which corresponds to the somewhat unrealistic assumption that ages are missing at random. This table is compatible with those produced by other estimation procedures, such as Reca, so that we can use the same plotting functions:
+Note that the domain of fish with missing age is preserved and assigned the minimum age 0, and we have added a plus group with minimum age 9. Downstream use may not support undefined age groups, and NAs may have to be dealt with. RstoxFDA have limited support for this. The easiest is to remove NA individuals (_RstoxData_::FilterStoxBiotic), or not calculate selection probabilites for them (_RstoxFDA::ComputeIndividualSamplingParameters_). These options corresponds to the somewhat unrealistic assumption that ages are missing at random. The report table is compatible with those produced by other estimation procedures, such as Reca, so that we can use the same plotting functions:
 
 ```{r PlotCatchAtAgeTotals}
 ReportFdaCatchAtAgeData = caaReport
@@ -320,7 +320,7 @@ populationEstimates = RstoxFDA::AnalyticalPopulationEstimate(PSUSamplingParamete
 
 # Redo ratio estimate
 AnalyticalPopulationEstimateData = populationEstimates
-ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method)
+ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method, StratificationVariables = "Species")
 
 # Report
 AnalyticalPopulationEstimateData = ratioEst
@@ -373,7 +373,7 @@ populationEstimates = RstoxFDA::AnalyticalPopulationEstimate(PSUSamplingParamete
 
 # Redo ratio estimate
 AnalyticalPopulationEstimateData = populationEstimates
-ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method)
+ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method, StratificationVariables = "Species")
 
 # Report
 AnalyticalPopulationEstimateData = ratioEst

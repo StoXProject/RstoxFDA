@@ -1284,9 +1284,6 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'  Column names in 'StoxLandingData' that are also either Stratification Columns or Domain Columns in 'AnalyticalPopulationEstimateData'
 #'  can be used to construct the landings partitions that provide total weigths for the ratio estimates.
 #'  
-#'  If estimates are not provided for all domains in the landing data, these domains will be added to \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} 
-#'  with NA for all estimates.
-#'  
 #'  Ratio estimation of abundance may either improve an estimate of abundance obtained by other means, or provide an estimate of abundance
 #'  when only proportions in domains are known. When only proprotions (frequencies) are known, the Method 'MeanDomainWeight'
 #'  must be used. This requires that landing partitions are not covering more than one strata, although they may cover less.
@@ -1579,11 +1576,18 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
 
 }
 
-#' Extend estimates to target population
 #' Strict: NAs unless estimated
-#' PartitionMean: based on means and frequencies in the least coarse partition available.
+#' GrandMean: based on overall means and frequencies.
 #' @noRd
-ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, StoxLandingData, LandingPartition, Method=c("Strict", "PartitionMean")){
+ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, StoxLandingData, LandingPartition, Method=c("Strict", "GrandMean")){
+  
+  # Add domains with 0 abundance and total, and NA mean for each unsampled variable that is a domain variable
+  
+  # Add new strata for not sampled, parameterize name, populate with all usampled combinations of strata-variables
+  
+  # Add all domains to unsampled strata with NA abundance, total, frequency and mean
+  
+  # if GrandMean: put in overall frequecny for domains and overall mean for all variables
   
 }
 

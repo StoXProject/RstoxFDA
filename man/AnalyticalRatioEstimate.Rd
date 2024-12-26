@@ -9,9 +9,8 @@ AnalyticalRatioEstimate(
   StoxLandingData,
   WeightVariable = character(),
   Method = c("TotalDomainWeight", "MeanDomainWeight"),
-  IgnoreStratification = FALSE,
-  IgnoreStratificationColumns = character(),
-  IgnoreDomainColumns = character()
+  StratificationVariables = character(),
+  DomainVariables = character()
 )
 }
 \arguments{
@@ -23,11 +22,9 @@ AnalyticalRatioEstimate(
 
 \item{Method}{The method of ratio estimation to use. 'TotalDomainWeight' or 'MeanDomainWeight'. See details}
 
-\item{IgnoreStratification}{logical indicating wheter some (or all) stratification columns in the design should be ignored when matching estimates and landings}
+\item{StratificationColumns}{vector of stratification columns to include when matching estimates to landings.}
 
-\item{IgnoreStratificationColumns}{vector of stratification columns to ignore when matching estimates to landings.}
-
-\item{IgnoreDomainColumns}{vector of domain columns to ignore when matching estimates to landings.}
+\item{DomainColumns}{vector of domain columns to include when matching estimates to landings.}
 }
 \value{
 \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance and frequency.
@@ -42,12 +39,12 @@ Ratio estimation generally incurs some bias in estimation, and analytical expres
 
 Landings are partitioned and assigned to domains in 'AnalyticalPopulationEstimateData' by matching column names.
 Column names in 'StoxLandingData' that are also either Stratification Columns or Domain Columns in 'AnalyticalPopulationEstimateData'
-are used to construct the landings partitions that provide total weigths for the ratio estimates.
+can be used to construct the landings partitions that provide total weigths for the ratio estimates.
 
 Ratio estimation of abundance may either improve an estimate of abundance obtained by other means, or provide an estimate of abundance
 when only proportions in domains are known. When only proprotions (frequencies) are known, the Method 'MeanDomainWeight'
 must be used. This requires that landing partitions are not covering more than one strata, although they may cover less.
-That is all Stratification columns in 'AnalyticalPopulationEstimateData' must have a corresponding column in 'StoxLandingData'
+That is the Stratification columns in 'StratificationColumns' must identify strata in 'AnalyticalPopulationEstimateData'
 
 The function obtains a ratio estimate of total abundance in landings by one of the following methods (provided in the argument 'Method'):
 \describe{
