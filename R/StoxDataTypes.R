@@ -2441,7 +2441,9 @@ stoxFunctionAttributes <- list(
       WeightVariable = "IndividualRoundWeight"
     ),
     functionParameterFormat = list(
-      WeightVariable = "weightvariableratioestimate"
+      WeightVariable = "weightvariableratioestimate",
+      StratificationVariables = "stratificationvariableslandings",
+      DomainVariables = "domainvariableslandings"
     )
   ),
   
@@ -3135,6 +3137,28 @@ processPropertyFormats <- list(
       possibleValues <- ReportFdaSamplingData$GroupingVariables$GroupingVariables
       return(sort(possibleValues))
     }, 
+    variableTypes = "character"
+  ),
+  stratificationvariableslandings = list(
+    class = "vector", 
+    title = "One or more Stratificaion variable to match with landings", 
+    possibleValues = function(AnalyticalPopulationEstimateData, StoxLandingData){
+      pv <- names(AnalyticalPopulationEstimateData$StratificationVariables)
+      pv <- pv[pv != "Stratum"]
+      pv <- pv[pv %in% names(StoxLandingData$Landing)]
+      return(pv)
+    },
+    variableTypes = "character"
+  ),
+  domainvariableslandings = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "Zero or more Domain variables to match with landings", 
+    possibleValues = function(AnalyticalPopulationEstimateData, StoxLandingData){
+      pv <- names(AnalyticalPopulationEstimateData$StratificationVariables)
+      pv <- pv[pv != "Domain"]
+      pv <- pv[pv %in% names(StoxLandingData$Landing)]
+      return(pv)
+    },
     variableTypes = "character"
   )
 )

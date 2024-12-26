@@ -132,6 +132,7 @@ CatchLotteryExample$Station$CountryVessel <- "NOR"
 usethis::use_data(CatchLotteryExample, overwrite = T)
 
 CatchLotterySamplingExample <- RstoxFDA::ReadPSUSamplingParameters(designParamsFile)
+CatchLotterySamplingExample$StratificationVariables$CountryVessel <- "NOR"
 usethis::use_data(CatchLotterySamplingExample, overwrite = T)
 
 landings2022 <- RstoxData::readLssFile("~/landingsets/LSS/FDIR_HI_LSS_FANGST_2022_PR_2023-03-06.psv")

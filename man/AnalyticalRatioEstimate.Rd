@@ -22,9 +22,9 @@ AnalyticalRatioEstimate(
 
 \item{Method}{The method of ratio estimation to use. 'TotalDomainWeight' or 'MeanDomainWeight'. See details}
 
-\item{StratificationColumns}{vector of stratification columns to include when matching estimates to landings.}
+\item{StratificationVariables}{vector of stratification columns to include when matching estimates to landings.}
 
-\item{DomainColumns}{vector of domain columns to include when matching estimates to landings.}
+\item{DomainVariables}{vector of domain columns to include when matching estimates to landings.}
 }
 \value{
 \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance and frequency.
@@ -130,14 +130,15 @@ Vocabulary for equations given above:
  psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 
                                        individualSamplingParameters, 
                                        c("IndividualRoundWeight"), 
-                                       c("IndividualAge"), c("CountryVessel"))
+                                       c("IndividualAge"))
  popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
  
  # perform ration estimate, assigning total weights by 'CountryVessel'
  ratioEst <- RstoxFDA::AnalyticalRatioEstimate(popEst, 
                                         RstoxFDA::CatchLotteryLandingExample, 
                                         "IndividualRoundWeight", 
-                                        "TotalDomainWeight")
+                                        "TotalDomainWeight",
+                                        "CountryVessel")
  
 }
 \concept{Analytical estimation}

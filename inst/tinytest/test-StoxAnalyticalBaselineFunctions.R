@@ -345,9 +345,6 @@ ll <- land
 ll$Landing$SpeciesCategory <- NULL
 expect_error(RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, ll, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "SpeciesCategory"), "Some Stratification Variables or Domain Variables could not be matched with landings")
 
-
-warning("Implement NA test for TotalDomainWeight")
-
 # Test year as stratification variable
 popEstDomainYear <- popEstDomain
 popEstDomainYear$StratificationVariables$Year <- "2022"
@@ -453,8 +450,6 @@ expect_true(max(abs(comp$Abundance.x - comp$Abundance.y)/comp$Abundance.x,na.rm=
 #
 # Input tests MeanDomainWeight
 #
-
-warning("Implement NA test for MeanDomainWeight")
 
 psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge", "Gear"))
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
@@ -562,9 +557,6 @@ filt2 <- popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
-#figure out how to make ratio estimation for total landings easy
-#make one report (CAA)
-#stop("Make function to ratio estimate less granular domains.")
 #stop("Check input sanitation.")
 #stop("Test collapseStrata with both HH and HT")
 #stop("Implement DefineHierarchy.")

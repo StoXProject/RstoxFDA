@@ -1144,6 +1144,10 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   if (any(names(LowerLevelStrata) %in% names(PSUSamplingParametersData$StratificationVariables))){
     stop("Strata naming conflict. The same column names are used for PSU stratification and lower level stratification")
   }
+  
+  if (any(names(AnalyticalPSUEstimateData$DomainVariables) %in% names(PSUSamplingParametersData$StratificationVariables))){
+    stop("Domain Variables in 'AnalyticalPSUEstimateData' occur as Stratification Variables in 'PSUSamplingParametersData'")
+  }
 
   missingAbund <- AnalyticalPSUEstimateData$Abundance$SampleId[is.na(AnalyticalPSUEstimateData$Abundance$Abundance)]
   missingFreq <- AnalyticalPSUEstimateData$Abundance$SampleId[is.na(AnalyticalPSUEstimateData$Abundance$Frequency)]
@@ -1364,8 +1368,8 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} with census data on total weight in each stratum
 #' @param WeightVariable character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals in grams.
 #' @param Method The method of ratio estimation to use. 'TotalDomainWeight' or 'MeanDomainWeight'. See details 
-#' @param StratificationColumns vector of stratification columns to include when matching estimates to landings.
-#' @param DomainColumns vector of domain columns to include when matching estimates to landings. 
+#' @param StratificationVariables vector of stratification columns to include when matching estimates to landings.
+#' @param DomainVariables vector of domain columns to include when matching estimates to landings. 
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance and frequency.
 #' @examples 
 #' 
@@ -1380,14 +1384,15 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'  psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 
 #'                                        individualSamplingParameters, 
 #'                                        c("IndividualRoundWeight"), 
-#'                                        c("IndividualAge"), c("CountryVessel"))
+#'                                        c("IndividualAge"))
 #'  popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
 #'  
 #'  # perform ration estimate, assigning total weights by 'CountryVessel'
 #'  ratioEst <- RstoxFDA::AnalyticalRatioEstimate(popEst, 
 #'                                         RstoxFDA::CatchLotteryLandingExample, 
 #'                                         "IndividualRoundWeight", 
-#'                                         "TotalDomainWeight")
+#'                                         "TotalDomainWeight",
+#'                                         "CountryVessel")
 #'  
 #' @concept Analytical estimation
 #' @export
@@ -1494,8 +1499,8 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     #check that strata are OK for application of frequencies
     strataCheck <- AnalyticalPopulationEstimateData$StratificationVariables
     landingsPart <- apply(strataCheck[,.SD,.SDcols = StratificationVariables], 1, FUN=paste, collapse="/")
-    strataCount <- strataCheck[,list(nStrata=length(unique(Stratum))), by=list(landingsPart=landingsPart)]
-    strataCount <- strataCount[nStrata>1,]
+    strataCount <- strataCheck[,list(nStrata=length(unique(get("Stratum")))), by=list(landingsPart=landingsPart)]
+    strataCount <- strataCount[get("nStrata")>1,]
     if (nrow(strataCount)>0){
       stop("The specified Stratification Variables does not identify strata. More than one strata found for landings partitions: ", paste(strataCount$landingsPart, collapse=","))
     }
