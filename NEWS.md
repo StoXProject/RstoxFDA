@@ -3,6 +3,7 @@
 * Replaced DefinePSUSamplingParameters (processdata) with ComputePSUSamplingParameters (no processdata) and ReadPSUSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006). (#127)
 * Replaced DefineIndividualSamplingParameters (processdata) with ComputeIndividualSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006).
 * Added documentation for ECA convergence analsysis (#153)
+* Fixed issue with running RunRecaModels with temporal resolution æmonth' (#144)
 * Fixed naming of age groups in reports from analytical estimates (#145)
 * Fixed documentation for handling NA age groups (#151)
 * Fixed issue with using integer columns in landings as stratification column in ratio estimates (#133)
