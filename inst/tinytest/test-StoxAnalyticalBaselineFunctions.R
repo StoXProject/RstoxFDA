@@ -560,6 +560,4 @@ all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovar
 #stop("Check input sanitation.")
 #stop("Test collapseStrata with both HH and HT")
 #stop("Implement DefineHierarchy.")
-#stop("expose to StoX")
-#stop("write vignette.")
 #stop("Make tests for all estimated parameters with and without domain and stratification)

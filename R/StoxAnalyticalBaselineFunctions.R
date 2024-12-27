@@ -1370,7 +1370,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #' @param Method The method of ratio estimation to use. 'TotalDomainWeight' or 'MeanDomainWeight'. See details 
 #' @param StratificationVariables vector of stratification columns to include when matching estimates to landings.
 #' @param DomainVariables vector of domain columns to include when matching estimates to landings. 
-#' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance and frequency.
+#' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates.
 #' @examples 
 #' 
 #'  PSUsamplingParameters <- RstoxFDA::AssignPSUSamplingParameters(
@@ -1581,10 +1581,38 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
 
 }
 
-#' Strict: NAs unless estimated
-#' GrandMean: based on overall means and frequencies.
+#' Extends estimate beyond sampling frame
+#' @description
+#'  Infer estimates to parts of the fishery / target population that was not targeted by sampling program.
+#'  Landing data is taken to be census.
+#' @details
+#'  Inference beyond sampling frames can be done in several ways, controlled by the argument 'Method'
+#'  \describe{
+#'  \item{Strict}{List all specified landing partitions. Infer zero-estimates for domains in sampling frame, that was not sampled.
+#'   Provide NA-values for all parameters of all domains that is not in the sampling frame,}
+#'  \item{GrandMean}{List all specified landing partitions. Infer zero-estimates for domains in sampling frame, that was not sampled.
+#'   For domains that are not in the sampling frame, set means, freuquencies, and corresponding variance to mean over all sampled strata.}
+#'  }
+#' @param AnalyticalPopulationEstimateData Estimates for the sampling frame
+#' @param StoxLandingData Landing data for the entire fishery / target population
+#' @param LandingPartition vector of variables in StoxLandingData that should be used to partition the fishery, must be Stratification Variables or Domain Variables in 'AnalyticalPopulationEstimateData'
+#' @param Method method of inference beyond sampling frame.
+#' @param UnsampledStratum name to use for unsamled stratum
+#' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with parameters for unsampled stratum
+#' @md
+#' @concept Analytical estimation
 #' @noRd
-ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, StoxLandingData, LandingPartition, Method=c("Strict", "GrandMean")){
+ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, StoxLandingData, LandingPartition, Method=c("Strict", "GrandMean"), UnsampledStratum=character()){
+  
+  checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
+  checkMandatory(StoxLandingData, "StoxLandingData")
+  checkMandatory(LandingPartition, "LandingPartition")
+  checkOptions(Method, "Method", c("Strict", "GrandMean"))
+  checkMandatory(UnsampledStratum, "UnsampledStratum")
+  
+  if (!all(LandingPartition %in% c(names(AnalyticalPopulationEstimateData$StratificationVariables), names(AnalyticalPopulationEstimateData$DomainVariables)))){
+    stop("LandingPartition must be composed of Stratification Variables and Domain Variables.")
+  }
   
   # Add domains with 0 abundance and total, and NA mean for each unsampled variable that is a domain variable
   
