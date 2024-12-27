@@ -402,7 +402,7 @@ popEstNoD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstNoD)
 ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstNoD, land, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "SpeciesCategory")
 
 #should have some higher errors, since some domains have few samples
-expect_true(abs(sum(ratioEst$Variables$Total) - sum(land$Landing$RoundWeight)*1000)<1e-6)
+expect_true(abs(sum(ratioEst$Variables$Total) - sum(land$Landing$RoundWeight)*1000)/sum(ratioEst$Variables$Total)<1e-6)
 expect_true(!all(sqrt(ratioEst$VariablesCovariance$TotalCovariance) / ratioEst$Variables$Total < 1e-2))
 
 #

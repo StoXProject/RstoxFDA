@@ -27,7 +27,7 @@ AnalyticalRatioEstimate(
 \item{DomainVariables}{vector of domain columns to include when matching estimates to landings.}
 }
 \value{
-\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance and frequency.
+\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates.
 }
 \description{
 Performs ratio estimate adjustments of estimates, based on either the ratio of abundance in domains to total weights in a stratum,
