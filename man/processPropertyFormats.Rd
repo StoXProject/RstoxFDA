@@ -5,7 +5,7 @@
 \alias{processPropertyFormats}
 \title{Define the process property formats for inclusion in stox UI}
 \format{
-An object of class \code{list} of length 20.
+An object of class \code{list} of length 22.
 }
 \usage{
 processPropertyFormats

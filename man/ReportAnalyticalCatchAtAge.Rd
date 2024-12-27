@@ -13,7 +13,7 @@ ReportAnalyticalCatchAtAge(
 )
 }
 \arguments{
-\item{AnalyticalPopulationEstimateData}{Results from analytical estimates (\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}).}
+\item{AnalyticalPopulationEstimateData}{Results from analytical estimates (\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}). The StoxBiotic variable 'IndividualAge' must be among the DomainVariables.}
 
 \item{PlusGroup}{If given, ages 'PlusGroup' or older are included in a plus group.}
 

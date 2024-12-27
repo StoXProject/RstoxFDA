@@ -8,7 +8,9 @@ AnalyticalRatioEstimate(
   AnalyticalPopulationEstimateData,
   StoxLandingData,
   WeightVariable = character(),
-  Method = c("TotalDomainWeight", "MeanDomainWeight")
+  Method = c("TotalDomainWeight", "MeanDomainWeight"),
+  StratificationVariables = character(),
+  DomainVariables = character()
 )
 }
 \arguments{
@@ -19,9 +21,13 @@ AnalyticalRatioEstimate(
 \item{WeightVariable}{character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals in grams.}
 
 \item{Method}{The method of ratio estimation to use. 'TotalDomainWeight' or 'MeanDomainWeight'. See details}
+
+\item{StratificationVariables}{vector of stratification columns to include when matching estimates to landings.}
+
+\item{DomainVariables}{vector of domain columns to include when matching estimates to landings.}
 }
 \value{
-\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates of abundance and frequency.
+\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates.
 }
 \description{
 Performs ratio estimate adjustments of estimates, based on either the ratio of abundance in domains to total weights in a stratum,
@@ -33,12 +39,12 @@ Ratio estimation generally incurs some bias in estimation, and analytical expres
 
 Landings are partitioned and assigned to domains in 'AnalyticalPopulationEstimateData' by matching column names.
 Column names in 'StoxLandingData' that are also either Stratification Columns or Domain Columns in 'AnalyticalPopulationEstimateData'
-are used to construct the landings partitions that provide total weigts for the ratio estimates.
+can be used to construct the landings partitions that provide total weigths for the ratio estimates.
 
 Ratio estimation of abundance may either improve an estimate of abundance obtained by other means, or provide an estimate of abundance
 when only proportions in domains are known. When only proprotions (frequencies) are known, the Method 'MeanDomainWeight'
 must be used. This requires that landing partitions are not covering more than one strata, although they may cover less.
-That is all Stratification columns in 'AnalyticalPopulationEstimateData' must have a corresponding column in 'StoxLandingData'
+That is the Stratification columns in 'StratificationColumns' must identify strata in 'AnalyticalPopulationEstimateData'
 
 The function obtains a ratio estimate of total abundance in landings by one of the following methods (provided in the argument 'Method'):
 \describe{
@@ -117,21 +123,22 @@ Vocabulary for equations given above:
                                        RstoxFDA::CatchLotterySamplingExample, 
                                        RstoxFDA::CatchLotteryExample, 
                                        "serialnumber", "Haul", "MissingAtRandom")
- individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
+ individualSamplingParameters <-  RstoxFDA:::ComputeIndividualSamplingParameters(
                                        RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
  
  # Estimate for the domain 'CountryVessel'                                      
  psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 
                                        individualSamplingParameters, 
                                        c("IndividualRoundWeight"), 
-                                       c("IndividualAge"), c("CountryVessel"))
+                                       c("IndividualAge"))
  popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
  
  # perform ration estimate, assigning total weights by 'CountryVessel'
  ratioEst <- RstoxFDA::AnalyticalRatioEstimate(popEst, 
                                         RstoxFDA::CatchLotteryLandingExample, 
                                         "IndividualRoundWeight", 
-                                        "TotalDomainWeight")
+                                        "TotalDomainWeight",
+                                        "CountryVessel")
  
 }
 \concept{Analytical estimation}

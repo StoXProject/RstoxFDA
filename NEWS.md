@@ -1,3 +1,13 @@
+# 1.5.0-9003
+* Changed how Stratification variables and Domain variables are matched to landings with AnalyticalRatioEstimate (# 125)
+* Replaced DefinePSUSamplingParameters (processdata) with ComputePSUSamplingParameters (no processdata) and ReadPSUSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006). (#127)
+* Replaced DefineIndividualSamplingParameters (processdata) with ComputeIndividualSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006).
+* Added documentation for ECA convergence analsysis (#153)
+* Fixed naming of age groups in reports from analytical estimates (#145)
+* Fixed documentation for handling NA age groups (#151)
+* Fixed issue with using integer columns in landings as stratification column in ratio estimates (#133)
+* Fixed error message when analytical catch at age reports are attempted without 'IndividualAge' in the domain definition (#126).
+
 # 1.5.0-9002
 * Fixed ordering of age groups in ReportAnalyticalCatchAtAge (#134)
 * Improved Error messages in AnalyticalRatioEstimate (#131)
@@ -26,7 +36,7 @@
 * Changed analytical variance estimator of means to a less conservative one.
 
 # RstoxFDA v1.3-9005
-* Added functions for analytical catch at age estimation (DefinePSUSamplingParameters, DefineIndividualSamplingParameters, AssignPSUSamplingParameters, AnalyticalPSUEstimate, AnalyticalPopulationEstimate, AnalyticalRatioEstimate, ReportAnalyticalCatchAtAge)
+* Added functions for analytical catch at age estimation (DefinePSUSamplingParameters, ComputeIndividualSamplingParameters, AssignPSUSamplingParameters, AnalyticalPSUEstimate, AnalyticalPopulationEstimate, AnalyticalRatioEstimate, ReportAnalyticalCatchAtAge)
 * Converted area code resources from sp SpatialPolygons to sf data.frames, reflecting changes in RstoxBase v 2. Breaks compatibility with RstoxBase < 2.
 * Changed ReadLandingFDA to use ForceUnique as implemented in RstoxData v 2. Breaks compatibility with RstoxData < 2
 * Made definition of coordinates used for appendAreaCodes and DefineAreaPosition stricter (now always centroids)

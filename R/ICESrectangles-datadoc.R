@@ -30,6 +30,7 @@
 #'
 #' @concept area code polygons
 #' @keywords datasets
+#' @import RstoxBase
 #'
 #' @examples
 #'  # plot statistical rectangles in 27.3.a

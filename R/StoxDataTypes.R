@@ -738,6 +738,7 @@ NULL
 #'  
 #' @name KommunePolygons
 #' @concept Data types
+#' @import RstoxBase
 #' 
 NULL
 
@@ -2375,66 +2376,33 @@ stoxFunctionAttributes <- list(
       ColumnName = "Period"
     )
   ),
-  DefineIndividualSamplingParameters = list(
-    functionType = "processData", 
+  ComputeIndividualSamplingParameters = list(
+    functionType = "modelData", 
     functionCategory = "baseline", 
     functionOutputDataType = "IndividualSamplingParametersData",
     functionParameterFormat = list(
       Parameters = "individualparameters",
       StratificationColumns = "individualstratificationcolumns"
-    ),
-    functionArgumentHierarchy = list(
-      DefinitionMethod = list(
-        UseProcessData = FALSE
-      ),
-      StoxBioticData = list(
-        UseProcessData = FALSE
-      ),
-      Parameters = list(
-        UseProcessData = FALSE
-      ),
-      LengthInterval = list(
-        DefinitionMethod = "LengthStratified",
-        UseProcessData = FALSE
-      ),
-      StratificationColumns = list(
-        DefinitionMethod = "Stratified",
-        UseProcessData = FALSE
-      )
     )
   ),
-  DefinePSUSamplingParameters = list(
-    functionType = "processData", 
+  ComputePSUSamplingParameters = list(
+    functionType = "modelData", 
     functionCategory = "baseline", 
     functionOutputDataType = "PSUSamplingParametersData",
     functionParameterFormat = list(
-      FileName = "filePath",
       SamplingUnitId = "samplingunitid",
       StratificationColumns = "stratificationcolumns"
       ),
     functionParameterDefaults = list(
-      DefinitionMethod = "ResourceFile"
+      DefinitionMethod = "AdHocStoxBiotic"
+    )
     ),
-    functionArgumentHierarchy = list(
-      DefinitionMethod = list(
-        UseProcessData = FALSE
-      ),
-      FileName = list(
-        DefinitionMethod = "ResourceFile",
-        UseProcessData = FALSE
-      ),
-      StoxBioticData = list(
-        DefinitionMethod = "AdHocStoxBiotic",
-        UseProcessData = FALSE
-      ),
-      SamplingUnitId = list(
-        DefinitionMethod = "AdHocStoxBiotic",
-        UseProcessData = FALSE
-      ),
-      StratificationColumns = list(
-        DefinitionMethod = "AdHocStoxBiotic",
-        UseProcessData = FALSE
-      )
+  ReadPSUSamplingParameters = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "PSUSamplingParametersData",
+    functionParameterFormat = list(
+      FileName = "filePath"
     )
   ),
   AssignPSUSamplingParameters = list(
@@ -2473,7 +2441,9 @@ stoxFunctionAttributes <- list(
       WeightVariable = "IndividualRoundWeight"
     ),
     functionParameterFormat = list(
-      WeightVariable = "weightvariableratioestimate"
+      WeightVariable = "weightvariableratioestimate",
+      StratificationVariables = "stratificationvariableslandings",
+      DomainVariables = "domainvariableslandings"
     )
   ),
   
@@ -3167,6 +3137,28 @@ processPropertyFormats <- list(
       possibleValues <- ReportFdaSamplingData$GroupingVariables$GroupingVariables
       return(sort(possibleValues))
     }, 
+    variableTypes = "character"
+  ),
+  stratificationvariableslandings = list(
+    class = "vector", 
+    title = "One or more Stratificaion variable to match with landings", 
+    possibleValues = function(AnalyticalPopulationEstimateData, StoxLandingData){
+      pv <- names(AnalyticalPopulationEstimateData$StratificationVariables)
+      pv <- pv[pv != "Stratum"]
+      pv <- pv[pv %in% names(StoxLandingData$Landing)]
+      return(pv)
+    },
+    variableTypes = "character"
+  ),
+  domainvariableslandings = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "Zero or more Domain variables to match with landings", 
+    possibleValues = function(AnalyticalPopulationEstimateData, StoxLandingData){
+      pv <- names(AnalyticalPopulationEstimateData$StratificationVariables)
+      pv <- pv[pv != "Domain"]
+      pv <- pv[pv %in% names(StoxLandingData$Landing)]
+      return(pv)
+    },
     variableTypes = "character"
   )
 )

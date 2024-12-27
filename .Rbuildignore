@@ -1,8 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^\.travis\.yml$
-^appveyor\.yml$
 ^\.github
 ^LICENSE$
 ^doc$
+^docs$
+^pkgdown$
 ^Meta$
