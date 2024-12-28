@@ -138,6 +138,10 @@ expect_true("Gear" %in% unlanded$GroupingVariables$GroupingVariables)
 expect_true(any(is.na(unlanded$FisheriesSampling$LandedRoundWeight)))
 expect_error(RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter", "Nonesene")), "All 'GroupingVariables' must be present in 'StoxLandingData'. Missing: Nonesene")
 
+#Test with counted variable as sampling variable (IndividualAge)
+SamplingReportAgedFish <- RstoxFDA::ReportFdaSampling(StoxBioticData, StoxLandingData, GroupingVariables = c("Quarter"), Unit="kiloton", Decimals = 6, SamplingVariables = c("IndividualAge"))
+expect_equal(sum(SamplingReportAgedFish$FisheriesSampling$AgeReadings[!is.na(SamplingReportAgedFish$FisheriesSampling$IndividualAge) &
+                                                                        SamplingReportAgedFish$FisheriesSampling$IndividualAge==3]), 77+153)
 
 #Report covariances
 catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))

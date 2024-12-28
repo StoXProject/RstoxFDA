@@ -3,6 +3,7 @@
 * Replaced DefinePSUSamplingParameters (processdata) with ComputePSUSamplingParameters (no processdata) and ReadPSUSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006). (#127)
 * Replaced DefineIndividualSamplingParameters (processdata) with ComputeIndividualSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006).
 * Added documentation for ECA convergence analsysis (#153)
+* Fixed issue with reporting IndividualAge as SamplingVariable in ReportFdaSampling (#146)
 * Fixed issue with running RunRecaModels with temporal resolution 'month' (#144)
 * Fixed issue with plotting with other column variables than 'Area' in PlotFisheriesOverviewSpatial (#147)
 * Fixed naming of age groups in reports from analytical estimates (#145)
