@@ -2949,6 +2949,7 @@ processPropertyFormats <- list(
           }
         }
       }
+      possibleValues <- possibleValues[!(possibleValues) %in% c("CruiseKey", "HaulKey", "IndividualKey", "SampleKey", "SpeciesCategoryKey", "StationKey")]
       possibleValues <- unique(possibleValues)
       return(sort(possibleValues))
     }, 
@@ -2966,6 +2967,7 @@ processPropertyFormats <- list(
           }
         }
       }
+      possibleValues <- possibleValues[!(possibleValues) %in% c("CruiseKey", "HaulKey", "IndividualKey", "SampleKey", "SpeciesCategoryKey", "StationKey")]
       possibleValues <- unique(possibleValues)
       return(sort(possibleValues))
     }, 
