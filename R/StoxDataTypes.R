@@ -2383,6 +2383,14 @@ stoxFunctionAttributes <- list(
     functionParameterFormat = list(
       Parameters = "individualparameters",
       StratificationColumns = "individualstratificationcolumns"
+    ),
+    functionArgumentHierarchy = list(
+      StratificationColumns = list(
+        DefinitionMethod = "Stratified"
+      ),
+      LengthInterval = list(
+        DefinitionMethod = "LengthStratified"
+      )
     )
   ),
   ComputePSUSamplingParameters = list(
