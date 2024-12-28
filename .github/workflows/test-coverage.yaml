@@ -2,14 +2,12 @@ on:
   push:
     branches:
       - master
-      - testing
-      - develop
 
 name: test-coverage
 
 jobs:
   test-coverage:
-    runs-on: macOS-latest
+    runs-on:  windows-latest
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
@@ -29,23 +27,7 @@ jobs:
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
         
-      - name: Install MacOS dependencies
-        if: runner.os == 'macOS'
-        run: |
-          rm -f '/usr/local/bin/gfortran'
-          rm -f '/usr/local/bin/2to3'
-          rm -f '/usr/local/bin/2to3-3.11'
-          rm -f '/usr/local/bin/idle3'
-          rm -f '/usr/local/bin/idle3.11'
-          rm -f '/usr/local/bin/pydoc3'
-          rm -f '/usr/local/bin/pydoc3.11'
-          rm -f '/usr/local/bin/python3'
-          rm -f '/usr/local/bin/python3.11'
-          rm -f '/usr/local/bin/python3-config'
-          rm -f '/usr/local/bin/python3.11-config'
-          export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=false # This prevents Homebrew from re-installing R, which will lead to .Platform$pkgType = "source".
-          brew install gdal
-        shell: bash
+
 
         #
         # Install Reca (awlays from prod repo)
@@ -59,6 +41,12 @@ jobs:
         #
         # Install StoX dependencies, corresponding to release status (unstable, pre-release or release)
         #
+      - name: Install R package dependencies from the unstableRepo
+        if: (github.event_name == 'push' && github.ref_name == 'catchLotteryStox4') || (github.event_name == 'pull_request' && github.base_ref == 'catchLotteryStox4')
+        run: |
+          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/unstableRepo/", "https://cloud.r-project.org/"))
+        shell: Rscript {0}
+        
       - name: Install R package dependencies from the unstableRepo
         if: (github.event_name == 'push' && github.ref_name == 'develop') || (github.event_name == 'pull_request' && github.base_ref == 'develop')
         run: |
