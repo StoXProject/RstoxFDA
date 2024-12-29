@@ -557,7 +557,64 @@ filt2 <- popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
-#stop("Check input sanitation.")
+#
+# Test sample frame expansion
+#
+land <- RstoxFDA::CatchLotteryLandingExample
+land$Landing$Frame <- "Sampling frame"
+land$Landing$Frame[1:300] <- "OutOfFrame"
+stationDesign <- RstoxFDA::CatchLotterySamplingExample
+stationDesign$StratificationVariables$Frame <- "Sampling frame"
+ex <- RstoxFDA::CatchLotteryExample
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+# Test expanding along a single stratification variable
+ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEst, land, "IndividualRoundWeight", "MeanDomainWeight", "Frame")
+expect_equal(nrow(ratioEst$Variables), nrow(popEst$Variables))
+
+expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrame(popEst, land, "Frame", "Strict", "Unsampled")
+expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)*2)
+expect_equal(nrow(expandedPopEst$Abundance), nrow(popEst$Abundance)*2)
+expect_equal(nrow(expandedPopEst$Variables), nrow(popEst$Variables)*2)
+expect_equal(nrow(expandedPopEst$AbundanceCovariance), nrow(popEst$AbundanceCovariance)*2)
+expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(popEst$VariablesCovariance)*2)
+expect_equal(nrow(expandedPopEst$DomainVariables), nrow(popEst$DomainVariables))
+expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$StratificationVariables)*2)
+expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+
+# Test expanding along a single domain variable
+land <- RstoxFDA::CatchLotteryLandingExample
+stationDesign <- RstoxFDA::CatchLotterySamplingExample
+stationDesign$StratificationVariables$Frame <- "Sampling frame"
+ex <- RstoxFDA::CatchLotteryExample
+ex$Haul$Gear[ex$Haul$Gear=="3600"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3700"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3100"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3500"] <- "53"
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrame(popEst, land, "Gear", "Strict", "Unsampled")
+expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary))
+expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
+expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
+expect_equal(nrow(expandedPopEst$AbundanceCovariance), (nrow(popEst$Abundance)*3)*(nrow(popEst$Abundance)*3-1)/2+nrow(popEst$Abundance)*3) #all domain combinations
+expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(expandedPopEst$AbundanceCovariance)*3) #three variable combinations
+expect_equal(nrow(expandedPopEst$DomainVariables), nrow(popEst$DomainVariables)*3)
+expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$StratificationVariables))
+expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+
+# Test expanding along several variables for both domain and stratification
+#warning("Add test along several domain and stratification variables")
+
+# Test Grand mean option
+#warning("Add test for Grand Mean, expanding along several domain and stratification variables")
+
 #stop("Test collapseStrata with both HH and HT")
 #stop("Implement DefineHierarchy.")
 #stop("Make tests for all estimated parameters with and without domain and stratification)
