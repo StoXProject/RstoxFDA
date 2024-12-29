@@ -92,8 +92,8 @@ jobs:
         shell: Rscript {0}
 
       - name: Test coverage
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           R CMD INSTALL .
           Rscript -e 'covr::codecov()'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
