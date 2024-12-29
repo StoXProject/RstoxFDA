@@ -95,3 +95,5 @@ jobs:
         run: |
           R CMD INSTALL .
           Rscript -e 'covr::codecov()'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
