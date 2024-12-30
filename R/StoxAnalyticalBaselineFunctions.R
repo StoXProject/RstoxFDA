@@ -1584,9 +1584,17 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
 #' Extends estimate beyond sampling frame
 #' @description
 #'  Infer estimates to parts of the fishery / target population that was not sampled.
+#'  That is strata not covered by the sampling frame and domains that did not get sampled, but are known to be populated in census data.
 #'  Landing data is taken to be census.
 #' @details
-#'  Inference can be done in several ways, controlled by the argument 'Method'
+#'  This function only infers precence of domains and strata from census-data, and provide options for replacing missing estimates (NA) with some pragmatic approximations.
+#'  Any estimates already provided is not changed. Domains that are not sampled are in design-based estimation imlied to have estimates of 0 abundance, total and frequencies, and hence unkown means.
+#'  Corresponding variances are also zero. This function encodes unsampled domains excplitly, and may therefore introduce some estimated values that
+#'  was not explicitly provided in the input. It does not introduce landed weights, or other knowledge from landings, 
+#'  except for the fact that domains and strata are present in the landings data. All inference about unkown values are inferred from the provided estimates ('AnalyticalPopulationEstimateData').
+#'  Subsequent ratio-estimation may make use of this information to also make use of total-weight information from landings (see \code{link[RstoxFDA]{AnalyticalRatioEstimate}}).
+#'  
+#'  Inference about unkown values can be done in several ways, controlled by the argument 'Method'
 #'  \describe{
 #'  \item{Strict}{Infer NA for means and frequencies for unsampled domains in the sampling frame.
 #'   Provide NA-values for all parameters of all domains that is not in the sampling frame.}
@@ -1632,7 +1640,7 @@ ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, Stox
   StratificationVariables <- names(AnalyticalPopulationEstimateData$StratificationVariables)[names(AnalyticalPopulationEstimateData$StratificationVariables) %in% LandingPartition]
   DomainVariables <- names(AnalyticalPopulationEstimateData$DomainVariables)[names(AnalyticalPopulationEstimateData$DomainVariables) %in% LandingPartition]
   
-  # Add domains with 0 abundance and total, and NA mean for each unsampled variable that is a domain variable
+  # Add domains with 0 abundance, frequency, and total, and NA mean for each unsampled variable that is a domain variable
   
   if (length(DomainVariables)>0){
     
@@ -1640,7 +1648,7 @@ ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, Stox
     # Construct unsampled domains that need to be filled to match landings
     #
     landeddomains <- StoxLandingData$Landing[,.SD,.SDcol=DomainVariables]
-    landeddomains <- landeddomains[!duplicated(apply(landeddomains, 1, paste, collapes=",")),]
+    landeddomains <- landeddomains[!duplicated(apply(landeddomains, 1, paste, collapse=",")),]
     sampledfractionaldomains <- AnalyticalPopulationEstimateData$DomainVariables[,.SD,.SDcol=DomainVariables]
     unsampledfractionaldomains <- landeddomains[!(apply(landeddomains, 1, paste, collapse=",") 
                                                   %in% apply(sampledfractionaldomains, 1, paste, collapse=",")),]
@@ -1689,7 +1697,7 @@ ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, Stox
 
     additionalAbundanceCovariance <- merge(data.table::CJ(Stratum=unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
                                                           Domain1=unique(AnalyticalPopulationEstimateData$DomainVariables$Domain)),
-                   cross, by=c("Domain1"))
+                   cross, by=c("Domain1"), allow.cartesian=T)
     additionalAbundanceCovariance <- additionalAbundanceCovariance[!(paste(additionalAbundanceCovariance$Stratum, 
                                                                            additionalAbundanceCovariance$Domain1, 
                                                                            additionalAbundanceCovariance$Domain2) %in% 
@@ -1731,7 +1739,7 @@ ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, Stox
   # Add new strata for not sampled
   if (length(StratificationVariables)>0){
     landedpart <- StoxLandingData$Landing[,.SD,.SDcol=StratificationVariables]
-    landedpart <- landedpart[!duplicated(apply(landedpart, 1, paste, collapes=",")),]
+    landedpart <- landedpart[!duplicated(apply(landedpart, 1, paste, collapse=",")),]
     sampleframepart <- AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcol=StratificationVariables]
     unsampledpart <- landedpart[!(apply(landedpart, 1, paste, collapse=",") %in% apply(sampleframepart, 1, paste, collapse=",")),]
     unsampledpart$Stratum <- UnsampledStratum
@@ -1747,6 +1755,10 @@ ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, Stox
                                                                                    PSURelativeDomainSize=as.numeric(NA)))
   }
 
+  #
+  # Infer values for some unkowns (NA or NaN)
+  #
+  
   if (Method == "Strict"){
     newAbundance <- data.table::CJ(Stratum=unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
                                    Domain=unique(AnalyticalPopulationEstimateData$DomainVariables$Domain))
@@ -1787,6 +1799,7 @@ ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, Stox
   }
   
   if (Method == "GrandMean"){
+    browser()
     stop("Not implemented")
     # if GrandMean: put in overall frequecny for domains and overall mean for all variables
   }

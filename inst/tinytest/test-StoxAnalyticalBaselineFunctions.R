@@ -588,7 +588,6 @@ expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundan
 # Test expanding along a single domain variable
 land <- RstoxFDA::CatchLotteryLandingExample
 stationDesign <- RstoxFDA::CatchLotterySamplingExample
-stationDesign$StratificationVariables$Frame <- "Sampling frame"
 ex <- RstoxFDA::CatchLotteryExample
 ex$Haul$Gear[ex$Haul$Gear=="3600"] <- "53"
 ex$Haul$Gear[ex$Haul$Gear=="3700"] <- "53"
@@ -610,9 +609,56 @@ expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$Stratific
 expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
 
 # Test expanding along several variables for both domain and stratification
-#warning("Add test along several domain and stratification variables")
 
-# Test Grand mean option
+#add stratification columns to landing
+land <- RstoxFDA::CatchLotteryLandingExample
+land$Landing$FrameVar1 <- "Sampling frame 1"
+land$Landing$FrameVar1[1:300] <- "OutOfFrame 1"
+land$Landing$FrameVar2 <- "Sampling frame 2-1"
+land$Landing$FrameVar2[500:1000] <- "Sampling frame 2-2"
+land$Landing$FrameVar2[1:150] <- "OutOfFrame 2-1"
+land$Landing$FrameVar2[150:300] <- "OutOfFrame 2-2"
+
+#add stratification columns to sampling design
+stationDesign <- RstoxFDA::CatchLotterySamplingExample
+stationDesign$StratificationVariables$FrameVar1 <- "Sampling frame"
+stationDesign$StratificationVariables$FrameVar2 <- "Sampling frame 2-1"
+stationDesign$StratificationVariables <- rbind(stationDesign$StratificationVariables,
+                                               data.table::data.table(Stratum="Nordsjo2", CountryVessel="NOR", FrameVar1="Sampling frame", FrameVar2="Sampling frame 2-2"))
+stationDesign$SelectionTable$Stratum[1:10] <- "Nordsjo2"
+stationDesign$SampleTable$N <- stationDesign$SampleTable$N - 200
+stationDesign$SampleTable$n <- stationDesign$SampleTable$n - 10
+stationDesign$SampleTable <- rbind(stationDesign$SampleTable, data.table::data.table(Stratum="Nordsjo2", N=200, n=10, SelectionMethod="Poisson", FrameDescription=""))
+
+ex <- RstoxFDA::CatchLotteryExample
+ex$Haul$Gear[ex$Haul$Gear=="3600"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3700"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3100"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3500"] <- "11"
+ex$Haul$Usage <- "2"
+ex$Haul$Usage[1:2] <- "1"
+
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear", "Usage"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrame(popEst, land, c("FrameVar1", "FrameVar2", "Gear", "Usage"), "Strict", "Unsampled")
+expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)+1)
+expect_true(nrow(expandedPopEst$Variables)>nrow(popEst$Variables)) 
+expect_true(nrow(expandedPopEst$Abundance)>nrow(popEst$Abundance))
+expect_true(nrow(expandedPopEst$AbundanceCovariance)> nrow(popEst$Abundance))
+expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(expandedPopEst$AbundanceCovariance)*3) #three variable combinations
+expect_true(nrow(expandedPopEst$DomainVariables)>nrow(popEst$DomainVariables))
+expect_true(nrow(expandedPopEst$StratificationVariables)>nrow(popEst$StratificationVariables))
+expect_equal(length(unique(expandedPopEst$StratificationVariables$Stratum)), length(unique(popEst$StratificationVariables$Stratum))+1)
+expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+
+
+#
+# Test Grand mean option for frame expansion
+#
+#browser()
 #warning("Add test for Grand Mean, expanding along several domain and stratification variables")
 
 #stop("Test collapseStrata with both HH and HT")
