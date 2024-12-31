@@ -653,7 +653,7 @@ expect_true(nrow(expandedPopEst$DomainVariables)>nrow(popEst$DomainVariables))
 expect_true(nrow(expandedPopEst$StratificationVariables)>nrow(popEst$StratificationVariables))
 expect_equal(length(unique(expandedPopEst$StratificationVariables$Stratum)), length(unique(popEst$StratificationVariables$Stratum))+1)
 expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
-
+expect_equal(sum(expandedPopEst$Abundance$Frequency,na.rm=T), sum(popEst$Abundance$Frequency))
 
 #
 # Test Stratum mean option for frame expansion
@@ -691,8 +691,8 @@ srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualA
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear", "Usage"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
-expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrame(popEst, land, c("FrameVar1", "FrameVar2", "Gear", "Usage"), "StratumMean", "Unsampled", "PSU-stratum:Nordsjo Lower-stratum:sild'G05/161722.G05/126417/Clupea harengus", c("IndividualAge"))
-browser()
+expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrame(popEst, land, c("FrameVar1", "FrameVar2", "Gear", "Usage"), "StratumMean", "Unsampled", "PSU-stratum:Nordsjo Lower-stratum:sild'G05/161722.G05/126417/Clupea harengus")
+
 expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)+1)
 expect_true(nrow(expandedPopEst$Variables)>nrow(popEst$Variables)) 
 expect_true(nrow(expandedPopEst$Abundance)>nrow(popEst$Abundance))
@@ -701,9 +701,8 @@ expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(expandedPopEst$Abund
 expect_true(nrow(expandedPopEst$DomainVariables)>nrow(popEst$DomainVariables))
 expect_true(nrow(expandedPopEst$StratificationVariables)>nrow(popEst$StratificationVariables))
 expect_equal(length(unique(expandedPopEst$StratificationVariables$Stratum)), length(unique(popEst$StratificationVariables$Stratum))+1)
-expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+expect_true(sum(expandedPopEst$Abundance$Frequency,na.rm=T)>sum(popEst$Abundance$Frequency))
 
-browser()
 
 
 #stop("Test collapseStrata with both HH and HT")

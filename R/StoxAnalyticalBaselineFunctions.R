@@ -1622,38 +1622,49 @@ fillStrict <- function(extendedAnalyticalPopulationEstimateData){
   return(extendedAnalyticalPopulationEstimateData)
 }
 
-#' Calculates domain means for selected sourceDomainColumns
-#' @noRd
-getDomainMeans <- function(AnalyticalPopulationEstimateData, SourceStratum, SourceDomainColumns){
-  domainMeanFrequency <- AnalyticalPopulationEstimateData$Abundance[AnalyticalPopulationEstimateData$Abundance$Stratum == SourceStratum,]
-  domainMeanFrequency <- merge(domainMeanFrequency, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
-  domainMeanFrequency[,list(Frequency=sum(Frequency)), by=SourceDomainColumns]
-  
-  stop("Need to think a bit more. Do we really need this hazzle.")
-  browser()
-}
 
-#' Fills in unsampled strata and domains, according to 'StratumMean' after new domains and new strata has been inferred and added to the estimation object
+#' Fills in unsampled strata, according to 'StratumMean' after new domains and new strata has been inferred and added to the estimation object
 #' @noRd
-fillStratumMean <- function(extendedAnalyticalPopulationEstimateData, SourceStratum, domainMeans, UnsampledStratum){
+fillStratumMean <- function(extendedAnalyticalPopulationEstimateData, SourceStratum, UnsampledStratum){
   
-  abundance <- extendedAnalyticalPopulationEstimateData$Abundance
+  abundance <- extendedAnalyticalPopulationEstimateData$Abundance[
+    extendedAnalyticalPopulationEstimateData$Abundance$Stratum == SourceStratum,]
   abundance$Stratum <- UnsampledStratum
   abundance$Abundance <- as.numeric(NA)
   
-  browser()
+  variables <- extendedAnalyticalPopulationEstimateData$Variables[
+    extendedAnalyticalPopulationEstimateData$Variables$Stratum == SourceStratum,]
+  variables$Total <- as.numeric(NA)
+  variables$Stratum <- UnsampledStratum
+  
+  abundCovar <- extendedAnalyticalPopulationEstimateData$AbundanceCovariance[
+    extendedAnalyticalPopulationEstimateData$AbundanceCovariance$Stratum == SourceStratum,]
+  abundCovar$AbundanceCovariance <- as.numeric(NA)
+  abundCovar$Stratum <- UnsampledStratum
+  
+  variableCovar <- extendedAnalyticalPopulationEstimateData$VariablesCovariance[
+    extendedAnalyticalPopulationEstimateData$VariablesCovariance$Stratum == SourceStratum,]
+  variableCovar$TotalCovariance <- as.numeric(NA)
+  variableCovar$Stratum <- UnsampledStratum
+  
+  extendedAnalyticalPopulationEstimateData$Abundance <- rbind(extendedAnalyticalPopulationEstimateData$Abundance, abundance)
+  extendedAnalyticalPopulationEstimateData$Variables <- rbind(variables, extendedAnalyticalPopulationEstimateData$Variables)
+  extendedAnalyticalPopulationEstimateData$AbundanceCovariance <- rbind(extendedAnalyticalPopulationEstimateData$AbundanceCovariance, abundCovar)
+  extendedAnalyticalPopulationEstimateData$VariablesCovariance <- rbind(variableCovar, extendedAnalyticalPopulationEstimateData$VariablesCovariance)
+  
+  return(extendedAnalyticalPopulationEstimateData)
 }
 
 #' Extends estimate beyond sampling frame
 #' @description
-#'  Infer estimates to parts of the fishery / target population that was not sampled.
-#'  That is strata not covered by the sampling frame and domains that did not get sampled, but are known to be populated in census data.
-#'  Landing data is taken to be census.
+#'  Infer estimates to parts of the fishery / target population that was not covered by sampling programs.
+#'  That is strata not covered by the sampling frame, but are known to be populated in census data (landing data).
+#'  These are pragmatic approximations, without statistical justification.
 #' @details
 #'  This function only infers precence of domains and strata from census-data, and provide options for replacing missing estimates (NA) with some pragmatic approximations.
-#'  Any estimates already provided is not changed. Domains that are not sampled are in design-based estimation imlied to have estimates of 0 abundance, total and frequencies, and hence unkown means.
+#'  Any estimates already provided is not changed. Domains that are not sampled are in design-based estimation implied to have estimates of 0 abundance, total and frequencies, and hence unkown means.
 #'  Corresponding variances are also zero. This function encodes unsampled domains excplitly, and may therefore introduce some estimated values that
-#'  was not explicitly provided in the input. It does not introduce landed weights, or other knowledge from landings, 
+#'  was not explicitly provided in the input, also in sampled strata. It does not introduce landed weights, or other knowledge from landings, 
 #'  except for the fact that domains and strata are present in the landings data. All inference about unkown values are inferred from the provided estimates ('AnalyticalPopulationEstimateData').
 #'  Subsequent ratio-estimation may make use of this information to also make use of total-weight information from landings (see \code{link[RstoxFDA]{AnalyticalRatioEstimate}}).
 #'  
@@ -1663,8 +1674,7 @@ fillStratumMean <- function(extendedAnalyticalPopulationEstimateData, SourceStra
 #'   Provide NA-values for all parameters of all domains that is not in the sampling frame.}
 #'  \item{StratumMean}{
 #'   Provide NA-values for abundance and total of all domains that is not in the sampling frame.
-#'   For all domains with unkown (NA or NaN) means or frequencies (whether they are in sampling frame or not); 
-#'   set means, freuquencies, and corresponding variance to the mean over selected domain variables in a sampled strata.}
+#'   Set means, freuquencies, and corresponding variance to the same values as in a sampled strata.}
 #'  }
 #'  For all Methods, 0 abundance, frequency and total estimates (as well as corresponding covariances) are inferred for unsampled domains in the sampling frame.
 #'  
@@ -1675,18 +1685,25 @@ fillStratumMean <- function(extendedAnalyticalPopulationEstimateData, SourceStra
 #'  will be added as one unsampled stratum with the name provided by 'UnsampledStratum'. Inferred statistics will be reported for all domains for this stratum,
 #'  including any domains added by this function.
 #'  
+#'  Inference about unsampled strata is not justified by sampling. It may be considered applicable if the following applies:
+#'  \itemize{
+#'    \item Other considerations inidcate that frequencies and means should be similar between the same domains
+#'     in the unsampeld stratum and the source stratum.
+#'    \item The unsampled stratum constitute a small volume, compared to sampled strata.
+#'     This can be inspected with \code{\link[RstoxFDA]{ReportFdaSampling}}.
+#'  }
+#'  
 #' @param AnalyticalPopulationEstimateData Estimates for the sampling frame
 #' @param StoxLandingData Landing data for the entire fishery / target population
 #' @param LandingPartition vector of variables in StoxLandingData that should be used to partition the fishery, must be Stratification Variables or Domain Variables in 'AnalyticalPopulationEstimateData'
 #' @param Method method of inference beyond sampling frame.
 #' @param UnsampledStratum name to use for unsamled stratum
 #' @param SourceStratum name of the stratum to get means and frequencies for the Method 'StratumMean'
-#' @param SourceDomainVariables name of the domain variables to get means and frequencies for the Method 'StratumMean'
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with parameters for unsampled stratum
 #' @md
 #' @concept Analytical estimation
-#' @noRd
-ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, StoxLandingData, LandingPartition, Method=c("Strict", "StratumMean"), UnsampledStratum=character(), SourceStratum=character(), SourceDomainVariables=character()){
+#' @export
+ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, StoxLandingData, LandingPartition, Method=c("Strict", "StratumMean"), UnsampledStratum=character(), SourceStratum=character()){
   
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")
@@ -1695,12 +1712,8 @@ ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, Stox
   checkMandatory(UnsampledStratum, "UnsampledStratum")
   if (Method == "StratumMean"){
     checkMandatory(SourceStratum, "SourceStratum")
-    checkMandatory(SourceDomainVariables, "SourceDomainVariables")
     if (!(SourceStratum %in% AnalyticalPopulationEstimateData$StratificationVariables$Stratum)){
       stop(paste("SourceStratum", SourceStratum, "is not a valid Stratum in 'AnalyticalPopulationEstimateData'"))
-    }
-    if (!(all(SourceDomainVariables %in% names(AnalyticalPopulationEstimateData$DomainVariables)))){
-      stop("All SourceDomainVariables must be DomainVariables in 'AnalyticalPopulationEstimateData'")
     }
   }
   
@@ -1838,8 +1851,7 @@ ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, Stox
   }
   
   else if (Method == "StratumMean"){
-    domainMeans <- getDomainMeans(AnalyticalPopulationEstimateData, SourceStratum, SourceDomainVariables)
-    return(fillStratumMean(extendedAnalyticalPopulationEstimateData, SourceStratum, domainMeans, UnsampledStratum))
+    return(fillStratumMean(extendedAnalyticalPopulationEstimateData, SourceStratum, UnsampledStratum))
   }
   
   else{
