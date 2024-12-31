@@ -1860,6 +1860,17 @@ ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, Stox
 
 }
 
+#' Infer means for zero-abundance domains
+#' 
+#' @noRD
+ExtendDomainCovarage <- function(AnalyticalPopulationEstimateData, DomainMarginVariables){
+  #allow replacin 0-abundance means by the mean over non-zero abundance domains that have different values for the 'DomainMarginVariables'
+  # e.g. replace any 0-abundance mean in Q1 with mean(Q2 and Q3 if Q2 and Q3 have abdunance). 
+  #DomainMarginVariables may be combinations of variables
+  # e.g replace any 0-abundance mean in Q1 trawl with mean(Q1-gear and Q3-trawl, etc. where these have abundance)
+  #implement and document with formula.
+}
+
 #' @noRd
 ProbabilisticSuperIndividuals <- function(StoxBioticData, PSUSamplingParametersData, IndividualSamplingParametersData){
   
