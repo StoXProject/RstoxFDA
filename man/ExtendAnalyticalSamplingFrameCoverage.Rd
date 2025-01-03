@@ -14,7 +14,7 @@ ExtendAnalyticalSamplingFrameCoverage(
 )
 }
 \arguments{
-\item{AnalyticalPopulationEstimateData}{Estimates for the sampling frame}
+\item{AnalyticalPopulationEstimateData}{\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with Estimates for the sampling frame}
 
 \item{StoxLandingData}{Landing data for the entire fishery / target population}
 
