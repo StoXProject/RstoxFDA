@@ -1,6 +1,5 @@
 # RstoxFDA
 ![R-CMD-check](https://github.com/StoXProject/RstoxFDA/workflows/R-CMD-check/badge.svg)
-[![Codecov test coverage](https://codecov.io/gh/StoxProject/RstoxFDA/branch/master/graph/badge.svg)](https://codecov.io/gh/StoxProject/RstoxFDA?branch=master)
 
 Fisheries Dependent Analysis with Rstox. Documentation can be found at: https://stoxproject.github.io/RstoxFDA/index.html . Functions, data formats, and data objects are documented under 'Reference' while tutorials to get started are provided under 'Articles'. 
 
@@ -59,10 +58,10 @@ We are still in the process of developing a policy for exactly which versions of
 
 Currently the latest release/pre-release of RstoxFDA is being tested for the following R versions:
 
-* R 4.2 (mac, linux, windows)
 * R 4.3 (mac, linux, windows)
+* R 4.4 (mac, linux, windows)
 
 and is tested with Reca for the following R versions:
 
-* R 4.2 (mac, linux, windows)
 * R 4.3 (linux, windows)
+* R 4.4 (linux, windows)

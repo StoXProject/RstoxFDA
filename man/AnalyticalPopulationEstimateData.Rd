@@ -35,8 +35,8 @@ Analytical estimates for a population
  AbundanceCovariance
  \describe{
    \item{Stratum}{The stratum that covariances are provided for.}
-   \item{Domain1}{A domain that covariances are provided for.}
-   \item{Domain2}{A domain that covariances are provided for.}
+   \item{Domain1}{A domain that covariances are provided for. Unique, given Stratum}
+   \item{Domain2}{A domain that covariances are provided for. Unique, given Stratum and Domain 1.}
    \item{AbundanceCovariance}{The estimated covariance of abundance between Domain1 and Domain2.}
    \item{FrequencyCovariance}{The estimated covariance of frequency between Domain1 and Domain2.}
  }
@@ -44,10 +44,10 @@ Analytical estimates for a population
  VariableCovariance
  \describe{
    \item{Stratum}{The stratum that covariances are provied for.}
-   \item{Domain1}{A domain that covariances are provided for.}
-   \item{Domain2}{A domain that covariances are provided for.}
-   \item{Variable1}{A variable that covariances are provided for.}
-   \item{Variable2}{A variable that covariances are provided for.}
+   \item{Domain1}{A domain that covariances are provided for. Unique, given Stratum}
+   \item{Domain2}{A domain that covariances are provided for. Unique, given Stratum and Domain 1.}
+   \item{Variable1}{A variable that covariances are provided for. Unique, given Stratum and domains.}
+   \item{Variable2}{A variable that covariances are provided for. Unique, given Stratum, domains and Variable1.}
    \item{TotalCovariance}{The estimated covariance of total value of Variable1 in Domain1 and Variable2 in Domain2}
    \item{MeanCovariance}{The estimated covariance of the mean value of Variable1 in Domain1 and Variable2 in Domain2}
  }

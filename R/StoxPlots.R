@@ -108,18 +108,19 @@ PlotFisheriesOverviewSpatial <- function(ReportFdaLandingData, StratumPolygon, A
     stop("Plot cannot be construceted for more than one grouping variable in 'ReportFdaLandingData'")
   }
   
-  if (!all(ReportFdaLandingData$FisheriesLandings$Area %in% StratumPolygon$StratumName)){
+  groupvars <- ReportFdaLandingData$GroupingVariables$GroupingVariables
+  if (!all(ReportFdaLandingData$FisheriesLandings[[groupvars]] %in% StratumPolygon$StratumName)){
     stop(paste("The provided polygons does not include all areas in ", ReportFdaLandingData$GroupingVariables$GroupingVariables[[1]]))
   }
   
   ftab <- ReportFdaLandingData$FisheriesLandings
-  groupvars <- ReportFdaLandingData$GroupingVariables$GroupingVariables[ReportFdaLandingData$GroupingVariables$GroupingVariables != "Area"]
+  
   
   sfPoly <- sf::st_as_sf(StratumPolygon)
   sfPoly$area <- sf::st_area(sfPoly)
   
   sfPoly <- merge(sfPoly, ReportFdaLandingData
-                $FisheriesLandings, by.y="Area", by.x="StratumName", all.x=T)
+                $FisheriesLandings, by.y=groupvars, by.x="StratumName", all.x=T)
   
   sfPoly$CatchDensity <- sfPoly$LandedRoundWeight / as.numeric(sfPoly$area)
   sfPoly$CatchDensity[sfPoly$CatchDensity==0] <- NA
