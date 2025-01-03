@@ -558,6 +558,50 @@ filt2 <- popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
 #
+# Test domain coverage expansion
+#
+
+land <- RstoxFDA::CatchLotteryLandingExample
+stationDesign <- RstoxFDA::CatchLotterySamplingExample
+ex <- RstoxFDA::CatchLotteryExample
+ex$Haul$Gear[ex$Haul$Gear=="3600"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3700"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3100"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3500"] <- "53"
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+expandedPopEst <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "Strict", "Gear")
+
+expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary))
+expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
+expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
+expect_equal(nrow(expandedPopEst$AbundanceCovariance), (nrow(popEst$Abundance)*3)*(nrow(popEst$Abundance)*3-1)/2+nrow(popEst$Abundance)*3) #all domain combinations
+expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(expandedPopEst$AbundanceCovariance)*3) #three variable combinations
+expect_equal(nrow(expandedPopEst$DomainVariables), nrow(popEst$DomainVariables)*3)
+expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$StratificationVariables))
+expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+
+eps <- 1e-3
+expandedPopEst <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "StratumMean", "Gear", eps)
+expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary))
+expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
+expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
+expect_equal(nrow(expandedPopEst$AbundanceCovariance), (nrow(popEst$Abundance)*3)*(nrow(popEst$Abundance)*3-1)/2+nrow(popEst$Abundance)*3) #all domain combinations
+expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(expandedPopEst$AbundanceCovariance)*3) #three variable combinations
+expect_equal(nrow(expandedPopEst$DomainVariables), nrow(popEst$DomainVariables)*3)
+expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$StratificationVariables))
+expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+totalFreqDiff <- sum(expandedPopEst$Abundance$Frequency,na.rm=T)- sum(popEst$Abundance$Frequency)
+expect_true(totalFreqDiff < eps)
+expect_true(sum(expandedPopEst$Variables$Mean) > sum(popEst$Variables$Mean))
+expect_true(sum(is.na(expandedPopEst$Abundance$Abundance))>0)
+expect_true(sum(is.na(popEst$Abundance$Abundance))==0)
+expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+
+#
 # Test sample frame expansion
 #
 land <- RstoxFDA::CatchLotteryLandingExample
@@ -575,7 +619,7 @@ popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEst, land, "IndividualRoundWeight", "MeanDomainWeight", "Frame")
 expect_equal(nrow(ratioEst$Variables), nrow(popEst$Variables))
 
-expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrame(popEst, land, "Frame", "Strict", "Unsampled")
+expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(popEst, land, "Frame", "Strict", "Unsampled")
 expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)*2)
 expect_equal(nrow(expandedPopEst$Abundance), nrow(popEst$Abundance)*2)
 expect_equal(nrow(expandedPopEst$Variables), nrow(popEst$Variables)*2)
@@ -583,29 +627,6 @@ expect_equal(nrow(expandedPopEst$AbundanceCovariance), nrow(popEst$AbundanceCova
 expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(popEst$VariablesCovariance)*2)
 expect_equal(nrow(expandedPopEst$DomainVariables), nrow(popEst$DomainVariables))
 expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$StratificationVariables)*2)
-expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
-
-# Test expanding along a single domain variable
-land <- RstoxFDA::CatchLotteryLandingExample
-stationDesign <- RstoxFDA::CatchLotterySamplingExample
-ex <- RstoxFDA::CatchLotteryExample
-ex$Haul$Gear[ex$Haul$Gear=="3600"] <- "53"
-ex$Haul$Gear[ex$Haul$Gear=="3700"] <- "53"
-ex$Haul$Gear[ex$Haul$Gear=="3100"] <- "53"
-ex$Haul$Gear[ex$Haul$Gear=="3500"] <- "53"
-stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
-srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
-psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear"))
-popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
-
-expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrame(popEst, land, "Gear", "Strict", "Unsampled")
-expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary))
-expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
-expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
-expect_equal(nrow(expandedPopEst$AbundanceCovariance), (nrow(popEst$Abundance)*3)*(nrow(popEst$Abundance)*3-1)/2+nrow(popEst$Abundance)*3) #all domain combinations
-expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(expandedPopEst$AbundanceCovariance)*3) #three variable combinations
-expect_equal(nrow(expandedPopEst$DomainVariables), nrow(popEst$DomainVariables)*3)
-expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$StratificationVariables))
 expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
 
 # Test expanding along several variables for both domain and stratification
@@ -643,7 +664,8 @@ srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualA
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear", "Usage"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
-expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrame(popEst, land, c("FrameVar1", "FrameVar2", "Gear", "Usage"), "Strict", "Unsampled")
+domainExpanded <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "Strict", c("Gear", "Usage"), eps)
+expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(domainExpanded, land, c("FrameVar1", "FrameVar2"), "Strict", "Unsampled")
 expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)+1)
 expect_true(nrow(expandedPopEst$Variables)>nrow(popEst$Variables)) 
 expect_true(nrow(expandedPopEst$Abundance)>nrow(popEst$Abundance))
@@ -691,7 +713,8 @@ srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualA
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear", "Usage"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
-expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrame(popEst, land, c("FrameVar1", "FrameVar2", "Gear", "Usage"), "StratumMean", "Unsampled", "PSU-stratum:Nordsjo Lower-stratum:sild'G05/161722.G05/126417/Clupea harengus")
+domainExpanded <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "StratumMean", c("Gear", "Usage"), eps)
+expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(domainExpanded, land, c("FrameVar1", "FrameVar2"), "SetToStratum", "Unsampled", "PSU-stratum:Nordsjo Lower-stratum:sild'G05/161722.G05/126417/Clupea harengus")
 
 expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)+1)
 expect_true(nrow(expandedPopEst$Variables)>nrow(popEst$Variables)) 
@@ -703,7 +726,7 @@ expect_true(nrow(expandedPopEst$StratificationVariables)>nrow(popEst$Stratificat
 expect_equal(length(unique(expandedPopEst$StratificationVariables$Stratum)), length(unique(popEst$StratificationVariables$Stratum))+1)
 expect_true(sum(expandedPopEst$Abundance$Frequency,na.rm=T)>sum(popEst$Abundance$Frequency))
 
-
+warning("Add some tests of covariances")
 
 #stop("Test collapseStrata with both HH and HT")
 #stop("Implement DefineHierarchy.")
