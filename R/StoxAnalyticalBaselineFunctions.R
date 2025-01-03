@@ -1759,8 +1759,41 @@ ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateDa
 #' Fill in stratum means for unsampled domain variables
 #' 
 #' @noRd
-fillDomainStratumMean <- function(originalEstimate, zeroDomainEstimate, DomainVariables, epsilon){
+fillDomainStratumMean <- function(zeroDomainEstimate, DomainVariables, epsilon){
 
+  #
+  # construct original estimate (only non-zero marginal domains)
+  #
+  
+  abundanceTable <- merge(zeroDomainEstimate$Abundance, zeroDomainEstimate$DomainVariables, by="Domain")
+  abundanceByDomain <- abundanceTable[,list(totalAbundance=sum(Abundance, na.rm=T)), by=c("Stratum", DomainVariables)]
+  nonzeroAbundance <- abundanceByDomain[get("totalAbundance")>epsilon,]
+  nonzeroAbundanceDomains <- merge(nonzeroAbundance, zeroDomainEstimate$DomainVariables, by=DomainVariables)
+  
+  originalEstimate <- zeroDomainEstimate
+  originalEstimate$Abundance <- originalEstimate$Abundance[paste(originalEstimate$Abundance$Stratum,
+                                                                 originalEstimate$Abundance$Domain) %in%
+                                                             paste(nonzeroAbundanceDomains$Stratum,
+                                                                   nonzeroAbundanceDomains$Domain),]
+  
+  originalEstimate$Variables <- originalEstimate$Variables[paste(originalEstimate$Variables$Stratum,
+                                                                 originalEstimate$Variables$Domain) %in%
+                                                             paste(nonzeroAbundanceDomains$Stratum,
+                                                                   nonzeroAbundanceDomains$Domain),]
+  
+  originalEstimate$AbundanceCovariance <- originalEstimate$AbundanceCovariance[paste(originalEstimate$AbundanceCovariance$Stratum,
+                                                                 originalEstimate$AbundanceCovariance$Domain) %in%
+                                                             paste(nonzeroAbundanceDomains$Stratum,
+                                                                   nonzeroAbundanceDomains$Domain),]
+  
+  originalEstimate$VariablesCovariance <- originalEstimate$VariablesCovariance[paste(originalEstimate$VariablesCovariance$Stratum,
+                                                                                     originalEstimate$VariablesCovariance$Domain) %in%
+                                                                                 paste(nonzeroAbundanceDomains$Stratum,
+                                                                                       nonzeroAbundanceDomains$Domain),]
+  originalEstimate$DomainVariables <- originalEstimate$DomainVariables[originalEstimate$DomainVariables$Domain %in%
+                                                                                       nonzeroAbundanceDomains$Domain,]
+  
+  
   keepVariables<-names(originalEstimate$DomainVariables)[!(names(originalEstimate$DomainVariables) %in% c("Domain", DomainVariables))]
   
   #
@@ -1916,7 +1949,7 @@ fillDomainStratumMean <- function(originalEstimate, zeroDomainEstimate, DomainVa
   return(zeroDomainEstimate)
 }
 
-#' Infer means and frequencies for zero-abundance domains
+#' Interpolate means and frequencies for zero-abundance domains
 #' 
 #' @noRd
 InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateData, StoxLandingData, Method=c("Strict", "StratumMean"), DomainMarginVariables, Epsilon=numeric()){
@@ -2043,7 +2076,7 @@ InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateDat
   }
   
   if (Method == "StratumMean"){
-    return(fillDomainStratumMean(AnalyticalPopulationEstimateData, extendedAnalyticalPopulationEstimateData, DomainMarginVariables, Epsilon))    
+    return(fillDomainStratumMean(extendedAnalyticalPopulationEstimateData, DomainMarginVariables, Epsilon))    
   }
 
   else{

@@ -726,7 +726,11 @@ expect_true(nrow(expandedPopEst$StratificationVariables)>nrow(popEst$Stratificat
 expect_equal(length(unique(expandedPopEst$StratificationVariables$Stratum)), length(unique(popEst$StratificationVariables$Stratum))+1)
 expect_true(sum(expandedPopEst$Abundance$Frequency,na.rm=T)>sum(popEst$Abundance$Frequency))
 
-warning("Add some tests of covariances")
+nvar <- length(unique(expandedPopEst$VariablesCovariance$Variable1))
+ndomain <- length(unique(expandedPopEst$VariablesCovariance$Domain1))
+ncombo <- (nvar*(nvar+1)/2)*(ndomain*(ndomain+1)/2)
+rowsByStratum <- expandedPopEst$VariablesCovariance[,.N,by="Stratum"]
+expect_true(all(rowsByStratum$N==ncombo))
 
 #stop("Test collapseStrata with both HH and HT")
 #stop("Implement DefineHierarchy.")
