@@ -732,6 +732,4 @@ ncombo <- (nvar*(nvar+1)/2)*(ndomain*(ndomain+1)/2)
 rowsByStratum <- expandedPopEst$VariablesCovariance[,.N,by="Stratum"]
 expect_true(all(rowsByStratum$N==ncombo))
 
-#stop("Test collapseStrata with both HH and HT")
-#stop("Implement DefineHierarchy.")
-#stop("Make tests for all estimated parameters with and without domain and stratification)
+warning("Some errors in domain interpolation where discovered when detailing documentation. Add proper tests for means, frequencies, frequency-covariance and mean-covariance.")
