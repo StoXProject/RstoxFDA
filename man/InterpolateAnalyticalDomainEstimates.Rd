@@ -76,14 +76,15 @@ with covariance:
 \deqn{\widehat{CoVar}(\widehat{f}^{(s,d_{1})}, \widehat{f}^{(s,d_{2})})=\sum_{m \in M}\widehat{CoVar}(\widehat{f}^{(s,d{1}+m)}, \widehat{f}^{(s,d_{2}+m)})}
 }
 \item{mean}{
-\deqn{\widehat{\mu}^{(s,d,v)}=\frac{1}{\widehat{f}^{(s,d)}}\sum_{m \in M}\widehat{f}^{(s,d+m)}\widehat{\mu}^{(s,d+m,v)}}
-where \eqn{v} denote the variable that the mean is estimated for.
+\deqn{\widehat{\mu}^{(s,d,v)}=\frac{1}{\sum_{m \in M}I(s,d+m)\widehat{f}^{(s,d+m)}}\sum_{m \in M}I(s,d+m)\widehat{f}^{(s,d+m)}\widehat{\mu}^{(s,d+m,v)}}
+where \eqn{v} denote the variable that the mean is estimated for, and \eqn{I(s,d)} is an indicator functon that is 1
+if a mean is defined for domain \eqn{d} in stratum \eqn{s}, otherwise 0.
 
 with covariance:
 
 \deqn{\widehat{CoVar}(\widehat{\mu}^{(s,d_{1},v_{1})}, \widehat{\mu}^{(s,d_{2},v_{2})})=\frac{1}{\sum_{m \in M}z^{s,d_{1},d_{2},m}}\sum_{m \in M}z^{s,d_{1},d_{2},m}\widehat{CoVar}(\widehat{\mu}^{(s,d_{1}+m, v_{1})}, \widehat{\mu}^{(s,d_{2}+m, v_{2})})}
 where:
-\deqn{z^{s,d_{1},d_{2},m}=\widehat{f}^{(s,d_{1}+m)}\widehat{f}^{(s,d_{2}+m)}}
+\deqn{z^{s,d_{1},d_{2},m}=I(s,d_{1}+m)I(s,d_{2}+m)\widehat{f}^{(s,d_{1}+m)}\widehat{f}^{(s,d_{2}+m)}}
 }
 }
 

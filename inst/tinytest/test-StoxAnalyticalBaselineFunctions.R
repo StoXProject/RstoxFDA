@@ -732,4 +732,45 @@ ncombo <- (nvar*(nvar+1)/2)*(ndomain*(ndomain+1)/2)
 rowsByStratum <- expandedPopEst$VariablesCovariance[,.N,by="Stratum"]
 expect_true(all(rowsByStratum$N==ncombo))
 
-warning("Some errors in domain interpolation where discovered when detailing documentation. Add proper tests for means, frequencies, frequency-covariance and mean-covariance.")
+#check that age-proportions in new domains are all equal
+freqtab <- merge(expandedPopEst$Abundance, expandedPopEst$DomainVariables)
+freqTabIndGear <- freqtab[,list(FrequencyInd=mean(Frequency)), by=c("IndividualAge", "Gear","Usage")]
+freqTabGear <- freqTabIndGear[,list(totalFreqGear=sum(FrequencyInd)),by=c("Gear", "Usage")]
+freqTabIndGear <- merge(freqTabIndGear, freqTabGear, by=c("Gear", "Usage"))
+freqTabIndGear$prop <- freqTabIndGear$FrequencyInd/freqTabIndGear$totalFreqGear
+freqTabIndGearwOdomains <- merge(freqTabIndGear, popEst$DomainVariables, by=c("IndividualAge", "Gear", "Usage"), all.x=T)
+freqTabIndNewDomains <- freqTabIndGearwOdomains[is.na(freqTabIndGearwOdomains$Domain),]
+propVars <- freqTabIndNewDomains[,list(propVar=var(prop)),by="IndividualAge"]
+expect_true(all(propVars$propVar==0))
+
+#check that new domains amount to practically zero proportion
+propByNewDom <- freqTabIndGearwOdomains[,list(totalIndFreq=sum(FrequencyInd)), by=list(newDomain=!is.na(get("Domain")))]
+expect_true(propByNewDom$totalIndFreq[!propByNewDom$newDomain] / sum(propByNewDom$totalIndFreq)<1e-2)
+
+#check that imputed means are reasonable
+meantab <- merge(expandedPopEst$Variables, expandedPopEst$DomainVariables)
+meantabwOdomains <- merge(meantab, popEst$DomainVariables, by=c("Gear", "Usage", "IndividualAge"), all.x=T)
+meantabwOdomains <- meantabwOdomains[order(meantabwOdomains$Mean, meantabwOdomains$Domain.y),]
+maxDomains <- meantabwOdomains[!duplicated(paste(meantabwOdomains$IndividualAge,meantabwOdomains$Variable)),]
+#check that highest mean for each age group is not an imputed domain
+expect_true(all(!is.na(maxDomains$Domain.y)))
+meantabwOdomains <- meantabwOdomains[order(meantabwOdomains$Mean*(-1), meantabwOdomains$Domain.y),]
+minDomains <- meantabwOdomains[!duplicated(paste(meantabwOdomains$IndividualAge,meantabwOdomains$Variable)),]
+#check that lowest mean for each age group is not an imputed domain
+expect_true(all(!is.na(minDomains$Domain.y)))
+
+#check that frequency cvs are in reasonable range
+cvtabFreq <- merge(expandedPopEst$AbundanceCovariance[Domain1==Domain2], expandedPopEst$Abundance, by.x=c("Stratum", "Domain1"), by.y=c("Stratum", "Domain"))
+cvtabFreq$cv <- sqrt(cvtabFreq$FrequencyCovariance) / cvtabFreq$Frequency
+#check that unsampled domain has gotten a cv
+expect_true(!is.na(cvtabFreq$cv[cvtabFreq$Domain1=="Not sampled:  11/1/ 1" & cvtabFreq$Stratum=="Unsampled"]))
+cvtabFreq <- merge(cvtabFreq, expandedPopEst$DomainVariables, by.x=c("Domain1"), by.y=c("Domain"))
+expect_true(mean(cvtabFreq$cv[cvtabFreq$IndividualAge==2],na.rm=T)<.3)
+
+#check that frequency cvs are in reasonable range
+cvtabMean <- merge(expandedPopEst$VariablesCovariance[Domain1==Domain2 & Variable1==Variable2], expandedPopEst$Variables, by.x=c("Stratum", "Domain1", "Variable1"), by.y=c("Stratum", "Domain", "Variable"))
+cvtabMean$cv <- sqrt(cvtabMean$MeanCovariance) / cvtabMean$Mean
+#check that unsampled domain has gotten a cv
+expect_true(!is.na(cvtabMean$cv[cvtabMean$Domain1=="Not sampled:  11/1/ 1" & cvtabMean$Stratum=="Unsampled" & cvtabMean$Variable1=="IndividualRoundWeight"]))
+cvtabMean <- merge(cvtabMean, expandedPopEst$DomainVariables, by.x=c("Domain1"), by.y=c("Domain"))
+expect_true(mean(cvtabMean$cv[cvtabMean$IndividualAge==2],na.rm=T)<.3)

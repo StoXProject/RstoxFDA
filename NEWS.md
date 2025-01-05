@@ -1,4 +1,5 @@
 # 1.5.0-9003
+* Added functions for sampling frame expansion (ExtendAnalyticalSamplingFrameCoverage), and domain interpolation (InterpolateAnalyticalDomainEstimates) (#154)
 * Changed how Stratification variables and Domain variables are matched to landings with AnalyticalRatioEstimate (# 125)
 * Replaced DefinePSUSamplingParameters (processdata) with ComputePSUSamplingParameters (no processdata) and ReadPSUSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006). (#127)
 * Replaced DefineIndividualSamplingParameters (processdata) with ComputeIndividualSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006).

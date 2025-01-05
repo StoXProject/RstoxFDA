@@ -1782,12 +1782,20 @@ fillDomainStratumMean <- function(zeroDomainEstimate, DomainVariables, epsilon){
                                                                    nonzeroAbundanceDomains$Domain),]
   
   originalEstimate$AbundanceCovariance <- originalEstimate$AbundanceCovariance[paste(originalEstimate$AbundanceCovariance$Stratum,
-                                                                 originalEstimate$AbundanceCovariance$Domain) %in%
+                                                                 originalEstimate$AbundanceCovariance$Domain1) %in%
                                                              paste(nonzeroAbundanceDomains$Stratum,
-                                                                   nonzeroAbundanceDomains$Domain),]
+                                                                   nonzeroAbundanceDomains$Domain) &
+                                                               paste(originalEstimate$AbundanceCovariance$Stratum,
+                                                                     originalEstimate$AbundanceCovariance$Domain2) %in%
+                                                               paste(nonzeroAbundanceDomains$Stratum,
+                                                                     nonzeroAbundanceDomains$Domain),]
   
   originalEstimate$VariablesCovariance <- originalEstimate$VariablesCovariance[paste(originalEstimate$VariablesCovariance$Stratum,
-                                                                                     originalEstimate$VariablesCovariance$Domain) %in%
+                                                                                     originalEstimate$VariablesCovariance$Domain1) %in%
+                                                                                 paste(nonzeroAbundanceDomains$Stratum,
+                                                                                       nonzeroAbundanceDomains$Domain) &
+                                                                                 paste(originalEstimate$VariablesCovariance$Stratum,
+                                                                                       originalEstimate$VariablesCovariance$Domain2) %in%
                                                                                  paste(nonzeroAbundanceDomains$Stratum,
                                                                                        nonzeroAbundanceDomains$Domain),]
   originalEstimate$DomainVariables <- originalEstimate$DomainVariables[originalEstimate$DomainVariables$Domain %in%
@@ -1814,16 +1822,24 @@ fillDomainStratumMean <- function(zeroDomainEstimate, DomainVariables, epsilon){
   #
   meansTable <- merge(originalEstimate$Variables, originalEstimate$Abundance, by=c("Stratum", "Domain"))
   meansTable <- merge(meansTable, originalEstimate$DomainVariables, by="Domain")
-  means <- meansTable[,list(StratumMean=sum(get("Mean")*get("Frequency"))/sum(get("Frequency"))), by=c("Stratum", "Variable", keepVariables)]
+  means <- meansTable[,list(StratumMean=sum(get("Mean")[!is.nan(get("Mean"))]*get("Frequency")[!is.nan(get("Mean"))])/sum(get("Frequency")[!is.nan(get("Mean"))])), by=c("Stratum", "Variable", keepVariables)]
   
   #
   # get mean covariance over marginal domain variables
   #
+  
   meanCovarTable <- merge(originalEstimate$VariablesCovariance, originalEstimate$DomainVariables, by.x=c("Domain1"), by.y=c("Domain"), all.x=T)
   meanCovarTable <- merge(meanCovarTable, originalEstimate$DomainVariables, by.x="Domain2", by.y="Domain", suffixes = c("1", "2"), all.x=T)
   meanCovarTable <- merge(meanCovarTable, originalEstimate$Abundance, by.x=c("Stratum", "Domain1"), by.y=c("Stratum", "Domain"), all.x=T)
   meanCovarTable <- merge(meanCovarTable, originalEstimate$Abundance, by.x=c("Stratum", "Domain2"), by.y=c("Stratum", "Domain"), , suffixes = c("1", "2"), all.x=T)
-  meanCovar <- meanCovarTable[,list(StratumMeanCovariance=sum(get("MeanCovariance")*get("Frequency1")*get("Frequency2"))/sum(get("Frequency1")*get("Frequency2"))), by=c("Stratum", "Variable1", "Variable2", paste(keepVariables, "1", sep=""), paste(keepVariables, "2", sep=""))]
+  meanCovarTable <- merge(meanCovarTable, meansTable[,.SD,.SDcol=c("Stratum", "Domain", "Variable", "Mean")], 
+                          by.x=c("Stratum", "Domain1", "Variable1"),
+                          by.y=c("Stratum", "Domain", "Variable"))
+  meanCovarTable <- merge(meanCovarTable, meansTable[,.SD,.SDcol=c("Stratum", "Domain", "Variable", "Mean")], 
+                          by.x=c("Stratum", "Domain2", "Variable2"),
+                          by.y=c("Stratum", "Domain", "Variable"), 
+                          suffixes = c("1", "2"))
+  meanCovar <- meanCovarTable[,list(StratumMeanCovariance=sum(get("MeanCovariance")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))]*get("Frequency1")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))]*get("Frequency2")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))])/sum(get("Frequency1")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))]*get("Frequency2")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))])), by=c("Stratum", "Variable1", "Variable2", paste(keepVariables, "1", sep=""), paste(keepVariables, "2", sep=""))]
   
   #
   # construct new abundance table
@@ -1891,6 +1907,7 @@ fillDomainStratumMean <- function(zeroDomainEstimate, DomainVariables, epsilon){
   #
   # construct new variables variance table
   #
+
   meansCovarNewDomains <- merge(zeroDomainEstimate$DomainVariables, meanCovar, by.x=keepVariables, by.y=paste0(keepVariables, "1"), allow.cartesian = T)
   meansCovarNewDomains <- merge(zeroDomainEstimate$DomainVariables, meansCovarNewDomains, by.x=keepVariables, by.y=paste0(keepVariables, "2"), suffixes = c("1","2"), allow.cartesian = T)
   
@@ -1999,14 +2016,15 @@ fillDomainStratumMean <- function(zeroDomainEstimate, DomainVariables, epsilon){
 #'    \deqn{\widehat{CoVar}(\widehat{f}^{(s,d_{1})}, \widehat{f}^{(s,d_{2})})=\sum_{m \in M}\widehat{CoVar}(\widehat{f}^{(s,d{1}+m)}, \widehat{f}^{(s,d_{2}+m)})}
 #'    }
 #'    \item{mean}{
-#'    \deqn{\widehat{\mu}^{(s,d,v)}=\frac{1}{\widehat{f}^{(s,d)}}\sum_{m \in M}\widehat{f}^{(s,d+m)}\widehat{\mu}^{(s,d+m,v)}}
-#'    where \eqn{v} denote the variable that the mean is estimated for.
+#'    \deqn{\widehat{\mu}^{(s,d,v)}=\frac{1}{\sum_{m \in M}I(s,d+m)\widehat{f}^{(s,d+m)}}\sum_{m \in M}I(s,d+m)\widehat{f}^{(s,d+m)}\widehat{\mu}^{(s,d+m,v)}}
+#'    where \eqn{v} denote the variable that the mean is estimated for, and \eqn{I(s,d)} is an indicator functon that is 1
+#'    if a mean is defined for domain \eqn{d} in stratum \eqn{s}, otherwise 0.
 #'    
 #'    with covariance:
 #'    
 #'    \deqn{\widehat{CoVar}(\widehat{\mu}^{(s,d_{1},v_{1})}, \widehat{\mu}^{(s,d_{2},v_{2})})=\frac{1}{\sum_{m \in M}z^{s,d_{1},d_{2},m}}\sum_{m \in M}z^{s,d_{1},d_{2},m}\widehat{CoVar}(\widehat{\mu}^{(s,d_{1}+m, v_{1})}, \widehat{\mu}^{(s,d_{2}+m, v_{2})})}
 #'    where:
-#'    \deqn{z^{s,d_{1},d_{2},m}=\widehat{f}^{(s,d_{1}+m)}\widehat{f}^{(s,d_{2}+m)}}
+#'    \deqn{z^{s,d_{1},d_{2},m}=I(s,d_{1}+m)I(s,d_{2}+m)\widehat{f}^{(s,d_{1}+m)}\widehat{f}^{(s,d_{2}+m)}}
 #'    }
 #'  }
 #'  
