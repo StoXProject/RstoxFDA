@@ -2454,6 +2454,24 @@ stoxFunctionAttributes <- list(
       DomainVariables = "domainvariableslandings"
     )
   ),
+    ExtendAnalyticalSamplingFrameCoverage = list(
+      functionType = "modelData", 
+      functionCategory = "baseline", 
+      functionOutputDataType = "AnalyticalPopulationEstimateData",
+      functionParameterDefaults = list(
+        Method = "SetToStratum",
+        UnsampledStratum = "Out-of-frame"
+      ),
+      functionParameterFormat = list(
+        LandingPartition = "stratificationvariableslandings",
+        SourceStratum = "sourcestratum"
+      ),
+      functionArgumentHierarchy = list(
+        SourceStratum = list(
+          Method = "SetToStratum"
+        )
+      )
+  ),
   
   ListBioticDifference = list(
     functionType = "modelData", 
@@ -3161,12 +3179,21 @@ processPropertyFormats <- list(
     variableTypes = "character"
   ),
   domainvariableslandings = list(
-    class = "vector", #convert to class single, if that becomes available.
+    class = "vector",
     title = "Zero or more Domain variables to match with landings", 
     possibleValues = function(AnalyticalPopulationEstimateData, StoxLandingData){
       pv <- names(AnalyticalPopulationEstimateData$StratificationVariables)
       pv <- pv[pv != "Domain"]
       pv <- pv[pv %in% names(StoxLandingData$Landing)]
+      return(pv)
+    },
+    variableTypes = "character"
+  ),
+  sourcestratum = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "Exactly one stratum to use for sampling-frame extension", 
+    possibleValues = function(AnalyticalPopulationEstimateData){
+      pv <- unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum)
       return(pv)
     },
     variableTypes = "character"
