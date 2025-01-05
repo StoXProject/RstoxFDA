@@ -2071,7 +2071,7 @@ fillDomainStratumMean <- function(zeroDomainEstimate, DomainVariables, epsilon){
 #' @md
 #' @concept Analytical estimation
 #' @export
-InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateData, StoxLandingData, Method=c("Strict", "StratumMean"), DomainMarginVariables, Epsilon=numeric()){
+InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateData, StoxLandingData, Method=c("Strict", "StratumMean"), DomainMarginVariables=character(), Epsilon=numeric()){
   
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")

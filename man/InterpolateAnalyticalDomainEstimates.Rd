@@ -8,7 +8,7 @@ InterpolateAnalyticalDomainEstimates(
   AnalyticalPopulationEstimateData,
   StoxLandingData,
   Method = c("Strict", "StratumMean"),
-  DomainMarginVariables,
+  DomainMarginVariables = character(),
   Epsilon = numeric()
 )
 }

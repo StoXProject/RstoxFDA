@@ -2472,6 +2472,23 @@ stoxFunctionAttributes <- list(
         )
       )
   ),
+  InterpolateAnalyticalDomainEstimates = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPopulationEstimateData",
+    functionParameterDefaults = list(
+      Method = "StratumMean",
+      Epsilon = 1e-4
+    ),
+    functionParameterFormat = list(
+      DomainMarginVariables = "domainvariableslandings"
+    ),
+    functionArgumentHierarchy = list(
+      Epsilon = list(
+        Method = "StratumMean"
+      )
+    )
+  ),
   
   ListBioticDifference = list(
     functionType = "modelData", 
@@ -3182,7 +3199,7 @@ processPropertyFormats <- list(
     class = "vector",
     title = "Zero or more Domain variables to match with landings", 
     possibleValues = function(AnalyticalPopulationEstimateData, StoxLandingData){
-      pv <- names(AnalyticalPopulationEstimateData$StratificationVariables)
+      pv <- names(AnalyticalPopulationEstimateData$DomainVariables)
       pv <- pv[pv != "Domain"]
       pv <- pv[pv %in% names(StoxLandingData$Landing)]
       return(pv)
