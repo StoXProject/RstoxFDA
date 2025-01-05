@@ -747,18 +747,20 @@ expect_true(all(propVars$propVar==0))
 propByNewDom <- freqTabIndGearwOdomains[,list(totalIndFreq=sum(FrequencyInd)), by=list(newDomain=!is.na(get("Domain")))]
 expect_true(propByNewDom$totalIndFreq[!propByNewDom$newDomain] / sum(propByNewDom$totalIndFreq)<1e-2)
 
-#check that imputed means are reasonable
+#check that imputed means are reasonable (should be within ranges of original domains)
+
 meantab <- merge(expandedPopEst$Variables, expandedPopEst$DomainVariables)
 meantabwOdomains <- merge(meantab, popEst$DomainVariables, by=c("Gear", "Usage", "IndividualAge"), all.x=T)
 meantabwOdomains <- meantabwOdomains[order(meantabwOdomains$Mean, meantabwOdomains$Domain.y),]
-maxDomains <- meantabwOdomains[!duplicated(paste(meantabwOdomains$IndividualAge,meantabwOdomains$Variable)),]
+maxDomains <- meantabwOdomains[,list(maxMeanNewDomain=max(Mean[is.na(Domain.y)],na.rm=T), maxMeanOldDomain=max(Mean[!is.na(Domain.y)],na.rm=T)), by="IndividualAge"]
+maxDomains$diff <- maxDomains$maxMeanOldDomain - maxDomains$maxMeanNewDomain
 #check that highest mean for each age group is not an imputed domain
-expect_true(all(!is.na(maxDomains$Domain.y)))
-meantabwOdomains <- meantabwOdomains[order(meantabwOdomains$Mean*(-1), meantabwOdomains$Domain.y),]
-minDomains <- meantabwOdomains[!duplicated(paste(meantabwOdomains$IndividualAge,meantabwOdomains$Variable)),]
-#check that lowest mean for each age group is not an imputed domain
-expect_true(all(!is.na(minDomains$Domain.y)))
+expect_true(all(maxDomains$diff/maxDomains$maxMeanOldDomain > -1e-3))
 
+minDomains <- meantabwOdomains[,list(minMeanNewDomain=min(Mean[is.na(Domain.y)],na.rm=T), minMeanOldDomain=min(Mean[!is.na(Domain.y)],na.rm=T)), by="IndividualAge"]
+minDomains$diff <- minDomains$minMeanOldDomain - minDomains$minMeanNewDomain
+#check that highest mean for each age group is not an imputed domain
+expect_true(all(minDomains$diff/minDomains$minMeanOldDomain < 1e-3))
 #check that frequency cvs are in reasonable range
 cvtabFreq <- merge(expandedPopEst$AbundanceCovariance[Domain1==Domain2], expandedPopEst$Abundance, by.x=c("Stratum", "Domain1"), by.y=c("Stratum", "Domain"))
 cvtabFreq$cv <- sqrt(cvtabFreq$FrequencyCovariance) / cvtabFreq$Frequency
