@@ -1581,47 +1581,625 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
 
 }
 
+#' Fills in unsampled strata according to 'strict' after new domains and new strata has been inferred and added to the estimation object
+#' @noRd
+fillStrict <- function(extendedAnalyticalPopulationEstimateData){
+  newAbundance <- data.table::CJ(Stratum=unique(extendedAnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
+                                 Domain=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain))
+  newAbundance <- merge(extendedAnalyticalPopulationEstimateData$Abundance, 
+                        newAbundance, all.y=T, by=c("Stratum", "Domain"))
+  
+  newVariables <- data.table::CJ(Stratum=unique(extendedAnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
+                                 Domain=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain), 
+                                 Variable=unique(extendedAnalyticalPopulationEstimateData$Variables$Variable))
+  newVariables <- merge(extendedAnalyticalPopulationEstimateData$Variables, newVariables, all.y=T, by=c("Stratum", "Domain", "Variable"))
+  
+  cross <- data.table::CJ(Domain1=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain), 
+                          Domain2=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain))
+  cross <- cross[cross$Domain1>=cross$Domain2,]
+  cross <- merge(data.table::CJ(Stratum=unique(extendedAnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
+                                Domain1=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain)),
+                 cross, by=c("Domain1"), allow.cartesian=T)
+  newAbundanceCovariance <- merge(extendedAnalyticalPopulationEstimateData$AbundanceCovariance, 
+                                  cross, by=c("Stratum", "Domain1", "Domain2"), all.y=T)
+  
+  cross <- data.table::CJ(Domain1=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain), 
+                          Variable1=unique(extendedAnalyticalPopulationEstimateData$Variables$Variable), 
+                          Domain2=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain), 
+                          Variable2=unique(extendedAnalyticalPopulationEstimateData$Variables$Variable))
+  cross <- cross[cross$Domain1>=cross$Domain2 & cross$Variable1 >= cross$Variable2]
+  cross <- merge(data.table::CJ(Stratum=unique(extendedAnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
+                                Domain1=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain)),
+                 cross, by=c("Domain1"), allow.cartesian=T)
+  newVariableCovariance <- merge(extendedAnalyticalPopulationEstimateData$VariablesCovariance, cross, 
+                                 by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2"), all.y=T)
+  
+  extendedAnalyticalPopulationEstimateData$Abundance <- newAbundance
+  extendedAnalyticalPopulationEstimateData$Variables <- newVariables
+  extendedAnalyticalPopulationEstimateData$AbundanceCovariance <- newAbundanceCovariance
+  extendedAnalyticalPopulationEstimateData$VariablesCovariance <- newVariableCovariance
+  
+  return(extendedAnalyticalPopulationEstimateData)
+}
+
+
+#' Fills in unsampled strata, according to 'SetToStratum' after new domains and new strata has been inferred and added to the estimation object
+#' @noRd
+fillSetToStratum <- function(extendedAnalyticalPopulationEstimateData, SourceStratum, UnsampledStratum){
+  
+  abundance <- extendedAnalyticalPopulationEstimateData$Abundance[
+    extendedAnalyticalPopulationEstimateData$Abundance$Stratum == SourceStratum,]
+  abundance$Stratum <- UnsampledStratum
+  abundance$Abundance <- as.numeric(NA)
+  
+  variables <- extendedAnalyticalPopulationEstimateData$Variables[
+    extendedAnalyticalPopulationEstimateData$Variables$Stratum == SourceStratum,]
+  variables$Total <- as.numeric(NA)
+  variables$Stratum <- UnsampledStratum
+  
+  abundCovar <- extendedAnalyticalPopulationEstimateData$AbundanceCovariance[
+    extendedAnalyticalPopulationEstimateData$AbundanceCovariance$Stratum == SourceStratum,]
+  abundCovar$AbundanceCovariance <- as.numeric(NA)
+  abundCovar$Stratum <- UnsampledStratum
+  
+  variableCovar <- extendedAnalyticalPopulationEstimateData$VariablesCovariance[
+    extendedAnalyticalPopulationEstimateData$VariablesCovariance$Stratum == SourceStratum,]
+  variableCovar$TotalCovariance <- as.numeric(NA)
+  variableCovar$Stratum <- UnsampledStratum
+  
+  extendedAnalyticalPopulationEstimateData$Abundance <- rbind(extendedAnalyticalPopulationEstimateData$Abundance, abundance)
+  extendedAnalyticalPopulationEstimateData$Variables <- rbind(variables, extendedAnalyticalPopulationEstimateData$Variables)
+  extendedAnalyticalPopulationEstimateData$AbundanceCovariance <- rbind(extendedAnalyticalPopulationEstimateData$AbundanceCovariance, abundCovar)
+  extendedAnalyticalPopulationEstimateData$VariablesCovariance <- rbind(variableCovar, extendedAnalyticalPopulationEstimateData$VariablesCovariance)
+  
+  return(extendedAnalyticalPopulationEstimateData)
+}
+
 #' Extends estimate beyond sampling frame
 #' @description
-#'  Infer estimates to parts of the fishery / target population that was not targeted by sampling program.
-#'  Landing data is taken to be census.
+#'  Infer estimates to parts of the fishery / target population that was not covered by sampling programs.
+#'  That is strata not covered by the sampling frame, but that are known to be populated in census data (landing data).
+#'  These are pragmatic approximations, without statistical justification.
 #' @details
-#'  Inference beyond sampling frames can be done in several ways, controlled by the argument 'Method'
+#'  This function only infers precence of unsampled strata from census-data, and provide options for some pragmatic approximations to substitute for estimates for these strata.
+#'  Any estimates already provided is not changed. The function does not introduce landed weights, or other knowledge from landings, 
+#'  except for the fact that strata are present in the landings data. All inference about unkown values are taken from the provided estimates ('AnalyticalPopulationEstimateData').
+#'  Subsequent ratio-estimation may make use of this information to also make use of total-weight information from landings (see \code{link[RstoxFDA]{AnalyticalRatioEstimate}}).
+#'  
+#'  Inference about unkown values can be done in several ways, controled by the argument 'Method'
 #'  \describe{
-#'  \item{Strict}{List all specified landing partitions. Infer zero-estimates for domains in sampling frame, that was not sampled.
-#'   Provide NA-values for all parameters of all domains that is not in the sampling frame,}
-#'  \item{GrandMean}{List all specified landing partitions. Infer zero-estimates for domains in sampling frame, that was not sampled.
-#'   For domains that are not in the sampling frame, set means, freuquencies, and corresponding variance to mean over all sampled strata.}
+#'  \item{Strict}{
+#'   Provide NA-values for all parameters of all domains that is not in the sampling frame.}
+#'  \item{SetToStratum}{
+#'   Provide NA-values for abundance and total of all domains that is not in the sampling frame.
+#'   Set means, frequencies, and corresponding variance to the same values as in a sampled strata.}
 #'  }
-#' @param AnalyticalPopulationEstimateData Estimates for the sampling frame
+#'  
+#'  For variables in 'LandingPartition' that identify Stratification Variables in 'AnalyticalPopulationEstimateData', any non-sampled landing partition
+#'  will be added as one unsampled stratum with the name provided by 'UnsampledStratum'. Inferred statistics will be reported for all domains for this stratum.
+#'  
+#'  Inference about unsampled strata is not justified by sampling. It may be considered applicable if the following applies:
+#'  \itemize{
+#'    \item Other considerations indicate that frequencies and means should be similar between the same domains
+#'     in the unsampeld stratum and the source stratum.
+#'    \item The unsampled stratum will be agregated with sampled ones, and constitute a small volume compared to sampled strata.
+#'     This can be inspected with \code{\link[RstoxFDA]{ReportFdaSampling}}.
+#'  }
+#'  
+#' @param AnalyticalPopulationEstimateData \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with Estimates for the sampling frame
 #' @param StoxLandingData Landing data for the entire fishery / target population
-#' @param LandingPartition vector of variables in StoxLandingData that should be used to partition the fishery, must be Stratification Variables or Domain Variables in 'AnalyticalPopulationEstimateData'
+#' @param LandingPartition vector of variables in StoxLandingData that should be used to partition the fishery, must be Stratification Variables in 'AnalyticalPopulationEstimateData'
 #' @param Method method of inference beyond sampling frame.
 #' @param UnsampledStratum name to use for unsamled stratum
+#' @param SourceStratum name of the stratum to get means and frequencies for the Method 'SetToStratum'
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with parameters for unsampled stratum
 #' @md
 #' @concept Analytical estimation
-#' @noRd
-ExtendAnalyticalSamplingFrame <- function(AnalyticalPopulationEstimateData, StoxLandingData, LandingPartition, Method=c("Strict", "GrandMean"), UnsampledStratum=character()){
+#' @export
+ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateData, StoxLandingData, LandingPartition, Method=c("Strict", "SetToStratum"), UnsampledStratum=character(), SourceStratum=character()){
   
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")
   checkMandatory(LandingPartition, "LandingPartition")
-  checkOptions(Method, "Method", c("Strict", "GrandMean"))
+  checkOptions(Method, "Method", c("Strict", "SetToStratum"))
   checkMandatory(UnsampledStratum, "UnsampledStratum")
-  
-  if (!all(LandingPartition %in% c(names(AnalyticalPopulationEstimateData$StratificationVariables), names(AnalyticalPopulationEstimateData$DomainVariables)))){
-    stop("LandingPartition must be composed of Stratification Variables and Domain Variables.")
+  if (Method == "SetToStratum"){
+    checkMandatory(SourceStratum, "SourceStratum")
+    if (!(SourceStratum %in% AnalyticalPopulationEstimateData$StratificationVariables$Stratum)){
+      stop(paste("SourceStratum", SourceStratum, "is not a valid Stratum in 'AnalyticalPopulationEstimateData'"))
+    }
   }
   
-  # Add domains with 0 abundance and total, and NA mean for each unsampled variable that is a domain variable
+  if (!all(LandingPartition %in% c(names(AnalyticalPopulationEstimateData$StratificationVariables)))){
+    stop("LandingPartition must be composed of Stratification Variables Variables.")
+  }
   
-  # Add new strata for not sampled, parameterize name, populate with all usampled combinations of strata-variables
+  if (length(LandingPartition)==0){
+   stop("No stratification variables provided") 
+  }
   
-  # Add all domains to unsampled strata with NA abundance, total, frequency and mean
+  if (UnsampledStratum %in% AnalyticalPopulationEstimateData$StratificationVariables$Stratum){
+    stop("Cannot use an existing stratum name for the unsampled stratum.")
+  }
   
-  # if GrandMean: put in overall frequecny for domains and overall mean for all variables
+  StratificationVariables <- names(AnalyticalPopulationEstimateData$StratificationVariables)[names(AnalyticalPopulationEstimateData$StratificationVariables) %in% LandingPartition]
   
+  extendedAnalyticalPopulationEstimateData <- AnalyticalPopulationEstimateData
+  
+    landedpart <- StoxLandingData$Landing[,.SD,.SDcol=StratificationVariables]
+    landedpart <- landedpart[!duplicated(apply(landedpart, 1, paste, collapse=",")),]
+    sampleframepart <- extendedAnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcol=StratificationVariables]
+    unsampledpart <- landedpart[!(apply(landedpart, 1, paste, collapse=",") %in% apply(sampleframepart, 1, paste, collapse=",")),]
+    unsampledpart$Stratum <- UnsampledStratum
+    
+    extendedAnalyticalPopulationEstimateData$StratificationVariables <- merge(extendedAnalyticalPopulationEstimateData$StratificationVariables, 
+                                                                      unsampledpart, all=T)
+    
+    extendedAnalyticalPopulationEstimateData$SampleSummary <- rbind(extendedAnalyticalPopulationEstimateData$SampleSummary,
+                                                            data.table::data.table(Stratum=UnsampledStratum, 
+                                                                                   PSUDomain=NA, 
+                                                                                   Samples=as.integer(NA), 
+                                                                                   PSUDomainSize=as.numeric(NA), 
+                                                                                   PSURelativeDomainSize=as.numeric(NA)))
+  
+  if (Method == "Strict"){
+    return(fillStrict(extendedAnalyticalPopulationEstimateData))
+  }
+  
+  else if (Method == "SetToStratum"){
+    return(fillSetToStratum(extendedAnalyticalPopulationEstimateData, SourceStratum, UnsampledStratum))
+  }
+  
+  else{
+    stop(paste("Option", Method, "for argument 'Method' is not recognized"))
+  }
+
+}
+
+#' Fill in stratum means for unsampled domain variables
+#' 
+#' @noRd
+fillDomainStratumMean <- function(zeroDomainEstimate, DomainVariables, epsilon){
+
+  #
+  # construct original estimate (only non-zero marginal domains)
+  #
+  
+  abundanceTable <- merge(zeroDomainEstimate$Abundance, zeroDomainEstimate$DomainVariables, by="Domain")
+  abundanceByDomain <- abundanceTable[,list(totalAbundance=sum(get("Abundance"), na.rm=T)), by=c("Stratum", DomainVariables)]
+  nonzeroAbundance <- abundanceByDomain[get("totalAbundance")>epsilon,]
+  nonzeroAbundanceDomains <- merge(nonzeroAbundance, zeroDomainEstimate$DomainVariables, by=DomainVariables)
+  
+  originalEstimate <- zeroDomainEstimate
+  originalEstimate$Abundance <- originalEstimate$Abundance[paste(originalEstimate$Abundance$Stratum,
+                                                                 originalEstimate$Abundance$Domain) %in%
+                                                             paste(nonzeroAbundanceDomains$Stratum,
+                                                                   nonzeroAbundanceDomains$Domain),]
+  
+  originalEstimate$Variables <- originalEstimate$Variables[paste(originalEstimate$Variables$Stratum,
+                                                                 originalEstimate$Variables$Domain) %in%
+                                                             paste(nonzeroAbundanceDomains$Stratum,
+                                                                   nonzeroAbundanceDomains$Domain),]
+  
+  originalEstimate$AbundanceCovariance <- originalEstimate$AbundanceCovariance[paste(originalEstimate$AbundanceCovariance$Stratum,
+                                                                 originalEstimate$AbundanceCovariance$Domain1) %in%
+                                                             paste(nonzeroAbundanceDomains$Stratum,
+                                                                   nonzeroAbundanceDomains$Domain) &
+                                                               paste(originalEstimate$AbundanceCovariance$Stratum,
+                                                                     originalEstimate$AbundanceCovariance$Domain2) %in%
+                                                               paste(nonzeroAbundanceDomains$Stratum,
+                                                                     nonzeroAbundanceDomains$Domain),]
+  
+  originalEstimate$VariablesCovariance <- originalEstimate$VariablesCovariance[paste(originalEstimate$VariablesCovariance$Stratum,
+                                                                                     originalEstimate$VariablesCovariance$Domain1) %in%
+                                                                                 paste(nonzeroAbundanceDomains$Stratum,
+                                                                                       nonzeroAbundanceDomains$Domain) &
+                                                                                 paste(originalEstimate$VariablesCovariance$Stratum,
+                                                                                       originalEstimate$VariablesCovariance$Domain2) %in%
+                                                                                 paste(nonzeroAbundanceDomains$Stratum,
+                                                                                       nonzeroAbundanceDomains$Domain),]
+  originalEstimate$DomainVariables <- originalEstimate$DomainVariables[originalEstimate$DomainVariables$Domain %in%
+                                                                                       nonzeroAbundanceDomains$Domain,]
+  
+  
+  keepVariables<-names(originalEstimate$DomainVariables)[!(names(originalEstimate$DomainVariables) %in% c("Domain", DomainVariables))]
+  
+  #
+  # get frequency over marginal domain variables
+  #
+  frequencyTable <- merge(originalEstimate$Abundance, originalEstimate$DomainVariables, by="Domain")
+  frequencies <- frequencyTable[,list(StratumFrequency=sum(get("Frequency"))), by=c("Stratum", keepVariables)]
+  
+  #
+  # get frequency covariance over marginal domain variables
+  #
+  frequencyCovarTable <- merge(originalEstimate$AbundanceCovariance, originalEstimate$DomainVariables, by.x="Domain1", by.y="Domain", all.x=T)
+  frequencyCovarTable <- merge(frequencyCovarTable, originalEstimate$DomainVariables, by.x="Domain2", by.y="Domain", suffixes = c("1", "2"), all.x=T)
+  frequencyCovar <- frequencyCovarTable[,list(StratumFrequencyCovariance=sum(get("FrequencyCovariance"))), by=c("Stratum", paste(keepVariables, "1", sep=""), paste(keepVariables, "2", sep=""))]
+  
+  #
+  # get means over marginal domain variables
+  #
+  meansTable <- merge(originalEstimate$Variables, originalEstimate$Abundance, by=c("Stratum", "Domain"))
+  meansTable <- merge(meansTable, originalEstimate$DomainVariables, by="Domain")
+  means <- meansTable[,list(StratumMean=sum(get("Mean")[!is.nan(get("Mean"))]*get("Frequency")[!is.nan(get("Mean"))])/sum(get("Frequency")[!is.nan(get("Mean"))])), by=c("Stratum", "Variable", keepVariables)]
+  
+  #
+  # get mean covariance over marginal domain variables
+  #
+  
+  meanCovarTable <- merge(originalEstimate$VariablesCovariance, originalEstimate$DomainVariables, by.x=c("Domain1"), by.y=c("Domain"), all.x=T)
+  meanCovarTable <- merge(meanCovarTable, originalEstimate$DomainVariables, by.x="Domain2", by.y="Domain", suffixes = c("1", "2"), all.x=T)
+  meanCovarTable <- merge(meanCovarTable, originalEstimate$Abundance, by.x=c("Stratum", "Domain1"), by.y=c("Stratum", "Domain"), all.x=T)
+  meanCovarTable <- merge(meanCovarTable, originalEstimate$Abundance, by.x=c("Stratum", "Domain2"), by.y=c("Stratum", "Domain"), , suffixes = c("1", "2"), all.x=T)
+  meanCovarTable <- merge(meanCovarTable, meansTable[,.SD,.SDcol=c("Stratum", "Domain", "Variable", "Mean")], 
+                          by.x=c("Stratum", "Domain1", "Variable1"),
+                          by.y=c("Stratum", "Domain", "Variable"))
+  meanCovarTable <- merge(meanCovarTable, meansTable[,.SD,.SDcol=c("Stratum", "Domain", "Variable", "Mean")], 
+                          by.x=c("Stratum", "Domain2", "Variable2"),
+                          by.y=c("Stratum", "Domain", "Variable"), 
+                          suffixes = c("1", "2"))
+  meanCovar <- meanCovarTable[,list(StratumMeanCovariance=sum(get("MeanCovariance")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))]*get("Frequency1")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))]*get("Frequency2")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))])/sum(get("Frequency1")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))]*get("Frequency2")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))])), by=c("Stratum", "Variable1", "Variable2", paste(keepVariables, "1", sep=""), paste(keepVariables, "2", sep=""))]
+  
+  #
+  # construct new abundance table
+  # frequencies for unsampled domains are adjusted by a low value (epsilon)
+  #
+  newAbundanceTable <- merge(zeroDomainEstimate$Abundance, zeroDomainEstimate$DomainVariables, by="Domain")
+  newAbundanceTable <- merge(newAbundanceTable, frequencies, by=c("Stratum", keepVariables), all.x=T)
+  newDomain <- !(apply(newAbundanceTable[,.SD,.SDcols = c("Stratum", DomainVariables)], 1, paste, collapse="/") %in%
+    apply(frequencyTable[,.SD,.SDcols = c("Stratum", DomainVariables)], 1, paste, collapse="/"))
+  newAbundanceTable$Frequency[newDomain] <- newAbundanceTable$StratumFrequency[newDomain] * epsilon
+  newAbundanceTable$Frequency[!newDomain] <- newAbundanceTable$Frequency[!newDomain] * (1-epsilon*(sum(newDomain)/sum(!newDomain)))
+  newAbundanceTable$Abundance[newDomain] <- as.numeric(NA)
+  newAbundanceTable <- newAbundanceTable[,.SD,.SDcols = names(originalEstimate$Abundance)]
+  
+  #
+  # construct new abundance variance table
+  # frequencies for unsampled domains are set to very low value, controlled by epsilon
+  #
+  frequencyCovarNewDomains <- merge(zeroDomainEstimate$DomainVariables, frequencyCovar, by.x=keepVariables, by.y=paste0(keepVariables, "1"), allow.cartesian = T)
+  frequencyCovarNewDomains <- merge(zeroDomainEstimate$DomainVariables, frequencyCovarNewDomains, by.x=keepVariables, by.y=paste0(keepVariables, "2"), suffixes = c("1","2"), allow.cartesian = T)
+  
+  #copy the covariance table constructed by Method 'Strict'
+  newAbundanceVarianceTable <- zeroDomainEstimate$AbundanceCovariance
+  
+  #
+  # We will set covariances for any new domains that are in the same marginal domain (same value for DomainVariables)
+  # cross marginal-domain covariances for new domians will be NA
+  #
+  newDomain1 <- !(newAbundanceVarianceTable$Domain1 %in%
+    originalEstimate$DomainVariables$Domain)
+  newDomain2 <- !(newAbundanceVarianceTable$Domain2 %in%
+    originalEstimate$DomainVariables$Domain)
+  sameMarginalDomain <- apply(zeroDomainEstimate$DomainVariables[match(newAbundanceVarianceTable$Domain1, zeroDomainEstimate$DomainVariables$Domain),.SD,.SDcols=DomainVariables], 1, paste, collapse="/") ==
+    apply(zeroDomainEstimate$DomainVariables[match(newAbundanceVarianceTable$Domain2, zeroDomainEstimate$DomainVariables$Domain),.SD,.SDcols=DomainVariables], 1, paste, collapse="/")
+  
+  # look up Domains either way (pmin, pmax), so that Domain1=a, Domain2=b is equal to Domain1=b, Domain2=a
+  newAbundanceVarianceTable$FrequencyCovariance[newDomain1 & newDomain2 & sameMarginalDomain] <- 
+    frequencyCovarNewDomains$StratumFrequencyCovariance[match(
+      paste(newAbundanceVarianceTable$Stratum[newDomain1 & newDomain2 & sameMarginalDomain],
+            pmin(newAbundanceVarianceTable$Domain1[newDomain1 & newDomain2 & sameMarginalDomain],
+                 newAbundanceVarianceTable$Domain2[newDomain1 & newDomain2 & sameMarginalDomain]),
+            pmax(newAbundanceVarianceTable$Domain1[newDomain1 & newDomain2 & sameMarginalDomain],
+            newAbundanceVarianceTable$Domain2[newDomain1 & newDomain2 & sameMarginalDomain])), 
+      paste(frequencyCovarNewDomains$Stratum,
+            pmin(frequencyCovarNewDomains$Domain1,
+            frequencyCovarNewDomains$Domain2),
+            pmax(frequencyCovarNewDomains$Domain1,
+                 frequencyCovarNewDomains$Domain2)))] * (epsilon**2)
+  newAbundanceVarianceTable$AbundanceCovariance[newDomain1 & newDomain2 & sameMarginalDomain] <- as.numeric(NA)
+  newAbundanceVarianceTable$FrequencyCovariance[(newDomain1 | newDomain2) & !sameMarginalDomain] <- as.numeric(NA)
+  newAbundanceVarianceTable$AbundanceCovariance[(newDomain1 | newDomain2) & !sameMarginalDomain] <- as.numeric(NA)
+  newAbundanceVarianceTable$FrequencyCovariance[(!newDomain1 & !newDomain2)] <- newAbundanceVarianceTable$FrequencyCovariance[(!newDomain1 & !newDomain2)] * (1-epsilon*(sum(newDomain)/sum(!newDomain)))**2
+  
+  #
+  # construct new variable table
+  #
+  newTotalTable <- merge(zeroDomainEstimate$Variables, zeroDomainEstimate$DomainVariables, by="Domain")
+  newTotalTable <- merge(newTotalTable, means, by=c("Stratum", "Variable", keepVariables), all.x=T)
+  newDomain <- !(apply(newTotalTable[,.SD,.SDcols = c("Stratum", "Variable", DomainVariables)], 1, paste, collapse="/") %in%
+                   apply(meansTable[,.SD,.SDcols = c("Stratum", "Variable", DomainVariables)], 1, paste, collapse="/"))
+  newTotalTable$Mean[newDomain] <- newTotalTable$StratumMean[newDomain]
+  newTotalTable$Total[newDomain] <- as.numeric(NA)
+  newTotalTable <- newTotalTable[,.SD,.SDcols = names(originalEstimate$Variables)]
+  
+  #
+  # construct new variables variance table
+  #
+
+  meansCovarNewDomains <- merge(zeroDomainEstimate$DomainVariables, meanCovar, by.x=keepVariables, by.y=paste0(keepVariables, "1"), allow.cartesian = T)
+  meansCovarNewDomains <- merge(zeroDomainEstimate$DomainVariables, meansCovarNewDomains, by.x=keepVariables, by.y=paste0(keepVariables, "2"), suffixes = c("1","2"), allow.cartesian = T)
+  
+  #copy the covariance table constructed by Method 'Strict'
+  newVariableVarianceTable <- zeroDomainEstimate$VariablesCovariance
+  
+  #
+  # We will set covariances for any new domains that are in the same marginal domain (same value for DomainVariables)
+  # cross marginal-domain covariances for new domians will be NA
+  #
+  newDomain1 <- !(newVariableVarianceTable$Domain1 %in%
+                    originalEstimate$DomainVariables$Domain)
+  newDomain2 <- !(newVariableVarianceTable$Domain2 %in%
+                    originalEstimate$DomainVariables$Domain)
+  sameMarginalDomain <- apply(zeroDomainEstimate$DomainVariables[match(newVariableVarianceTable$Domain1, zeroDomainEstimate$DomainVariables$Domain),.SD,.SDcols=DomainVariables], 1, paste, collapse="/") ==
+    apply(zeroDomainEstimate$DomainVariables[match(newVariableVarianceTable$Domain2, zeroDomainEstimate$DomainVariables$Domain),.SD,.SDcols=DomainVariables], 1, paste, collapse="/")
+  
+  # look up Domains either way (pmin, pmax), so that Domain1=a, Domain2=b is equal to Domain1=b, Domain2=a
+  newVariableVarianceTable$MeanCovariance[newDomain1 & newDomain2 & sameMarginalDomain] <- 
+    meansCovarNewDomains$StratumMeanCovariance[match(
+      paste(newVariableVarianceTable$Stratum[newDomain1 & newDomain2 & sameMarginalDomain],
+            pmin(newVariableVarianceTable$Domain1[newDomain1 & newDomain2 & sameMarginalDomain],
+                 newVariableVarianceTable$Domain2[newDomain1 & newDomain2 & sameMarginalDomain]),
+            pmax(newVariableVarianceTable$Domain1[newDomain1 & newDomain2 & sameMarginalDomain],
+                 newVariableVarianceTable$Domain2[newDomain1 & newDomain2 & sameMarginalDomain]),
+            pmin(newVariableVarianceTable$Variable1[newDomain1 & newDomain2 & sameMarginalDomain],
+                 newVariableVarianceTable$Variable2[newDomain1 & newDomain2 & sameMarginalDomain]),
+            pmax(newVariableVarianceTable$Variable1[newDomain1 & newDomain2 & sameMarginalDomain],
+                 newVariableVarianceTable$Variable2[newDomain1 & newDomain2 & sameMarginalDomain])), 
+      paste(meansCovarNewDomains$Stratum,
+            pmin(meansCovarNewDomains$Domain1,
+                 meansCovarNewDomains$Domain2),
+            pmax(meansCovarNewDomains$Domain1,
+                 meansCovarNewDomains$Domain2),
+            pmin(meansCovarNewDomains$Variable1,
+                 meansCovarNewDomains$Variable2),
+            pmax(meansCovarNewDomains$Variable1,
+                 meansCovarNewDomains$Variable2)))]
+  newVariableVarianceTable$TotalCovariance[newDomain1 & newDomain2 & sameMarginalDomain] <- as.numeric(NA)
+  newVariableVarianceTable$MeanCovariance[(newDomain1 | newDomain2) & !sameMarginalDomain] <- as.numeric(NA)
+  newVariableVarianceTable$TotalCovariance[(newDomain1 | newDomain2) & !sameMarginalDomain] <- as.numeric(NA)
+  
+  #
+  # Update object with new tables
+  #
+  
+  stopifnot(nrow(zeroDomainEstimate$Abundance)==nrow(newAbundanceTable))
+  stopifnot(nrow(zeroDomainEstimate$Variables)==nrow(newTotalTable))
+  stopifnot(nrow(zeroDomainEstimate$AbundanceCovariance)==nrow(newAbundanceVarianceTable))
+  stopifnot(nrow(zeroDomainEstimate$VariablesCovariance)==nrow(newVariableVarianceTable))
+  
+  zeroDomainEstimate$Abundance <- newAbundanceTable
+  zeroDomainEstimate$Variables <- newTotalTable
+  zeroDomainEstimate$AbundanceCovariance <- newAbundanceVarianceTable
+  zeroDomainEstimate$VariablesCovariance <- newVariableVarianceTable
+  return(zeroDomainEstimate)
+}
+
+#' Interpolate means and frequencies for zero-abundance domains
+#' @description
+#'  Interpolate means and frequences for domains with no estimated abundance (domains not sampled)
+#' @details
+#'  This function infers parameters for unsampled domains that are present in census data (landings).
+#'  This function only infers precence of unsampled domains from census-data, and provide options for some pragmatic approximations to substitute for estimates for these domains.
+#'  The function does not introduce landed weights, or other knowledge from landings, 
+#'  except for the fact that domains are present in the landings data. All inference about unkown values are taken from the provided estimates ('AnalyticalPopulationEstimateData').
+#'  
+#'  The Domain-variables provided in the argument 'DomainMarginVariables' are compared with landings ('StoxLandingData')
+#'  to detect if the census contains values and combinations for these variables that are not present in the samples.
+#'  Corresponding domains are then introduced into the analytical estimates results according to the option for the argument 'Method'
+#'  
+#'  Subsequent ratio-estimation may make use of this information to also make use of total-weight information from landings (see \code{link[RstoxFDA]{AnalyticalRatioEstimate}}).
+#'  For design based approaches, unsampled domains have estimates of zero abundance, frequencies and totals, and hence undefined means.
+#'  Such zero-domains may be only implicitly encoded in 'AnalyticalPopulationEstimateData', 
+#'  and this function may make that encoding explicit for by use of the option 'Strict' for Method.
+#'  The 'Strict' Method introduces unsampled domains with abundance, total and frequencies of 0, and NaN means.
+#'  
+#'  In order to prepare ratio-estimation (see. \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}), it may be desirable to infer some plausible values for means and frequencies of unsampled domains.
+#'  This is facilitated by the option 'StratumMean' for 'Method'. This method will calculate aggregate statistcs for each stratum over the
+#'  domain variables, and use this average for means and frequencies for the marginal domains that have zero abundance. Marginal domains are
+#'  domains defined by combining statistics for all other domain variables than those identified in DomainMarginVariables.
+#'  
+#'  For instance, one may one to infer frequencies and means for unsampled gears, as the mean of all sampled gears in a stratum.
+#'  This can be obtained by providing DomainMarginVariables='Gear', or unsampled combinations of gears and quarters could be similarly
+#'  specifyed by DomainMarginVariables=c('Gear','Quarter'). The DomainMarginVariables must be domain variables in 'AnalyticalPopulationEstimateData'
+#'  and are typically PSU-domains (see. \code{\link[RstoxFDA]{AnalyticalPSUEstimate}}).
+#'  
+#'  Since frequencies are normalized to strata, they need to be re-normalized after inclusion of positive frequencies in these domains.
+#'  In order to reflect their low abundance in the sampling frame, the frequencies are scaled to a low-value provided in the argument 'Epsilon'.
+#'  Epsilon indicate the precense of these domains, as deduced from census-data, but should be chosen low enough to be considered practically zero, 
+#'  to be consistent with the result of sampling-based estimation. For this reason, abundances and totals are set to NA for these domains,
+#'  but frequencies need to present to capture for instance age-distributions in the domain.
+#'  
+#'  Subsequent ratio-estimation may provide relastic estimates of abundances and relative frequencies between PSU-domains.
+#'  
+#'  The domain estimates in 'AnalyticalPopulationEstimateData' are identied by a stratum \eqn{s} and a set of domain variables \eqn{D}.
+#'  The domain variables can be divided into the set \eqn{M} and \eqn{N}, where \eqn{M} are the 'DomainMarginVariables'. Let \eqn{(m+n)}
+#'  denote a domain defined by the combination of the variables \eqn{m} and \eqn{n}.
+#'  For each \eqn{d \in N}, we define the stratum statistics:
+#'  \describe{
+#'    \item{frequency}{
+#'    \deqn{\widehat{f}^{(s,d)}=\sum_{m \in M}\widehat{f}^{(s,d+m)}}
+#'    
+#'    with covariance:
+#'    
+#'    \deqn{\widehat{CoVar}(\widehat{f}^{(s,d_{1})}, \widehat{f}^{(s,d_{2})})=\sum_{m \in M}\widehat{CoVar}(\widehat{f}^{(s,d{1}+m)}, \widehat{f}^{(s,d_{2}+m)})}
+#'    }
+#'    \item{mean}{
+#'    \deqn{\widehat{\mu}^{(s,d,v)}=\frac{1}{\sum_{m \in M}I(s,d+m)\widehat{f}^{(s,d+m)}}\sum_{m \in M}I(s,d+m)\widehat{f}^{(s,d+m)}\widehat{\mu}^{(s,d+m,v)}}
+#'    where \eqn{v} denote the variable that the mean is estimated for, and \eqn{I(s,d)} is an indicator functon that is 1
+#'    if a mean is defined for domain \eqn{d} in stratum \eqn{s}, otherwise 0.
+#'    
+#'    with covariance:
+#'    
+#'    \deqn{\widehat{CoVar}(\widehat{\mu}^{(s,d_{1},v_{1})}, \widehat{\mu}^{(s,d_{2},v_{2})})=\frac{1}{\sum_{m \in M}z^{s,d_{1},d_{2},m}}\sum_{m \in M}z^{s,d_{1},d_{2},m}\widehat{CoVar}(\widehat{\mu}^{(s,d_{1}+m, v_{1})}, \widehat{\mu}^{(s,d_{2}+m, v_{2})})}
+#'    where:
+#'    \deqn{z^{s,d_{1},d_{2},m}=I(s,d_{1}+m)I(s,d_{2}+m)\widehat{f}^{(s,d_{1}+m)}\widehat{f}^{(s,d_{2}+m)}}
+#'    }
+#'  }
+#'  
+#'  These stratum statistics are used to interpolate to zero-abundance domains, as follows.
+#'  Let \eqn{D'} denote the combinations of 'DomainMarginVariables' that have zero estimated abundance.
+#'  For each \eqn{d \in N} and \eqn{n' \in D'}, statistics are defined as:
+#'  
+#'  \describe{
+#'    \item{frequency}{
+#'    \deqn{\widehat{f}^{(s,d+n')}=\epsilon\widehat{f}^{(s,d)}}
+#'    where \eqn{\epsilon} corresponds to the argument 'Epsilon'
+#'    
+#'    with covariance:
+#'    
+#'    \deqn{\widehat{CoVar}(\widehat{f}^{(s,d_{1}+n')}, \widehat{f}^{(s,d_{2}+n')})=\epsilon^{2}\widehat{CoVar}(\widehat{f}^{(s,d_{1})}, \widehat{f}^{(s,d_{2})})}
+#'    }
+#'    \item{mean}{
+#'    \deqn{\widehat{\mu}^{(s,d+n',v)}=\widehat{\mu}^{(s,d,v)}}
+#'    
+#'    with covariance:
+#'    
+#'    \deqn{\widehat{CoVar}(\widehat{\mu}^{(s,d_{1}+n',v_{1})}, \widehat{\mu}^{(s,d_{2}+n',v_{2})})=\widehat{CoVar}(\widehat{\mu}^{(s,d_{1},v_{1})}, \widehat{\mu}^{(s,d_{2},v_{2})})}
+#'    }
+#'  }
+#'  
+#'  To renormalize frequencies, a minor adjustment is also made to the non-zero abundance domains:
+#'  
+#'  Let \eqn{D''} denote the combinations of 'DomainMarginVariables' that have positive estimated abundance.
+#'  For each \eqn{d \in N} and \eqn{n'' \in D''}, the frequency is defined as:
+#'  
+#'  \deqn{\widehat{f{*}}^{(s,d+n'')}=(1-\epsilon r)\widehat{f}^{(s,d+n'')}}
+#'  where \eqn{r=\frac{|D'|}{|D''|}}, the ratio of zero-abundance domains to non-zero-abundance marginal domains.
+#'  
+#'  Similarly, the covariance is:
+#'  \deqn{\widehat{CoVar^{*}}(\widehat{f}^{(s,d_{1}+n'')}, \widehat{f}^{(s,d_{2}+n'')}=(1-\epsilon r)^{2}\widehat{CoVar}(\widehat{f}^{(s,d_{1}+n'')}, \widehat{f}^{(s,d_{2}+n'')})}
+#'  
+#'  
+#' @param AnalyticalPopulationEstimateData \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with analytical estimates
+#' @param StoxLandingData Landing data for the entire fishery / target population
+#' @param Method method for inferring means and frequencies. See details.
+#' @param DomainMarginVariables Domain Variables used for interpolation with the 'StratumMean' Method. Must be variables in StoxLandingData and Domain Variables in 'AnalyticalPopulationEstimateData'. See details.
+#' @param Epsilon factor for representing relative frequencies for 0-abundance domains, used for interpolation with the 'StratumMean' Method. See details.
+#' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with parameters for unsampled domains
+#' @md
+#' @concept Analytical estimation
+#' @export
+InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateData, StoxLandingData, Method=c("Strict", "StratumMean"), DomainMarginVariables=character(), Epsilon=numeric()){
+  
+  checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
+  checkMandatory(StoxLandingData, "StoxLandingData")
+  checkOptions(Method, "Method", c("Strict", "StratumMean"))
+  if (Method=="StratumMean"){
+    checkMandatory(DomainMarginVariables, "DomainMarginVariables")
+    checkMandatory(Epsilon, "Epsilon")
+    if (!(Epsilon > 0 & Epsilon < 1)){
+      stop("Argument 'Epsilon' must be between 0 and 1.")
+    }
+  }
+  
+  if (!all(DomainMarginVariables %in% names(AnalyticalPopulationEstimateData$DomainVariables))){
+    stop("DomainMarginVariables must all be Domain Variables in 'AnalyticalPopulationEstimateData'.")
+  }
+  
+  if (length(DomainMarginVariables)==0){
+    stop("'DomainMarginVariables' does not contain any variables that are domain variables in 'AnalyticalPopulationEstimateData'")
+  }
+  
+  extendedAnalyticalPopulationEstimateData <- AnalyticalPopulationEstimateData
+  
+  # Add domains with 0 abundance, frequency, and total, and NA mean for each unsampled variable that is a domain variable
+  
+    
+    #
+    # Construct unsampled domains that need to be filled to match landings
+    #
+    landeddomains <- StoxLandingData$Landing[,.SD,.SDcol=DomainMarginVariables]
+    landeddomains <- landeddomains[!duplicated(apply(landeddomains, 1, paste, collapse=",")),]
+    sampledfractionaldomains <- extendedAnalyticalPopulationEstimateData$DomainVariables[,.SD,.SDcol=DomainMarginVariables]
+    unsampledfractionaldomains <- landeddomains[!(apply(landeddomains, 1, paste, collapse=",") 
+                                                  %in% apply(sampledfractionaldomains, 1, paste, collapse=",")),]
+    unsampledfractionaldomains$Domain <- "newdomain"
+    
+    otherDomainVariables <- extendedAnalyticalPopulationEstimateData$DomainVariables
+    otherDomainVariables <- otherDomainVariables[,.SD,.SDcol=names(otherDomainVariables)[!(names(otherDomainVariables) %in% DomainMarginVariables)],]
+    otherDomainVariables$Domain <- "newdomain"
+    otherDomainVariables <- otherDomainVariables[!(duplicated(apply(otherDomainVariables, 1, paste, collapse=","))),]
+    
+    additionalDomains <- merge(otherDomainVariables, unsampledfractionaldomains, by="Domain", allow.cartesian = T)
+    additionalDomains <- additionalDomains[,.SD,.SDcol=names(extendedAnalyticalPopulationEstimateData$DomainVariables)]
+    additionalDomains$Domain <- NULL
+    additionalDomains$Domain <- paste("Not sampled: ", apply(additionalDomains, 1, paste, collapse="/"))
+    additionalDomains <- additionalDomains[!duplicated(additionalDomains$Domain),]
+    
+    extendedAnalyticalPopulationEstimateData$DomainVariables <- rbind(extendedAnalyticalPopulationEstimateData$DomainVariables, additionalDomains)
+    stopifnot(all(!duplicated(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain)))
+    
+    #
+    # Infer zero domains for sampling frame, same for all methods
+    #
+    
+    additionalAbundance <- data.table::CJ(Stratum=unique(extendedAnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
+                                          Domain=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain))
+    additionalAbundance <- additionalAbundance[!(paste(additionalAbundance$Stratum, additionalAbundance$Domain) 
+                                                 %in% paste(extendedAnalyticalPopulationEstimateData$Abundance$Stratum, 
+                                                            extendedAnalyticalPopulationEstimateData$Abundance$Domain)),]
+    additionalAbundance$Abundance <- 0
+    additionalAbundance$Frequency <- 0
+    
+    additionalVariables <- data.table::CJ(Stratum=unique(extendedAnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
+                                          Domain=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain), 
+                                          Variable=unique(extendedAnalyticalPopulationEstimateData$Variables$Variable))
+    additionalVariables <- additionalVariables[!(paste(additionalVariables$Stratum, additionalVariables$Domain) %in% 
+                                                   paste(extendedAnalyticalPopulationEstimateData$Variables$Stratum, 
+                                                         extendedAnalyticalPopulationEstimateData$Variables$Domain)),]
+    additionalVariables$Total <- 0
+    additionalVariables$Mean <- NaN
+    
+    cross <- data.table::CJ(Domain1=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain), 
+                            Domain2=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain))
+    cross <- cross[cross$Domain1>=cross$Domain2,]
+    cross$AbundanceCovariance <- 0
+    cross$FrequencyCovariance <- 0
+    
+    additionalAbundanceCovariance <- merge(data.table::CJ(Stratum=unique(extendedAnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
+                                                          Domain1=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain)),
+                                           cross, by=c("Domain1"), allow.cartesian=T)
+    additionalAbundanceCovariance <- additionalAbundanceCovariance[!(paste(additionalAbundanceCovariance$Stratum, 
+                                                                           additionalAbundanceCovariance$Domain1, 
+                                                                           additionalAbundanceCovariance$Domain2) %in% 
+                                                                       paste(extendedAnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, 
+                                                                             extendedAnalyticalPopulationEstimateData$AbundanceCovariance$Domain1, 
+                                                                             extendedAnalyticalPopulationEstimateData$AbundanceCovariance$Domain2)),]
+    
+    
+    
+    cross <- data.table::CJ(Domain1=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain), 
+                            Variable1=unique(extendedAnalyticalPopulationEstimateData$Variables$Variable), 
+                            Domain2=unique(unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain)), 
+                            Variable2=unique(extendedAnalyticalPopulationEstimateData$Variables$Variable))
+    cross <- cross[cross$Domain1>=cross$Domain2 & cross$Variable1 >= cross$Variable2,]
+    cross$TotalCovariance <- 0
+    cross$MeanCovariance <- NaN
+    additionalVariableCovariance <- merge(data.table::CJ(Stratum=unique(extendedAnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
+                                                         Domain1=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain)),
+                                          cross, by=c("Domain1"), allow.cartesian=T)
+    additionalVariableCovariance <- additionalVariableCovariance[!(paste(additionalVariableCovariance$Stratum, 
+                                                                         additionalVariableCovariance$Domain1, 
+                                                                         additionalVariableCovariance$Domain2, 
+                                                                         additionalVariableCovariance$Variable1, 
+                                                                         additionalVariableCovariance$Variable2) %in% 
+                                                                     paste(extendedAnalyticalPopulationEstimateData$VariablesCovariance$Stratum, 
+                                                                           extendedAnalyticalPopulationEstimateData$VariablesCovariance$Domain1, 
+                                                                           extendedAnalyticalPopulationEstimateData$VariablesCovariance$Domain2, 
+                                                                           extendedAnalyticalPopulationEstimateData$VariablesCovariance$Variable1, 
+                                                                           extendedAnalyticalPopulationEstimateData$VariablesCovariance$Variable2)),]
+    
+    extendedAnalyticalPopulationEstimateData$Abundance <- rbind(extendedAnalyticalPopulationEstimateData$Abundance, additionalAbundance)
+    extendedAnalyticalPopulationEstimateData$Variables <- rbind(extendedAnalyticalPopulationEstimateData$Variables, additionalVariables)
+    extendedAnalyticalPopulationEstimateData$AbundanceCovariance <- rbind(extendedAnalyticalPopulationEstimateData$AbundanceCovariance, 
+                                                                          additionalAbundanceCovariance)
+    extendedAnalyticalPopulationEstimateData$VariablesCovariance <- rbind(extendedAnalyticalPopulationEstimateData$VariablesCovariance, 
+                                                                          additionalVariableCovariance)
+  
+  if (Method == "Strict"){
+    return(extendedAnalyticalPopulationEstimateData)
+  }
+  
+  if (Method == "StratumMean"){
+    return(fillDomainStratumMean(extendedAnalyticalPopulationEstimateData, DomainMarginVariables, Epsilon))    
+  }
+
+  else{
+    stop(paste("The option", Method, "for the argument 'Method' is not recognized."))
+  }
+    
 }
 
 #' @noRd

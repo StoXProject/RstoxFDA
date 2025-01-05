@@ -102,8 +102,8 @@ NULL
 #'  AbundanceCovariance
 #'  \describe{
 #'    \item{Stratum}{The stratum that covariances are provided for.}
-#'    \item{Domain1}{A domain that covariances are provided for.}
-#'    \item{Domain2}{A domain that covariances are provided for.}
+#'    \item{Domain1}{A domain that covariances are provided for. Unique, given Stratum}
+#'    \item{Domain2}{A domain that covariances are provided for. Unique, given Stratum and Domain 1.}
 #'    \item{AbundanceCovariance}{The estimated covariance of abundance between Domain1 and Domain2.}
 #'    \item{FrequencyCovariance}{The estimated covariance of frequency between Domain1 and Domain2.}
 #'  }
@@ -111,10 +111,10 @@ NULL
 #'  VariableCovariance
 #'  \describe{
 #'    \item{Stratum}{The stratum that covariances are provied for.}
-#'    \item{Domain1}{A domain that covariances are provided for.}
-#'    \item{Domain2}{A domain that covariances are provided for.}
-#'    \item{Variable1}{A variable that covariances are provided for.}
-#'    \item{Variable2}{A variable that covariances are provided for.}
+#'    \item{Domain1}{A domain that covariances are provided for. Unique, given Stratum}
+#'    \item{Domain2}{A domain that covariances are provided for. Unique, given Stratum and Domain 1.}
+#'    \item{Variable1}{A variable that covariances are provided for. Unique, given Stratum and domains.}
+#'    \item{Variable2}{A variable that covariances are provided for. Unique, given Stratum, domains and Variable1.}
 #'    \item{TotalCovariance}{The estimated covariance of total value of Variable1 in Domain1 and Variable2 in Domain2}
 #'    \item{MeanCovariance}{The estimated covariance of the mean value of Variable1 in Domain1 and Variable2 in Domain2}
 #'  }
@@ -2383,6 +2383,14 @@ stoxFunctionAttributes <- list(
     functionParameterFormat = list(
       Parameters = "individualparameters",
       StratificationColumns = "individualstratificationcolumns"
+    ),
+    functionArgumentHierarchy = list(
+      StratificationColumns = list(
+        DefinitionMethod = "Stratified"
+      ),
+      LengthInterval = list(
+        DefinitionMethod = "LengthStratified"
+      )
     )
   ),
   ComputePSUSamplingParameters = list(
@@ -2444,6 +2452,41 @@ stoxFunctionAttributes <- list(
       WeightVariable = "weightvariableratioestimate",
       StratificationVariables = "stratificationvariableslandings",
       DomainVariables = "domainvariableslandings"
+    )
+  ),
+    ExtendAnalyticalSamplingFrameCoverage = list(
+      functionType = "modelData", 
+      functionCategory = "baseline", 
+      functionOutputDataType = "AnalyticalPopulationEstimateData",
+      functionParameterDefaults = list(
+        Method = "SetToStratum",
+        UnsampledStratum = "Out-of-frame"
+      ),
+      functionParameterFormat = list(
+        LandingPartition = "stratificationvariableslandings",
+        SourceStratum = "sourcestratum"
+      ),
+      functionArgumentHierarchy = list(
+        SourceStratum = list(
+          Method = "SetToStratum"
+        )
+      )
+  ),
+  InterpolateAnalyticalDomainEstimates = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPopulationEstimateData",
+    functionParameterDefaults = list(
+      Method = "StratumMean",
+      Epsilon = 1e-4
+    ),
+    functionParameterFormat = list(
+      DomainMarginVariables = "domainvariableslandings"
+    ),
+    functionArgumentHierarchy = list(
+      Epsilon = list(
+        Method = "StratumMean"
+      )
     )
   ),
   
@@ -2941,6 +2984,7 @@ processPropertyFormats <- list(
           }
         }
       }
+      possibleValues <- possibleValues[!(possibleValues) %in% c("CruiseKey", "HaulKey", "IndividualKey", "SampleKey", "SpeciesCategoryKey", "StationKey")]
       possibleValues <- unique(possibleValues)
       return(sort(possibleValues))
     }, 
@@ -2958,6 +3002,7 @@ processPropertyFormats <- list(
           }
         }
       }
+      possibleValues <- possibleValues[!(possibleValues) %in% c("CruiseKey", "HaulKey", "IndividualKey", "SampleKey", "SpeciesCategoryKey", "StationKey")]
       possibleValues <- unique(possibleValues)
       return(sort(possibleValues))
     }, 
@@ -3151,12 +3196,21 @@ processPropertyFormats <- list(
     variableTypes = "character"
   ),
   domainvariableslandings = list(
-    class = "vector", #convert to class single, if that becomes available.
+    class = "vector",
     title = "Zero or more Domain variables to match with landings", 
     possibleValues = function(AnalyticalPopulationEstimateData, StoxLandingData){
-      pv <- names(AnalyticalPopulationEstimateData$StratificationVariables)
+      pv <- names(AnalyticalPopulationEstimateData$DomainVariables)
       pv <- pv[pv != "Domain"]
       pv <- pv[pv %in% names(StoxLandingData$Landing)]
+      return(pv)
+    },
+    variableTypes = "character"
+  ),
+  sourcestratum = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "Exactly one stratum to use for sampling-frame extension", 
+    possibleValues = function(AnalyticalPopulationEstimateData){
+      pv <- unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum)
       return(pv)
     },
     variableTypes = "character"

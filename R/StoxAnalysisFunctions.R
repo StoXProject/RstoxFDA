@@ -702,7 +702,7 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
     quarter <- data.table::quarter(StoxLandingData$Landing$CatchDate)
   }
   else if (TemporalResolution == "Month"){
-    month <- month(StoxLandingData$Landing$CatchDate)
+    month <- data.table::month(StoxLandingData$Landing$CatchDate)
   }
   else if (TemporalResolution == "Day"){
     date <- StoxLandingData$Landing$CatchDate

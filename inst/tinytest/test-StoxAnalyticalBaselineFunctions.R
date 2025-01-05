@@ -557,7 +557,222 @@ filt2 <- popEst$VariablesCovariance$Variable1=="IW" & popEst$VariablesCovariance
 #this is probably not generally guaranteed, but seem to work for this example
 all(popEst$VariablesCovariance$MeanCovariance < popEstMeanOfMeans$VariablesCovariance$MeanCovariance)
 
-#stop("Check input sanitation.")
-#stop("Test collapseStrata with both HH and HT")
-#stop("Implement DefineHierarchy.")
-#stop("Make tests for all estimated parameters with and without domain and stratification)
+#
+# Test domain coverage expansion
+#
+
+land <- RstoxFDA::CatchLotteryLandingExample
+stationDesign <- RstoxFDA::CatchLotterySamplingExample
+ex <- RstoxFDA::CatchLotteryExample
+ex$Haul$Gear[ex$Haul$Gear=="3600"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3700"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3100"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3500"] <- "53"
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+expandedPopEst <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "Strict", "Gear")
+
+expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary))
+expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
+expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
+expect_equal(nrow(expandedPopEst$AbundanceCovariance), (nrow(popEst$Abundance)*3)*(nrow(popEst$Abundance)*3-1)/2+nrow(popEst$Abundance)*3) #all domain combinations
+expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(expandedPopEst$AbundanceCovariance)*3) #three variable combinations
+expect_equal(nrow(expandedPopEst$DomainVariables), nrow(popEst$DomainVariables)*3)
+expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$StratificationVariables))
+expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+
+eps <- 1e-3
+expandedPopEst <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "StratumMean", "Gear", eps)
+expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary))
+expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
+expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
+expect_equal(nrow(expandedPopEst$AbundanceCovariance), (nrow(popEst$Abundance)*3)*(nrow(popEst$Abundance)*3-1)/2+nrow(popEst$Abundance)*3) #all domain combinations
+expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(expandedPopEst$AbundanceCovariance)*3) #three variable combinations
+expect_equal(nrow(expandedPopEst$DomainVariables), nrow(popEst$DomainVariables)*3)
+expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$StratificationVariables))
+expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+totalFreqDiff <- sum(expandedPopEst$Abundance$Frequency,na.rm=T)- sum(popEst$Abundance$Frequency)
+expect_true(totalFreqDiff < eps)
+expect_true(sum(expandedPopEst$Variables$Mean) > sum(popEst$Variables$Mean))
+expect_true(sum(is.na(expandedPopEst$Abundance$Abundance))>0)
+expect_true(sum(is.na(popEst$Abundance$Abundance))==0)
+expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+
+#
+# Test sample frame expansion
+#
+land <- RstoxFDA::CatchLotteryLandingExample
+land$Landing$Frame <- "Sampling frame"
+land$Landing$Frame[1:300] <- "OutOfFrame"
+stationDesign <- RstoxFDA::CatchLotterySamplingExample
+stationDesign$StratificationVariables$Frame <- "Sampling frame"
+ex <- RstoxFDA::CatchLotteryExample
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+# Test expanding along a single stratification variable
+ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEst, land, "IndividualRoundWeight", "MeanDomainWeight", "Frame")
+expect_equal(nrow(ratioEst$Variables), nrow(popEst$Variables))
+
+expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(popEst, land, "Frame", "Strict", "Unsampled")
+expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)*2)
+expect_equal(nrow(expandedPopEst$Abundance), nrow(popEst$Abundance)*2)
+expect_equal(nrow(expandedPopEst$Variables), nrow(popEst$Variables)*2)
+expect_equal(nrow(expandedPopEst$AbundanceCovariance), nrow(popEst$AbundanceCovariance)*2)
+expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(popEst$VariablesCovariance)*2)
+expect_equal(nrow(expandedPopEst$DomainVariables), nrow(popEst$DomainVariables))
+expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$StratificationVariables)*2)
+expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+
+# Test expanding along several variables for both domain and stratification
+
+#add stratification columns to landing
+land <- RstoxFDA::CatchLotteryLandingExample
+land$Landing$FrameVar1 <- "Sampling frame 1"
+land$Landing$FrameVar1[1:300] <- "OutOfFrame 1"
+land$Landing$FrameVar2 <- "Sampling frame 2-1"
+land$Landing$FrameVar2[500:1000] <- "Sampling frame 2-2"
+land$Landing$FrameVar2[1:150] <- "OutOfFrame 2-1"
+land$Landing$FrameVar2[150:300] <- "OutOfFrame 2-2"
+
+#add stratification columns to sampling design
+stationDesign <- RstoxFDA::CatchLotterySamplingExample
+stationDesign$StratificationVariables$FrameVar1 <- "Sampling frame"
+stationDesign$StratificationVariables$FrameVar2 <- "Sampling frame 2-1"
+stationDesign$StratificationVariables <- rbind(stationDesign$StratificationVariables,
+                                               data.table::data.table(Stratum="Nordsjo2", CountryVessel="NOR", FrameVar1="Sampling frame", FrameVar2="Sampling frame 2-2"))
+stationDesign$SelectionTable$Stratum[1:10] <- "Nordsjo2"
+stationDesign$SampleTable$N <- stationDesign$SampleTable$N - 200
+stationDesign$SampleTable$n <- stationDesign$SampleTable$n - 10
+stationDesign$SampleTable <- rbind(stationDesign$SampleTable, data.table::data.table(Stratum="Nordsjo2", N=200, n=10, SelectionMethod="Poisson", FrameDescription=""))
+
+ex <- RstoxFDA::CatchLotteryExample
+ex$Haul$Gear[ex$Haul$Gear=="3600"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3700"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3100"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3500"] <- "11"
+ex$Haul$Usage <- "2"
+ex$Haul$Usage[1:2] <- "1"
+
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear", "Usage"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+domainExpanded <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "Strict", c("Gear", "Usage"), eps)
+expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(domainExpanded, land, c("FrameVar1", "FrameVar2"), "Strict", "Unsampled")
+expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)+1)
+expect_true(nrow(expandedPopEst$Variables)>nrow(popEst$Variables)) 
+expect_true(nrow(expandedPopEst$Abundance)>nrow(popEst$Abundance))
+expect_true(nrow(expandedPopEst$AbundanceCovariance)> nrow(popEst$Abundance))
+expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(expandedPopEst$AbundanceCovariance)*3) #three variable combinations
+expect_true(nrow(expandedPopEst$DomainVariables)>nrow(popEst$DomainVariables))
+expect_true(nrow(expandedPopEst$StratificationVariables)>nrow(popEst$StratificationVariables))
+expect_equal(length(unique(expandedPopEst$StratificationVariables$Stratum)), length(unique(popEst$StratificationVariables$Stratum))+1)
+expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
+expect_equal(sum(expandedPopEst$Abundance$Frequency,na.rm=T), sum(popEst$Abundance$Frequency))
+
+#
+# Test Stratum mean option for frame expansion
+#
+#add stratification columns to landing
+land <- RstoxFDA::CatchLotteryLandingExample
+land$Landing$FrameVar1 <- "Sampling frame 1"
+land$Landing$FrameVar1[1:300] <- "OutOfFrame 1"
+land$Landing$FrameVar2 <- "Sampling frame 2-1"
+land$Landing$FrameVar2[500:1000] <- "Sampling frame 2-2"
+land$Landing$FrameVar2[1:150] <- "OutOfFrame 2-1"
+land$Landing$FrameVar2[150:300] <- "OutOfFrame 2-2"
+
+#add stratification columns to sampling design
+stationDesign <- RstoxFDA::CatchLotterySamplingExample
+stationDesign$StratificationVariables$FrameVar1 <- "Sampling frame"
+stationDesign$StratificationVariables$FrameVar2 <- "Sampling frame 2-1"
+stationDesign$StratificationVariables <- rbind(stationDesign$StratificationVariables,
+                                               data.table::data.table(Stratum="Nordsjo2", CountryVessel="NOR", FrameVar1="Sampling frame", FrameVar2="Sampling frame 2-2"))
+stationDesign$SelectionTable$Stratum[1:10] <- "Nordsjo2"
+stationDesign$SampleTable$N <- stationDesign$SampleTable$N - 200
+stationDesign$SampleTable$n <- stationDesign$SampleTable$n - 10
+stationDesign$SampleTable <- rbind(stationDesign$SampleTable, data.table::data.table(Stratum="Nordsjo2", N=200, n=10, SelectionMethod="Poisson", FrameDescription=""))
+
+ex <- RstoxFDA::CatchLotteryExample
+ex$Haul$Gear[ex$Haul$Gear=="3600"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3700"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3100"] <- "53"
+ex$Haul$Gear[ex$Haul$Gear=="3500"] <- "11"
+ex$Haul$Usage <- "2"
+ex$Haul$Usage[1:2] <- "1"
+
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear", "Usage"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+domainExpanded <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "StratumMean", c("Gear", "Usage"), eps)
+expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(domainExpanded, land, c("FrameVar1", "FrameVar2"), "SetToStratum", "Unsampled", "PSU-stratum:Nordsjo Lower-stratum:sild'G05/161722.G05/126417/Clupea harengus")
+
+expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)+1)
+expect_true(nrow(expandedPopEst$Variables)>nrow(popEst$Variables)) 
+expect_true(nrow(expandedPopEst$Abundance)>nrow(popEst$Abundance))
+expect_true(nrow(expandedPopEst$AbundanceCovariance)> nrow(popEst$Abundance))
+expect_equal(nrow(expandedPopEst$VariablesCovariance), nrow(expandedPopEst$AbundanceCovariance)*3) #three variable combinations
+expect_true(nrow(expandedPopEst$DomainVariables)>nrow(popEst$DomainVariables))
+expect_true(nrow(expandedPopEst$StratificationVariables)>nrow(popEst$StratificationVariables))
+expect_equal(length(unique(expandedPopEst$StratificationVariables$Stratum)), length(unique(popEst$StratificationVariables$Stratum))+1)
+expect_true(sum(expandedPopEst$Abundance$Frequency,na.rm=T)>sum(popEst$Abundance$Frequency))
+
+nvar <- length(unique(expandedPopEst$VariablesCovariance$Variable1))
+ndomain <- length(unique(expandedPopEst$VariablesCovariance$Domain1))
+ncombo <- (nvar*(nvar+1)/2)*(ndomain*(ndomain+1)/2)
+rowsByStratum <- expandedPopEst$VariablesCovariance[,.N,by="Stratum"]
+expect_true(all(rowsByStratum$N==ncombo))
+
+#check that age-proportions in new domains are all equal
+freqtab <- merge(expandedPopEst$Abundance, expandedPopEst$DomainVariables)
+freqTabIndGear <- freqtab[,list(FrequencyInd=mean(Frequency)), by=c("IndividualAge", "Gear","Usage")]
+freqTabGear <- freqTabIndGear[,list(totalFreqGear=sum(FrequencyInd)),by=c("Gear", "Usage")]
+freqTabIndGear <- merge(freqTabIndGear, freqTabGear, by=c("Gear", "Usage"))
+freqTabIndGear$prop <- freqTabIndGear$FrequencyInd/freqTabIndGear$totalFreqGear
+freqTabIndGearwOdomains <- merge(freqTabIndGear, popEst$DomainVariables, by=c("IndividualAge", "Gear", "Usage"), all.x=T)
+freqTabIndNewDomains <- freqTabIndGearwOdomains[is.na(freqTabIndGearwOdomains$Domain),]
+propVars <- freqTabIndNewDomains[,list(propVar=var(prop)),by="IndividualAge"]
+expect_true(all(propVars$propVar==0))
+
+#check that new domains amount to practically zero proportion
+propByNewDom <- freqTabIndGearwOdomains[,list(totalIndFreq=sum(FrequencyInd)), by=list(newDomain=!is.na(get("Domain")))]
+expect_true(propByNewDom$totalIndFreq[!propByNewDom$newDomain] / sum(propByNewDom$totalIndFreq)<1e-2)
+
+#check that imputed means are reasonable (should be within ranges of original domains)
+
+meantab <- merge(expandedPopEst$Variables, expandedPopEst$DomainVariables)
+meantabwOdomains <- merge(meantab, popEst$DomainVariables, by=c("Gear", "Usage", "IndividualAge"), all.x=T)
+meantabwOdomains <- meantabwOdomains[order(meantabwOdomains$Mean, meantabwOdomains$Domain.y),]
+maxDomains <- meantabwOdomains[,list(maxMeanNewDomain=max(Mean[is.na(Domain.y)],na.rm=T), maxMeanOldDomain=max(Mean[!is.na(Domain.y)],na.rm=T)), by="IndividualAge"]
+maxDomains$diff <- maxDomains$maxMeanOldDomain - maxDomains$maxMeanNewDomain
+#check that highest mean for each age group is not an imputed domain
+expect_true(all(maxDomains$diff/maxDomains$maxMeanOldDomain > -1e-3))
+
+minDomains <- meantabwOdomains[,list(minMeanNewDomain=min(Mean[is.na(Domain.y)],na.rm=T), minMeanOldDomain=min(Mean[!is.na(Domain.y)],na.rm=T)), by="IndividualAge"]
+minDomains$diff <- minDomains$minMeanOldDomain - minDomains$minMeanNewDomain
+#check that highest mean for each age group is not an imputed domain
+expect_true(all(minDomains$diff/minDomains$minMeanOldDomain < 1e-3))
+#check that frequency cvs are in reasonable range
+cvtabFreq <- merge(expandedPopEst$AbundanceCovariance[Domain1==Domain2], expandedPopEst$Abundance, by.x=c("Stratum", "Domain1"), by.y=c("Stratum", "Domain"))
+cvtabFreq$cv <- sqrt(cvtabFreq$FrequencyCovariance) / cvtabFreq$Frequency
+#check that unsampled domain has gotten a cv
+expect_true(!is.na(cvtabFreq$cv[cvtabFreq$Domain1=="Not sampled:  11/1/ 1" & cvtabFreq$Stratum=="Unsampled"]))
+cvtabFreq <- merge(cvtabFreq, expandedPopEst$DomainVariables, by.x=c("Domain1"), by.y=c("Domain"))
+expect_true(mean(cvtabFreq$cv[cvtabFreq$IndividualAge==2],na.rm=T)<.3)
+
+#check that frequency cvs are in reasonable range
+cvtabMean <- merge(expandedPopEst$VariablesCovariance[Domain1==Domain2 & Variable1==Variable2], expandedPopEst$Variables, by.x=c("Stratum", "Domain1", "Variable1"), by.y=c("Stratum", "Domain", "Variable"))
+cvtabMean$cv <- sqrt(cvtabMean$MeanCovariance) / cvtabMean$Mean
+#check that unsampled domain has gotten a cv
+expect_true(!is.na(cvtabMean$cv[cvtabMean$Domain1=="Not sampled:  11/1/ 1" & cvtabMean$Stratum=="Unsampled" & cvtabMean$Variable1=="IndividualRoundWeight"]))
+cvtabMean <- merge(cvtabMean, expandedPopEst$DomainVariables, by.x=c("Domain1"), by.y=c("Domain"))
+expect_true(mean(cvtabMean$cv[cvtabMean$IndividualAge==2],na.rm=T)<.3)
