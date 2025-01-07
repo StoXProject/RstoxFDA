@@ -2201,8 +2201,3 @@ InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateDat
   }
     
 }
-
-#' @noRd
-ProbabilisticSuperIndividuals <- function(StoxBioticData, PSUSamplingParametersData, IndividualSamplingParametersData){
-  
-}
