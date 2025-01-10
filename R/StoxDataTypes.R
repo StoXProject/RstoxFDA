@@ -2402,7 +2402,21 @@ stoxFunctionAttributes <- list(
       StratificationColumns = "stratificationcolumns"
       ),
     functionParameterDefaults = list(
-      DefinitionMethod = "AdHocStoxBiotic"
+      DefinitionMethod = "ProportionalPoissonSampling"
+    ),
+    functionArgumentHierarchy = list(
+      StratificationColumns = list(
+        DefinitionMethod = "AdHocStoxBiotic"
+      ),
+      StratumName = list(
+        DefinitionMethod = "ProportionalPoissonSampling"
+      ),
+      Quota = list(
+        DefinitionMethod = "ProportionalPoissonSampling"
+      ),
+      ExpectedSampleSize = list(
+        DefinitionMethod = "ProportionalPoissonSampling"
+      )
     )
     ),
   ReadPSUSamplingParameters = list(

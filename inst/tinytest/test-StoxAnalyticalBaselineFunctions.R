@@ -33,7 +33,26 @@ expect_true(abs((sum(1/designParamsCorrected$SelectionTable$InclusionProbability
 #HH should be approximately the same after non-response correction
 expect_true(abs((mean(1/designParamsCorrected$SelectionTable$InclusionProbability)-mean(1/designParams$SelectionTable$InclusionProbability))/sum(1/designParamsCorrected$SelectionTable$InclusionProbability))<0.1)
 
-#define from data
+
+#define pps-parameters from data
+calculatedPps <- RstoxFDA::ComputePSUSamplingParameters(RstoxFDA::CatchLotteryExample, 
+                                                        "ProportionalPoissonSampling", 
+                                                        "serialnumber", StratumName = 
+                                                          "Nordsjo", Quota = 124*1e6, 
+                                                        ExpectedSampleSize = 110)
+expect_true(RstoxFDA:::is.PSUSamplingParametersData(calculatedPps))
+comp <- merge(calculatedPps$SelectionTable, 
+              RstoxFDA::CatchLotterySamplingExample$SelectionTable
+              , by=c("Stratum", "SamplingUnitId"))
+comp <- comp[!(comp$SamplingUnitId %in% c("38408", "38409"))] #remove catches that has had weights corrected or something
+expect_true(all(comp$SelectionProbability.x - comp$SelectionProbability.y < 1e-10))
+expect_true(all(comp$InclusionProbability.x - comp$InclusionProbability.y < 1e-10))
+
+#sampling weights are different, because of the two removed hauls above, but should be proportional
+expect_true(length(unique(round(comp$HHsamplingWeight.x / comp$HHsamplingWeight.y, digits=10)))==1)
+expect_true(length(unique(round(comp$HTsamplingWeight.x / comp$HTsamplingWeight.y, digits=10)))==1)
+
+#define equal prob fixed-size selection from data
 suppressWarnings(StoxBioticData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic(system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA"))))
 designParamsSB <- RstoxFDA:::ComputePSUSamplingParameters(StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsSB))

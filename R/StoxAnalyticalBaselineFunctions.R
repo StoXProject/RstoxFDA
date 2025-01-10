@@ -161,6 +161,49 @@ ReadPSUSamplingParameters <- function(FileName){
   return(parseDesignParameters(FileName))
 }
 
+#' @noRd
+computePpsParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Quota, StratumName, ExpectedSampleSize){
+  
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(SamplingUnitId, "SamplingUnitId")
+  checkMandatory(Quota, "Quota")
+  checkMandatory(StratumName, "StratumName")
+  checkMandatory(ExpectedSampleSize, "ExpectedSampleSize")
+  
+  if (length(unique(StoxBioticData$SpeciesCategory$SpeciesCategory))!=1){
+    stop(paste("The DefinitionMethod 'ProportionalPoissonSampling', requires only one species category to be present in sample records. Found:", 
+               truncateStringVector(unique(StoxBioticData$SpeciesCategory$SpeciesCategory))))
+  }
+  
+  if (!(SamplingUnitId %in% names(StoxBioticData$Haul))){
+    stop(paste("The argument 'SamplingUnitId' must identify a variable in the 'Haul'-table of 'StoxBioticData"))
+  }
+  
+  n <- ExpectedSampleSize
+  
+  flatBiotic <- RstoxData::MergeStoxBiotic(StoxBioticData, TargetTable = "Sample")
+  SelectionTable <- flatBiotic[,list(catchWeight=sum(CatchFractionWeight)), by=list(SamplingUnitId=get(SamplingUnitId))]
+  SelectionTable$SelectionProbability <- SelectionTable$catchWeight / Quota
+  SelectionTable$HHsamplingWeight <- 1 / (SelectionTable$SelectionProbability * sum(1/SelectionTable$SelectionProbability))
+  SelectionTable$InclusionProbability <- 1-((1-SelectionTable$SelectionProbability)**n)
+  SelectionTable$HTsamplingWeight <- 1 / (SelectionTable$InclusionProbability * sum(1/SelectionTable$InclusionProbability))
+  SelectionTable$Order <- as.numeric(NA)
+  SelectionTable$Stratum <- StratumName
+  SelectionTable$SelectionDescription <- ""
+  SelectionTable <- SelectionTable[,.SD,.SDcol=c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "HTsamplingWeight", "SelectionProbability", "HHsamplingWeight", "SelectionDescription")]
+  
+  SampleTable <- data.table::data.table(Stratum=StratumName, N=as.numeric(NA), n=n, SelectionMethod="Poisson", FrameDescription="")
+  
+  StratificationVariables <- data.table::data.table(Stratum=StratumName)
+
+  samplingParams <- list()
+  samplingParams$SampleTable <- SampleTable
+  samplingParams$SelectionTable <- SelectionTable
+  samplingParams$StratificationVariables <- StratificationVariables
+    
+  return(samplingParams)
+}
+
 #' Compute PSU Sampling Design Parameters
 #' @description 
 #'  Compute sampling parameters for Primary Sampling Units in multi-stage sampling.
@@ -172,27 +215,89 @@ ReadPSUSamplingParameters <- function(FileName){
 #'  This is a reasonable approximation if within-strata sampling is approximately simple random selections,
 #'  the sample intensitiy is low (only a small fraction of the population is sampled),
 #'  and non-response is believed to be random.
-#' @param DefinitionMethod 'AdHocStoxBiotic'
+#'  
+#'  If 'DefinitionMethod' is 'ProportionalPoissonSampling', Unstratified (singe stratum) Poission sampling with selection probabilities
+#'  proportional to catch size is assumed. 'SamplingUnitId' must be a variable on the Haul table of 'StoxBioticData' for this option,
+#'  and the data must contain only one species (SpeciesCategory in 'StoxBioticData'). SelectionProbabilities are assigned
+#'  based on the total catch of the species in each haul. Specifically, for a haul \eqn{i}; selectionprobabilites, \eqn{p_{i}} and inclusionprobabilities \eqn{\pi_{i}}
+#'  are calculated as:
+#'  
+#'  \deqn{p_{i}=\frac{w_{i}}{W}}
+#'  
+#'  \deqn{\pi_{i}=1-(1-p_{i})^{n}}
+#'  
+#'  where:
+#'  \itemize{ 
+#'    \item \eqn{w_{i}} is the sum of all catch weights in haul \eqn{i} ('CatchFractionWeight' on the 'Sample' table of 'StoxBioticData') 
+#'    \item \eqn{W} is the expected total catch in the fishery (argument 'Quota')
+#'    \item \eqn{n} is the expected sample size (argument 'ExpectedSampleSize')
+#'  }
+#'  If proportional poisson sampling was actually used to select the sampled records in 'StoxBioticData',
+#'  sampling parameters would have been obtained prior to sampling, and it is generally preferable to obtain these, 
+#'  and import those via \code{\link[RstoxFDA]{ReadPSUSamplingParameters}}. Weight-records are sometimes corrected after
+#'  sampling parameters are calculated, and proper information about non-response can not be recalculated after the fact.
+#'  
+#'  Proportional poisson sampling also allows the sampler to combine rigour and pragmatism, by varying sampling parameters
+#'  in the course of sample selection. For instance 'n' may be changed during the sampling period, if non-response 
+#'  turns out to be higher than expected. Such flexibilities are not
+#'  provided by this function, and the approximation may be severely compromised, if such pragmatism is not accounted for.
+#'  
+#' @param DefinitionMethod 'AdHocStoxBiotic' or 'ProportionalPoissonSampling'
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} Sample data to construct design parameters from
 #' @param SamplingUnitId name of column in 'StoxBioticData' that identifies the Primary Sampling Unit the design is constructed for.
-#' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling.
+#' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic')
+#' @param StratumName name of the stratum sampling parameters are calculated for (for DefinitionMethod 'ProportionalPoissonSampling')
+#' @param Quota expected total catch in sampling frame in kg (for DefinitionMethod 'ProportionalPoissonSampling')
+#' @param ExpectedSampleSize the expected sample size for Possion sampling (for DefinitionMethod 'ProportionalPoissonSampling')
 #' @return \code{\link[RstoxFDA]{PSUSamplingParametersData}}
 #' @examples
-#'  # parameters for simpler random haul-selection, stratified by GearGroup
+#'  # parameters for simple random haul-selection, stratified by GearGroup
 #'  PSUparams <- ComputePSUSamplingParameters(RstoxFDA::StoxBioticDataExample, 
 #'   "AdHocStoxBiotic", 
 #'   "Haul", 
 #'   "GearGroup")
+#'   
+#'  # parameters for haul selection proportional to catch size.
+#'  calculatedPps <- RstoxFDA::ComputePSUSamplingParameters(RstoxFDA::CatchLotteryExample, 
+#'     "ProportionalPoissonSampling", 
+#'     "serialnumber", StratumName = 
+#'     "Nordsjo", Quota = 124*1e6, 
+#'     ExpectedSampleSize = 110)
 #' 
 #' @export
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
-ComputePSUSamplingParameters <- function(StoxBioticData, DefinitionMethod=c("AdHocStoxBiotic"), SamplingUnitId=character(), StratificationColumns=character()){
+ComputePSUSamplingParameters <- function(StoxBioticData, DefinitionMethod=c("AdHocStoxBiotic", "ProportionalPoissonSampling"), SamplingUnitId=character(), StratificationColumns=character(), StratumName=character(), Quota=numeric(), ExpectedSampleSize=numeric()){
 
-  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("AdHocStoxBiotic"))
+  DefinitionMethod <- checkOptions(DefinitionMethod, "DefinitionMethod", c("AdHocStoxBiotic", "ProportionalPoissonSampling"))
+
+  if (DefinitionMethod=="AdHocStoxBiotic"){
+    return(assumeDesignParametersStoxBiotic(StoxBioticData, SamplingUnitId, StratificationColumns))    
+  }
+  else if (DefinitionMethod=="ProportionalPoissonSampling"){
+    return(computePpsParametersStoxBiotic(StoxBioticData, SamplingUnitId, Quota, StratumName, ExpectedSampleSize))    
+  }
+  else{
+    stop(paste("The option", DefinitionMethod, "is not recognized for the argument 'DefinitionMethod'"))
+  }
+
+}
+
+#' @param PSUSamplingParametersData doc
+#' @param StratificationVariables doc
+#' @param StratificationVariablesTable doc
+#' @noRd
+AddPsuStratificationVariables <- function(PSUSamplingParametersData, StratificationVariables, StratificationVariablesTable=data.table::data.table()){
   
-  return(assumeDesignParametersStoxBiotic(StoxBioticData, SamplingUnitId, StratificationColumns))
+  #refuse if stratification columns already exist.
+  
+  #check that all StratificationVariablesTable mathc PSUSamplingParametersData wrp Stratum
+  
+  #check that StratificationVariables identify Strata
+  
+  #Add StratificationVariables to PSUSamplingParametersData 
+  
 }
 
 #' collapse strata, recalulate n/N and sampling weights
@@ -1579,6 +1684,12 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     return(AnalyticalPopulationEstimateData)
   }
 
+}
+
+#' 
+#' @noRd
+AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, RetainStrata=character(), AggregateStratumName=character()){
+  # consider an option for combining with several 'AnalyticalPopulationEstimateData'
 }
 
 #' Fills in unsampled strata according to 'strict' after new domains and new strata has been inferred and added to the estimation object

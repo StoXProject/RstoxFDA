@@ -6,19 +6,28 @@
 \usage{
 ComputePSUSamplingParameters(
   StoxBioticData,
-  DefinitionMethod = c("AdHocStoxBiotic"),
+  DefinitionMethod = c("AdHocStoxBiotic", "ProportionalPoissonSampling"),
   SamplingUnitId = character(),
-  StratificationColumns = character()
+  StratificationColumns = character(),
+  StratumName = character(),
+  Quota = numeric(),
+  ExpectedSampleSize = numeric()
 )
 }
 \arguments{
 \item{StoxBioticData}{\code{\link[RstoxData]{StoxBioticData}} Sample data to construct design parameters from}
 
-\item{DefinitionMethod}{'AdHocStoxBiotic'}
+\item{DefinitionMethod}{'AdHocStoxBiotic' or 'ProportionalPoissonSampling'}
 
 \item{SamplingUnitId}{name of column in 'StoxBioticData' that identifies the Primary Sampling Unit the design is constructed for.}
 
-\item{StratificationColumns}{name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling.}
+\item{StratificationColumns}{name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic')}
+
+\item{StratumName}{name of the stratum sampling parameters are calculated for (for DefinitionMethod 'ProportionalPoissonSampling')}
+
+\item{Quota}{expected total catch in sampling frame in kg (for DefinitionMethod 'ProportionalPoissonSampling')}
+
+\item{ExpectedSampleSize}{the expected sample size for Possion sampling (for DefinitionMethod 'ProportionalPoissonSampling')}
 }
 \value{
 \code{\link[RstoxFDA]{PSUSamplingParametersData}}
@@ -34,13 +43,46 @@ selection with replacement and complete response.
 This is a reasonable approximation if within-strata sampling is approximately simple random selections,
 the sample intensitiy is low (only a small fraction of the population is sampled),
 and non-response is believed to be random.
+
+If 'DefinitionMethod' is 'ProportionalPoissonSampling', Unstratified (singe stratum) Poission sampling with selection probabilities
+proportional to catch size is assumed. 'SamplingUnitId' must be a variable on the Haul table of 'StoxBioticData' for this option,
+and the data must contain only one species (SpeciesCategory in 'StoxBioticData'). SelectionProbabilities are assigned
+based on the total catch of the species in each haul. Specifically, for a haul \eqn{i}; selectionprobabilites, \eqn{p_{i}} and inclusionprobabilities \eqn{\pi_{i}}
+are calculated as:
+
+\deqn{p_{i}=\frac{w_{i}}{W}}
+
+\deqn{\pi_{i}=1-(1-p_{i})^{n}}
+
+where:
+\itemize{
+\item \eqn{w_{i}} is the sum of all catch weights in haul \eqn{i} ('CatchFractionWeight' on the 'Sample' table of 'StoxBioticData')
+\item \eqn{W} is the expected total catch in the fishery (argument 'Quota')
+\item \eqn{n} is the expected sample size (argument 'ExpectedSampleSize')
+}
+If proportional poisson sampling was actually used to select the sampled records in 'StoxBioticData',
+sampling parameters would have been obtained prior to sampling, and it is generally preferable to obtain these,
+and import those via \code{\link[RstoxFDA]{ReadPSUSamplingParameters}}. Weight-records are sometimes corrected after
+sampling parameters are calculated, and proper information about non-response can not be recalculated after the fact.
+
+Proportional poisson sampling also allows the sampler to combine rigour and pragmatism, by varying sampling parameters
+in the course of sample selection. For instance 'n' may be changed during the sampling period, if non-response
+turns out to be higher than expected. Such flexibilities are not
+provided by this function, and the approximation may be severely compromised, if such pragmatism is not accounted for.
 }
 \examples{
- # parameters for simpler random haul-selection, stratified by GearGroup
+ # parameters for simple random haul-selection, stratified by GearGroup
  PSUparams <- ComputePSUSamplingParameters(RstoxFDA::StoxBioticDataExample, 
   "AdHocStoxBiotic", 
   "Haul", 
   "GearGroup")
+  
+ # parameters for haul selection proportional to catch size.
+ calculatedPps <- RstoxFDA::ComputePSUSamplingParameters(RstoxFDA::CatchLotteryExample, 
+    "ProportionalPoissonSampling", 
+    "serialnumber", StratumName = 
+    "Nordsjo", Quota = 124*1e6, 
+    ExpectedSampleSize = 110)
 
 }
 \concept{Analytical estimation}
