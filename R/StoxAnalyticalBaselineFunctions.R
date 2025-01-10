@@ -179,9 +179,13 @@ computePpsParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Quota
     stop(paste("The argument 'SamplingUnitId' must identify a variable in the 'Haul'-table of 'StoxBioticData"))
   }
   
+  if (any(is.na(StoxBioticData$Sample$CatchFractionWeight))){
+    missing <- StoxBioticData$Sample$Sample[is.na(StoxBioticData$Sample$CatchFractionWeight)]
+    stop(paste("Cannot computed sampling parameters with missing catch weights, missing for samples: ", truncateStringVector(missing)))
+  }
   n <- ExpectedSampleSize
   
-  flatBiotic <- RstoxData::MergeStoxBiotic(StoxBioticData, TargetTable = "Sample")
+  flatBiotic <- RstoxData::mergeByStoxKeys(StoxBioticData$Haul, StoxBioticData$Sample, StoxDataType = "StoxBiotic")
   SelectionTable <- flatBiotic[,list(catchWeight=sum(CatchFractionWeight)), by=list(SamplingUnitId=get(SamplingUnitId))]
   SelectionTable$SelectionProbability <- SelectionTable$catchWeight / Quota
   SelectionTable$HHsamplingWeight <- 1 / (SelectionTable$SelectionProbability * sum(1/SelectionTable$SelectionProbability))
@@ -964,6 +968,7 @@ covarAbundance <- function(Totals, PSUSampling, MeanOfMeans){
 
       relPSUDomainSize <- sum(table$HHsamplingWeight[!duplicated(table$SamplingUnitId)])
       relDomainSizes <- table[,list(relDomainSize=sum(get("HHsamplingWeight")[!duplicated(get("SamplingUnitId"))])), by=c("Stratum", "Domain")]
+      
       stopifnot(relPSUDomainSize<=1+1e-1)
       stopifnot(all(relDomainSizes$relDomainSize <= relPSUDomainSize))
 
@@ -1011,6 +1016,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
       
       relPSUDomainSize <- sum(table$HHsamplingWeight[!duplicated(table$SamplingUnitId)])
       relDomainSizes <- table[,list(relDomainSize=sum(get("HHsamplingWeight")[!duplicated(get("SamplingUnitId"))])), by=c("Stratum", "Domain")]
+      
       stopifnot(relPSUDomainSize<=1+1e-1)
       stopifnot(all(relDomainSizes$relDomainSize <= relPSUDomainSize))
       

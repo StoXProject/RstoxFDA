@@ -142,7 +142,9 @@ weights <- lsCol$SelectionTable[,list(meanN=sum(HTsamplingWeight)), by=c("Stratu
 expect_true(all(abs(weights$meanN-1) < 1e-6))
 
 
-#test estimate with HansenHurwitzDomainEstimate
+
+
+#test estimate with HansenHurwitzDomainEstimate, read params
 data <- RstoxFDA::CatchLotteryExample
 indSampling <- RstoxFDA:::ComputeIndividualSamplingParameters(data, "SRS", c("IndividualAge"))
 
@@ -325,7 +327,15 @@ popEstPD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstPD)
 expect_true(abs(popEst$Abundance$Abundance - sum(popEstPD$Abundance$Abundance))/popEst$Abundance$Abundance < 1e-2)
 expect_true(abs(popEst$Variables$Total - sum(popEstPD$Variables$Total))/popEst$Variables$Total < 1e-2)
 
+#test PSU domains, computed PSU sampling parameters
+ex2 <- RstoxFDA::CatchLotteryExample
+ex2$SpeciesCategory$SpeciesCategory <- "061104"
+stationDesignComp <- RstoxFDA::ComputePSUSamplingParameters(StoxBioticData = ex2, "ProportionalPoissonSampling", "serialnumber", StratumName = "Nordsjo", Quota = 124*1e6, ExpectedSampleSize = 110)
+stationDesignComp <- RstoxFDA::AssignPSUSamplingParameters(stationDesignComp, ex2, "serialnumber", "Haul", "MissingAtRandom")
 
+psuEstCompPD <- RstoxFDA:::AnalyticalPSUEstimate(ex2, srs, c("IndividualRoundWeight"), c("IndividualAge"), c("Gear"))
+popEstCompPD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesignComp, psuEstCompPD)
+expect_true(abs(sum(popEstCompPD$Abundance$Abundance) - sum(popEstPD$Abundance$Abundance))/sum(popEstCompPD$Abundance$Abundance) < 1e-2)
 #
 # Test ratio estimation
 #
