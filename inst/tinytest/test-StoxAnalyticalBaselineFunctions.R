@@ -48,6 +48,25 @@ comp <- comp[!(comp$SamplingUnitId %in% c("38408", "38409"))] #remove catches th
 expect_true(all(comp$SelectionProbability.x - comp$SelectionProbability.y < 1e-10))
 expect_true(all(comp$InclusionProbability.x - comp$InclusionProbability.y < 1e-10))
 
+# add stratification columns
+expect_error(RstoxFDA:::AddPsuStratificationVariables(calculatedPps, StratificationVariables = c("VesselLengthGroup", "VesselFlag"), StratificationVariablesTable = data.table::data.table(VesselLengthGroup="o15m", VesselFlag="NOR")), "Invalid 'StratificationVariablesTable'")
+expect_error(RstoxFDA:::AddPsuStratificationVariables(calculatedPps, StratificationVariables = c("VesselLengthGroup", "VesselFlag"), StratificationVariablesTable = data.table::data.table(Stratum=c("s1", "s2"), VesselLengthGroup=c("o15m","o15m"), VesselFlag=c("NOR","NOR"))), "Not all strata in 'StratificationVariablesTable' exist in 'PSUSamplingParametersData'.")
+calculatedPps2 <- calculatedPps
+calculatedPps2$StratificationVariables <- data.table::data.table(Stratum=c("s1","s2"))
+expect_error(RstoxFDA:::AddPsuStratificationVariables(calculatedPps2, StratificationVariables = c("VesselLengthGroup", "VesselFlag"), StratificationVariablesTable = data.table::data.table(Stratum=c("s1", "s2"), VesselLengthGroup=c("o15m","o15m"), VesselFlag=c("NOR","NOR"))), "Stratification variables does not identify strata. Several strata overlap with")
+
+calculatedPpsStrat <- RstoxFDA:::AddPsuStratificationVariables(calculatedPps, StratificationVariables = c("VesselFlag"), StratificationVariablesTable = data.table::data.table(Stratum="Nordsjo", VesselFlag="NOR"))
+expect_true(all(c("Stratum", "VesselFlag") %in% names(calculatedPpsStrat$StratificationVariables)))
+expect_equal(nrow(calculatedPpsStrat$StratificationVariables), 1)
+
+calculatedPpsStrat <- RstoxFDA:::AddPsuStratificationVariables(calculatedPps, StratificationVariables = c("VesselLengthGroup", "VesselFlag"), StratificationVariablesTable = data.table::data.table(Stratum="Nordsjo", VesselLengthGroup="o15m", VesselFlag="NOR"))
+expect_true(all(c("Stratum", "VesselLengthGroup", "VesselFlag") %in% names(calculatedPpsStrat$StratificationVariables)))
+expect_equal(nrow(calculatedPpsStrat$StratificationVariables), 1)
+
+calculatedPpsStrat <- RstoxFDA:::AddPsuStratificationVariables(calculatedPps, StratificationVariables = c("VesselLengthGroup", "VesselFlag"), StratificationVariablesTable = data.table::data.table(Stratum=c("Nordsjo", "Nordsjo"), VesselLengthGroup=c("u15m","o15m"), VesselFlag=c("NOR")))
+expect_true(all(c("Stratum", "VesselLengthGroup", "VesselFlag") %in% names(calculatedPpsStrat$StratificationVariables)))
+expect_equal(nrow(calculatedPpsStrat$StratificationVariables), 2)
+
 #sampling weights are different, because of the two removed hauls above, but should be proportional
 expect_true(length(unique(round(comp$HHsamplingWeight.x / comp$HHsamplingWeight.y, digits=10)))==1)
 expect_true(length(unique(round(comp$HTsamplingWeight.x / comp$HTsamplingWeight.y, digits=10)))==1)

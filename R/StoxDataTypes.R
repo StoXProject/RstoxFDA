@@ -2427,6 +2427,15 @@ stoxFunctionAttributes <- list(
       FileName = "filePath"
     )
   ),
+  AddPsuStratificationVariables = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "PSUSamplingParametersData",
+    functionParameterFormat = list(
+      StratificationVariables = "stratificationvariablesvector",
+      StratificationVariablesTable = "stratificationvariablestable"
+    )
+  ),
   AssignPSUSamplingParameters = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
@@ -3228,6 +3237,21 @@ processPropertyFormats <- list(
       return(pv)
     },
     variableTypes = "character"
+  ),
+  stratificationvariablesvector = list(
+    class = "vector",
+    title = "Names of stratification variables to add", 
+    variableTypes = "character"
+  ),
+  stratificationvariablestable = list(
+    class = "table", 
+    title = "Table of Stratification variables for each Stratum", 
+    columnNames = function(StratificationVariables) {
+      c("Stratum", StratificationVariables)
+    }, 
+    variableTypes = function(StratificationVariables) {
+      rep("character", 1 + length(StratificationVariables))
+    }
   )
 )
 

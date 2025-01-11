@@ -186,7 +186,7 @@ computePpsParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Quota
   n <- ExpectedSampleSize
   
   flatBiotic <- RstoxData::mergeByStoxKeys(StoxBioticData$Haul, StoxBioticData$Sample, StoxDataType = "StoxBiotic")
-  SelectionTable <- flatBiotic[,list(catchWeight=sum(CatchFractionWeight)), by=list(SamplingUnitId=get(SamplingUnitId))]
+  SelectionTable <- flatBiotic[,list(catchWeight=sum(get("CatchFractionWeight"))), by=list(SamplingUnitId=get(SamplingUnitId))]
   SelectionTable$SelectionProbability <- SelectionTable$catchWeight / Quota
   SelectionTable$HHsamplingWeight <- 1 / (SelectionTable$SelectionProbability * sum(1/SelectionTable$SelectionProbability))
   SelectionTable$InclusionProbability <- 1-((1-SelectionTable$SelectionProbability)**n)
@@ -288,19 +288,82 @@ ComputePSUSamplingParameters <- function(StoxBioticData, DefinitionMethod=c("AdH
 
 }
 
-#' @param PSUSamplingParametersData doc
-#' @param StratificationVariables doc
-#' @param StratificationVariablesTable doc
-#' @noRd
+is.StratificationVariablesData <- function(StratificationVariablesTable){
+  if(!data.table::is.data.table(StratificationVariablesTable)){
+    return(FALSE)
+  }
+  if (!("Stratum" %in% names(StratificationVariablesTable))){
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
+#' Add Stratification columns to 'PSUSamplingParametersData'
+#' @description
+#'  Add additional variables to encode strata and its correspondance with census data (e.g. landings data).
+#' @details
+#'  \code{\link[RstoxFDA]{PSUSamplingParametersData}} provide sampling parameters by strata.
+#'  Optionally, it may also contain additional variables that encode the stratification in terms of variables
+#'  available in other data sources, such as \code{\link[RstoxData]{StoxLandingData}}. This function allows
+#'  such variables to be added, if not already present.
+#'  
+#'  More detailed encoding of stratification is useful for 
+#'  encoding the sampling frame of the design provided by 'PSUSamplingParametersData'. By encoding all strata
+#'  in terms of variables that are available in census-data, the correspondance between sampling frame and
+#'  target population can be encoded. This information will be available in downstream estimates (e.g.
+#'  \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}) and allow for pragmatic inference to
+#'  out-of-frame strata (via \code{\link[RstoxFDA]{ExtendAnalyticalSamplingFrameCoverage}}).
+#' 
+#' @param PSUSamplingParametersData Sampling parameters stratification variables should be added to
+#' @param StratificationVariables name of variables to add
+#' @param StratificationVariablesTable value-combinations for the variables to add to each stratum
+#' @return \code{\link[RstoxFDA]{PSUSamplingParametersData}}
+#' @export
+#' @concept StoX-functions
+#' @concept Analytical estimation
+#' @md
 AddPsuStratificationVariables <- function(PSUSamplingParametersData, StratificationVariables, StratificationVariablesTable=data.table::data.table()){
   
-  #refuse if stratification columns already exist.
+  checkMandatory(PSUSamplingParametersData, "PSUSamplingParametersData")
+  checkMandatory(StratificationVariables, "StratificationVariables")
+  checkMandatory(StratificationVariablesTable, "StratificationVariablesTable")
   
-  #check that all StratificationVariablesTable mathc PSUSamplingParametersData wrp Stratum
+  if (length(names(PSUSamplingParametersData$StratificationVariables))>1){
+    stop("'PSUSamplingParametersData' already has StratificationVariables")
+  }
   
-  #check that StratificationVariables identify Strata
+  if (!is.StratificationVariablesData(StratificationVariablesTable)){
+    stop("Invalid 'StratificationVariablesTable'.")
+  }
   
-  #Add StratificationVariables to PSUSamplingParametersData 
+  if (!all(StratificationVariablesTable$Stratum %in% PSUSamplingParametersData$StratificationVariables$Stratum)){
+    missing <- StratificationVariablesTable$Stratum[!(StratificationVariablesTable$Stratum %in% PSUSamplingParametersData$StratificationVariables$Stratum)]
+    stop(paste("Not all strata in 'StratificationVariablesTable' exist in 'PSUSamplingParametersData'. Missing", truncateStringVector(missing)))
+  }
+  
+  if (!all(PSUSamplingParametersData$StratificationVariables$Stratum %in% StratificationVariablesTable$Stratum)){
+    missing <- PSUSamplingParametersData$StratificationVariables$Stratum[!(PSUSamplingParametersData$StratificationVariables$Stratum %in% StratificationVariablesTable$Stratum)]
+    stop(paste("Stratification variables are not provided for strata:", truncateStringVector(missing)))
+  }
+  
+  if (!all(StratificationVariables %in% names(StratificationVariablesTable))){
+    stop("Not all StratificationVariables are in the StratificationVariablesTable")
+  }
+  if (!all(names(StratificationVariablesTable) %in% c("Stratum", StratificationVariables))){
+    stop("Some StratificationVariables are not in the StratificationVariablesTable")
+  }
+  
+  stratCount <- StratificationVariablesTable[,list(strata=length(unique(get("Stratum")))), by=list(stratVarString=apply(StratificationVariablesTable[,.SD,.SDcol=names(StratificationVariablesTable)[names(StratificationVariablesTable) != "Stratum"]], 1, paste, collapse="/"))]
+  manyStrata <- stratCount[get("strata")>1,]
+  if (nrow(manyStrata)>0){
+    stop(paste("Stratification variables does not identify strata. Several strata overlap with:", truncateStringVector(manyStrata$stratVarString)))
+  }
+
+  PSUSamplingParametersData$StratificationVariables <- merge(PSUSamplingParametersData$StratificationVariables,
+                                                             StratificationVariablesTable,
+                                                             by="Stratum")
+  
+  return(PSUSamplingParametersData)
   
 }
 

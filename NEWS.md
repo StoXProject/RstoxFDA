@@ -1,4 +1,5 @@
 # 1.5.0-9003
+* Added function for annotating stratification variables to sampling parameters (AddPsuStratificationVariables) (#163)
 * Added option for computing sampling parameters for Proportion Poisson Sampling from data records (option DefinitionMethod='ProportionalPoissonSampling' to ComputePSUSamplingParameters) (#165)
 * Added functions for sampling frame expansion (ExtendAnalyticalSamplingFrameCoverage), and domain interpolation (InterpolateAnalyticalDomainEstimates) (#154)
 * Changed how Stratification variables and Domain variables are matched to landings with AnalyticalRatioEstimate (# 125)
