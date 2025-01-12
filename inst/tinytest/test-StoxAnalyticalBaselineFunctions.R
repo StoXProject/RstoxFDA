@@ -283,7 +283,6 @@ sexStrat <-  RstoxFDA:::ComputeIndividualSamplingParameters(ss, "Stratified", c(
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualTotalLength", c("IndividualSex"))
 psuEst <- RstoxFDA:::LiftStrata(psuEst)
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
-
 popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
 
 zeroAbund <- popEstMeanOfMeans$Abundance[popEstMeanOfMeans$Abundance$Frequency==0]
@@ -806,7 +805,7 @@ expect_true(all(minDomains$diff/minDomains$minMeanOldDomain < 1e-3))
 cvtabFreq <- merge(expandedPopEst$AbundanceCovariance[Domain1==Domain2], expandedPopEst$Abundance, by.x=c("Stratum", "Domain1"), by.y=c("Stratum", "Domain"))
 cvtabFreq$cv <- sqrt(cvtabFreq$FrequencyCovariance) / cvtabFreq$Frequency
 #check that unsampled domain has gotten a cv
-expect_true(!is.na(cvtabFreq$cv[cvtabFreq$Domain1=="Not sampled:  11/1/ 1" & cvtabFreq$Stratum=="Unsampled"]))
+expect_true(!is.na(cvtabFreq$cv[cvtabFreq$Domain1=="All/Gear:11/Usage:1/IndividualAge:1" & cvtabFreq$Stratum=="Unsampled"]))
 cvtabFreq <- merge(cvtabFreq, expandedPopEst$DomainVariables, by.x=c("Domain1"), by.y=c("Domain"))
 expect_true(mean(cvtabFreq$cv[cvtabFreq$IndividualAge==2],na.rm=T)<.3)
 
@@ -814,10 +813,9 @@ expect_true(mean(cvtabFreq$cv[cvtabFreq$IndividualAge==2],na.rm=T)<.3)
 cvtabMean <- merge(expandedPopEst$VariablesCovariance[Domain1==Domain2 & Variable1==Variable2], expandedPopEst$Variables, by.x=c("Stratum", "Domain1", "Variable1"), by.y=c("Stratum", "Domain", "Variable"))
 cvtabMean$cv <- sqrt(cvtabMean$MeanCovariance) / cvtabMean$Mean
 #check that unsampled domain has gotten a cv
-expect_true(!is.na(cvtabMean$cv[cvtabMean$Domain1=="Not sampled:  11/1/ 1" & cvtabMean$Stratum=="Unsampled" & cvtabMean$Variable1=="IndividualRoundWeight"]))
+expect_true(!is.na(cvtabMean$cv[cvtabMean$Domain1=="All/Gear:11/Usage:1/IndividualAge:1" & cvtabMean$Stratum=="Unsampled" & cvtabMean$Variable1=="IndividualRoundWeight"]))
 cvtabMean <- merge(cvtabMean, expandedPopEst$DomainVariables, by.x=c("Domain1"), by.y=c("Domain"))
 expect_true(mean(cvtabMean$cv[cvtabMean$IndividualAge==2],na.rm=T)<.3)
 
 # check aggregation
 #aggPopEst <- RstoxFDA:::AggregateAnalyticalEstimate(expandedPopEst, AggregateStratumName = "all")
-#browser()

@@ -1367,14 +1367,17 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   CombinedDomains <- data.table::CJ(PSUDomain=PSUDomainVariables$PSUDomain, LowerDomain=AnalyticalPSUEstimateData$DomainVariables$Domain, unique = T)
   CombinedDomains <- merge(CombinedDomains, PSUDomainVariables, by="PSUDomain")
   CombinedDomains <- merge(CombinedDomains, AnalyticalPSUEstimateData$DomainVariables, by.x="LowerDomain", by.y="Domain")
-  CombinedDomains$Domain <- paste("PSU-domain: ", CombinedDomains$PSUDomain, " Individual domain:", CombinedDomains$LowerDomain)
+  CombinedDomains$Domain <- "All"
+  for (domainCol in names(CombinedDomains)[!(names(CombinedDomains) %in% c("PSUDomain", "LowerDomain", "Domain"))]){
+    CombinedDomains$Domain <- paste(CombinedDomains$Domain, paste(domainCol, CombinedDomains[[domainCol]], sep=":"), sep="/")
+  }
   
   #
   # Estimate abundance
   #
   selAbundance <- merge(PSUSamplingParametersData$SelectionTable, AnalyticalPSUEstimateData$Abundance, by.x="SamplingUnitId", by.y="SampleId", suffixes = c(".PSU", ".lower"))
   selAbundance$Stratum <- paste("PSU-stratum:", selAbundance$Stratum.PSU, " Lower-stratum:", selAbundance$Stratum.lower, sep="")
-  selAbundance$Domain <- paste("PSU-domain: ", selAbundance$PSUDomain, " Individual domain:", selAbundance$Domain)
+  selAbundance$Domain <- CombinedDomains$Domain[match(paste(selAbundance$PSUDomain, selAbundance$Domain), paste(CombinedDomains$PSUDomain, CombinedDomains$LowerDomain))]
   AbundanceTable <- selAbundance[,list(Abundance=mean(get("Abundance")/get("SelectionProbability"))*sum(get("HHsamplingWeight")), Frequency=sum(get("HHsamplingWeight")*get("Frequency"))/sum(get("HHsamplingWeight"))), by=c("Stratum", "Domain")]    
   
   if (!MeanOfMeans){
@@ -1393,7 +1396,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   
   selVariables <- merge(PSUSamplingParametersData$SelectionTable, AnalyticalPSUEstimateData$Variables, by.x="SamplingUnitId", by.y="SampleId", suffixes = c(".PSU", ".lower"))
   selVariables$Stratum <- paste("PSU-stratum:", selVariables$Stratum.PSU, " Lower-stratum:", selVariables$Stratum.lower, sep="")
-  selVariables$Domain <- paste("PSU-domain: ", selVariables$PSUDomain, " Individual domain:", selVariables$Domain)
+  selVariables$Domain <- CombinedDomains$Domain[match(paste(selVariables$PSUDomain, selVariables$Domain), paste(CombinedDomains$PSUDomain, CombinedDomains$LowerDomain))]
   VariablesTable <- selVariables[,list(Total=mean(get("Total")/get("SelectionProbability"))*sum(get("HHsamplingWeight")), Mean=sum(get("Mean")[!is.nan(get("Mean"))]*get("HHsamplingWeight")[!is.nan(get("Mean"))])/sum(get("HHsamplingWeight")[!is.nan(get("Mean"))]), NoMeans=all(is.nan(get("Mean")))), by=c("Stratum", "Domain", "Variable")]
   VariablesTable$Mean[VariablesTable$NoMeans] <- NaN
   VariablesTable$NoMeans <- NULL
@@ -1438,7 +1441,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
     output$VariablesCovariance <- rbind(output$VariablesCovariance, merge(output$VariablesCovariance, strataDomains, all.y = T))
     
   }
-
+  
   return(output)
 }
 
@@ -2301,8 +2304,10 @@ InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateDat
     
     additionalDomains <- merge(otherDomainVariables, unsampledfractionaldomains, by="Domain", allow.cartesian = T)
     additionalDomains <- additionalDomains[,.SD,.SDcol=names(extendedAnalyticalPopulationEstimateData$DomainVariables)]
-    additionalDomains$Domain <- NULL
-    additionalDomains$Domain <- paste("Not sampled: ", apply(additionalDomains, 1, paste, collapse="/"))
+    additionalDomains$Domain <- "All"
+    for (domainCol in names(additionalDomains)[!(names(additionalDomains) %in% c("Domain"))]){
+      additionalDomains$Domain <- paste(additionalDomains$Domain, paste(domainCol, additionalDomains[[domainCol]], sep=":"), sep="/")
+    }
     additionalDomains <- additionalDomains[!duplicated(additionalDomains$Domain),]
     
     extendedAnalyticalPopulationEstimateData$DomainVariables <- rbind(extendedAnalyticalPopulationEstimateData$DomainVariables, additionalDomains)
