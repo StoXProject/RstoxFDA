@@ -1405,18 +1405,10 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   VariablesCovarianceTable <- covarVariables(VariablesTable, selVariables, MeanOfMeans, AbundanceTable)
   
   #
-  # Add sample size etc..
-  #
-  
-  SampleTable <- PSUSamplingParametersData$SelectionTable[,list(Samples=length(unique(get("SamplingUnitId"))), PSUDomainSize=mean(1/get("SelectionProbability"))*sum(get("HHsamplingWeight")), PSURelativeDomainSize=sum(get("HHsamplingWeight"))), by=c("Stratum", "PSUDomain")]    
-  
-  
-  #
   # Format output
   #
   
   output <- list()
-  output$SampleSummary <- SampleTable
   output$Abundance <- AbundanceTable
   output$Variables <- VariablesTable
   output$AbundanceCovariance <- AbundanceCovarianceTable
@@ -1758,7 +1750,29 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
 #' 
 #' @noRd
 AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, RetainStrata=character(), AggregateStratumName=character()){
-  # consider an option for combining with several 'AnalyticalPopulationEstimateData'
+  
+  checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
+  checkMandatory(AggregateStratumName, "AggregateStratumName")
+  if (isGiven(RetainStrata)){
+    if (all(RetainStrata %in% AnalyticalPopulationEstimateData$StratificationVariables$Stratum)){
+      missing <- RetainStrata[!(RetainStrata %in% AnalyticalPopulationEstimateData$StratificationVariables$Stratum)]
+      stop(paste("Not all value in 'RetainStrata' are strata in 'AnalyticalPopulationEstimateData'. Missing:", truncateStringVector(missing)))
+    }
+  }
+  else{
+    RetainStrata <- c()
+  }
+  collapsedStrata <- unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum[
+    !(AnalyticalPopulationEstimateData$StratificationVariables$Stratum %in% RetainStrata)])
+  
+  newAbundanceTable <- AnalyticalPopulationEstimateData$Abundance
+  newAbundanceTable$Stratum[AnalyticalPopulationEstimateData$Abundance$Stratum %in%
+                                                       collapsedStrata] <- AggregateStratumName
+  
+  #
+  #
+  # need to fix domain naming
+  
 }
 
 #' Fills in unsampled strata according to 'strict' after new domains and new strata has been inferred and added to the estimation object
@@ -1914,13 +1928,6 @@ ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateDa
     
     extendedAnalyticalPopulationEstimateData$StratificationVariables <- merge(extendedAnalyticalPopulationEstimateData$StratificationVariables, 
                                                                       unsampledpart, all=T)
-    
-    extendedAnalyticalPopulationEstimateData$SampleSummary <- rbind(extendedAnalyticalPopulationEstimateData$SampleSummary,
-                                                            data.table::data.table(Stratum=UnsampledStratum, 
-                                                                                   PSUDomain=NA, 
-                                                                                   Samples=as.integer(NA), 
-                                                                                   PSUDomainSize=as.numeric(NA), 
-                                                                                   PSURelativeDomainSize=as.numeric(NA)))
   
   if (Method == "Strict"){
     return(fillStrict(extendedAnalyticalPopulationEstimateData))

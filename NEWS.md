@@ -1,4 +1,5 @@
 # 1.5.0-9003
+* Removed the table SampleSummary from the data type AnalyticalPopulationEstimateData.
 * Added function for annotating stratification variables to sampling parameters (AddPsuStratificationVariables) (#163)
 * Added option for computing sampling parameters for Proportion Poisson Sampling from data records (option DefinitionMethod='ProportionalPoissonSampling' to ComputePSUSamplingParameters) (#165)
 * Added functions for sampling frame expansion (ExtendAnalyticalSamplingFrameCoverage), and domain interpolation (InterpolateAnalyticalDomainEstimates) (#154)

@@ -73,15 +73,6 @@ NULL
 #' @description
 #'  Analytical estimates for a population
 #'  
-#'  SampleSummary
-#'  \describe{
-#'   \item{Stratum}{Stratum that summary is provided for.}
-#'   \item{PSUDomain}{PSU domain that summary is provided for.}
-#'   \item{Samples}{The number of PSUs sampled in the domain.}
-#'   \item{PSUDomainSize}{The estimated number of PSUs in the domain.}
-#'   \item{PSURelativeDomainSize}{The estimated fraction of PSUs in the domain, relative to the number of PSUs in the stratum.}
-#'  }
-#'  
 #'  Abundance
 #'  \describe{
 #'    \item{Stratum}{Stratum that abundance is provided for.}
@@ -147,10 +138,7 @@ is.AnalyticalPopulationEstimateData <- function(AnalyticalPopulationEstimateData
   if (!is.list(AnalyticalPopulationEstimateData)){
     return(FALSE)
   }
-  if (!all(c("SampleSummary", "Abundance", "Variables", "AbundanceCovariance", "VariablesCovariance", "DomainVariables", "StratificationVariables") %in% names(AnalyticalPopulationEstimateData))){
-    return(FALSE)
-  }
-  if (!all(c("Stratum", "PSUDomain", "Samples", "PSUDomainSize", "PSURelativeDomainSize") %in% c(names(AnalyticalPopulationEstimateData$SampleSummary)))){
+  if (!all(c("Abundance", "Variables", "AbundanceCovariance", "VariablesCovariance", "DomainVariables", "StratificationVariables") %in% names(AnalyticalPopulationEstimateData))){
     return(FALSE)
   }
   if (!all(c("Stratum", "Domain", "Abundance", "Frequency") %in% names(AnalyticalPopulationEstimateData$Abundance))){

@@ -472,8 +472,6 @@ psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeig
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
 ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "SpeciesCategory", DomainVariables = "Gear")
 
-expect_equal(length(unique(stationDesign$SelectionTable$SamplingUnitId)), sum(popEstDomain$SampleSummary$Samples))
-expect_true(!is.null(ratioEst$SampleSummary))
 
 CVs <- merge(ratioEst$Abundance, ratioEst$AbundanceCovariance[Domain1==Domain2], by.x=c("Stratum", "Domain"), by.y=c("Stratum", "Domain1"))
 CVs$CV <- sqrt(CVs$AbundanceCovariance) / CVs$Abundance
@@ -623,7 +621,6 @@ popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
 expandedPopEst <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "Strict", "Gear")
 
-expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary))
 expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
 expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
 expect_equal(nrow(expandedPopEst$AbundanceCovariance), (nrow(popEst$Abundance)*3)*(nrow(popEst$Abundance)*3-1)/2+nrow(popEst$Abundance)*3) #all domain combinations
@@ -634,7 +631,6 @@ expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundan
 
 eps <- 1e-3
 expandedPopEst <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "StratumMean", "Gear", eps)
-expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary))
 expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
 expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
 expect_equal(nrow(expandedPopEst$AbundanceCovariance), (nrow(popEst$Abundance)*3)*(nrow(popEst$Abundance)*3-1)/2+nrow(popEst$Abundance)*3) #all domain combinations
@@ -668,7 +664,6 @@ ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEst, land, "IndividualRoundWei
 expect_equal(nrow(ratioEst$Variables), nrow(popEst$Variables))
 
 expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(popEst, land, "Frame", "Strict", "Unsampled")
-expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)*2)
 expect_equal(nrow(expandedPopEst$Abundance), nrow(popEst$Abundance)*2)
 expect_equal(nrow(expandedPopEst$Variables), nrow(popEst$Variables)*2)
 expect_equal(nrow(expandedPopEst$AbundanceCovariance), nrow(popEst$AbundanceCovariance)*2)
@@ -714,7 +709,6 @@ popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
 domainExpanded <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "Strict", c("Gear", "Usage"), eps)
 expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(domainExpanded, land, c("FrameVar1", "FrameVar2"), "Strict", "Unsampled")
-expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)+1)
 expect_true(nrow(expandedPopEst$Variables)>nrow(popEst$Variables)) 
 expect_true(nrow(expandedPopEst$Abundance)>nrow(popEst$Abundance))
 expect_true(nrow(expandedPopEst$AbundanceCovariance)> nrow(popEst$Abundance))
@@ -764,7 +758,6 @@ popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 domainExpanded <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "StratumMean", c("Gear", "Usage"), eps)
 expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(domainExpanded, land, c("FrameVar1", "FrameVar2"), "SetToStratum", "Unsampled", "PSU-stratum:Nordsjo Lower-stratum:sild'G05/161722.G05/126417/Clupea harengus")
 
-expect_equal(nrow(expandedPopEst$SampleSummary), nrow(popEst$SampleSummary)+1)
 expect_true(nrow(expandedPopEst$Variables)>nrow(popEst$Variables)) 
 expect_true(nrow(expandedPopEst$Abundance)>nrow(popEst$Abundance))
 expect_true(nrow(expandedPopEst$AbundanceCovariance)> nrow(popEst$Abundance))
@@ -824,3 +817,7 @@ cvtabMean$cv <- sqrt(cvtabMean$MeanCovariance) / cvtabMean$Mean
 expect_true(!is.na(cvtabMean$cv[cvtabMean$Domain1=="Not sampled:  11/1/ 1" & cvtabMean$Stratum=="Unsampled" & cvtabMean$Variable1=="IndividualRoundWeight"]))
 cvtabMean <- merge(cvtabMean, expandedPopEst$DomainVariables, by.x=c("Domain1"), by.y=c("Domain"))
 expect_true(mean(cvtabMean$cv[cvtabMean$IndividualAge==2],na.rm=T)<.3)
+
+# check aggregation
+#aggPopEst <- RstoxFDA:::AggregateAnalyticalEstimate(expandedPopEst, AggregateStratumName = "all")
+#browser()

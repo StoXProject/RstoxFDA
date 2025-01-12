@@ -6,15 +6,6 @@
 \description{
 Analytical estimates for a population
  
- SampleSummary
- \describe{
-  \item{Stratum}{Stratum that summary is provided for.}
-  \item{PSUDomain}{PSU domain that summary is provided for.}
-  \item{Samples}{The number of PSUs sampled in the domain.}
-  \item{PSUDomainSize}{The estimated number of PSUs in the domain.}
-  \item{PSURelativeDomainSize}{The estimated fraction of PSUs in the domain, relative to the number of PSUs in the stratum.}
- }
- 
  Abundance
  \describe{
    \item{Stratum}{Stratum that abundance is provided for.}
