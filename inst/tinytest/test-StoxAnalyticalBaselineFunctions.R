@@ -742,15 +742,15 @@ cvtabMean <- merge(cvtabMean, expandedPopEst$DomainVariables, by.x=c("Domain1"),
 expect_true(mean(cvtabMean$cv[cvtabMean$IndividualAge==2],na.rm=T)<.3)
 
 # check aggregation
-#aggPopEst <- RstoxFDA:::AggregateAnalyticalEstimate(expandedPopEst, AggregateStratumName = "all")
-#expect_true(RstoxFDA:::is.AnalyticalPopulationEstimateData(aggPopEst))
-#aggPopEstRatioEst <- RstoxFDA::AnalyticalRatioEstimate(aggPopEst, land, "IndividualRoundWeight", 
+aggPopEst <- RstoxFDA:::AggregateAnalyticalEstimate(expandedPopEst, AggregateStratumName = "all")
+expect_true(RstoxFDA:::is.AnalyticalPopulationEstimateData(aggPopEst))
+aggPopEstRatioEst <- RstoxFDA::AnalyticalRatioEstimate(aggPopEst, land, "IndividualRoundWeight", 
                                                         
-#                                                       StratificationVariables = c("FrameVar1", "FrameVar2"),
-#                                                       DomainVariables = c("Gear", "Usage"))
+                                                       StratificationVariables = c("FrameVar1", "FrameVar2"),
+                                                       DomainVariables = c("Gear", "Usage"))
 
-#stop("First enable multi-line stratificatrion for AnalyticalPopulationEstimateData")
-#stop("Consider if also possilbe for AnalyticalPSUEstimateSData")
-#stop("Update data type description, and implement is.AnalyticalPSUEstimateSData")
-#stop("Figure out how to deal with NAs as stratificationvariables. Make Expand... not introduce them in the first place, but remove whats not in landingpartition.")
-#stop("Write more tests for AggregateAnalyticalEstimate. Check covariances as well.")
+stop("First enable multi-line stratificatrion for AnalyticalPopulationEstimateData")
+stop("Consider if also possilbe for AnalyticalPSUEstimateSData")
+stop("Update data type description, and implement is.AnalyticalPSUEstimateSData")
+stop("Figure out how to deal with NAs as stratificationvariables. Make Expand... not introduce them in the first place, but remove whats not in landingpartition.")
+stop("Write more tests for AggregateAnalyticalEstimate. Check covariances as well.")

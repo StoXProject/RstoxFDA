@@ -1573,10 +1573,6 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
   
   if (Method == "MeanDomainWeight"){
   
-    
-    #handle multi-line stratum
-    #browser()
-    
     #check that strata are OK for application of frequencies
     strataCheck <- AnalyticalPopulationEstimateData$StratificationVariables
     landingsPart <- apply(strataCheck[,.SD,.SDcols = StratificationVariables], 1, FUN=paste, collapse="/")
@@ -1587,47 +1583,49 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     }
 
     frequencies <- AnalyticalPopulationEstimateData$Abundance[,.SD,.SDcol=c("Stratum", "Domain", "Frequency")]
-    
-    
-    #handle multi-line stratum
-    #browser()
-    frequencies <- merge(frequencies, AnalyticalPopulationEstimateData$StratificationVariables, by="Stratum")
     frequencies <- merge(frequencies, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
 
     #add mean weights
     meanW <- AnalyticalPopulationEstimateData$Variables[AnalyticalPopulationEstimateData$Variables$Variable==WeightVariable,.SD,.SDcol=c("Stratum", "Domain", "Mean")]
     frequencies <- merge(frequencies, meanW, by=c("Stratum", "Domain"))
     
-    #handle multi-line stratum
-    #browser()
     # normalize frequencies to landingsPartition within samplingstrata
-    totalFrequencies <- frequencies[,list(totalFreq=sum(get("Frequency")*get("Mean"))), by=c("Stratum", landingsPartition)]
-    
-    domainsLandings <- apply(StoxLandingData$Landing[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
-    domainsEstimates <- apply(totalFrequencies[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
-    
+    totalFrequencies <- frequencies[,list(totalFreq=sum(get("Frequency")*get("Mean"))), by=c("Stratum", DomainVariables)]
+
     #
     # Check matches
     #
-    
+    domainsLandings <- apply(StoxLandingData$Landing[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
+    domainsEstimatedWithRepl <- merge(totalFrequencies, AnalyticalPopulationEstimateData$StratificationVariables, by="Stratum", allow.cartesian=T)
+    domainsEstimates <- apply(domainsEstimatedWithRepl[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
     if (!any(domainsEstimates %in% domainsLandings)){
       stop(paste("None of the landing partitions (", paste(landingsPartition, collapse = ","), ") in 'StoxLandingData' have corresponding domains in 'AnalyticalPopulationEstimateData'", sep=""))
     }
 
-    missingEstimates <- domainsEstimates[!(domainsEstimates %in% domainsLandings)]
-    if (length(missingEstimates)>0){
-      stop(paste("Not all of the estimated domains (", paste(landingsPartition, collapse = ","), ") in 'AnalyticalPopulationEstimateData' have corresponding landing partitions in 'StoxLandingData'. Missing for: ", truncateStringVector(missingEstimates), sep=""))
-    }
-    
     #
     # calculate total frequencies
     #
-    
-    frequencies <- merge(frequencies, totalFrequencies, by=c("Stratum", landingsPartition), all.x = T)
+    frequencies <- merge(frequencies, totalFrequencies, by=c("Stratum", DomainVariables), all.x = T)
     
     # estimate total landings in domain
-    totalLandings <- StoxLandingData$Landing[,list(totalLanding=sum(get("RoundWeight"))*1000), by=landingsPartition] #WeightVariable is in grams.
-    frequencies <- merge(frequencies, totalLandings, by=landingsPartition, all.x=T)
+    domainStrata <- AnalyticalPopulationEstimateData$StratificationVariables$Stratum[
+      match(
+        apply(
+          StoxLandingData$Landing[,.SD,.SDcol=StratificationVariables], 1, paste, collapse="/"
+        ),
+        apply(
+          AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcol=StratificationVariables], 1, paste, collapse="/"
+        )
+            )
+    ]
+    
+    byList <- list(Stratum=domainStrata)
+    for (var in DomainVariables){
+      byList[[var]] <- StoxLandingData$Landing[[var]]
+    }
+    totalLandings <- StoxLandingData$Landing[,list(totalLanding=sum(get("RoundWeight"))*1000), by=byList] #WeightVariable is in grams.
+    frequencies <- merge(frequencies, totalLandings, by=c("Stratum", DomainVariables), all.x=T)
+    frequencies$totalLanding[is.na(frequencies$totalLanding)] <- 0 #domains not reported in landings are zero
     frequencies$domainLanding <- (frequencies$Frequency / frequencies$totalFreq) * frequencies$totalLanding
     
     means <- AnalyticalPopulationEstimateData$Variables[AnalyticalPopulationEstimateData$Variables$Variable == WeightVariable,]
@@ -1887,7 +1885,7 @@ ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateDa
   
   # check that landingpartition identify strata
   # remove other stratification variables
-  #browser()
+  browser()
   
   StratificationVariables <- names(AnalyticalPopulationEstimateData$StratificationVariables)[names(AnalyticalPopulationEstimateData$StratificationVariables) %in% LandingPartition]
   
@@ -1900,7 +1898,7 @@ ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateDa
     unsampledpart$Stratum <- UnsampledStratum
     
     #handle multi-line stratum
-    #browser()
+    browser()
     extendedAnalyticalPopulationEstimateData$StratificationVariables <- merge(extendedAnalyticalPopulationEstimateData$StratificationVariables, 
                                                                       unsampledpart, all=T)
   
