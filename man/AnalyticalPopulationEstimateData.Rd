@@ -46,8 +46,9 @@ Analytical estimates for a population
  StratificationVariables
  \describe{
   \item{Stratum}{A stratum, as identified in other tables.}
-  \item{StratificationVariables}{Columns that relate the stratum to data records.}
+  \item{<StratificationVariables>}{Columns that relate the stratum to data records.}
  }
+ The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum and a row in the StratificationVariables table.
  
  DomainVariables
  \describe{

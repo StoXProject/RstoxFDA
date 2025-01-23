@@ -375,56 +375,28 @@ ex$Haul$Gear[ex$Haul$Gear %in% c("3100")] <- "11"
 popEstDomain$Variables$Mean <- popEstDomain$Variables$Mean + 1e-3
 
 #
-# Input tests TotalDomainWeight
+# Landings for ratio-estimation tests
 #
 
 psuBySex <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), "IndividualSex")
 popBySex <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuBySex)
-
 ll <- land
 ll$Landing$IndividualSex <- "M"
-expect_error(RstoxFDA:::AnalyticalRatioEstimate(popBySex, ll, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "Sex"), "Some Stratification Variables or Domain Variables could not be matched with landings")
+expect_error(RstoxFDA:::AnalyticalRatioEstimate(popBySex, ll, "IndividualRoundWeight", StratificationVariables = "Sex"), "Some Stratification Variables or Domain Variables could not be matched with landings")
 ll <- land
 ll$Landing$SpeciesCategory <- 1
-expect_error(RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, ll, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "SpeciesCategory"), "Not all of the estimated domains")
+expect_error(RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, ll, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory"), "None of the landing partitions")
 
 ll <- land
 ll$Landing$SpeciesCategory <- NULL
-expect_error(RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, ll, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "SpeciesCategory"), "Some Stratification Variables or Domain Variables could not be matched with landings")
+expect_error(RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, ll, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory"), "Some Stratification Variables or Domain Variables could not be matched with landings")
 
 # Test year as stratification variable
 popEstDomainYear <- popEstDomain
 popEstDomainYear$StratificationVariables$Year <- "2022"
 
-result <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomainYear, ll, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "Year")
+result <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomainYear, ll, "IndividualRoundWeight",  StratificationVariables = "Year")
 expect_true(all(result$StratificationVariables$Year == "2022"))
-
-#
-# Calculations TotalDomainWeight
-#
-
-ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "SpeciesCategory")
-#check that relative difference in abundance equals relative difference in total estimated weigh vs landed weight for all landings as one stratum
-relDiff <- (ratioEst$Abundance$Abundance - popEstDomain$Abundance$Abundance)/popEstDomain$Abundance$Abundance
-
-expect_true(all(abs(relDiff-(sum(land$Landing$RoundWeight)*1000 - popEst$Variables$Total)/popEst$Variables$Total)<1e-6))
-relDiffCov <- (ratioEst$AbundanceCovariance$AbundanceCovariance - popEstDomain$AbundanceCovariance$AbundanceCovariance*((sum(land$Landing$RoundWeight)*1000/popEst$Variables$Total)**2))/ratioEst$AbundanceCovariance$AbundanceCovariance
-expect_true(all(abs(relDiffCov)<1e-6))
-#check that total and total covariances are changed in accordance with difference between estimated total weight and landing total weight
-expect_true(all((abs(ratioEst$Variables$Total - popEstDomain$Variables$Total)/ratioEst$Variables$Total) - (sum(land$Landing$RoundWeight)*1000 - sum(popEstDomain$Variables$Total))/(sum(land$Landing$RoundWeight)*1000) < 1e-6))
-
-expect_true(all(abs(ratioEst$VariablesCovariance$TotalCovariance - popEstDomain$VariablesCovariance$TotalCovariance)/ratioEst$VariablesCovariance$TotalCovariance - 
-                  ((sum(land$Landing$RoundWeight)*1000)**2 - popEst$Variables$Total**2)/((sum(land$Landing$RoundWeight)*1000)**2) < 1e-6))
-
-#frequencies should be recalculated, but have barely changed when all landings is one stratum
-expect_true(all(abs(ratioEst$Abundance$Frequency - popEstDomain$Abundance$Frequency)<1e-6))
-expect_true(!all(ratioEst$Abundance$Frequency == popEstDomain$Abundance$Frequency))
-expect_true(all(abs(ratioEst$AbundanceCovariance$FrequencyCovariance - popEstDomain$AbundanceCovariance$FrequencyCovariance)<1e-6))
-expect_true(!all(ratioEst$AbundanceCovariance$FrequencyCovariance == popEstDomain$AbundanceCovariance$FrequencyCovariance))
-
-#means should be exactly as before
-expect_true(all(ratioEst$Variables$Mean == popEstDomain$Variables$Mean))
-expect_true(all(ratioEst$VariablesCovariance$MeanCovariance[!is.nan(ratioEst$VariablesCovariance$MeanCovariance)] == popEstDomain$VariablesCovariance$MeanCovariance[!is.nan(popEstDomain$VariablesCovariance$MeanCovariance)]))
 
 
 #
@@ -433,60 +405,12 @@ expect_true(all(ratioEst$VariablesCovariance$MeanCovariance[!is.nan(ratioEst$Var
 
 psuEstNoD <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"))
 popEstNoD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstNoD)
-ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstNoD, land, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "SpeciesCategory")
+ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstNoD, land, "IndividualRoundWeight",  StratificationVariables = "SpeciesCategory")
 
 #error should be close to zero, since domain coincides with strata
-
 expect_true(abs(ratioEst$Variables$Total - sum(land$Landing$RoundWeight)*1000)/ratioEst$Variables$Total<1e-6)
-expect_true(sqrt(ratioEst$VariablesCovariance$TotalCovariance) / ratioEst$Variables$Total < 1e-2)
+expect_true(sqrt(ratioEst$VariablesCovariance$TotalCovariance) / ratioEst$Variables$Total < 5e-2)
 
-#
-# Test total catch estimates (w PSu domains)
-#
-
-psuEstNoD <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), PSUDomainVariables = c("Gear"))
-popEstNoD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstNoD)
-ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstNoD, land, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "SpeciesCategory")
-
-#should have some higher errors, since some domains have few samples
-expect_true(abs(sum(ratioEst$Variables$Total) - sum(land$Landing$RoundWeight)*1000)/sum(ratioEst$Variables$Total)<1e-6)
-expect_true(!all(sqrt(ratioEst$VariablesCovariance$TotalCovariance) / ratioEst$Variables$Total < 1e-2))
-
-#
-# Test total catch estimates (w ind domains)
-#
-
-psuEstNoD <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualSex"))
-popEstNoD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstNoD)
-ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstNoD, land, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "SpeciesCategory")
-
-expect_true(abs(sum(ratioEst$Variables$Total) - sum(land$Landing$RoundWeight)*1000)<1e-4)
-
-
-#
-# Test with landings mapped to domain
-#
-
-psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge"), "Gear")
-popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
-ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "TotalDomainWeight", StratificationVariables = "SpeciesCategory", DomainVariables = "Gear")
-
-
-CVs <- merge(ratioEst$Abundance, ratioEst$AbundanceCovariance[Domain1==Domain2], by.x=c("Stratum", "Domain"), by.y=c("Stratum", "Domain1"))
-CVs$CV <- sqrt(CVs$AbundanceCovariance) / CVs$Abundance
-expect_equal(sum(is.na(CVs$CV)), sum(is.na(CVs$CV)))
-expect_true(min(CVs$CV, na.rm=T)<.2)
-
-#check that relative age comp in Gear domain is preserved, even if abundance estimates are very different.
-domainAbundRatio <- merge(ratioEst$Abundance, ratioEst$DomainVariables, by=c("Domain"))
-ageAbundRatio <- domainAbundRatio[,list(tot=sum(Abundance[Gear=="51"])),by="IndividualAge"]
-ageAbundRatio$tot <- ageAbundRatio$tot / sum(ageAbundRatio$tot)
-domainAbundPop <- merge(popEstDomain$Abundance, popEstDomain$DomainVariables, by=c("Domain"))
-ageAbundPop <- domainAbundPop[,list(tot=sum(Abundance[Gear=="51"])),by="IndividualAge"]
-ageAbundPop$tot <- ageAbundPop$tot / sum(ageAbundPop$tot)
-expect_true(all(abs(ageAbundPop$tot - ageAbundRatio$tot)/ageAbundRatio$tot<1e-6))
-comp <- merge(domainAbundRatio, domainAbundPop, by=c("Stratum", "Domain"))
-expect_true(max(abs(comp$Abundance.x - comp$Abundance.y)/comp$Abundance.x,na.rm=T)>1)
 
 #
 # Test with MeanDomainWeights
@@ -498,7 +422,7 @@ expect_true(max(abs(comp$Abundance.x - comp$Abundance.y)/comp$Abundance.x,na.rm=
 
 psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge", "Gear"))
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
-ratioEstMDW <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", "MeanDomainWeight", StratificationVariables = "SpeciesCategory", DomainVariables = "Gear")
+ratioEstMDW <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory", DomainVariables = "Gear")
 
 #check that total abundance estimates are in the same ballpark (catch rounding errors etc)
 expect_true(abs(sum(ratioEstMDW$Abundance$Abundance) - sum(popEstDomain$Abundance$Abundance))/sum(ratioEstMDW$Abundance$Abundance) < .2)
@@ -659,7 +583,7 @@ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
 # Test expanding along a single stratification variable
-ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEst, land, "IndividualRoundWeight", "MeanDomainWeight", "Frame")
+ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEst, land, "IndividualRoundWeight",  "Frame")
 expect_equal(nrow(ratioEst$Variables), nrow(popEst$Variables))
 
 expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(popEst, land, "Frame", "Strict", "Unsampled")
@@ -819,3 +743,14 @@ expect_true(mean(cvtabMean$cv[cvtabMean$IndividualAge==2],na.rm=T)<.3)
 
 # check aggregation
 #aggPopEst <- RstoxFDA:::AggregateAnalyticalEstimate(expandedPopEst, AggregateStratumName = "all")
+#expect_true(RstoxFDA:::is.AnalyticalPopulationEstimateData(aggPopEst))
+#aggPopEstRatioEst <- RstoxFDA::AnalyticalRatioEstimate(aggPopEst, land, "IndividualRoundWeight", 
+                                                        
+#                                                       StratificationVariables = c("FrameVar1", "FrameVar2"),
+#                                                       DomainVariables = c("Gear", "Usage"))
+
+#stop("First enable multi-line stratificatrion for AnalyticalPopulationEstimateData")
+#stop("Consider if also possilbe for AnalyticalPSUEstimateSData")
+#stop("Update data type description, and implement is.AnalyticalPSUEstimateSData")
+#stop("Figure out how to deal with NAs as stratificationvariables. Make Expand... not introduce them in the first place, but remove whats not in landingpartition.")
+#stop("Write more tests for AggregateAnalyticalEstimate. Check covariances as well.")

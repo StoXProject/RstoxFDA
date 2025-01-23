@@ -61,6 +61,7 @@ is.Date <- function(date){
 #'   \item{Stratum}{Identfier of stratum for individuals at PSU. In addition strata are identified by the combination of any additional columns in this table.}
 #'   \item{<StratificationVariables>}{Columns that relate the PSU domains to data records.}
 #'  }
+#'  The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum and a row in the StratificationVariables table.
 #' 
 #' @name AnalyticalPSUEstimateData
 #' @concept Data types
@@ -113,8 +114,9 @@ NULL
 #'  StratificationVariables
 #'  \describe{
 #'   \item{Stratum}{A stratum, as identified in other tables.}
-#'   \item{StratificationVariables}{Columns that relate the stratum to data records.}
+#'   \item{<StratificationVariables>}{Columns that relate the stratum to data records.}
 #'  }
+#'  The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum and a row in the StratificationVariables table.
 #'  
 #'  DomainVariables
 #'  \describe{
@@ -159,10 +161,21 @@ is.AnalyticalPopulationEstimateData <- function(AnalyticalPopulationEstimateData
   if (!all(c("Stratum") %in% names(AnalyticalPopulationEstimateData$StratificationVariables))){
     return(FALSE)
   }
-  domains <- nrow(AnalyticalPopulationEstimateData$DomainVariables) * nrow(AnalyticalPopulationEstimateData$StratificationVariables)
+  domains <- nrow(AnalyticalPopulationEstimateData$DomainVariables) * length(unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum))
   if (domains != nrow(AnalyticalPopulationEstimateData$Abundance)){
     return(FALSE)
   }
+  if (domains*length(unique(AnalyticalPopulationEstimateData$Variables$Variable)) != nrow(AnalyticalPopulationEstimateData$Variables)){
+    return(FALSE)
+  }
+  if (any(names(AnalyticalPopulationEstimateData$StratificationVariables != "Stratum"))){
+    stratvarString <- apply(AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcols = names(AnalyticalPopulationEstimateData$StratificationVariables)[names(AnalyticalPopulationEstimateData$StratificationVariables)!="Stratum"]],
+                            1, paste, collapse="/")
+    if (any(duplicated(stratvarString))){
+      return(FALSE)
+    }
+  }
+
   return(TRUE)
 }
 
@@ -2456,7 +2469,6 @@ stoxFunctionAttributes <- list(
     functionCategory = "baseline", 
     functionOutputDataType = "AnalyticalPopulationEstimateData",
     functionParameterDefaults = list(
-      Method = "TotalDomainWeight",
       WeightVariable = "IndividualRoundWeight"
     ),
     functionParameterFormat = list(

@@ -46,6 +46,7 @@ Analytical estimates for each PSU
   \item{Stratum}{Identfier of stratum for individuals at PSU. In addition strata are identified by the combination of any additional columns in this table.}
   \item{<StratificationVariables>}{Columns that relate the PSU domains to data records.}
  }
+ The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum and a row in the StratificationVariables table.
 }
 \concept{Analytical estimation}
 \concept{Data types}

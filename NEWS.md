@@ -1,4 +1,5 @@
 # 1.5.0-9003
+* AnalyticalRatioEstimate no longer provides the (unreleased) method option "TotalDomainWeight"
 * Changed naming conventions for domains in AnalyticalPopulationEstimateData.
 * Removed the table SampleSummary from the data type AnalyticalPopulationEstimateData.
 * Added function for annotating stratification variables to sampling parameters (AddPsuStratificationVariables) (#163)
