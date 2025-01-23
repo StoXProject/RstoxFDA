@@ -1572,7 +1572,7 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
   }
   
   if (Method == "MeanDomainWeight"){
-  
+
     #check that strata are OK for application of frequencies
     strataCheck <- AnalyticalPopulationEstimateData$StratificationVariables
     landingsPart <- apply(strataCheck[,.SD,.SDcols = StratificationVariables], 1, FUN=paste, collapse="/")
@@ -1589,12 +1589,14 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     meanW <- AnalyticalPopulationEstimateData$Variables[AnalyticalPopulationEstimateData$Variables$Variable==WeightVariable,.SD,.SDcol=c("Stratum", "Domain", "Mean")]
     frequencies <- merge(frequencies, meanW, by=c("Stratum", "Domain"))
     
+    #
     # normalize frequencies to landingsPartition within samplingstrata
-    totalFrequencies <- frequencies[,list(totalFreq=sum(get("Frequency")*get("Mean"))), by=c("Stratum", DomainVariables)]
+    #
+    
+    # NaN means correspond to frequency of zero
+    totalFrequencies <- frequencies[,list(totalFreq=sum(get("Frequency")[!is.nan(get("Mean"))]*get("Mean")[!is.nan(get("Mean"))])), by=c("Stratum", DomainVariables)]
 
-    #
     # Check matches
-    #
     domainsLandings <- apply(StoxLandingData$Landing[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
     domainsEstimatedWithRepl <- merge(totalFrequencies, AnalyticalPopulationEstimateData$StratificationVariables, by="Stratum", allow.cartesian=T)
     domainsEstimates <- apply(domainsEstimatedWithRepl[,.SD,.SDcol=landingsPartition], FUN=paste, 1, collapse="/")
@@ -1625,8 +1627,10 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     }
     totalLandings <- StoxLandingData$Landing[,list(totalLanding=sum(get("RoundWeight"))*1000), by=byList] #WeightVariable is in grams.
     frequencies <- merge(frequencies, totalLandings, by=c("Stratum", DomainVariables), all.x=T)
-    frequencies$totalLanding[is.na(frequencies$totalLanding)] <- 0 #domains not reported in landings are zero
     frequencies$domainLanding <- (frequencies$Frequency / frequencies$totalFreq) * frequencies$totalLanding
+    frequencies$domainLanding[is.na(frequencies$totalLanding)] <- 0 #domains not reported in landings are zero
+    frequencies$totalLanding[is.na(frequencies$totalLanding)] <- 0 #domains not reported in landings are zero
+    
     
     means <- AnalyticalPopulationEstimateData$Variables[AnalyticalPopulationEstimateData$Variables$Variable == WeightVariable,]
     
@@ -1643,8 +1647,12 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     # Ratio-estimate frequencies
     #
     abundanceByStratum <- AnalyticalPopulationEstimateData$Abundance[,list(totalAbundance=sum(get("Abundance"))), by="Stratum"]
+    stopifnot(all(!is.na(abundanceByStratum$totalAbundance)))
+    stopifnot(all(!is.na(AnalyticalPopulationEstimateData$Abundance$Abundance)))
     m <- match(AnalyticalPopulationEstimateData$Abundance$Stratum, abundanceByStratum$Stratum)
     AnalyticalPopulationEstimateData$Abundance$Frequency <- AnalyticalPopulationEstimateData$Abundance$Abundance / abundanceByStratum$totalAbundance[m]
+    #since totalAbundance and Abundance is asserted to not be NaN, NaN frequencies correspond to zero abundance and hence zero frequenct
+    AnalyticalPopulationEstimateData$Abundance$Frequency[is.nan(AnalyticalPopulationEstimateData$Abundance$Frequency)] <- 0
     m <- match(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, abundanceByStratum$Stratum)
     AnalyticalPopulationEstimateData$AbundanceCovariance$FrequencyCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance$AbundanceCovariance * (1/abundanceByStratum$totalAbundance[m])**2
     
@@ -1673,9 +1681,9 @@ AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, Retain
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(AggregateStratumName, "AggregateStratumName")
   if (isGiven(RetainStrata)){
-    if (all(RetainStrata %in% AnalyticalPopulationEstimateData$StratificationVariables$Stratum)){
+    if (!all(RetainStrata %in% AnalyticalPopulationEstimateData$StratificationVariables$Stratum)){
       missing <- RetainStrata[!(RetainStrata %in% AnalyticalPopulationEstimateData$StratificationVariables$Stratum)]
-      stop(paste("Not all value in 'RetainStrata' are strata in 'AnalyticalPopulationEstimateData'. Missing:", truncateStringVector(missing)))
+      stop(paste("Not all values in 'RetainStrata' are strata in 'AnalyticalPopulationEstimateData'. Missing:", truncateStringVector(missing)))
     }
   }
   else{
@@ -1688,21 +1696,21 @@ AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, Retain
   
   collapsedStrata <- unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum[
     !(AnalyticalPopulationEstimateData$StratificationVariables$Stratum %in% RetainStrata)])
-  
-  newAbundanceTable <- AnalyticalPopulationEstimateData$Abundance[!(get("Stratum") %in% RetainStrata)]
+
+  newAbundanceTable <- AnalyticalPopulationEstimateData$Abundance[!(get("Stratum") %in% RetainStrata),]
   newAbundanceTable$Stratum[newAbundanceTable$Stratum %in% collapsedStrata] <- AggregateStratumName
-  newAbundanceTable <- newAbundanceTable[,list(Abundance=sum(Abundance), 
-                                               Frequency=sum(Frequency)/length(collapsedStrata)
+  newAbundanceTable <- newAbundanceTable[,list(Abundance=sum(get("Abundance")), 
+                                               Frequency=sum(get("Frequency"))/length(collapsedStrata)
                                                ), 
                                          by=c("Stratum", "Domain")]
   
-  newAbundanceVarianceTable <- AnalyticalPopulationEstimateData$AbundanceCovariance[!(get("Stratum") %in% RetainStrata)]
+  newAbundanceVarianceTable <- AnalyticalPopulationEstimateData$AbundanceCovariance[!(get("Stratum") %in% RetainStrata),]
   newAbundanceVarianceTable$Stratum[newAbundanceVarianceTable$Stratum %in% collapsedStrata] <- AggregateStratumName
   newAbundanceVarianceTable <- newAbundanceVarianceTable[,list(AbundanceCovariance=sum(get("AbundanceCovariance")),
                                                                FrequencyCovariance=sum(get("FrequencyCovariance"))/(length(collapsedStrata)**2)),
                                                          by=c("Stratum", "Domain1", "Domain2")]
   
-  newVariablesTable <- AnalyticalPopulationEstimateData$Variables[!(get("Stratum") %in% RetainStrata)]
+  newVariablesTable <- AnalyticalPopulationEstimateData$Variables[!(get("Stratum") %in% RetainStrata),]
   newVariablesTable$Stratum[newVariablesTable$Stratum %in% collapsedStrata] <- AggregateStratumName
   newVariablesTable <- merge(newVariablesTable, newAbundanceTable, by=c("Stratum", "Domain"))
   newVariablesTable <- newVariablesTable[,list(Total=sum(get("Total")), 
@@ -1710,7 +1718,7 @@ AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, Retain
                                                ), 
                                          by=c("Stratum", "Domain", "Variable")]
   
-  newVariablesVariancetable <- AnalyticalPopulationEstimateData$VariablesCovariance[!(get("Stratum") %in% RetainStrata)]
+  newVariablesVariancetable <- AnalyticalPopulationEstimateData$VariablesCovariance[!(get("Stratum") %in% RetainStrata),]
   newVariablesVariancetable$Stratum[newVariablesVariancetable$Stratum %in% collapsedStrata] <- AggregateStratumName
   newVariablesVariancetable <- merge(newVariablesVariancetable, newAbundanceTable, by.x=c("Stratum", "Domain1"), by.y=c("Stratum", "Domain"))
   newVariablesVariancetable <- merge(newVariablesVariancetable, newAbundanceTable, by.x=c("Stratum", "Domain2"), by.y=c("Stratum", "Domain"), suffixes=c("1","2"))
@@ -1832,7 +1840,7 @@ fillSetToStratum <- function(extendedAnalyticalPopulationEstimateData, SourceStr
 #'   Set means, frequencies, and corresponding variance to the same values as in a sampled strata.}
 #'  }
 #'  
-#'  For variables in 'LandingPartition' that identify Stratification Variables in 'AnalyticalPopulationEstimateData', any non-sampled landing partition
+#'  For variables in 'StratificationVariables', any non-sampled landing partition
 #'  will be added as one unsampled stratum with the name provided by 'UnsampledStratum'. Inferred statistics will be reported for all domains for this stratum.
 #'  
 #'  Inference about unsampled strata is not justified by sampling. It may be considered applicable if the following applies:
@@ -1845,19 +1853,19 @@ fillSetToStratum <- function(extendedAnalyticalPopulationEstimateData, SourceStr
 #'  
 #' @param AnalyticalPopulationEstimateData \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with Estimates for the sampling frame
 #' @param StoxLandingData Landing data for the entire fishery / target population
-#' @param LandingPartition vector of variables in StoxLandingData that should be used to partition the fishery, must be Stratification Variables in 'AnalyticalPopulationEstimateData'
+#' @param StratificationVariables vector of variables in StoxLandingData that should be used to partition the fishery, must be Stratification Variables in 'AnalyticalPopulationEstimateData'
 #' @param Method method of inference beyond sampling frame.
 #' @param UnsampledStratum name to use for unsamled stratum
 #' @param SourceStratum name of the stratum to get means and frequencies for the Method 'SetToStratum'
-#' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with parameters for unsampled stratum
+#' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with parameters for unsampled stratum, and StratificationVariables reduced to those mathced with landings
 #' @md
 #' @concept Analytical estimation
 #' @export
-ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateData, StoxLandingData, LandingPartition, Method=c("Strict", "SetToStratum"), UnsampledStratum=character(), SourceStratum=character()){
+ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateData, StoxLandingData, StratificationVariables, Method=c("Strict", "SetToStratum"), UnsampledStratum=character(), SourceStratum=character()){
   
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")
-  checkMandatory(LandingPartition, "LandingPartition")
+  checkMandatory(StratificationVariables, "StratificationVariables")
   checkOptions(Method, "Method", c("Strict", "SetToStratum"))
   checkMandatory(UnsampledStratum, "UnsampledStratum")
   if (Method == "SetToStratum"){
@@ -1871,11 +1879,11 @@ ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateDa
     stop("Invalid 'AnalyticalPopulationEstimateData'")
   }
   
-  if (!all(LandingPartition %in% c(names(AnalyticalPopulationEstimateData$StratificationVariables)))){
-    stop("LandingPartition must be composed of Stratification Variables")
+  if (!all(StratificationVariables %in% c(names(AnalyticalPopulationEstimateData$StratificationVariables)))){
+    stop("StratificationVariables are not found in 'AnalyticalPopulationEstimateData'")
   }
   
-  if (length(LandingPartition)==0){
+  if (length(StratificationVariables)==0){
    stop("No stratification variables provided") 
   }
   
@@ -1885,10 +1893,16 @@ ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateDa
   
   # check that landingpartition identify strata
   # remove other stratification variables
-  browser()
-  
-  StratificationVariables <- names(AnalyticalPopulationEstimateData$StratificationVariables)[names(AnalyticalPopulationEstimateData$StratificationVariables) %in% LandingPartition]
-  
+  AnalyticalPopulationEstimateData$StratificationVariables <- AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcols=c("Stratum", StratificationVariables)]
+  stratacount <- AnalyticalPopulationEstimateData$StratificationVariables[,list(totalStrata=length(unique(get("Stratum")))), by=list(stratavars=apply(AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcols=StratificationVariables], 1, paste, collapse="/"))]
+  stratacount <- stratacount[get("totalStrata")>1]
+  if (nrow(stratacount)>0){
+    stop(paste("Stratification variables does not identify strata. Several strata identified for:", truncateStringVector(stratacount$stratavars)))
+  }
+  AnalyticalPopulationEstimateData$StratificationVariables <- AnalyticalPopulationEstimateData$StratificationVariables[!duplicated(
+    apply(AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcols=StratificationVariables], 1, paste, collapse="/")
+  ),]
+
   extendedAnalyticalPopulationEstimateData <- AnalyticalPopulationEstimateData
   
     landedpart <- StoxLandingData$Landing[,.SD,.SDcol=StratificationVariables]
@@ -1896,11 +1910,10 @@ ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateDa
     sampleframepart <- extendedAnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcol=StratificationVariables]
     unsampledpart <- landedpart[!(apply(landedpart, 1, paste, collapse=",") %in% apply(sampleframepart, 1, paste, collapse=",")),]
     unsampledpart$Stratum <- UnsampledStratum
+    unsampledpart <- unsampledpart[,.SD,.SDcol=c("Stratum", StratificationVariables)]
     
-    #handle multi-line stratum
-    browser()
-    extendedAnalyticalPopulationEstimateData$StratificationVariables <- merge(extendedAnalyticalPopulationEstimateData$StratificationVariables, 
-                                                                      unsampledpart, all=T)
+    extendedAnalyticalPopulationEstimateData$StratificationVariables <- rbind(extendedAnalyticalPopulationEstimateData$StratificationVariables, 
+                                                                      unsampledpart)
   
   if (Method == "Strict"){
     return(fillStrict(extendedAnalyticalPopulationEstimateData))

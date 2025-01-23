@@ -48,7 +48,7 @@ check_intervalWidth <- function(intervalwidth){
 #'   samplingreport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
 #'       RstoxFDA::StoxLandingDataExample, GroupingVariables = c("GearGroup"), Unit = "ton")
 #'   samplingreport$FisheriesSampling
-#' @seealso [PlotSamplingOverviewCell(), PlotSamplingCoverage(), PlotSamplingVariables()]
+#' @seealso \code{\link[RstoxFDA]{PlotSamplingOverviewCell}}, \code{\link[RstoxFDA]{PlotSamplingCoverage}}, \code{\link[RstoxFDA]{PlotSamplingVariables}}
 #' @export
 #' @md
 ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12)), SamplingVariables=character()){

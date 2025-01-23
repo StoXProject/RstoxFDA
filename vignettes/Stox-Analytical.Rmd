@@ -275,8 +275,7 @@ We have not yet utilized the census information on landings. We can improve our 
 AnalyticalPopulationEstimateData = populationEstimates
 StoxLandingData = RstoxFDA::CatchLotteryLandingExample
 WeightVariable = "IndividualRoundWeight"
-Method = "TotalDomainWeight"
-ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method, StratificationVariables = "Species")
+ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, StratificationVariables = "Species")
 ```
 
 Comparing this with the estimate above, the frequencies should be nearly identical, but some corrections are expected for the abundances:
@@ -320,7 +319,7 @@ populationEstimates = RstoxFDA::AnalyticalPopulationEstimate(PSUSamplingParamete
 
 # Redo ratio estimate
 AnalyticalPopulationEstimateData = populationEstimates
-ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method, StratificationVariables = "Species")
+ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, StratificationVariables = "Species")
 
 # Report
 AnalyticalPopulationEstimateData = ratioEst
@@ -373,7 +372,7 @@ populationEstimates = RstoxFDA::AnalyticalPopulationEstimate(PSUSamplingParamete
 
 # Redo ratio estimate
 AnalyticalPopulationEstimateData = populationEstimates
-ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, Method = Method, StratificationVariables = "Species")
+ratioEst <- RstoxFDA::AnalyticalRatioEstimate(AnalyticalPopulationEstimateData=AnalyticalPopulationEstimateData, StoxLandingData = StoxLandingData, WeightVariable = WeightVariable, StratificationVariables = "Species")
 
 # Report
 AnalyticalPopulationEstimateData = ratioEst

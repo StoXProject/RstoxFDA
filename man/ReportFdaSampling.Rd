@@ -63,7 +63,7 @@ The units considered valid for weights are those listed for quantity 'mass' in \
   samplingreport$FisheriesSampling
 }
 \seealso{
-\code{\link[=PlotSamplingOverviewCell(), PlotSamplingCoverage(), PlotSamplingVariables]{PlotSamplingOverviewCell(), PlotSamplingCoverage(), PlotSamplingVariables()}}
+\code{\link[RstoxFDA]{PlotSamplingOverviewCell}}, \code{\link[RstoxFDA]{PlotSamplingCoverage}}, \code{\link[RstoxFDA]{PlotSamplingVariables}}
 }
 \concept{StoX-functions}
 \concept{landings functions}

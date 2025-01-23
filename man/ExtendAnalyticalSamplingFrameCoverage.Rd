@@ -7,7 +7,7 @@
 ExtendAnalyticalSamplingFrameCoverage(
   AnalyticalPopulationEstimateData,
   StoxLandingData,
-  LandingPartition,
+  StratificationVariables,
   Method = c("Strict", "SetToStratum"),
   UnsampledStratum = character(),
   SourceStratum = character()
@@ -18,7 +18,7 @@ ExtendAnalyticalSamplingFrameCoverage(
 
 \item{StoxLandingData}{Landing data for the entire fishery / target population}
 
-\item{LandingPartition}{vector of variables in StoxLandingData that should be used to partition the fishery, must be Stratification Variables in 'AnalyticalPopulationEstimateData'}
+\item{StratificationVariables}{vector of variables in StoxLandingData that should be used to partition the fishery, must be Stratification Variables in 'AnalyticalPopulationEstimateData'}
 
 \item{Method}{method of inference beyond sampling frame.}
 
@@ -27,7 +27,7 @@ ExtendAnalyticalSamplingFrameCoverage(
 \item{SourceStratum}{name of the stratum to get means and frequencies for the Method 'SetToStratum'}
 }
 \value{
-\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with parameters for unsampled stratum
+\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with parameters for unsampled stratum, and StratificationVariables reduced to those mathced with landings
 }
 \description{
 Infer estimates to parts of the fishery / target population that was not covered by sampling programs.
@@ -49,7 +49,7 @@ Provide NA-values for abundance and total of all domains that is not in the samp
 Set means, frequencies, and corresponding variance to the same values as in a sampled strata.}
 }
 
-For variables in 'LandingPartition' that identify Stratification Variables in 'AnalyticalPopulationEstimateData', any non-sampled landing partition
+For variables in 'StratificationVariables', any non-sampled landing partition
 will be added as one unsampled stratum with the name provided by 'UnsampledStratum'. Inferred statistics will be reported for all domains for this stratum.
 
 Inference about unsampled strata is not justified by sampling. It may be considered applicable if the following applies:

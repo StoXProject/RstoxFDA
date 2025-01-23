@@ -742,15 +742,23 @@ cvtabMean <- merge(cvtabMean, expandedPopEst$DomainVariables, by.x=c("Domain1"),
 expect_true(mean(cvtabMean$cv[cvtabMean$IndividualAge==2],na.rm=T)<.3)
 
 # check aggregation
-aggPopEst <- RstoxFDA:::AggregateAnalyticalEstimate(expandedPopEst, AggregateStratumName = "all")
+aggPopEst <- RstoxFDA:::AggregateAnalyticalEstimate(expandedPopEst, AggregateStratumName = "sampled", RetainStrata = "Unsampled")
 expect_true(RstoxFDA:::is.AnalyticalPopulationEstimateData(aggPopEst))
+expect_equal(sum(is.na(aggPopEst$Abundance$Frequency)), 0)
 aggPopEstRatioEst <- RstoxFDA::AnalyticalRatioEstimate(aggPopEst, land, "IndividualRoundWeight", 
-                                                        
                                                        StratificationVariables = c("FrameVar1", "FrameVar2"),
                                                        DomainVariables = c("Gear", "Usage"))
+expect_equal(sum(is.na(aggPopEstRatioEst$Abundance$Frequency)),0)
+expect_true(RstoxFDA:::is.AnalyticalPopulationEstimateData(aggPopEstRatioEst))
+expect_true(abs(sum(aggPopEstRatioEst$Variables$Total[aggPopEstRatioEst$Variables$Variable=="IndividualRoundWeight"],na.rm=T) / sum(land$Landing$RoundWeight) - 1000) < 1e-6)
 
-stop("First enable multi-line stratificatrion for AnalyticalPopulationEstimateData")
-stop("Consider if also possilbe for AnalyticalPSUEstimateSData")
-stop("Update data type description, and implement is.AnalyticalPSUEstimateSData")
-stop("Figure out how to deal with NAs as stratificationvariables. Make Expand... not introduce them in the first place, but remove whats not in landingpartition.")
-stop("Write more tests for AggregateAnalyticalEstimate. Check covariances as well.")
+indPrKgOriginal<-sum(popEst$Abundance$Abundance) / sum(popEst$Variables$Total[popEst$Variables$Variable=="IndividualRoundWeight"])
+indPrKgAggPop <- sum(aggPopEstRatioEst$Abundance$Abundance) / sum(aggPopEstRatioEst$Variables$Total[aggPopEstRatioEst$Variables$Variable=="IndividualRoundWeight"],na.rm=T)
+
+#check that some approximate invariants are OK
+expect_true(abs(indPrKgAggPop-indPrKgOriginal)/indPrKgOriginal < 5e-2)
+
+#stop("disallow NA in stratificationvariables. update is.PSU...")
+#stop("Disallow multi-line strata forfor AnalyticalPSUEstimateSData")
+#stop("Update data type description, and implement is.AnalyticalPSUEstimateSData")
+#stop("Document AggregateAnalyticalEstimate")
