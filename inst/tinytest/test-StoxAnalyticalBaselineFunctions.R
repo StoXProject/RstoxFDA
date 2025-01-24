@@ -744,7 +744,7 @@ expect_true(mean(cvtabMean$cv[cvtabMean$IndividualAge==2],na.rm=T)<.3)
 # check aggregation
 aggPopEst <- RstoxFDA:::AggregateAnalyticalEstimate(expandedPopEst, AggregateStratumName = "sampled", RetainStrata = "Unsampled")
 expect_true(RstoxFDA:::is.AnalyticalPopulationEstimateData(aggPopEst))
-expect_equal(sum(is.na(aggPopEst$Abundance$Frequency)), 0)
+expect_equal(sum(!is.na(aggPopEst$Abundance$Frequency)), sum(aggPopEst$Abundance$Stratum=="sampled")) #frequency estimated from abundance. NAs if some abundance in stratum is missing (aggreagate before ratio-estimate)
 aggPopEstRatioEst <- RstoxFDA::AnalyticalRatioEstimate(aggPopEst, land, "IndividualRoundWeight", 
                                                        StratificationVariables = c("FrameVar1", "FrameVar2"),
                                                        DomainVariables = c("Gear", "Usage"))
@@ -758,4 +758,4 @@ indPrKgAggPop <- sum(aggPopEstRatioEst$Abundance$Abundance) / sum(aggPopEstRatio
 #check that some approximate invariants are OK
 expect_true(abs(indPrKgAggPop-indPrKgOriginal)/indPrKgOriginal < 5e-2)
 
-#stop("Document AggregateAnalyticalEstimate")
+#stop("Need more aggregation tests")

@@ -1682,8 +1682,59 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
 
 }
 
-#' 
-#' @noRd
+#' Aggregate Analytical Estimate across strata
+#' @description
+#'  Aggregates estimate across strata. One can optinally exclude some strata from being aggregated (using the argument 'RetainStrata').
+#'  Retained strata are returned unchanged.
+#'  
+#'  Aggregation of means and frequencies across strata, requires information about strata size (abundance in strata).
+#'  For sampling programs where these cannot be directly estimated, they must be inferred before application of this function.
+#'  Otherwise means and frequencies will be NA. Consider for example ratio-estimation by strata (\code{\link[RstoxFDA]{AnalyticalRatioEstimate}})
+#'  
+#'  Specifically, a new stratum \eqn{s'} (named according to 'AggregateStratumName') is defined based on the strata in \eqn{S}, where \eqn{S} contains all strata in 'AnalyticalPopulationEstimateData',
+#'  except those explicitly excluded by the argument 'RetainStrata'. The estimated parameters are obtained as follows:
+#'  \describe{
+#'   \item{Abundance:}{
+#'   The estimate of the total number of individuals in domain \eqn{d} and stratum \eqn{s'}:
+#'   \deqn{\hat{N}^{(s',d)} = \sum_{s \in S} \hat{N}^{(s,d)}}
+#'   with co-variance:
+#'   \deqn{\widehat{CoVar}(\hat{N}^{(s',d_{1})}, \hat{N}^{(s',d_{2})}) = \sum_{s \in S} \widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})}
+#'   
+#'   where \eqn{\hat{N}^{(s,d)}} and \eqn{\widehat{CoVar}(\hat{N}^{(s,d_{1})}, \hat{N}^{(s,d_{2})})} are provided by the argument 'AnalyticalPopulationEstimateData'.
+#'   }
+#'   \item{Frequency:}{
+#'   The estimate of the fraction of individuals in stratum \eqn{s'} that are in domain \eqn{d}:
+#'   \deqn{ \hat{f}^{(s',d)} = \frac{\hat{N}^{(s',d)}}{\hat{N}^{(s')}} }
+#'   with co-variance:
+#'   \deqn{ \widehat{CoVar}(\hat{f}^{(s',d_{1})}, \hat{f}^{(s',d_{2})}) = \frac{1}{(\hat{N}^{(s')})^{2}}\widehat{CoVar}(\hat{N}^{(s',d_{1})}, \hat{N}^{(s',d_{2})})}
+#'   
+#'   where \eqn{\hat{N}^{(s')}} is the total estimated abundance in stratum, across all domains.
+#'   }
+#'   \item{Total:}{
+#'   The estimate of the total value of some variable \eqn{v} in domain \eqn{d} and stratum \eqn{s'}.
+#'   \deqn{\hat{t}^{(s',d,v)}=\sum_{s \in S}\hat{t}^{(s,d,v)}}
+#'   with co-variance:
+#'   \deqn{\widehat{CoVar}(\hat{t}^{(s',d_{1},v_{1})}, \hat{t}^{(s',d_{2},v_{2})}) = \sum_{s \in S} \widehat{CoVar}(\hat{t}^{(s,d_{1},v_{1})}, \hat{t}^{(s,d_{2},v_{2})})}
+#'   
+#'   where \eqn{\hat{t}^{(s,d,v)}} and \eqn{\widehat{CoVar}(\hat{t}^{(s,d_{1},v_{1})}, \hat{t}^{(s,d_{2},v_{2})})} are provided by the argument 'AnalyticalPopulationEstimateData'.
+#'   }
+#'
+#'   \item{Mean:}{
+#'   The estimate of the mean value of some variable \eqn{v} in domain \eqn{d} and stratum \eqn{s'}:
+#'   \deqn{\hat{\mu}^{(s',d,v)} = \frac{1}{\hat{N}^{(s',d)}}\sum_{s \in S} \hat{\mu}^{(s,d,v)}\hat{N}^{(s,d)}}
+#'   with co-variance:
+#'   \deqn{\widehat{CoVar}(\hat{\mu}^{(s',d_{1},v_{1})}, \hat{\mu}^{(s',d_{2},v_{2})}) = \sum_{s \in S} \widehat{CoVar}(\hat{\mu}^{(s,d_{1},v_{1})}, \hat{\mu}^{(s,d_{2},v_{2})}) z^{(s, d_{1}, d_{2})}}
+#'   where
+#'   \deqn{z^{(s, d_{1}, d_{2})}=\frac{\hat{N}^{(s,d_{1})}\hat{N}^{(s,d_{2})}}{\hat{N}^{(s',d_{1})}\hat{N}^{(s',d_{2})}}}
+#'   }
+#'  }
+#' @param AnalyticalPopulationEstimateData \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimates to aggregate.
+#' @param RetainStrata strata that should not be included in the aggregation. Must correspond to 'Stratum' in 'AnalyticalPopulationEstimateData'
+#' @param AggregateStratumName name to use for the aggregated stratum
+#' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with aggregated estimates.
+#' @concept Analytical estimation
+#' @export
+#' @md
 AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, RetainStrata=character(), AggregateStratumName=character()){
   
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
@@ -1706,22 +1757,24 @@ AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, Retain
     !(AnalyticalPopulationEstimateData$StratificationVariables$Stratum %in% RetainStrata)])
 
   newAbundanceTable <- AnalyticalPopulationEstimateData$Abundance[!(get("Stratum") %in% RetainStrata),]
+  totalAbundance <- sum(newAbundanceTable$Abundance)
   newAbundanceTable$Stratum[newAbundanceTable$Stratum %in% collapsedStrata] <- AggregateStratumName
   newAbundanceTable <- newAbundanceTable[,list(Abundance=sum(get("Abundance")), 
-                                               Frequency=sum(get("Frequency"))/length(collapsedStrata)
+                                               Frequency=sum(get("Abundance"))/totalAbundance
                                                ), 
                                          by=c("Stratum", "Domain")]
   
   newAbundanceVarianceTable <- AnalyticalPopulationEstimateData$AbundanceCovariance[!(get("Stratum") %in% RetainStrata),]
   newAbundanceVarianceTable$Stratum[newAbundanceVarianceTable$Stratum %in% collapsedStrata] <- AggregateStratumName
   newAbundanceVarianceTable <- newAbundanceVarianceTable[,list(AbundanceCovariance=sum(get("AbundanceCovariance")),
-                                                               FrequencyCovariance=sum(get("FrequencyCovariance"))/(length(collapsedStrata)**2)),
+                                                               FrequencyCovariance=sum(get("AbundanceCovariance"))/(totalAbundance**2)),
                                                          by=c("Stratum", "Domain1", "Domain2")]
   
   newVariablesTable <- AnalyticalPopulationEstimateData$Variables[!(get("Stratum") %in% RetainStrata),]
   newVariablesTable$Stratum[newVariablesTable$Stratum %in% collapsedStrata] <- AggregateStratumName
   newVariablesTable <- merge(newVariablesTable, newAbundanceTable, by=c("Stratum", "Domain"))
   newVariablesTable <- newVariablesTable[,list(Total=sum(get("Total")), 
+                                               #NaN means correspond to zero abundance
                                                Mean=sum(get("Mean")[!is.na(get("Mean"))]*get("Abundance")[!is.nan(get("Mean"))])/sum(get("Abundance")[!is.nan(get("Mean"))])
                                                ), 
                                          by=c("Stratum", "Domain", "Variable")]
