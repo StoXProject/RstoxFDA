@@ -741,7 +741,11 @@ expect_true(!is.na(cvtabMean$cv[cvtabMean$Domain1=="All/Gear:11/Usage:1/Individu
 cvtabMean <- merge(cvtabMean, expandedPopEst$DomainVariables, by.x=c("Domain1"), by.y=c("Domain"))
 expect_true(mean(cvtabMean$cv[cvtabMean$IndividualAge==2],na.rm=T)<.3)
 
+#
 # check aggregation
+#
+
+#check with ratio estimation with several strata (based on tests above)
 aggPopEst <- RstoxFDA:::AggregateAnalyticalEstimate(expandedPopEst, AggregateStratumName = "sampled", RetainStrata = "Unsampled")
 expect_true(RstoxFDA:::is.AnalyticalPopulationEstimateData(aggPopEst))
 expect_equal(sum(!is.na(aggPopEst$Abundance$Frequency)), sum(aggPopEst$Abundance$Stratum=="sampled")) #frequency estimated from abundance. NAs if some abundance in stratum is missing (aggreagate before ratio-estimate)
@@ -758,4 +762,36 @@ indPrKgAggPop <- sum(aggPopEstRatioEst$Abundance$Abundance) / sum(aggPopEstRatio
 #check that some approximate invariants are OK
 expect_true(abs(indPrKgAggPop-indPrKgOriginal)/indPrKgOriginal < 5e-2)
 
-#stop("Need more aggregation tests")
+#
+#checks aggregation with herring example with added stratification
+#
+stationDesign <- RstoxFDA::CatchLotterySamplingExample
+stationDesign$StratificationVariables <- rbind(stationDesign$StratificationVariables, data.table::data.table(Stratum="S2", CountryVessel="OUT"))
+stationDesign$SampleTable <- rbind(stationDesign$SampleTable, data.table::data.table(Stratum="S2", N=100, n=2, SelectionMethod="Poisson", FrameDescription="OUT"))
+stationDesign$SampleTable$n[1] <- stationDesign$SampleTable$n[1]-2
+stationDesign$SelectionTable$Stratum[stationDesign$SelectionTable$SamplingUnitId %in% c("38401","38433")] <- "S2"
+
+ex <- RstoxFDA::CatchLotteryExample
+ex$SpeciesCategory$SpeciesCategory <- "061104"
+ex$Individual$IW <- ex$Individual$IndividualRoundWeight #for testing that covariances equal variances when appropriate
+ex$Individual$one <- 1 #for testing that variable covariance equal abundance covariance when appropriate.
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
+expect_true(abs(sum(psuEst$Abundance$Abundance) - sum(ex$Sample$CatchFractionNumber))/sum(ex$Sample$CatchFractionNumber) < 1e-3)
+popEstAgeDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+# check that aggregate with one stratum does nothing (except change stratum names)
+aggregate <- RstoxFDA::AggregateAnalyticalEstimate(popEst, AggregateStratumName = "aggregate")
+retained <- RstoxFDA::AggregateAnalyticalEstimate(popEst, RetainStrata = popEst$StratificationVariables$Stratum, AggregateStratumName = "aggregate")
+expect_true(all(popEst$Abundance$Abundance==retained$Abundance$Abundance))
+expect_equal(aggregate$Abundance$Abundance, sum(retained$Abundance$Abundance))
+expect_equal(aggregate$Abundance$Frequency, 1)
+expect_true(all(retained$Abundance$Frequency==1))
+expect_true(!any(aggregate$Abundance$Stratum %in% retained$Abundance$Stratum))
+expect_equal(aggregate$VariablesCovariance$TotalCovariance, sum(retained$VariablesCovariance$TotalCovariance))
+expect_true(!any(aggregate$VariablesCovariance$Stratum %in% retained$VariablesCovariance$Stratum))
+

@@ -310,6 +310,9 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
   if (!all(c("Stratum", "Order", "SamplingUnitId", "InclusionProbability", "SelectionProbability", "HHsamplingWeight", "SelectionDescription") %in% names(PSUSamplingParametersData$SelectionTable))){
     return(FALSE)
   }
+  if (any(duplicated(PSUSamplingParametersData$SelectionTable$SamplingUnitId[!is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId)]))){
+    return(FALSE)
+  }
   if (!all(c("Stratum") %in% names(PSUSamplingParametersData$StratificationVariables))){
     return(FALSE)
   }
