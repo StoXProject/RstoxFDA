@@ -1468,14 +1468,14 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'  when only proportions in domains are known. This requires that landing partitions are not covering more than one strata, although they may cover less.
 #'  That is the Stratification columns in 'StratificationColumns' must identify strata in 'AnalyticalPopulationEstimateData'
 #'  
-#'  The function obtains a ratio estimate of total abundance in landings by one of the following methods (provided in the argument 'Method'):
+#'  The function obtains a ratio estimate of total abundance in landings by relating proportion in domains, mean weight in domains, and total weight in landings to each other:
 #'        
 #'   'Abundance' will be estimated as \eqn{\widehat{qN}^{(s,d)}}, the variable 'Frequency' as \eqn{\widehat{qf}^{(s,d)}}, and the variable 'Total' as \eqn{\widehat{qt}^{(s,d,v)}}.
 #'     These estimators and their corresponding variances ('AbundanceCovariance', 'FrequencyCovariance', and 'TotalCovariance') are given below. 
-#'     Note that no revised estimate for means are provided with this method. 'Mean' and MeanCovariance' is unchanged.
+#'     Note that no revised estimate for means are provided with this method. 'Mean' and MeanCovariance' are unchanged.
 #'     The estimates are based on estimated frequencies and ratio of of total landings in each landing partition to the estimated mean individual weight ('WeightVariable'):
 #'     \deqn{\hat{Q}^{(s,d)}=\frac{W^{(L)}}{\sum_{(s',d') \in L}\hat{f}^{(s',d')}\hat{\mu}^{(s',d',\mathrm{w})}}}
-#'     where \eqn{L=part(s,d)} is a partition of the landings containing the domain. 
+#'     where \eqn{L=part(s,d)} is a partition of the landings containing the domain, specified by the arguments 'StratificationVariables' and 'DomainVariables'. 
 #'     Since frequencies are normalized to strata, L cannot contain several strata.
 #'     The abundance is estimated as:
 #'     \deqn{\widehat{qN}^{(s,d)} = \hat{f}^{(s,d)}\hat{Q}^{(s,d)}}
