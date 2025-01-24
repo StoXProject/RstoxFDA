@@ -1,6 +1,6 @@
 Package: RstoxFDA
 Version: 1.5.0-9003
-Date: 2024-12-28
+Date: 2025-01-24
 Title: Fisheries Dependent Analysis with RstoX
 Authors@R: c(
   person(given = "Edvin", 
@@ -26,8 +26,8 @@ Imports:
     RColorBrewer (>= 1.1-2),
     rnaturalearth (>= 1.0.1),
     rnaturalearthdata (>= 1.0.0),
-    RstoxBase (>= 2.1.1-9001),
-    RstoxData (>= 2.1.1-9001),
+    RstoxBase (>= 2.1.2-9002),
+    RstoxData (>= 2.1.2-9001),
     sf (>= 1.0.0),
     stats (>= 3.5.0),
     utils (>= 3.5.0)

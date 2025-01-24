@@ -6,15 +6,6 @@
 \description{
 Analytical estimates for a population
  
- SampleSummary
- \describe{
-  \item{Stratum}{Stratum that summary is provided for.}
-  \item{PSUDomain}{PSU domain that summary is provided for.}
-  \item{Samples}{The number of PSUs sampled in the domain.}
-  \item{PSUDomainSize}{The estimated number of PSUs in the domain.}
-  \item{PSURelativeDomainSize}{The estimated fraction of PSUs in the domain, relative to the number of PSUs in the stratum.}
- }
- 
  Abundance
  \describe{
    \item{Stratum}{Stratum that abundance is provided for.}
@@ -55,8 +46,11 @@ Analytical estimates for a population
  StratificationVariables
  \describe{
   \item{Stratum}{A stratum, as identified in other tables.}
-  \item{StratificationVariables}{Columns that relate the stratum to data records.}
+  \item{<StratificationVariables>}{Columns that relate the stratum to data records.}
  }
+ The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum.
+ Unlike \code{\link[RstoxFDA]{PSUSamplingParametersData}}, \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}, and, \code{\link[RstoxFDA]{IndividualSamplingParametersData}}, a stratum for 'AnalyticalPopulationEstimateData' 
+ can be defined by several rows in the 'StratificationVariables' table.
  
  DomainVariables
  \describe{
