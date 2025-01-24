@@ -122,7 +122,7 @@ FileName = system.file("testresources", "lotteryParameters", "lotteryDesignNSHst
 PSUparameters <- RstoxFDA::ReadPSUSamplingParameters(FileName)
 ```
 
-These sampling variables are design variables for the biological records, and should conventionally be archived in the "biotic" folder in StoX-project folder structure.
+These sampling variables are design variables for the biological records, and should conventionally be archived in the "biotic" folder in StoX-project folder structure. If for sampling parameters for some reason are lost, an approximation can be computed with _RstoxFDA::ComputePSUSamplingParameters_.
 
 Note that these files contains selection and inclusion probabilites for every haul selected for sampling:
 ```{r inspectPSUsamplingParameters}
@@ -141,7 +141,11 @@ The samples are all selected from the same stratum, called "Nordsjo". Later on, 
 PSUparameters$StratificationVariables
 ```
 
-This tells use that the Stratum "Nordsjo" is defined by the Species code "061104", which we will later find in the landings data. You can use other or additional columns i stead, if that is more appropriate for your fishery or the way you prepare the landings data. You may also use StoX functions for adding columns to the landings, to make sure that the strata sampled are identifiable in the landings, and you may edit the resource-file for sampling parameters to make sure they are identifiable in the samples. For some kinds of estimation the landings are not necessary. In these cases it is sufficient that the strata is encoded in the column "Stratum", and additional stratification variables are not necessary. For purposes of estimation, the case when sampling is not stratified is the same as if we have only one stratum. So the Stratum column can always be encoded.
+This tells use that the Stratum "Nordsjo" is defined by the Species code "061104", which we will later find in the landings data. You can use other or additional columns in stead, if that is more appropriate for your fishery or the way you prepare the landings data. You may also use StoX functions for adding columns to the landings, to make sure that the strata sampled are identifiable in the landings. If no stratification variables are provided, you may add them with _RstoxFDA::AddPsuStratificationVariables_, or you may manually edit the resource file.
+
+Ideally, the Stratification Variables should encode the sampling frame of each stratum, so that we can be explicit about any part of the fishery that is not covered by our sampling. The example provided here implicitly assumes that we are covering the entire fishery, but this is typically not true. For instance, sampling programs based in electronic logbook reports, does not cover fishing activity from vessels without logbooks. RstoxFDA provide functions for explicit inference to out-of-frame strata, but they are not introduced here. Consult function documentation for _RstoxFDA::ExtendAnalyticalSamplingFrameCoverage_, _RstoxFDA::InterpolateAnalyticalDomainEstimates_, and _RstoxFDA::AggregateAnalyticalEstimate_.
+
+For purposes of estimation, the case when sampling is not stratified is the same as if we have only one stratum. So the Stratum column can always be encoded.
 
 #### Compute sampling parameters for measurements
 
