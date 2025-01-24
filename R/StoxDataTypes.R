@@ -2570,7 +2570,18 @@ stoxFunctionAttributes <- list(
       )
     )
   ),
-  
+  AggregateAnalyticalEstimate = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "AnalyticalPopulationEstimateData",
+    functionParameterDefaults = list(
+      RetainStrata=character(),
+      AggregateStratumName="Aggregate"
+    ),
+    functionParameterFormat = list(
+      RetainStrata = "retainstrata"
+    )
+  ),
   ListBioticDifference = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
@@ -3310,6 +3321,15 @@ processPropertyFormats <- list(
     variableTypes = function(StratificationVariables) {
       rep("character", 1 + length(StratificationVariables))
     }
+  ),
+  retainstrata = list(
+    class = "vector",
+    title = "Strata to retain from aggregation", 
+    possibleValues = function(AnalyticalPopulationEstimateData){
+      pv <- unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum)
+      return(pv)
+    },
+    variableTypes = "character"
   )
 )
 
