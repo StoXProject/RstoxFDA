@@ -48,7 +48,9 @@ Analytical estimates for a population
   \item{Stratum}{A stratum, as identified in other tables.}
   \item{<StratificationVariables>}{Columns that relate the stratum to data records.}
  }
- The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum and a row in the StratificationVariables table.
+ The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum.
+ Unlike \code{\link[RstoxFDA]{PSUSamplingParametersData}}, \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}, and, \code{\link[RstoxFDA]{IndividualSamplingParametersData}}, a stratum for 'AnalyticalPopulationEstimateData' 
+ can be defined by several rows in the 'StratificationVariables' table.
  
  DomainVariables
  \describe{

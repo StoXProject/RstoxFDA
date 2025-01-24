@@ -985,6 +985,10 @@ CollapseStrata <- function(IndividualSamplingParametersData, RetainStrata=charac
 #' @export
 LiftStrata <- function(AnalyticalPSUEstimateData){
 
+  if (!is.AnalyticalPSUEstimateData(AnalyticalPSUEstimateData)){
+    stop("Invalid 'AnalyticalPSUEstimateData'")
+  }
+  
   allStrata <- data.table::CJ(SampleId=AnalyticalPSUEstimateData$StratificationVariables$SampleId, Stratum=AnalyticalPSUEstimateData$StratificationVariables$Stratum, unique = T)
   missingStrata <- allStrata[!(paste(allStrata$SampleId, allStrata$Stratum) %in% paste(AnalyticalPSUEstimateData$StratificationVariables$SampleId, AnalyticalPSUEstimateData$StratificationVariables$Stratum)),]
   
@@ -1307,6 +1311,10 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   checkMandatory(PSUSamplingParametersData, "PSUSamplingParametersData")
   checkMandatory(AnalyticalPSUEstimateData, "AnalyticalPSUEstimateData")
 
+  if (!is.AnalyticalPSUEstimateData(AnalyticalPSUEstimateData)){
+    stop("Invalid 'AnalyticalPSUEstimateData'")
+  }
+  
   NestimatesByStrata <- AnalyticalPSUEstimateData$Abundance[,list(estimates=get(".N")),by="Stratum"]
   if (!length(unique(NestimatesByStrata$estimates))==1){
     stop("Cannot Estimate with heterogeneous lower level stratification. Consider the functions LiftStrata or CollapseStrata.")

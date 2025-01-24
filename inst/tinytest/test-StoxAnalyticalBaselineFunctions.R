@@ -758,7 +758,4 @@ indPrKgAggPop <- sum(aggPopEstRatioEst$Abundance$Abundance) / sum(aggPopEstRatio
 #check that some approximate invariants are OK
 expect_true(abs(indPrKgAggPop-indPrKgOriginal)/indPrKgOriginal < 5e-2)
 
-#stop("disallow NA in stratificationvariables. update is.PSU...")
-#stop("Disallow multi-line strata forfor AnalyticalPSUEstimateSData")
-#stop("Update data type description, and implement is.AnalyticalPSUEstimateSData")
 #stop("Document AggregateAnalyticalEstimate")

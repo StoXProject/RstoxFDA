@@ -61,13 +61,59 @@ is.Date <- function(date){
 #'   \item{Stratum}{Identfier of stratum for individuals at PSU. In addition strata are identified by the combination of any additional columns in this table.}
 #'   \item{<StratificationVariables>}{Columns that relate the PSU domains to data records.}
 #'  }
-#'  The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum and a row in the StratificationVariables table.
+#'  The combination of the columns 'Stratum' and 'SampleId' uniquely identifies a row in the table 'StratificationVariables'
+#'  The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum for each 'SamplingId'.
 #' 
 #' @name AnalyticalPSUEstimateData
 #' @concept Data types
 #' @concept Analytical estimation
 #' 
 NULL
+
+#' Check if input is correctly formatted Analytical PSU Estimate Data
+#' @param table \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}
+#' @return validity
+#' @concept Data types
+#' @noRd
+is.AnalyticalPSUEstimateData <- function(AnalyticalPSUEstimateData){
+  
+  if (!is.list(AnalyticalPSUEstimateData)){
+    return(FALSE)
+  }
+  if (!all(c("Abundance", "Variables", "DomainVariables", "PSUDomainVariables", "StratificationVariables") %in% names(AnalyticalPSUEstimateData))){
+    return(FALSE)
+  }
+  if (!all(c("SampleId", "Stratum", "Domain", "Abundance", "Frequency") %in% names(AnalyticalPSUEstimateData$Abundance))){
+    return(FALSE)
+  }
+  if (!all(c("SampleId", "Stratum", "Domain", "Variable", "Total", "Mean") %in% names(AnalyticalPSUEstimateData$Variables))){
+    return(FALSE)
+  }
+  if (!all(c("Domain") %in% names(AnalyticalPSUEstimateData$DomainVariables))){
+    return(FALSE)
+  }
+  if (!all(c("SampleId", "Stratum") %in% names(AnalyticalPSUEstimateData$StratificationVariables))){
+    return(FALSE)
+  }
+  if (any(!(names(AnalyticalPSUEstimateData$StratificationVariables) %in% c("Stratum", "SampleId")))){
+    stratavars <- names(AnalyticalPSUEstimateData$StratificationVariables)[!(names(AnalyticalPSUEstimateData$StratificationVariables) %in% c("Stratum", "SampleId"))]
+    
+    stratacount <- AnalyticalPSUEstimateData$StratificationVariables[,list(stratacount=length(unique(paste(get("Stratum"))))), by=list(stratavars=apply(AnalyticalPSUEstimateData$StratificationVariables[,.SD,.SDcol=c(stratavars, "SampleId")], 1, paste, collapse="/"))]
+    
+    if (any(stratacount$stratacount>1)){
+      return(FALSE)
+    }
+    if (any(is.na(AnalyticalPSUEstimateData$StratificationVariables[,.SD,.SDcols = stratavars]))){
+      return(FALSE)
+    }
+  }
+  
+  if (any(duplicated(paste(AnalyticalPSUEstimateData$StratificationVariables$SampleId, AnalyticalPSUEstimateData$StratificationVariables$Stratum)))){
+    return(FALSE)
+  }
+  
+  return(TRUE)
+}
 
 #' Analytical Population Estimate Data
 #' 
@@ -116,7 +162,9 @@ NULL
 #'   \item{Stratum}{A stratum, as identified in other tables.}
 #'   \item{<StratificationVariables>}{Columns that relate the stratum to data records.}
 #'  }
-#'  The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum and a row in the StratificationVariables table.
+#'  The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum.
+#'  Unlike \code{\link[RstoxFDA]{PSUSamplingParametersData}}, \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}, and, \code{\link[RstoxFDA]{IndividualSamplingParametersData}}, a stratum for 'AnalyticalPopulationEstimateData' 
+#'  can be defined by several rows in the 'StratificationVariables' table.
 #'  
 #'  DomainVariables
 #'  \describe{
@@ -169,9 +217,13 @@ is.AnalyticalPopulationEstimateData <- function(AnalyticalPopulationEstimateData
     return(FALSE)
   }
   if (any(names(AnalyticalPopulationEstimateData$StratificationVariables != "Stratum"))){
-    stratvarString <- apply(AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcols = names(AnalyticalPopulationEstimateData$StratificationVariables)[names(AnalyticalPopulationEstimateData$StratificationVariables)!="Stratum"]],
+    stratavars <- names(AnalyticalPopulationEstimateData$StratificationVariables)[names(AnalyticalPopulationEstimateData$StratificationVariables)!="Stratum"]
+    stratvarString <- apply(AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcols = stratavars],
                             1, paste, collapse="/")
     if (any(duplicated(stratvarString))){
+      return(FALSE)
+    }
+    if (any(is.na(AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcols = stratavars]))){
       return(FALSE)
     }
   }
@@ -211,9 +263,9 @@ is.AnalyticalPopulationEstimateData <- function(AnalyticalPopulationEstimateData
 #'  The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
 #'  \describe{
 #'   \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
-#'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
+#'   \item{<StratificationVariables>}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
 #'  }
-#'  
+#'  The column 'Stratum' uniquely identifies a row in the table 'StratificationVariables'
 #' 
 #' Optional columns may be NA.
 #' 
@@ -291,6 +343,11 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
       return(FALSE)
     }
   }
+  
+  if (any(duplicated(PSUSamplingParametersData$StratificationVariables$Stratum))){
+    return(FALSE)
+  }
+  
   return(TRUE)
 }
 
@@ -331,8 +388,9 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
 #'  \describe{
 #'   \item{SampleId}{Mandatory, chr: Identifies the sample the stratification applies to}
 #'   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
-#'   \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
+#'   \item{<StratificationVariables>}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
 #'  }
+#'  The combination of the columns 'Stratum' and 'SampleId' uniquely identifies a row in the table 'StratificationVariables'
 #' 
 #' Optional columns may be NA.
 #' 
