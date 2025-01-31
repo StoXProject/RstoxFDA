@@ -907,7 +907,7 @@ NULL
 #'   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
 #'  }
 #' 
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaData
 #' @concept Data types
@@ -933,7 +933,7 @@ NULL
 #'   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
 #'  }
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
@@ -952,7 +952,7 @@ NULL
 #'  }
 #'  
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
@@ -982,7 +982,7 @@ NULL
 #'   \item{...}{Any aggregation variables.}
 #'  }
 #' 
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #' 
 #' 
 #' @name ReportFdaCatchAtAgeCovarianceData
@@ -1000,7 +1000,7 @@ NULL
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
@@ -1020,7 +1020,7 @@ NULL
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
@@ -1039,7 +1039,7 @@ NULL
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #'  
@@ -1062,7 +1062,7 @@ NULL
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #'  
@@ -1125,7 +1125,7 @@ is.ReportFdaData <- function(ReportFdaData){
 #'  }
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
-#'  The unit for RelativeDifference is configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  The unit for RelativeDifference is configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaSopData
 #' @concept Data types
@@ -2697,7 +2697,18 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "ReportFdaCatchAtAgeData",
     functionParameterDefaults = list(
       Decimals = 0,
-      IntervalWidth = 0.9
+      IntervalWidth = 0.9,
+      Unit = "individuals"
+    )
+  ),
+  ReportAnalyticalWeightAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaCatchAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9,
+      Unit = "g"
     )
   ),
   ReportRecaCatchAtAgeCovariance = list(
