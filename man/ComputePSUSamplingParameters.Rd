@@ -85,5 +85,8 @@ provided by this function, and the approximation may be severely compromised, if
     ExpectedSampleSize = 110)
 
 }
+\seealso{
+\code{\link[RstoxFDA]{ReadPSUSamplingParameters}}, \code{\link[RstoxFDA]{AddPsuStratificationVariables}}, \code{\link[RstoxFDA]{AssignPSUSamplingParameters}}, \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}
+}
 \concept{Analytical estimation}
 \concept{StoX-functions}

@@ -64,5 +64,8 @@ The available DefinitionMethods specifies how Individuals are selected from a Sa
 \item{LengthStratified}{Length stratified selection. Individuals are selected for measurement by stratified random selection without replacement from each Sample. Strata are length groups, specified by the left closed intervals starting with [0,'LengthInterval'>.}
 }
 }
+\seealso{
+\code{\link[RstoxFDA]{AnalyticalPSUEstimate}}
+}
 \concept{Analytical estimation}
 \concept{StoX-functions}

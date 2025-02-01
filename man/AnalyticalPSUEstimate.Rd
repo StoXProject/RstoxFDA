@@ -92,4 +92,7 @@ If the domain does not coincide with stratum, it must also be considered approxi
 \item{\eqn{\hat{D}^{(s,d)}}}{The estimated relative domain size of domain \eqn{d} in stratum \eqn{s} at PSU: \eqn{\sum_{i=1}^{m}w_{i}I^{s,d}_{i}}}
 }
 }
+\seealso{
+\code{\link[RstoxFDA]{ComputeIndividualSamplingParameters}}
+}
 \concept{Analytical estimation}

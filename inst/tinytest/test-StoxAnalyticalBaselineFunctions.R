@@ -1,3 +1,15 @@
+#
+# Test adding length-group
+#
+StoxBioticWLengthGroup <- RstoxFDA:::AddLengthGroupStoxBiotic(RstoxFDA::CatchLotteryExample, LengthInterval=5, LengthGroupVariable="LengthGroup", LeftOpen=TRUE)
+expect_true(all(c("(15,20]", "(20,25]", "(25,30]", "(30,35]") %in% StoxBioticWLengthGroup$Individual$LengthGroup))
+StoxBioticWLengthGroup <- RstoxFDA:::AddLengthGroupStoxBiotic(RstoxFDA::CatchLotteryExample, LengthInterval=0.5, LengthGroupVariable="LengthGroup", LeftOpen=FALSE)
+expect_true(all(c("[16,16.5)", "[16.5,17)", "[33.5,34)") %in% StoxBioticWLengthGroup$Individual$LengthGroup))
+
+#
+# Test sampling parameters
+#
+
 designParamsFile <- system.file("testresources", "lotteryParameters", "lotteryDesignNSH.txt", package="RstoxFDA")
 
 #regular read:

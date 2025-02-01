@@ -154,6 +154,7 @@ parseDesignParameters <- function(filename){
 #'  FlatSamplingParametersData <- read.csv(exampleFile, sep="\t")
 #' 
 #' @export
+#' @seealso \code{\link[RstoxFDA]{ComputePSUSamplingParameters}}, \code{\link[RstoxFDA]{AddPsuStratificationVariables}}, \code{\link[RstoxFDA]{AssignPSUSamplingParameters}}, \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}} 
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
@@ -268,6 +269,7 @@ computePpsParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Quota
 #'     "Nordsjo", Quota = 124*1e6, 
 #'     ExpectedSampleSize = 110)
 #' 
+#' @seealso \code{\link[RstoxFDA]{ReadPSUSamplingParameters}}, \code{\link[RstoxFDA]{AddPsuStratificationVariables}}, \code{\link[RstoxFDA]{AssignPSUSamplingParameters}}, \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}} 
 #' @export
 #' @concept StoX-functions
 #' @concept Analytical estimation
@@ -319,6 +321,7 @@ is.StratificationVariablesData <- function(StratificationVariablesTable){
 #' @param StratificationVariablesTable value-combinations for the variables to add to each stratum
 #' @return \code{\link[RstoxFDA]{PSUSamplingParametersData}}
 #' @export
+#' @seealso \code{\link[RstoxFDA]{ReadPSUSamplingParameters}}, \code{\link[RstoxFDA]{ComputePSUSamplingParameters}}, \code{\link[RstoxFDA]{AssignPSUSamplingParameters}}, \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}} 
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
@@ -546,6 +549,7 @@ extractIndividualDesignParametersStoxBiotic <- function(StoxBioticData, Stratifi
 #' @param StratificationColumns names of columns in the Individual table of StoxBioticData that identify strata for Stratified selection (DefinitionMethod 'Stratified').
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}} where SampleId refers to the variable 'Haul' on the 'Haul' table in StoxBioticData, and IndividualId refers to the variable 'Individual' on the 'Individual' table of StoxBioticData.
 #' @export
+#' @seealso \code{\link[RstoxFDA]{AnalyticalPSUEstimate}}
 #' @concept StoX-functions
 #' @concept Analytical estimation
 #' @md
@@ -638,7 +642,7 @@ ComputeIndividualSamplingParameters <- function(StoxBioticData, DefinitionMethod
 #' @return \code{\link[RstoxFDA]{IndividualSamplingParametersData}}
 #' @concept Analytical estimation
 #' @md
-#' @export
+#' @noRd
 DefineSamplingHierarchy <- function(StoxBioticData, IndividualSamplingParametersData, Hierarchy=character(), Stratification=character(), StrataSizes=character(), SelectionMethod=character()){
   stop("Not Implemented")
 }
@@ -679,6 +683,7 @@ DefineSamplingHierarchy <- function(StoxBioticData, IndividualSamplingParameters
 #' @return \code{\link[RstoxFDA]{PSUSamplingParametersData}} without non-respondent and with 'SamplingUnitId' changed
 #' @concept StoX-functions
 #' @concept Analytical estimation
+#' @seealso \code{\link[RstoxFDA]{ReadPSUSamplingParameters}}, \code{\link[RstoxFDA]{ComputePSUSamplingParameters}}, \code{\link[RstoxFDA]{AddPsuStratificationVariables}}, \code{\link[RstoxFDA]{ComputeIndividualSamplingParameters}}, \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}} 
 #' @md
 #' @export
 AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticData, SamplingUnitId=character(), DataRecordId=character(), DefinitionMethod=c("MissingAtRandom")){
@@ -815,6 +820,7 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #' @param PSUDomainVariables names of variables that define groups of PSUs to be annotated on the results for later processing. Must be columns of 'Individual' or some higher level table in 'StoxBioticData', and must have a unique value for each PSU.
 #' @return \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}} with estimates for each PSU of abundance, frequencies, totals and means by stratum and domain.
 #' @concept Analytical estimation
+#' @seealso \code{\link[RstoxFDA]{ComputeIndividualSamplingParameters}}
 #' @md
 #' @export
 AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersData, Variables=character(), DomainVariables=character(), PSUDomainVariables=character()){
@@ -1304,6 +1310,7 @@ covarVariables <- function(Totals, PSUSampling, MeanOfMeans, Abundance){
 #'  abundance <- abundance[order(as.numeric(abundance$Domain)),]
 #'  abundance
 #' @concept Analytical estimation
+#' @seealso \code{\link[RstoxFDA]{ReadPSUSamplingParameters}}, \code{\link[RstoxFDA]{ComputePSUSamplingParameters}}, \code{\link[RstoxFDA]{AddPsuStratificationVariables}}, \code{\link[RstoxFDA]{AssignPSUSamplingParameters}}, \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}, \code{\link[RstoxFDA]{AggregateAnalyticalEstimate}}, \code{\link[RstoxFDA]{ExtendAnalyticalSamplingFrameCoverage}}, \code{\link[RstoxFDA]{InterpolateAnalyticalDomainEstimates}}
 #' @export
 #' @md
 AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPSUEstimateData, MeanOfMeans=F){
@@ -1549,6 +1556,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'                                         "CountryVessel")
 #'  
 #' @concept Analytical estimation
+#' @seealso \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}, \code{\link[RstoxFDA]{AggregateAnalyticalEstimate}}, \code{\link[RstoxFDA]{ExtendAnalyticalSamplingFrameCoverage}}, \code{\link[RstoxFDA]{InterpolateAnalyticalDomainEstimates}}
 #' @export
 #' @md
 AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandingData, WeightVariable=character(), StratificationVariables=character(), DomainVariables=character()){
@@ -1749,6 +1757,7 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
 #' @param AggregateStratumName name to use for the aggregated stratum
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with aggregated estimates.
 #' @concept Analytical estimation
+#' @seealso \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}, \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}, \code{\link[RstoxFDA]{ExtendAnalyticalSamplingFrameCoverage}}, \code{\link[RstoxFDA]{InterpolateAnalyticalDomainEstimates}}
 #' @export
 #' @md
 AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, RetainStrata=character(), AggregateStratumName=character()){
@@ -1938,6 +1947,7 @@ fillSetToStratum <- function(extendedAnalyticalPopulationEstimateData, SourceStr
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with parameters for unsampled stratum, and StratificationVariables reduced to those mathced with landings
 #' @md
 #' @concept Analytical estimation
+#' @seealso \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}, \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}, \code{\link[RstoxFDA]{AggregateAnalyticalEstimate}}, \code{\link[RstoxFDA]{InterpolateAnalyticalDomainEstimates}}
 #' @export
 ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateData, StoxLandingData, StratificationVariables, Method=c("Strict", "SetToStratum"), UnsampledStratum=character(), SourceStratum=character()){
   
@@ -2321,6 +2331,7 @@ fillDomainStratumMean <- function(zeroDomainEstimate, DomainVariables, epsilon){
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with parameters for unsampled domains
 #' @md
 #' @concept Analytical estimation
+#' @seealso \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}, \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}, \code{\link[RstoxFDA]{AggregateAnalyticalEstimate}}, \code{\link[RstoxFDA]{ExtendAnalyticalSamplingFrameCoverage}}
 #' @export
 InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateData, StoxLandingData, Method=c("Strict", "StratumMean"), DomainMarginVariables=character(), Epsilon=numeric()){
   
@@ -2457,4 +2468,45 @@ InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateDat
     stop(paste("The option", Method, "for the argument 'Method' is not recognized."))
   }
     
+}
+
+#' Add length group to StoxBioticData
+#' @description
+#'  Adds a variable that groups individuals based on the variable 'IndividualTotalLength'.
+#'  This allows length-groups to be defined as domains in analytical estimation.
+#'  
+#'  The groups are defined by the argument 'LengthInterval', which specify consecutive length groups of
+#'  equal length range ('LengthInterval'), starting with length 0. The argument 'LeftOpen' specifies
+#'  whether the intervals are open to the left (lower value) or to the right (higher value).
+#'  
+#'  For example LengthInterval=5, and LeftOpen=FALSE, specifies length-groups [0,5>,[5,10>,...
+#' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} with individuals to be grouped by length
+#' @param LengthInterval The 'bin-size', length in cm between length-groups
+#' @param LengthGroupVariable Name to use for the length group variable
+#' @param LeftOpen logical, specifying whether intervals are left-open, or right-open.
+#' @md
+#' @examples
+#'  StoxBioticWLengthGroup <- RstoxFDA:::AddLengthGroupStoxBiotic(RstoxFDA::CatchLotteryExample, 
+#'        LengthInterval=5, LengthGroupVariable="LengthGroup", LeftOpen=TRUE)
+#'  table(StoxBioticWLengthGroup$Individual$LengthGroup)
+#' @concept Analytical estimation
+#' @seealso \code{\link[RstoxFDA]{AnalyticalPSUEstimate}}
+#' @export
+AddLengthGroupStoxBiotic <- function(StoxBioticData, LengthInterval=numeric(), LengthGroupVariable=character(), LeftOpen=TRUE){
+  checkMandatory(StoxBioticData, "StoxBioticData")
+  checkMandatory(LengthInterval, "LengthInterval")
+  checkMandatory(LengthGroupVariable, "LengthGroupVariable")
+  checkMandatory(LeftOpen, "LeftOpen")
+  
+  for (tab in names(StoxBioticData)){
+    if (LengthGroupVariable %in% names(StoxBioticData[[tab]])){
+      stop(paste("The argument 'LengthGroupVariable' cannot be a variable already existing in 'StoxBioticData'.", LengthGroupVariable,"was found on the table:", tab))
+    }
+  }
+  StoxBioticData$Individual[[LengthGroupVariable]] <- as.character(
+    cut(StoxBioticData$Individual$IndividualTotalLength, 
+        seq(0, max(StoxBioticData$Individual$IndividualTotalLength)+LengthInterval, LengthInterval), 
+        right=LeftOpen))
+  
+  return(StoxBioticData)
 }

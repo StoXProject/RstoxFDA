@@ -108,4 +108,7 @@ Vocabulary for equations given above:
                                         "CountryVessel")
  
 }
+\seealso{
+\code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}, \code{\link[RstoxFDA]{AggregateAnalyticalEstimate}}, \code{\link[RstoxFDA]{ExtendAnalyticalSamplingFrameCoverage}}, \code{\link[RstoxFDA]{InterpolateAnalyticalDomainEstimates}}
+}
 \concept{Analytical estimation}
