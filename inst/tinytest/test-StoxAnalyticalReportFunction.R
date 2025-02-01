@@ -20,7 +20,6 @@ expect_true(all(abs(comp$TotalCovariance.x-comp$TotalCovariance.y)/comp$TotalCov
 expect_true(sum(abs(comp$MeanCovariance.x-comp$MeanCovariance.y)/comp$MeanCovariance.y,na.rm=T) < 1e-3)
 expect_equal(sum(is.nan(comp$MeanCovariance.x)), sum(is.nan(comp$MeanCovariance.y)))
 
-
 #
 # Test report Catch At Age
 #

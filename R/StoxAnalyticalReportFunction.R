@@ -4,6 +4,7 @@
 #' Aggregates data
 #' @noRd
 makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup, AgeDomainVar){
+  
   AnalyticalPopulationEstimateData$DomainVariables$AgeGroup <- paste("Age", as.character(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]]))
   AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]][is.na(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]])] <- 0
   if (isGiven(PlusGroup)){
@@ -217,6 +218,9 @@ meanByAgeDomain <- function(AnalyticalPopulationEstimateData, PlusGroup, Interva
 #'  
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+#'  
+#'  Covariances for means of a variable between domains are not always defined, and the variances (and hence 'SD', 'Low' and 'High') 
+#'  for means in the plusgroup is approximated with an assumption of independence.
 #' 
 #'  The units considered valid for catch at age in numbers are those listed for quantity 'mass' in \code{\link[RstoxData]{StoxUnits}}
 #' @param AnalyticalPopulationEstimateData Results from analytical estimates (\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}). The StoxBiotic variable 'IndividualAge' must be among the DomainVariables, and estimates must be available for the StoxBiotic-variable 'IndividualRoundWeight'.
@@ -271,6 +275,9 @@ ReportAnalyticalWeightAtAge <- function(AnalyticalPopulationEstimateData, PlusGr
 #'  
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+#' 
+#'  Covariances for means of a variable between domains are not always defined, and the variances (and hence 'SD', 'Low' and 'High') 
+#'  for means in the plusgroup is approximated with an assumption of independence.
 #' 
 #'  The units considered valid for catch at age in numbers are those listed for quantity 'length' in \code{\link[RstoxData]{StoxUnits}}
 #' @param AnalyticalPopulationEstimateData Results from analytical estimates (\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}). The StoxBiotic variable 'IndividualAge' must be among the DomainVariables, and estimates must be available for the StoxBiotic-variable 'IndividualTotalLength'.
