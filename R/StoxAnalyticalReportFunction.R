@@ -162,7 +162,7 @@ meanByAgeDomain <- function(AnalyticalPopulationEstimateData, PlusGroup, Interva
   GroupingVariables <- GroupingVariables[!(GroupingVariables %in% c("Domain", AgeDomainVar))]
   AnalyticalPopulationEstimateData <- makePlusGroupAnalytical(AnalyticalPopulationEstimateData, PlusGroup, AgeDomainVar)    
   
-  pointEst <- merge(AnalyticalPopulationEstimateData$Variables, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
+  pointEst <- merge(AnalyticalPopulationEstimateData$Variables[AnalyticalPopulationEstimateData$Variables$Variable==obsVar,], AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
   varEst <- AnalyticalPopulationEstimateData$VariablesCovariance[AnalyticalPopulationEstimateData$VariablesCovariance$Domain1==AnalyticalPopulationEstimateData$VariablesCovariance$Domain2 & 
                                                                    AnalyticalPopulationEstimateData$VariablesCovariance$Variable1==AnalyticalPopulationEstimateData$VariablesCovariance$Variable2 &
                                                                    AnalyticalPopulationEstimateData$VariablesCovariance$Variable1==obsVar,]

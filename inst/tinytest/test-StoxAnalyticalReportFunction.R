@@ -56,7 +56,7 @@ ex <- RstoxFDA::CatchLotteryExample
 ex$Individual$IndividualAge[!is.na(ex$Individual$IndividualAge) & ex$Individual$IndividualAge>8] <- 9
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, 
                                            individualSamplingParameters, 
-                                           c("IndividualRoundWeight"), c("IndividualAge"))
+                                           c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
 mwaReportnoPG <- RstoxFDA:::ReportAnalyticalWeightAtAge(popEst, Decimals = 0, Unit = "g", IntervalWidth = .9)
 expect_true(RstoxFDA:::is.ReportFdaData(mwaReportnoPG))
@@ -70,3 +70,4 @@ popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
 mwaReportPG9 <- RstoxFDA:::ReportAnalyticalWeightAtAge(popEst, PlusGroup = 9, Unit="kg", Decimals = 3, IntervalWidth = .9)
 expect_true(RstoxFDA:::is.ReportFdaData(mwaReportPG9))
 expect_true("IndividualSex" %in% mwaReportPG9$GroupingVariables$GroupingVariables)
+
