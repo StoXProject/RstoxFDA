@@ -784,12 +784,33 @@ popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuE
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
-# check that aggregate with one stratum does nothing (except change stratum names)
+#
+# check against some manual calculations
+#
+
 aggregate <- RstoxFDA::AggregateAnalyticalEstimate(popEst, AggregateStratumName = "aggregate")
+expect_equal(aggregate$Abundance$Frequency, 1)
+abund <- sum(popEst$Abundance$Abundance)
+expect_equal(abund, aggregate$Abundance$Abundance)
+freqCovar <- sum(popEst$AbundanceCovariance$FrequencyCovariance * popEst$Abundance$Abundance**2) / sum(popEst$Abundance$Abundance)**2
+expect_true(abs(aggregate$AbundanceCovariance$FrequencyCovariance - freqCovar)/freqCovar < 1e-3)
+
+mean <- sum(popEst$Variables$Mean * popEst$Abundance$Abundance) / sum(popEst$Abundance$Abundance)
+expect_equal(mean, aggregate$Variables$Mean)
+total <- sum(popEst$Variables$Total)
+expect_true(abs(aggregate$Variables$Total - total)/total < 1e-3)
+meanVar <- sum(popEst$VariablesCovariance$MeanCovariance * (popEst$Abundance$Abundance / sum(popEst$Abundance$Abundance))**2)
+expect_true(abs(aggregate$VariablesCovariance$MeanCovariance - meanVar)/meanVar < 1e-3)
+totalVar <- sum(popEst$VariablesCovariance$TotalCovariance)
+expect_true(abs(aggregate$VariablesCovariance$TotalCovariance - totalVar)/totalVar < 1e-3)
+
+#
+# check retained
+#
+
 retained <- RstoxFDA::AggregateAnalyticalEstimate(popEst, RetainStrata = popEst$StratificationVariables$Stratum, AggregateStratumName = "aggregate")
 expect_true(all(popEst$Abundance$Abundance==retained$Abundance$Abundance))
 expect_equal(aggregate$Abundance$Abundance, sum(retained$Abundance$Abundance))
-expect_equal(aggregate$Abundance$Frequency, 1)
 expect_true(all(retained$Abundance$Frequency==1))
 expect_true(!any(aggregate$Abundance$Stratum %in% retained$Abundance$Stratum))
 expect_equal(aggregate$VariablesCovariance$TotalCovariance, sum(retained$VariablesCovariance$TotalCovariance))

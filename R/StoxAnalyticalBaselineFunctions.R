@@ -1450,6 +1450,14 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
     
   }
   
+  #order tables
+  output$Abundance <- output$Abundance[order(output$Abundance$Stratum, output$Abundance$Domain),]
+  output$Variables <- output$Variables[order(output$Variables$Stratum, output$Variables$Domain, output$Variables$Variable),]
+  output$AbundanceCovariance <- output$AbundanceCovariance[order(output$AbundanceCovariance$Stratum, output$AbundanceCovariance$Domain1, output$AbundanceCovariance$Domain2),]
+  output$VariablesCovariance <- output$VariablesCovariance[order(output$VariablesCovariance$Stratum, output$VariablesCovariance$Domain1, output$VariablesCovariance$Domain2, output$VariablesCovariance$Variable1, output$VariablesCovariance$Variable2),]
+  output$DomainVariables <- output$DomainVariables[order(output$DomainVariables$Domain),]
+  output$StratificationVariables <- output$StratificationVariables[order(output$StratificationVariables$Stratum),]
+  
   return(output)
 }
 
@@ -1677,6 +1685,14 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     # Do nothing with means.
     #
     
+    #order tables
+    AnalyticalPopulationEstimateData$Abundance <- AnalyticalPopulationEstimateData$Abundance[order(AnalyticalPopulationEstimateData$Abundance$Stratum, AnalyticalPopulationEstimateData$Abundance$Domain),]
+    AnalyticalPopulationEstimateData$Variables <- AnalyticalPopulationEstimateData$Variables[order(AnalyticalPopulationEstimateData$Variables$Stratum, AnalyticalPopulationEstimateData$Variables$Domain, AnalyticalPopulationEstimateData$Variables$Variable),]
+    AnalyticalPopulationEstimateData$AbundanceCovariance <- AnalyticalPopulationEstimateData$AbundanceCovariance[order(AnalyticalPopulationEstimateData$AbundanceCovariance$Stratum, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain1, AnalyticalPopulationEstimateData$AbundanceCovariance$Domain2),]
+    AnalyticalPopulationEstimateData$VariablesCovariance <- AnalyticalPopulationEstimateData$VariablesCovariance[order(AnalyticalPopulationEstimateData$VariablesCovariance$Stratum, AnalyticalPopulationEstimateData$VariablesCovariance$Domain1, AnalyticalPopulationEstimateData$VariablesCovariance$Domain2, AnalyticalPopulationEstimateData$VariablesCovariance$Variable1, AnalyticalPopulationEstimateData$VariablesCovariance$Variable2),]
+    AnalyticalPopulationEstimateData$DomainVariables <- AnalyticalPopulationEstimateData$DomainVariables[order(AnalyticalPopulationEstimateData$DomainVariables$Domain),]
+    AnalyticalPopulationEstimateData$StratificationVariables <- AnalyticalPopulationEstimateData$StratificationVariables[order(AnalyticalPopulationEstimateData$StratificationVariables$Stratum),]
+    
     return(AnalyticalPopulationEstimateData)
   }
 
@@ -1756,8 +1772,9 @@ AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, Retain
   collapsedStrata <- unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum[
     !(AnalyticalPopulationEstimateData$StratificationVariables$Stratum %in% RetainStrata)])
 
-  newAbundanceTable <- AnalyticalPopulationEstimateData$Abundance[!(get("Stratum") %in% RetainStrata),]
-  totalAbundance <- sum(newAbundanceTable$Abundance)
+  newAbundanceTableOldStratum <- AnalyticalPopulationEstimateData$Abundance[!(get("Stratum") %in% RetainStrata),]
+  totalAbundance <- sum(newAbundanceTableOldStratum$Abundance)
+  newAbundanceTable <- newAbundanceTableOldStratum
   newAbundanceTable$Stratum[newAbundanceTable$Stratum %in% collapsedStrata] <- AggregateStratumName
   newAbundanceTable <- newAbundanceTable[,list(Abundance=sum(get("Abundance")), 
                                                Frequency=sum(get("Abundance"))/totalAbundance
@@ -1771,8 +1788,8 @@ AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, Retain
                                                          by=c("Stratum", "Domain1", "Domain2")]
   
   newVariablesTable <- AnalyticalPopulationEstimateData$Variables[!(get("Stratum") %in% RetainStrata),]
+  newVariablesTable <- merge(newVariablesTable, newAbundanceTableOldStratum, by=c("Stratum", "Domain"))
   newVariablesTable$Stratum[newVariablesTable$Stratum %in% collapsedStrata] <- AggregateStratumName
-  newVariablesTable <- merge(newVariablesTable, newAbundanceTable, by=c("Stratum", "Domain"))
   newVariablesTable <- newVariablesTable[,list(Total=sum(get("Total")), 
                                                #NaN means correspond to zero abundance
                                                Mean=sum(get("Mean")[!is.na(get("Mean"))]*get("Abundance")[!is.nan(get("Mean"))])/sum(get("Abundance")[!is.nan(get("Mean"))])
@@ -1780,9 +1797,9 @@ AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, Retain
                                          by=c("Stratum", "Domain", "Variable")]
   
   newVariablesVariancetable <- AnalyticalPopulationEstimateData$VariablesCovariance[!(get("Stratum") %in% RetainStrata),]
+  newVariablesVariancetable <- merge(newVariablesVariancetable, newAbundanceTableOldStratum, by.x=c("Stratum", "Domain1"), by.y=c("Stratum", "Domain"))
+  newVariablesVariancetable <- merge(newVariablesVariancetable, newAbundanceTableOldStratum, by.x=c("Stratum", "Domain2"), by.y=c("Stratum", "Domain"), suffixes=c("1","2"))
   newVariablesVariancetable$Stratum[newVariablesVariancetable$Stratum %in% collapsedStrata] <- AggregateStratumName
-  newVariablesVariancetable <- merge(newVariablesVariancetable, newAbundanceTable, by.x=c("Stratum", "Domain1"), by.y=c("Stratum", "Domain"))
-  newVariablesVariancetable <- merge(newVariablesVariancetable, newAbundanceTable, by.x=c("Stratum", "Domain2"), by.y=c("Stratum", "Domain"), suffixes=c("1","2"))
   newVariablesVariancetable <- newVariablesVariancetable[,list(TotalCovariance=sum(get("TotalCovariance")),
                                                                MeanCovariance=sum(get("MeanCovariance")[!is.nan(get("MeanCovariance"))] * 
                                                                                     get("Abundance1")[!is.nan(get("MeanCovariance"))] *
