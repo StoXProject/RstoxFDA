@@ -19,6 +19,6 @@ Sum of Products report (SOP-report), comparing the total landed weight of fish
  }
  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 
- The unit for RelativeDifference is configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+ The unit for RelativeDifference is configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 }
 \concept{Data types}

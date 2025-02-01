@@ -22,6 +22,6 @@ Covariances from catch at age estimations. Covariances are presented
   \item{...}{Any aggregation variables.}
  }
 
- Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+ Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 }
 \concept{Data types}
