@@ -2711,6 +2711,16 @@ stoxFunctionAttributes <- list(
       Unit = "g"
     )
   ),
+  ReportAnalyticalLengthAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaLengthAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9,
+      Unit = "cm"
+    )
+  ),
   ReportRecaCatchAtAgeCovariance = list(
     functionType = "modelData",
     functionCategory = "report",

@@ -1,9 +1,9 @@
 #' Redefines age variable as lowest age in age group
 #' Adds plusgroup and puts NA group to 0.
+#' Assumes zero covariance for unkown covariances.
 #' Aggregates data
 #' @noRd
 makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup, AgeDomainVar){
-  
   AnalyticalPopulationEstimateData$DomainVariables$AgeGroup <- paste("Age", as.character(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]]))
   AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]][is.na(AnalyticalPopulationEstimateData$DomainVariables[[AgeDomainVar]])] <- 0
   if (isGiven(PlusGroup)){
@@ -37,10 +37,18 @@ makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup,
     AnalyticalPopulationEstimateData$Variables <- AnalyticalPopulationEstimateData$Variables[,list(Total=sum(get("Total")), Mean=sum(get("Mean")[!is.nan(get("Mean"))]*get("Abundance")[!is.nan(get("Mean"))])/(sum(get("Abundance")[!is.nan(get("Mean"))]))), by=c("Stratum", "Domain", "Variable")]
     
     #Annotate and aggregate total and mean covariance
+    
     AnalyticalPopulationEstimateData$VariablesCovariance <- merge(AnalyticalPopulationEstimateData$VariablesCovariance, domainMap, by.x="Domain1", by.y="Domain")
     AnalyticalPopulationEstimateData$VariablesCovariance <- merge(AnalyticalPopulationEstimateData$VariablesCovariance, domainMap, by.x="Domain2", by.y="Domain",  suffixes = c("Domain1", "Domain2"))
     AnalyticalPopulationEstimateData$VariablesCovariance <- merge(AnalyticalPopulationEstimateData$VariablesCovariance, AnalyticalPopulationEstimateData$Abundance, by.x=c("Stratum", "Domain1"), by.y=c("Stratum", "Domain"))
     AnalyticalPopulationEstimateData$VariablesCovariance <- merge(AnalyticalPopulationEstimateData$VariablesCovariance, AnalyticalPopulationEstimateData$Abundance, by.x=c("Stratum", "Domain2"), by.y=c("Stratum", "Domain"), suffixes = c("Domain1", "Domain2"))
+    
+    #assume all covariances are 0 for plus group
+    plusgr <- newDomains[get(AgeDomainVar)>=PlusGroup]$Domain
+    AnalyticalPopulationEstimateData$VariablesCovariance$MeanCovariance[(AnalyticalPopulationEstimateData$VariablesCovariance$Domain1 %in% plusgr |
+                                                                          AnalyticalPopulationEstimateData$VariablesCovariance$Domain2 %in% plusgr) &
+                                                                          AnalyticalPopulationEstimateData$VariablesCovariance$Domain1 != AnalyticalPopulationEstimateData$VariablesCovariance$Domain2] <- 0
+
     AnalyticalPopulationEstimateData$VariablesCovariance$Domain1 <- AnalyticalPopulationEstimateData$VariablesCovariance$Domain.newDomain1
     AnalyticalPopulationEstimateData$VariablesCovariance$Domain2 <- AnalyticalPopulationEstimateData$VariablesCovariance$Domain.newDomain2
     
@@ -50,14 +58,16 @@ makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup,
     AnalyticalPopulationEstimateData$VariablesCovariance <- merge(AnalyticalPopulationEstimateData$VariablesCovariance, totalDomainAbundance, by.x=c("Stratum", "Domain1"), by.y=c("Stratum", "Domain.new"), all.x=T)
     AnalyticalPopulationEstimateData$VariablesCovariance <- merge(AnalyticalPopulationEstimateData$VariablesCovariance, totalDomainAbundance, by.x=c("Stratum", "Domain2"), by.y=c("Stratum", "Domain.new"), suffixes = c("Domain1", "Domain2"), all.x=T)
     
-    #nan for mean covariance is for domain-pairs not simultanously observed
+    
     AnalyticalPopulationEstimateData$VariablesCovariance <- AnalyticalPopulationEstimateData$VariablesCovariance[,list(TotalCovariance=sum(get("TotalCovariance")), 
-                                                                                                                       MeanCovariance=sum(get("MeanCovariance")[!is.nan(get("MeanCovariance"))] * 
-                                                                                                                                            (get("FrequencyDomain1")[!is.nan(get("MeanCovariance"))] / get("TotalFrequencyDomain1")[!is.nan(get("MeanCovariance"))]) *
-                                                                                                                                            (get("FrequencyDomain2")[!is.nan(get("MeanCovariance"))] / get("TotalFrequencyDomain2")[!is.nan(get("MeanCovariance"))])
+                                                                                                                       MeanCovariance=sum(get("MeanCovariance") * 
+                                                                                                                                            (get("FrequencyDomain1") / get("TotalFrequencyDomain1")) *
+                                                                                                                                            (get("FrequencyDomain2") / get("TotalFrequencyDomain2"))
                                                                                                                                           )
                                                                                                                          ), 
                                                                                                                  by=c("Stratum", "Domain1", "Domain2", "Variable1", "Variable2")]
+
+    
     #Annotate and aggregate abundance and frquencies
     AnalyticalPopulationEstimateData$Abundance <- merge(AnalyticalPopulationEstimateData$Abundance, domainMap, by="Domain")
     AnalyticalPopulationEstimateData$Abundance$Domain <- AnalyticalPopulationEstimateData$Abundance$Domain.new
@@ -74,6 +84,12 @@ makePlusGroupAnalytical <- function(AnalyticalPopulationEstimateData, PlusGroup,
     AnalyticalPopulationEstimateData$DomainVariables <- newDomains[!duplicated(get("Domain.new")),]
     AnalyticalPopulationEstimateData$DomainVariables$Domain <- AnalyticalPopulationEstimateData$DomainVariables$Domain.new
     AnalyticalPopulationEstimateData$DomainVariables$Domain.new <- NULL
+    
+    # set covariances with plusgroup to NA
+    plusgr <- newDomains[get(AgeDomainVar)>=PlusGroup]$Domain.new
+    AnalyticalPopulationEstimateData$VariablesCovariance$MeanCovariance[(AnalyticalPopulationEstimateData$VariablesCovariance$Domain1 %in% plusgr |
+                                                                           AnalyticalPopulationEstimateData$VariablesCovariance$Domain2 %in% plusgr) &
+                                                                          AnalyticalPopulationEstimateData$VariablesCovariance$Domain1 != AnalyticalPopulationEstimateData$VariablesCovariance$Domain2] <- NA
     
   }
   
@@ -117,7 +133,7 @@ ReportAnalyticalCatchAtAge <- function(AnalyticalPopulationEstimateData, PlusGro
   
   checkMandatory(Decimals, "Decimals")
   checkMandatory(IntervalWidth, "IntervalWidth")
-  Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12)))
+  Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("cardinality"))
   check_intervalWidth(IntervalWidth)
       
   GroupingVariables <- names(AnalyticalPopulationEstimateData$DomainVariables)
@@ -172,6 +188,7 @@ meanByAgeDomain <- function(AnalyticalPopulationEstimateData, PlusGroup, Interva
   tab$Age <- tab[[AgeDomainVar]]
 
   alpha <- (1-IntervalWidth)/2.0
+  
   result <- tab[,list(Mean=get("Mean"), SD=sqrt(get("MeanCovariance")), Low=max(stats::qnorm(alpha,mean=get("Mean"), sd=sqrt(get("MeanCovariance"))),0), High=stats::qnorm(1-alpha,mean=get("Mean"), sd=sqrt(get("MeanCovariance")))), by=c(GroupingVariables, "AgeGroup", "Age")]
   
   mba <- list()
@@ -225,7 +242,7 @@ ReportAnalyticalWeightAtAge <- function(AnalyticalPopulationEstimateData, PlusGr
   }
   checkMandatory(Decimals, "Decimals")
   checkMandatory(IntervalWidth, "IntervalWidth")
-  Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("mass", conversionRange=c(1e-3,1)))
+  Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("mass"))
   check_intervalWidth(IntervalWidth)
 
   mwa <- meanByAgeDomain(AnalyticalPopulationEstimateData, PlusGroup, IntervalWidth, Decimals, AgeDomainVar, WeightVar)
@@ -240,4 +257,58 @@ ReportAnalyticalWeightAtAge <- function(AnalyticalPopulationEstimateData, PlusGr
   }
     
   return(mwa)
+}
+
+#' Report mean length at age
+#' @description
+#'  Tabulates summary statistics for analytical mean total length at age estimates.
+#'  Summary statistics are obtained as analytical domain estimates,
+#'  along with an estimate of the standard deviation of their sampling distribution (the standard error).
+#'  Confidence intervals are calculated from a Gaussian approximation to the sampling distribution.
+#'  
+#'  If AnalyticalPopulationEstimateData contains estimates for domains that include more than just age, such as
+#'  area, gear, stock, etc., summary statistics will be presented similarly.
+#'  
+#'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+#'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+#' 
+#'  The units considered valid for catch at age in numbers are those listed for quantity 'length' in \code{\link[RstoxData]{StoxUnits}}
+#' @param AnalyticalPopulationEstimateData Results from analytical estimates (\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}). The StoxBiotic variable 'IndividualAge' must be among the DomainVariables, and estimates must be available for the StoxBiotic-variable 'IndividualTotalLength'.
+#' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
+#' @param IntervalWidth The width of the reported confidence interval. A value of 0.9 gives 90 per cent confidence intervals.
+#' @param Decimals integer specifying the number of decimals to report for 'MeanIndividualLength', 'SD', 'Low' and 'High'.
+#' @param Unit unit for 'MeanIndividualLength', 'SD', 'Low' and 'High'
+#' @return \code{\link[RstoxFDA]{ReportFdaLengthAtAgeData}}
+#' @seealso \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}} and \code{\link[RstoxFDA]{AnalyticalRatioEstimate}} for obtaining analytical estimates.
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
+#' @export
+ReportAnalyticalLengthAtAge <- function(AnalyticalPopulationEstimateData, PlusGroup=integer(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("length", conversionRange=c(1e-3,1))){
+  AgeDomainVar = "IndividualAge"
+  LengthVar = "IndividualTotalLength"
+  checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
+  stopifnot(is.AnalyticalPopulationEstimateData(AnalyticalPopulationEstimateData))
+  if (!(AgeDomainVar %in% names(AnalyticalPopulationEstimateData$DomainVariables))){
+    stop(paste("Length-at-age reporting, requires the StoxBiotic variable '",AgeDomainVar,"' to be among the domain variables of 'AnalyticalPopulationEstimateData'."))
+  }
+  if (!(LengthVar %in% AnalyticalPopulationEstimateData$Variables$Variable)){
+    stop(paste("Length-at-age reporting, requires the StoxBiotic variable '",LengthVar,"' to be among the variables of 'AnalyticalPopulationEstimateData'.", sep=""))
+  }
+  checkMandatory(Decimals, "Decimals")
+  checkMandatory(IntervalWidth, "IntervalWidth")
+  Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("length"))
+  check_intervalWidth(IntervalWidth)
+  
+  mla <- meanByAgeDomain(AnalyticalPopulationEstimateData, PlusGroup, IntervalWidth, Decimals, AgeDomainVar, LengthVar)
+  
+  names(mla)[names(mla)=="MeanByAge"] <- "MeanLengthByAge"
+  names(mla$MeanLengthByAge)[names(mla$MeanLengthByAge)=="Mean"] <- "MeanIndividualLength"
+  
+  
+  mla$MeanLengthByAge <- setUnits(mla$MeanLengthByAge, c("MeanIndividualLength", "SD", "Low", "High"), "cm", "length")
+  if (isGiven(Unit)){
+    mla$MeanLengthByAge <- setUnits(mla$MeanLengthByAge, c("MeanIndividualLength", "SD", "Low", "High"), Unit, "length")  
+  }
+  
+  return(mla)
 }
