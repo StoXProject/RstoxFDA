@@ -2704,7 +2704,7 @@ stoxFunctionAttributes <- list(
   ReportAnalyticalWeightAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
-    functionOutputDataType = "ReportFdaCatchAtAgeData",
+    functionOutputDataType = "ReportFdaWeightAtAgeData",
     functionParameterDefaults = list(
       Decimals = 0,
       IntervalWidth = 0.9,
