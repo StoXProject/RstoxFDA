@@ -54,5 +54,8 @@ These assumptions are specified via the argument 'DefinitionMethod' and the foll
 \item{MissingAtRandom}{A response propensity is estimated for each stratum as the fraction of the sample resonding, and sample size (n) and InclusionProbability are adjusted by multiplying with this propensity. Sampling weights are adjusted by dividing them with their sum over repsondents in a stratum.}
 }
 }
+\seealso{
+\code{\link[RstoxFDA]{ReadPSUSamplingParameters}}, \code{\link[RstoxFDA]{ComputePSUSamplingParameters}}, \code{\link[RstoxFDA]{AddPsuStratificationVariables}}, \code{\link[RstoxFDA]{ComputeIndividualSamplingParameters}}, \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}
+}
 \concept{Analytical estimation}
 \concept{StoX-functions}

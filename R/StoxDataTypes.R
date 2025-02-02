@@ -907,7 +907,7 @@ NULL
 #'   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
 #'  }
 #' 
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaData
 #' @concept Data types
@@ -933,7 +933,7 @@ NULL
 #'   \item{...}{Any aggregation variables. The names of these are listed in 'GroupingVariables'}
 #'  }
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
@@ -952,7 +952,7 @@ NULL
 #'  }
 #'  
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
@@ -982,7 +982,7 @@ NULL
 #'   \item{...}{Any aggregation variables.}
 #'  }
 #' 
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #' 
 #' 
 #' @name ReportFdaCatchAtAgeCovarianceData
@@ -1000,7 +1000,7 @@ NULL
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
@@ -1020,7 +1020,7 @@ NULL
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
@@ -1039,7 +1039,7 @@ NULL
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #'  
@@ -1062,7 +1062,7 @@ NULL
 #'   \item{GroupingVariables}{Any specified Grouping variables.}
 #'  }
 #'  
-#'  Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #'  
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #'  
@@ -1125,7 +1125,7 @@ is.ReportFdaData <- function(ReportFdaData){
 #'  }
 #'  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 #' 
-#'  The unit for RelativeDifference is configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+#'  The unit for RelativeDifference is configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
 #' 
 #' @name ReportFdaSopData
 #' @concept Data types
@@ -2697,7 +2697,50 @@ stoxFunctionAttributes <- list(
     functionOutputDataType = "ReportFdaCatchAtAgeData",
     functionParameterDefaults = list(
       Decimals = 0,
-      IntervalWidth = 0.9
+      IntervalWidth = 0.9,
+      Unit = "individuals"
+    )
+  ),
+  AddLengthGroupStoxBiotic = list(
+    functionType = "modelData",
+    functionCategory = "baseline",
+    functionOutputDataType = "StoxBioticData",
+    functionParameterDefaults = list(
+      LengthGroupVariable = "LengthGroup",
+      LeftOpen = TRUE
+    )
+  ),
+  ReportAnalyticalCatchAtLength = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaCatchAtLengthData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9,
+      Unit = "individuals"
+    ),
+    functionParameterFormat = list(
+      LengthGroupVariable = "domainvariablecatchatlength"
+    )
+  ),
+  ReportAnalyticalWeightAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaWeightAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9,
+      Unit = "g"
+    )
+  ),
+  ReportAnalyticalLengthAtAge = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaLengthAtAgeData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9,
+      Unit = "cm"
     )
   ),
   ReportRecaCatchAtAgeCovariance = list(
@@ -3297,6 +3340,16 @@ processPropertyFormats <- list(
       pv <- names(AnalyticalPopulationEstimateData$DomainVariables)
       pv <- pv[pv != "Domain"]
       pv <- pv[pv %in% names(StoxLandingData$Landing)]
+      return(pv)
+    },
+    variableTypes = "character"
+  ),
+  domainvariablecatchatlength = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "Exactly on Domain variable to specify length group", 
+    possibleValues = function(AnalyticalPopulationEstimateData){
+      pv <- names(AnalyticalPopulationEstimateData$DomainVariables)
+      pv <- pv[pv != "Domain"]
       return(pv)
     },
     variableTypes = "character"

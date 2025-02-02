@@ -60,4 +60,7 @@ in the unsampeld stratum and the source stratum.
 This can be inspected with \code{\link[RstoxFDA]{ReportFdaSampling}}.
 }
 }
+\seealso{
+\code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}, \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}, \code{\link[RstoxFDA]{AggregateAnalyticalEstimate}}, \code{\link[RstoxFDA]{InterpolateAnalyticalDomainEstimates}}
+}
 \concept{Analytical estimation}

@@ -40,8 +40,7 @@ reason it is also possible to provide groups of PSUs to be annotated on the outp
 PSU domains has no effect on estimation, but are merely annotated on the results for further processing or reporting.
 
 Sampling parameters for the selection of individuals from a catch can be inferred for some common sub-sampling techniques
-with the function \code{\link[RstoxFDA]{ComputeIndividualSamplingParameters}}. If samples of Individuals are not directly sampled from each
-PSU, any intermediate sampling levels can be incorporated with the function \code{\link[RstoxFDA]{DefineSamplingHierarchy}}
+with the function \code{\link[RstoxFDA]{ComputeIndividualSamplingParameters}}.
 
 If any strata are specified in the SampleTable of 'IndividualSamplingParametersData' but are not sampled per the SelectionTable
 all estimates will be provided as NAs for this stratum.
@@ -91,5 +90,8 @@ If the domain does not coincide with stratum, it must also be considered approxi
 \item{\eqn{y^{v}_{i}}}{The value of a variable \eqn{v} observed for an individual \eqn{i}.}
 \item{\eqn{\hat{D}^{(s,d)}}}{The estimated relative domain size of domain \eqn{d} in stratum \eqn{s} at PSU: \eqn{\sum_{i=1}^{m}w_{i}I^{s,d}_{i}}}
 }
+}
+\seealso{
+\code{\link[RstoxFDA]{ComputeIndividualSamplingParameters}}
 }
 \concept{Analytical estimation}

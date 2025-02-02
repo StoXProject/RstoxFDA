@@ -36,5 +36,8 @@ target population can be encoded. This information will be available in downstre
 \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}) and allow for pragmatic inference to
 out-of-frame strata (via \code{\link[RstoxFDA]{ExtendAnalyticalSamplingFrameCoverage}}).
 }
+\seealso{
+\code{\link[RstoxFDA]{ReadPSUSamplingParameters}}, \code{\link[RstoxFDA]{ComputePSUSamplingParameters}}, \code{\link[RstoxFDA]{AssignPSUSamplingParameters}}, \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}
+}
 \concept{Analytical estimation}
 \concept{StoX-functions}

@@ -121,4 +121,7 @@ where \eqn{r=\frac{|D'|}{|D''|}}, the ratio of zero-abundance domains to non-zer
 Similarly, the covariance is:
 \deqn{\widehat{CoVar^{*}}(\widehat{f}^{(s,d_{1}+n'')}, \widehat{f}^{(s,d_{2}+n'')}=(1-\epsilon r)^{2}\widehat{CoVar}(\widehat{f}^{(s,d_{1}+n'')}, \widehat{f}^{(s,d_{2}+n'')})}
 }
+\seealso{
+\code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}, \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}, \code{\link[RstoxFDA]{AggregateAnalyticalEstimate}}, \code{\link[RstoxFDA]{ExtendAnalyticalSamplingFrameCoverage}}
+}
 \concept{Analytical estimation}

@@ -37,5 +37,8 @@ with a stratification variable 'Species'.
  FlatSamplingParametersData <- read.csv(exampleFile, sep="\t")
 
 }
+\seealso{
+\code{\link[RstoxFDA]{ComputePSUSamplingParameters}}, \code{\link[RstoxFDA]{AddPsuStratificationVariables}}, \code{\link[RstoxFDA]{AssignPSUSamplingParameters}}, \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}}
+}
 \concept{Analytical estimation}
 \concept{StoX-functions}
