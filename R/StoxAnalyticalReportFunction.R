@@ -172,6 +172,91 @@ ReportAnalyticalCatchAtAge <- function(AnalyticalPopulationEstimateData, PlusGro
   return(caa)
 }
 
+#' Report catch at length
+#' @description
+#'  Tabulates summary statistics for analytical catch at length estimate.
+#'  Summary statistics are obtained as analytical domain estimates, including a length-group
+#'  domain, obtained by annotating sample data with the function \code{\link[RstoxFDA]{AddLengthGroupStoxBiotic}}.
+#'  An estimate of the standard deviation of their sampling distribution (the standard error) is also provided.
+#'  Confidence intervals are calculated from a Gaussian approximation to the sampling distribution.
+#'  
+#'  If AnalyticalPopulationEstimateData contains estimates for domains that include more than just length group, such as
+#'  area, gear, stock, etc., summary statistics will be presented similarly.
+#'  
+#'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
+#'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
+#' 
+#'  The units considered valid for catch at length in numbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
+#' @param AnalyticalPopulationEstimateData Results from analytical estimates (\code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}}). A variable identifying length groups (argument: 'LengthGroupVariable') must be among the domain variables. This must be formatted as done by \code{\link[RstoxFDA]{AddLengthGroupStoxBiotic}}.
+#' @param LengthGroupVariable Name of domain variable in 'AnalyticalPopulationEstimateData' that identifies length group.
+#' @param IntervalWidth The width of the reported confidence interval. A value of 0.9 gives 90 per cent confidence intervals. 
+#' @param Decimals integer specifying the number of decimals to report for 'CatchAtLength', 'SD', 'Low' and 'High'.
+#' @param Unit unit for 'CatchAtLength', 'SD', 'Low' and 'High'
+#' @return \code{\link[RstoxFDA]{ReportFdaCatchAtLengthData}}
+#' @seealso \code{\link[RstoxFDA]{AddLengthGroupStoxBiotic}} for annotating length groups, \code{\link[RstoxFDA]{AnalyticalPopulationEstimate}} and \code{\link[RstoxFDA]{AnalyticalRatioEstimate}} for obtaining analytical estimates. See \code{\link[RstoxFDA]{ReportAnalyticalCatchAtAge}} for reporting catch at age.
+#' @concept StoX-Reca functions
+#' @concept StoX-functions
+#' @export
+ReportAnalyticalCatchAtLength <- function(AnalyticalPopulationEstimateData, LengthGroupVariable=character(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
+  
+  checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
+  stopifnot(is.AnalyticalPopulationEstimateData(AnalyticalPopulationEstimateData))
+  checkMandatory(LengthGroupVariable, "LengthGroupVariable")
+  if (!(LengthGroupVariable %in% names(AnalyticalPopulationEstimateData$DomainVariables))){
+    stop(paste("Catch-at-length reporting, requires the StoxBiotic variable identified by 'LengthGroupVariable'", LengthGroupVariable," to be among the domain variables of 'AnalyticalPopulationEstimateData'."))
+  }
+  if (!(all(startsWith(AnalyticalPopulationEstimateData$DomainVariables[[LengthGroupVariable]], "[")) |
+      all(startsWith(AnalyticalPopulationEstimateData$DomainVariables[[LengthGroupVariable]], "(")))){
+    stop("Malformed length groups. Use AddLengthGroupStoxBiotic to annotate length groups")
+  }
+  if (!(all(endsWith(AnalyticalPopulationEstimateData$DomainVariables[[LengthGroupVariable]], "]")) |
+        all(endsWith(AnalyticalPopulationEstimateData$DomainVariables[[LengthGroupVariable]], ")")))){
+    stop("Malformed length groups. Use AddLengthGroupStoxBiotic to annotate length groups")
+  }
+  if (!(all(grepl(",", AnalyticalPopulationEstimateData$DomainVariables[[LengthGroupVariable]])))){
+    stop("Malformed length groups. Use AddLengthGroupStoxBiotic to annotate length groups")
+  }
+  
+  checkMandatory(Decimals, "Decimals")
+  checkMandatory(IntervalWidth, "IntervalWidth")
+  Unit <- checkOptions(Unit, "Unit", RstoxData::getUnitOptions("cardinality"))
+  check_intervalWidth(IntervalWidth)
+  
+  GroupingVariables <- names(AnalyticalPopulationEstimateData$DomainVariables)
+  GroupingVariables <- GroupingVariables[!(GroupingVariables %in% c("Domain", LengthGroupVariable))]
+
+  pointEst <- merge(AnalyticalPopulationEstimateData$Abundance, AnalyticalPopulationEstimateData$DomainVariables, by="Domain")
+  varEst <- AnalyticalPopulationEstimateData$AbundanceCovariance[AnalyticalPopulationEstimateData$AbundanceCovariance$Domain1==AnalyticalPopulationEstimateData$AbundanceCovariance$Domain2,]
+  varEst$Domain <- varEst$Domain1
+  
+  tab <- merge(pointEst, varEst, by=c("Stratum", "Domain"))
+  tab$LengthGroup <- tab[[LengthGroupVariable]]
+  tab$Length <- as.numeric(gsub("]", "", gsub(")", "", sapply(strsplit(AnalyticalPopulationEstimateData$DomainVariables[[LengthGroupVariable]], ","), FUN=function(x){x[[2]]}))))
+  
+  alpha <- (1-IntervalWidth)/2.0
+  result <- tab[,list(CatchAtLength=get("Abundance"), SD=sqrt(get("AbundanceCovariance")), Low=max(stats::qnorm(alpha,mean=get("Abundance"), sd=sqrt(get("AbundanceCovariance"))),0), High=stats::qnorm(1-alpha,mean=get("Abundance"), sd=sqrt(get("AbundanceCovariance")))), by=c(GroupingVariables, "LengthGroup", "Length")]
+
+  cal <- list()
+  cal$NbyLength <- result
+  cal$GroupingVariables <- data.table::data.table(GroupingVariables=GroupingVariables)
+  
+  
+  cal$NbyLength <- setUnits(cal$NbyLength, "Length", "cm", "length")
+  cal$NbyLength <- setUnits(cal$NbyLength, c("CatchAtLength", "SD", "Low", "High"), "individuals", "cardinality")
+  if (isGiven(Unit)){
+    cal$NbyLength <- setUnits(cal$NbyLength, c("CatchAtLength", "SD", "Low", "High"), Unit, "cardinality")  
+  }
+  
+  if (isGiven(Decimals)){
+    cal$NbyLength <- setDecimals(cal$NbyLength, c("CatchAtLength", "SD", "Low", "High"), Decimals)
+  }
+  
+  #order by length
+  cal$NbyLength <- cal$NbyLength[order(cal$NbyLength$Length),]
+  
+  return(cal)
+}
+
 #' mean by age report
 #' @noRd
 meanByAgeDomain <- function(AnalyticalPopulationEstimateData, PlusGroup, IntervalWidth=numeric(), Decimals=integer(), AgeDomainVar=character(), obsVar=character()){

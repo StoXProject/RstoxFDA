@@ -1,4 +1,5 @@
 # 1.5.0-9003
+* Added function to annotate length groups: AddLengthGroupStoxBiotic (#163), and report total catch by age group: ReportAnalyticalCatchAtLength (#150)
 * Added function to report mean of weight and length by age: ReportAnalyticalLengthAtAge, and ReportAnalyticalWeightAtAge (#150).
 * Added function for annotating stratification variables to sampling parameters: AddPsuStratificationVariables (#163)
 * Added function for aggregating estimates over strata: AggregateAnalyticalEstimate (#164)

@@ -2479,6 +2479,9 @@ InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateDat
 #'  whether the intervals are open to the left (lower value) or to the right (higher value).
 #'  
 #'  For example LengthInterval=5, and LeftOpen=FALSE, specifies length-groups [0,5>,[5,10>,...
+#'  
+#'  Note that even though the length-groups are formatted as a character, they have a strict format that
+#'  carry numerical information for downstream functions, such as \code{\link[RstoxFDA]{ReportAnalyticalCatchAtLength}}
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} with individuals to be grouped by length
 #' @param LengthInterval The 'bin-size', length in cm between length-groups
 #' @param LengthGroupVariable Name to use for the length group variable
@@ -2489,7 +2492,7 @@ InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateDat
 #'        LengthInterval=5, LengthGroupVariable="LengthGroup", LeftOpen=TRUE)
 #'  table(StoxBioticWLengthGroup$Individual$LengthGroup)
 #' @concept Analytical estimation
-#' @seealso \code{\link[RstoxFDA]{AnalyticalPSUEstimate}}
+#' @seealso \code{\link[RstoxFDA]{AnalyticalPSUEstimate}}, \code{\link[RstoxFDA]{ReportAnalyticalCatchAtLength}}
 #' @export
 AddLengthGroupStoxBiotic <- function(StoxBioticData, LengthInterval=numeric(), LengthGroupVariable=character(), LeftOpen=TRUE){
   checkMandatory(StoxBioticData, "StoxBioticData")

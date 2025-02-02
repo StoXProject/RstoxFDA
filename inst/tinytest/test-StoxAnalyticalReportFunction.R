@@ -134,3 +134,34 @@ mwaReportPG9 <- RstoxFDA:::ReportAnalyticalLengthAtAge(popEst, PlusGroup = 9, Un
 expect_true(RstoxFDA:::is.ReportFdaData(mwaReportPG9))
 expect_true("IndividualSex" %in% mwaReportPG9$GroupingVariables$GroupingVariables)
 
+#
+# Test length group reports
+#
+ex <- RstoxFDA:::AddLengthGroupStoxBiotic(RstoxFDA::CatchLotteryExample, LengthInterval = 5, LengthGroupVariable = "LengthGroup", LeftOpen = FALSE)
+PSUsamplingParameters <- RstoxFDA::AssignPSUSamplingParameters(
+  RstoxFDA::CatchLotterySamplingExample, 
+  RstoxFDA::CatchLotteryExample, 
+  "serialnumber", "Haul", "MissingAtRandom")
+individualSamplingParameters <-  RstoxFDA:::ComputeIndividualSamplingParameters(
+  RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
+
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, 
+                                           individualSamplingParameters, 
+                                           c("IndividualRoundWeight"), c("LengthGroup"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
+cal <- RstoxFDA:::ReportAnalyticalCatchAtLength(popEst, LengthGroupVariable = "LengthGroup", Decimals = 1, IntervalWidth = .9, Unit = "individuals")
+expect_true(abs(sum(cal$NbyLength$CatchAtLength) - sum(caaReport$NbyAge$CatchAtAge)) / sum(cal$NbyLength$CatchAtLength) < 1e-5)
+
+#
+# test with additional domain variables
+#
+
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, 
+                                           individualSamplingParameters, 
+                                           c("IndividualRoundWeight"), c("LengthGroup"), c("Gear"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
+cal <- RstoxFDA:::ReportAnalyticalCatchAtLength(popEst, LengthGroupVariable = "LengthGroup", Decimals = 1, IntervalWidth = .9, Unit = "individuals")
+expect_true(abs(sum(cal$NbyLength$CatchAtLength) - sum(caaReport$NbyAge$CatchAtAge)) / sum(cal$NbyLength$CatchAtLength) < 1e-5)
+expect_true("Gear" %in% names(cal$NbyLength))
+expect_true("Gear" %in% names(cal$GroupingVariables$GroupingVariables))
+browser()

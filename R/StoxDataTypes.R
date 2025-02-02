@@ -2701,6 +2701,20 @@ stoxFunctionAttributes <- list(
       Unit = "individuals"
     )
   ),
+  ReportAnalyticalCatchAtLength = list(
+    functionType = "modelData",
+    functionCategory = "report",
+    functionOutputDataType = "ReportFdaCatchAtLengthData",
+    functionParameterDefaults = list(
+      Decimals = 0,
+      IntervalWidth = 0.9,
+      Unit = "individuals",
+      LeftOpen = FALSE
+    ),
+    functionParameterFormat = list(
+      LengthGroupVariable = "domainvariablecatchatlength"
+    )
+  ),
   ReportAnalyticalWeightAtAge = list(
     functionType = "modelData",
     functionCategory = "report",
@@ -3318,6 +3332,16 @@ processPropertyFormats <- list(
       pv <- names(AnalyticalPopulationEstimateData$DomainVariables)
       pv <- pv[pv != "Domain"]
       pv <- pv[pv %in% names(StoxLandingData$Landing)]
+      return(pv)
+    },
+    variableTypes = "character"
+  ),
+  domainvariablecatchatlength = list(
+    class = "vector", #convert to class single, if that becomes available.
+    title = "Exactly on Domain variable to specify length group", 
+    possibleValues = function(AnalyticalPopulationEstimateData){
+      pv <- names(AnalyticalPopulationEstimateData$DomainVariables)
+      pv <- pv[pv != "Domain"]
       return(pv)
     },
     variableTypes = "character"

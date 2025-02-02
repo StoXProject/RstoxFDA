@@ -29,6 +29,9 @@ equal length range ('LengthInterval'), starting with length 0. The argument 'Lef
 whether the intervals are open to the left (lower value) or to the right (higher value).
 
 For example LengthInterval=5, and LeftOpen=FALSE, specifies length-groups [0,5>,[5,10>,...
+
+Note that even though the length-groups are formatted as a character, they have a strict format that
+carry numerical information for downstream functions, such as \code{\link[RstoxFDA]{ReportAnalyticalCatchAtLength}}
 }
 \examples{
  StoxBioticWLengthGroup <- RstoxFDA:::AddLengthGroupStoxBiotic(RstoxFDA::CatchLotteryExample, 
@@ -36,6 +39,6 @@ For example LengthInterval=5, and LeftOpen=FALSE, specifies length-groups [0,5>,
  table(StoxBioticWLengthGroup$Individual$LengthGroup)
 }
 \seealso{
-\code{\link[RstoxFDA]{AnalyticalPSUEstimate}}
+\code{\link[RstoxFDA]{AnalyticalPSUEstimate}}, \code{\link[RstoxFDA]{ReportAnalyticalCatchAtLength}}
 }
 \concept{Analytical estimation}
