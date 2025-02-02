@@ -2701,6 +2701,15 @@ stoxFunctionAttributes <- list(
       Unit = "individuals"
     )
   ),
+  AddLengthGroupStoxBiotic = list(
+    functionType = "modelData",
+    functionCategory = "baseline",
+    functionOutputDataType = "StoxBioticData",
+    functionParameterDefaults = list(
+      LengthGroupVariable = "LengthGroup",
+      LeftOpen = TRUE
+    )
+  ),
   ReportAnalyticalCatchAtLength = list(
     functionType = "modelData",
     functionCategory = "report",
@@ -2708,8 +2717,7 @@ stoxFunctionAttributes <- list(
     functionParameterDefaults = list(
       Decimals = 0,
       IntervalWidth = 0.9,
-      Unit = "individuals",
-      LeftOpen = FALSE
+      Unit = "individuals"
     ),
     functionParameterFormat = list(
       LengthGroupVariable = "domainvariablecatchatlength"
