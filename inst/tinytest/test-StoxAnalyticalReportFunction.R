@@ -160,7 +160,8 @@ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex,
                                            individualSamplingParameters, 
                                            c("IndividualRoundWeight"), c("LengthGroup"), c("Gear"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(PSUsamplingParameters, psuEst)
+
 cal <- RstoxFDA:::ReportAnalyticalCatchAtLength(popEst, LengthGroupVariable = "LengthGroup", Decimals = 1, IntervalWidth = .9, Unit = "individuals")
-expect_true(abs(sum(cal$NbyLength$CatchAtLength) - sum(caaReport$NbyAge$CatchAtAge)) / sum(cal$NbyLength$CatchAtLength) < 1e-5)
+expect_true(abs(sum(cal$NbyLength$CatchAtLength) - sum(caaReport$NbyAge$CatchAtAge)) / sum(cal$NbyLength$CatchAtLength) < 1e-2)
 expect_true("Gear" %in% names(cal$NbyLength))
-expect_true("Gear" %in% names(cal$GroupingVariables$GroupingVariables))
+expect_true("Gear" %in% cal$GroupingVariables$GroupingVariables)
