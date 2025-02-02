@@ -196,7 +196,7 @@ jobs:
 
      # turn off testing of suggestions for configurations where Reca is not provided in StoX package repositories
       - name: Check without suggest-dependencies
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' || (runner.os == 'Linux' && matrix.config.r == '4.4')
         env:
           _R_CHECK_CRAN_INCOMING_: false
           _R_CHECK_FORCE_SUGGESTS_ : false
@@ -204,7 +204,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Check with suggest-dependencies
-        if: runner.os != 'macOS'
+        if: runner.os != 'macOS' && (runner.os != 'Linux' || matrix.config.r != '4.4')
         env:
           _R_CHECK_CRAN_INCOMING_: false
           _R_CHECK_FORCE_SUGGESTS_ : true
