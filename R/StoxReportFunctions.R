@@ -48,6 +48,7 @@ check_intervalWidth <- function(intervalwidth){
 #'   samplingreport <- RstoxFDA::ReportFdaSampling(RstoxFDA::StoxBioticDataExample, 
 #'       RstoxFDA::StoxLandingDataExample, GroupingVariables = c("GearGroup"), Unit = "ton")
 #'   samplingreport$FisheriesSampling
+#' @seealso \code{\link[RstoxFDA]{PlotSamplingOverviewCell}}, \code{\link[RstoxFDA]{PlotSamplingCoverage}}, \code{\link[RstoxFDA]{PlotSamplingVariables}}
 #' @export
 #' @md
 ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables=character(), Decimals=integer(), Unit=RstoxData::getUnitOptions("mass", conversionRange=c(1,1e12)), SamplingVariables=character()){
@@ -126,11 +127,21 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
 
   samples <- flatbiotic[,c(GroupingVariables, SamplingVariables, "IndividualRoundWeight", "IndividualAge", "IndividualTotalLength", "CatchFractionWeight", "CatchPlatform", "Haul", "Sample"), with=F]
   
-  sampledTab <- samples[,list(Catches=length(unique(get("Haul"))), 
-                              Vessels=length(unique(get("CatchPlatform"))),
-                              WeightMeasurements=sum(!is.na(get("IndividualRoundWeight"))),
-                              LengthMeasurements=sum(!is.na(get("IndividualTotalLength"))),
-                              AgeReadings=sum(!is.na(get("IndividualAge")))
+  #prep with some reserved names, to allow counted variables to also be aggregation variables (e.g. IndividualAge)
+  if (any(c("Catches", "Vessels", "WeightMeasurements", "LengthMeasurements", "AgeReadings") %in% names(samples))){
+    stop("The follwing variable names are reserved for this report and cannot occur in StoxBioticData or StoxLandingData: 'Catches', 'Vessels', 'WeightMeasurements', 'LengthMeasurements', 'AgeReadings'")
+  }
+  samples$Catches <- samples$Haul
+  samples$Vessels <- samples$CatchPlatform
+  samples$WeightMeasurements <- !is.na(samples$IndividualRoundWeight)
+  samples$LengthMeasurements <- !is.na(samples$IndividualTotalLength)
+  samples$AgeReadings <- !is.na(samples$IndividualAge)
+  
+  sampledTab <- samples[,list(Catches=length(unique(get("Catches"))), 
+                              Vessels=length(unique(get("Vessels"))),
+                              WeightMeasurements=sum(get("WeightMeasurements")),
+                              LengthMeasurements=sum(get("LengthMeasurements")),
+                              AgeReadings=sum(get("AgeReadings"))
                               ), by=c(GroupingVariables, SamplingVariables)]
   
   sampledWeights <- samples[,list(WeightOfSampledCatches=sum(get("CatchFractionWeight")[!duplicated(get("Sample"))], na.rm=T)), by=c(GroupingVariables, SamplingVariables)]

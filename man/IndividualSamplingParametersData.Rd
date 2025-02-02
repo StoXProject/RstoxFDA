@@ -39,8 +39,9 @@ Encodes information about the selection of a sub-sample of observations from ind
  \describe{
   \item{SampleId}{Mandatory, chr: Identifies the sample the stratification applies to}
   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
-  \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
+  \item{<StratificationVariables>}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
  }
+ The combination of the columns 'Stratum' and 'SampleId' uniquely identifies a row in the table 'StratificationVariables'
 
 Optional columns may be NA.
 

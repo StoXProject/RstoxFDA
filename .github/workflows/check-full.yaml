@@ -28,12 +28,12 @@ jobs:
           - {os: macOS-latest,   r: 'next', pkgext: '.tgz'} # will be tested without suggests
           - {os: macOS-latest,   r: '4.4', pkgext: '.tgz'} # will be tested without suggests
           - {os: macOS-latest,   r: '4.3', pkgext: '.tgz'} # will be tested without suggests
-          - {os: macOS-latest,   r: '4.2', pkgext: '.tgz'} # will be tested without suggests
+          - {os: macOS-latest,   r: '4.4', pkgext: '.tgz'} # will be tested without suggests
           
           - {os: windows-latest, r: 'next', pkgext: '.zip'} 
           - {os: windows-latest, r: '4.4', pkgext: '.zip'}
           - {os: windows-latest, r: '4.3', pkgext: '.zip'}
-          - {os: windows-latest, r: '4.2', pkgext: '.zip'}
+          - {os: windows-latest, r: '4.4', pkgext: '.zip'}
           
 
           - {os: ubuntu-latest,  r: 'next', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
@@ -100,7 +100,7 @@ jobs:
           while read -r cmd
           do
             eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
 
       - name: Install MacOS system dependencies
         if: runner.os == 'macOS'

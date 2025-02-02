@@ -263,6 +263,7 @@ warnMissingLandings <- function(StoxBiotic, StoxLanding, effects){
 #'  and \code{\link[RstoxData]{AddToStoxBiotic}} for adding otolith-type to samples for stock-splitting analysis.
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
+#' @import RstoxBase
 #' @export
 #' @md
 PrepareRecaEstimate <- function(StoxBioticData, StoxLandingData, FixedEffects=character(), RandomEffects=character(), UseCarEffect=FALSE, CarEffect=character(), CarNeighbours, UseAgingError=FALSE, AgeErrorMatrix, UseStockSplitting=FALSE, UseStockSplittingError=FALSE, StockSplittingParameters, CellEffect=c("Off", "All"), MinAge=integer(), MaxAge=integer(), MaxLength=numeric(), LengthResolution=numeric(), HatchDay=integer()){
@@ -701,7 +702,7 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
     quarter <- data.table::quarter(StoxLandingData$Landing$CatchDate)
   }
   else if (TemporalResolution == "Month"){
-    month <- month(StoxLandingData$Landing$CatchDate)
+    month <- data.table::month(StoxLandingData$Landing$CatchDate)
   }
   else if (TemporalResolution == "Day"){
     date <- StoxLandingData$Landing$CatchDate

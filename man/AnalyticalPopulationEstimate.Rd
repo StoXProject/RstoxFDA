@@ -172,7 +172,7 @@ Vocabulary for notation used above:
                                        RstoxFDA::CatchLotterySamplingExample, 
                                        RstoxFDA::CatchLotteryExample, 
                                        "serialnumber", "Haul", "MissingAtRandom")
- individualSamplingParameters <-  RstoxFDA:::DefineIndividualSamplingParameters(NULL, 
+ individualSamplingParameters <-  RstoxFDA:::ComputeIndividualSamplingParameters(
                                        RstoxFDA::CatchLotteryExample, "SRS", c("IndividualAge"))
                                        
  psuEst <- RstoxFDA:::AnalyticalPSUEstimate(RstoxFDA::CatchLotteryExample, 
@@ -191,5 +191,8 @@ Vocabulary for notation used above:
  #need to order as numeric. Domain is always a chr:
  abundance <- abundance[order(as.numeric(abundance$Domain)),]
  abundance
+}
+\seealso{
+\code{\link[RstoxFDA]{ReadPSUSamplingParameters}}, \code{\link[RstoxFDA]{ComputePSUSamplingParameters}}, \code{\link[RstoxFDA]{AddPsuStratificationVariables}}, \code{\link[RstoxFDA]{AssignPSUSamplingParameters}}, \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}, \code{\link[RstoxFDA]{AggregateAnalyticalEstimate}}, \code{\link[RstoxFDA]{ExtendAnalyticalSamplingFrameCoverage}}, \code{\link[RstoxFDA]{InterpolateAnalyticalDomainEstimates}}
 }
 \concept{Analytical estimation}

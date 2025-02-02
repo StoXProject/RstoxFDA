@@ -799,6 +799,7 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition, ColumnName=c
 #' @concept spatial coding functions
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
+#' @import RstoxBase
 #' @export
 #' @md
 AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=character()){
@@ -845,6 +846,7 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=ch
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
 #' @concept spatial coding functions
 #' @concept StoX-functions
+#' @import RstoxBase
 #' @export
 #' @md
 AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, ColumnName=character()){
@@ -920,6 +922,7 @@ appendGear <- function(table, gearcolumn, gearDefinition, colName){
 #' @concept gear coding functions
 #' @concept StoX-functions
 #' @importFrom data.table .SD
+#' @import methods
 #' @export
 #' @md
 AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
@@ -1327,6 +1330,7 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
 #' @seealso \code{\link[RstoxFDA]{SetAreaPositionsBiotic}} and \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to data.
 #' @concept spatial coding functions
 #' @concept StoX-functions
+#' @import RstoxBase
 #' @export
 #' @md
 DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "StratumPolygon"), FileName=character(), StratumPolygon, UseProcessData=F){
@@ -1444,6 +1448,7 @@ calculateCarNeighbours <- function(StratumPolygon, tolerance=1){
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of the definition in Reca-estimates, and \code{\link[RstoxBase]{DefineStratumPolygon}} for how to define a spatial variable from a strata-definition.
 #' @concept spatial coding functions
 #' @concept StoX-functions
+#' @import RstoxBase
 #' @export
 #' @md
 DefineCarNeighbours <- function(processData,
@@ -2003,6 +2008,7 @@ FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
 #' @return \code{\link[RstoxBase]{StratumPolygon}} with the desired strata definition.
 #' @concept spatial coding functions
 #' @concept StoX-functions
+#' @import RstoxBase
 #' @export
 #' @md
 LoadFdaStratumPolygon <- function(processData, StrataSystem=c("FDIR.2017", "FDIR.2018", "ICES.2018", "ICES.SubArea.2018", "ICES.Division.2018", "ICES.SubDivision.2018", "ICES.Unit.2018", "ICES.Rectangles.2018", "NAFO", "NAFO.FDIR.2017", "NAFO.FDIR.2018"), UseProcessData=F){

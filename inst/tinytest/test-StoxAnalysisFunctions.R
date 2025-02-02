@@ -31,6 +31,13 @@ if (nchar(system.file(package="Reca"))>0){
   prednl <- RstoxFDA::RunRecaModels(paramOut, StoxLandingData)
   RstoxFDA:::removeTempDirReca(fpath)
   
+  #test running with temporalresolution month
+  prep <- RstoxFDA:::PrepareRecaEstimate(StoxBioticData, StoxLandingData, FixedEffects = c(), RandomEffects = c())
+  fpath <- RstoxFDA:::makeTempDirReca()
+  paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=99, Lgamodel = "log-linear")
+  prednl <- RstoxFDA::RunRecaModels(paramOut, StoxLandingData, TemporalResolution = "Month")
+  RstoxFDA:::removeTempDirReca(fpath)
+  
   fpath <- RstoxFDA:::makeTempDirReca()
   # check that seed works
   paramOut <- RstoxFDA:::ParameterizeRecaModels(prep, 10, 50, 1, fpath, Seed=99)

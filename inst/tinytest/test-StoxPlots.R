@@ -53,6 +53,9 @@ expect_warning(RstoxFDA:::PlotPosteriorTraces(predictiondatafile, Nclust = 10), 
 StoxLandingFile <- system.file("testresources","StoxLandingData.rds", package="RstoxFDA")
 StoxLandingData <- readRDS(StoxLandingFile)
 
+areacodeconv <- RstoxFDA:::areaCodeConversionTable(RstoxFDA::mainareaFdir2018, RstoxFDA::ICESareas)
+StoxLandingData$Landing$IcesArea <- RstoxFDA::convertCodes(StoxLandingData$Landing$Area, areacodeconv)
+
 tab1 <- RstoxFDA::ReportFdaLandings(StoxLandingData, GroupingVariables = c("Gear", "CatchDate"), Unit = "kg")
 tab2 <- RstoxFDA::ReportFdaLandings(StoxLandingData, GroupingVariables = c("Gear","Area", "CatchDate"), Unit = "ton")
 RstoxFDA:::PlotFisheriesOverviewTemporal(tab1)
@@ -65,6 +68,11 @@ RstoxFDA:::PlotFisheriesOverviewSpatial(tab3, RstoxFDA::mainareaFdir2018, AreaLa
 RstoxFDA:::PlotFisheriesOverviewTable(tab3)
 RstoxFDA:::PlotFisheriesOverviewTable(tab2)
 
+
+# test with ICES areas
+tab4 <- RstoxFDA::ReportFdaLandings(StoxLandingData, GroupingVariables = c("IcesArea"), Unit = "kg")
+RstoxFDA:::PlotFisheriesOverviewSpatial(tab4, RstoxFDA::ICESareas)
+RstoxFDA:::PlotFisheriesOverviewSpatial(tab4, RstoxFDA::ICESareas, AreaLabels = T)
 
 catchAtAgeFlat <- readRDS(system.file("testresources", "recaPredictionFlat.rds", package="RstoxFDA"))
 catchAtAgeDecomp <- readRDS(system.file("testresources", "recaPredictionDecomp.rds", package="RstoxFDA"))

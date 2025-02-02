@@ -1,3 +1,25 @@
+# 1.5.0-9003
+* Added function to annotate length groups: AddLengthGroupStoxBiotic (#163), and report total catch by age group: ReportAnalyticalCatchAtLength (#150)
+* Added function to report mean of weight and length by age: ReportAnalyticalLengthAtAge, and ReportAnalyticalWeightAtAge (#150).
+* Added function for annotating stratification variables to sampling parameters: AddPsuStratificationVariables (#163)
+* Added function for aggregating estimates over strata: AggregateAnalyticalEstimate (#164)
+* Added option for computing sampling parameters for Proportion Poisson Sampling from data records (option DefinitionMethod='ProportionalPoissonSampling' to ComputePSUSamplingParameters) (#165)
+* Added functions for sampling frame expansion: ExtendAnalyticalSamplingFrameCoverage, and domain interpolation: InterpolateAnalyticalDomainEstimates (#154)
+* AnalyticalRatioEstimate is simplified, and no longer provides the (unreleased) method option. Support for the method "TotalDomainWeight" has been dropped.
+* Changed naming conventions for domains in AnalyticalPopulationEstimateData.
+* Removed the table SampleSummary from the data type AnalyticalPopulationEstimateData.
+* Changed how Stratification variables and Domain variables are matched to landings with AnalyticalRatioEstimate (# 125)
+* Replaced DefinePSUSamplingParameters (processdata) with ComputePSUSamplingParameters (no processdata) and ReadPSUSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006). (#127)
+* Replaced DefineIndividualSamplingParameters (processdata) with ComputeIndividualSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006).
+* Added documentation for ECA convergence analsysis (#153)
+* Fixed issue with reporting IndividualAge as SamplingVariable in ReportFdaSampling (#146)
+* Fixed issue with running RunRecaModels with temporal resolution 'month' (#144)
+* Fixed issue with plotting with other column variables than 'Area' in PlotFisheriesOverviewSpatial (#147)
+* Fixed naming of age groups in reports from analytical estimates (#145)
+* Fixed documentation for handling NA age groups (#151)
+* Fixed issue with using integer columns in landings as stratification column in ratio estimates (#133)
+* Fixed error message when analytical catch at age reports are attempted without 'IndividualAge' in the domain definition (#126).
+
 # 1.5.0-9002
 * Fixed ordering of age groups in ReportAnalyticalCatchAtAge (#134)
 * Improved Error messages in AnalyticalRatioEstimate (#131)
@@ -26,7 +48,7 @@
 * Changed analytical variance estimator of means to a less conservative one.
 
 # RstoxFDA v1.3-9005
-* Added functions for analytical catch at age estimation (DefinePSUSamplingParameters, DefineIndividualSamplingParameters, AssignPSUSamplingParameters, AnalyticalPSUEstimate, AnalyticalPopulationEstimate, AnalyticalRatioEstimate, ReportAnalyticalCatchAtAge)
+* Added functions for analytical catch at age estimation (DefinePSUSamplingParameters, ComputeIndividualSamplingParameters, AssignPSUSamplingParameters, AnalyticalPSUEstimate, AnalyticalPopulationEstimate, AnalyticalRatioEstimate, ReportAnalyticalCatchAtAge)
 * Converted area code resources from sp SpatialPolygons to sf data.frames, reflecting changes in RstoxBase v 2. Breaks compatibility with RstoxBase < 2.
 * Changed ReadLandingFDA to use ForceUnique as implemented in RstoxData v 2. Breaks compatibility with RstoxData < 2
 * Made definition of coordinates used for appendAreaCodes and DefineAreaPosition stricter (now always centroids)

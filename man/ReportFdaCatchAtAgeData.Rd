@@ -12,7 +12,7 @@ A list with two members: 'NbyAge' and 'GroupingVariables'.
  }
  
  
- Units are configurable, and can be inspected by ~\code{\link[RstoxData]{getUnit}}
+ Units are configurable, and can be inspected by \code{\link[RstoxData]{getUnit}}
  
  'GroupingVariables' is a \code{\link[data.table]{data.table}} with a column containing the names of any aggregation variables.
 }
