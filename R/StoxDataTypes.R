@@ -2547,7 +2547,7 @@ stoxFunctionAttributes <- list(
         UnsampledStratum = "Out-of-frame"
       ),
       functionParameterFormat = list(
-        LandingPartition = "stratificationvariableslandings",
+        StratificationVariables = "stratificationvariableslandings",
         SourceStratum = "sourcestratum"
       ),
       functionArgumentHierarchy = list(
