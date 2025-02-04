@@ -33,10 +33,16 @@ assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Str
   flatStox$SamplingUnitId <- flatStox[[SamplingUnitId]]
   flatStox$Order <- as.numeric(NA)
   
-  CommonSelectionData <- flatStox[,list(InclusionProbability=as.numeric(NA), HTsamplingWeight=as.numeric(NA), SelectionProbability=as.numeric(NA), HHsamplingWeight=1/length(unique(SamplingUnitId)), SelectionDescription=as.character(NA)), by=c("Stratum")]
+  nStrata <- flatStox[,list(nStrata=length(unique(get("Stratum")))), by=SamplingUnitId]
+  if (any(nStrata$nStrata>1)){
+    stop("Invalid stratification. Some PSUs are in several strata.")
+  }
+  
+  CommonSelectionData <- flatStox[!duplicated(flatStox$SamplingUnitId),list(InclusionProbability=as.numeric(NA), HTsamplingWeight=as.numeric(NA), SelectionProbability=as.numeric(NA), HHsamplingWeight=1/length(unique(SamplingUnitId)), SelectionDescription=as.character(NA)), by=c("Stratum")]
   selectionUnits <- flatStox[,.SD, .SDcol=c("Stratum", "Order", "SamplingUnitId")]
   selectionUnits <- selectionUnits[!duplicated(selectionUnits$SamplingUnitId),]
-  selectionTable <- merge(flatStox[,.SD, .SDcol=c("Stratum", "Order", "SamplingUnitId")], CommonSelectionData)
+  
+  selectionTable <- merge(flatStox[,.SD, .SDcol=c("Stratum", "Order", "SamplingUnitId")], CommonSelectionData, by="Stratum")
   sampleTable <- flatStox[,list(N=as.numeric(NA), n=length(unique(get("SamplingUnitId"))), SelectionMethod="FSWR", FrameDescription=as.character(NA)), by=c("Stratum")]
   sampleTable <- sampleTable[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
   stratificationTable <- flatStox[,.SD,.SDcol=c("Stratum", StratificationColumns)]
