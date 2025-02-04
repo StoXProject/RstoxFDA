@@ -1572,10 +1572,6 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
     stop(paste("'WeightVariable'", WeightVariable, "is not estimated in 'AnalyticalPopulationEstimateData'"))
   }
 
-  if (any(names(StoxLandingData$Landing) %in% c("Stratum", "Domain"))){
-    stop("The names 'Stratum' or 'Domain' may not be used for stratification variables in 'StoxLandingData'")
-  }
-  
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")
   checkMandatory(WeightVariable, "WeightVariable")
