@@ -46,7 +46,7 @@ For testing pre-releases of StoX, obtain the stox packages from the testing repo
 install.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"), repos = c("https://stoxproject.github.io/testingRepo/"))
 ```
 
-This will install latest pre-release available for your version of R and operating system. Make sure you have R 4.2 or 4.3 if testing on Mac or Windows.
+This will install latest pre-release available for your version of R and operating system. Make sure you have R 4.4 or 4.4 if testing on Mac or Windows.
 
 After you have finished testing, you may want to revert to the production packages. This may require explicitly uninstalling the packages first, as they have higher version numbers than production packages:
 
@@ -67,6 +67,7 @@ A minimal StoX project implementing analytical catch at age estimates with catch
 | ReadSamples | ReadBiotic | Reads sample data |
 | StoxBiotic | StoxBiotic | Convert sample data to StoxBiotic |
 | AddSamplingId | AddToStoxBiotic | Add serialnumber to StoxBiotic |
+| AddLengthGroups | AddLengthGroupStoxBiotic | If catch-at-length is desired. Adds a column to StoxBiotic, grouping individuals by length. |
 | ReadPSUsamplingParameters | ReadPSUSamplingParameters | Read sampling parameters for each haul. These ar provided from the catch lottery. |
 | ComputeINDsamplingParameters | ComputeIndividualSamplingParameters | Defines sampling parameters for each individual, within haul. Parameters are inferred from data with configurable assumptions. |
 | AssignPSUSamplingParameters | AssignPSUSamplingParameters |  Matches selections to data records, handles non-response corrections |
@@ -83,6 +84,11 @@ The following functions provides reporting from analytical estimates:
 |:------|:-----|
 | ReportAnalyticalCatchAtAge | Tabulate total catch of each age group |
 | PlotCatchAtAgeTotals | Plot total catch of each age group |
+| ReportAnalyticalCatchAtLength | Tabulate total catch of each length group |
+| ReportAnalyticalLengthAtAge | Tabulate mean length of each age group |
+| PlotMeanLengthAtAge | Plot mean length of each age group |
+| ReportAnalyticalWeightAtAge | Tabulate mean weight of each age group |
+| PlotMeanWeightAtAge | Plot mean weight of each age group |
 
 In addition some functions are relevant in this context, that may also be used with other estimation approaches, such as Reca:
 
