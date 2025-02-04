@@ -1,3 +1,6 @@
+# 1.5.0-9004
+* Fixed a bug which caused AssignPSUSamplingParameters to report the wrong records as missing, when data is not provided for all sampled records
+
 # 1.5.0-9003
 * Added function to annotate length groups: AddLengthGroupStoxBiotic (#163), and report total catch by age group: ReportAnalyticalCatchAtLength (#150)
 * Added function to report mean of weight and length by age: ReportAnalyticalLengthAtAge, and ReportAnalyticalWeightAtAge (#150).
