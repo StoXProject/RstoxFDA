@@ -165,3 +165,27 @@ cal <- RstoxFDA:::ReportAnalyticalCatchAtLength(popEst, LengthGroupVariable = "L
 expect_true(abs(sum(cal$NbyLength$CatchAtLength) - sum(caaReport$NbyAge$CatchAtAge)) / sum(cal$NbyLength$CatchAtLength) < 1e-2)
 expect_true("Gear" %in% names(cal$NbyLength))
 expect_true("Gear" %in% cal$GroupingVariables$GroupingVariables)
+
+
+
+#
+# check reports for estimates with several strata
+#
+stationDesign <- RstoxFDA::CatchLotterySamplingExample
+stationDesign$StratificationVariables <- rbind(stationDesign$StratificationVariables, data.table::data.table(Stratum="S2", CountryVessel="OUT"))
+stationDesign$SampleTable <- rbind(stationDesign$SampleTable, data.table::data.table(Stratum="S2", N=100, n=2, SelectionMethod="Poisson", FrameDescription="OUT"))
+stationDesign$SampleTable$n[1] <- stationDesign$SampleTable$n[1]-2
+stationDesign$SelectionTable$Stratum[stationDesign$SelectionTable$SamplingUnitId %in% c("38401","38433")] <- "S2"
+
+ex <- RstoxFDA::CatchLotteryExample
+ex$SpeciesCategory$SpeciesCategory <- "061104"
+stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "serialnumber", "Haul", "MissingAtRandom")
+srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
+#add stratificaion variable to domain definition
+psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge", "SpeciesCategory"))
+popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+expect_error(RstoxFDA:::ReportAnalyticalCatchAtAge(popEst, Decimals = 1, IntervalWidth = .9, Unit = "individuals"), "Report function does not support several strata. Consider aggregating with 'AggregateAnalyticalEstimate'. Specify any desired grouping variables as PSU-domains.")
+agg <- RstoxFDA::AggregateAnalyticalEstimate(popEst, AggregateStratumName = "agg")
+aggRep <- RstoxFDA:::ReportAnalyticalCatchAtAge(agg, Decimals = 1, IntervalWidth = .9, Unit = "individuals")
+expect_true("SpeciesCategory" %in% names(aggRep$NbyAge))
