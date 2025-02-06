@@ -1,20 +1,19 @@
 #' Construct design parameters assuming FSWOR, non-finite, equal prob, potentially stratified
 #' @noRd
 assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, StratificationColumns=c()){
-  targetTable <- NULL
-  for (n in names(StoxBioticData)){
-    if (SamplingUnitId %in% names(StoxBioticData[[n]])){
-      targetTable=n
-    }
+
+  flatStox <- RstoxData::MergeStoxBiotic(StoxBioticData, TargetTable = "Sample")
+    
+  if (!(SamplingUnitId %in% names(flatStox))){
+    stop(paste("The SamplingUnitId", SamplingUnitId, "was not found in 'StoxBioticData'"))
   }
-  
-  if (is.null(targetTable)){
-    stop(paste("The SamplingUnitId", SamplingUnitId, "was not found in StoxBioticData"))
-  }
-  
-  flatStox <- StoxBioticData[[targetTable]]
+
   if (isGiven(StratificationColumns) & length(StratificationColumns)>0 & !all(StratificationColumns %in% names(flatStox))){
-    stop("Not all stratification columns were found at ", targetTable, ", where the SamplingUnitId ", SamplingUnitId, " is found.")
+    stop("Not all stratification columns were found in 'StoxBioticData'")
+  }
+  
+  if ("Stratum" %in% StratificationColumns){
+    stop("'Stratum' is a reserved name that cannot be used as a stratification column")
   }
 
   if (any(is.na(flatStox[[SamplingUnitId]]))){
@@ -42,12 +41,12 @@ assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Str
   selectionUnits <- flatStox[,.SD, .SDcol=c("Stratum", "Order", "SamplingUnitId")]
   selectionUnits <- selectionUnits[!duplicated(selectionUnits$SamplingUnitId),]
   
-  selectionTable <- merge(flatStox[,.SD, .SDcol=c("Stratum", "Order", "SamplingUnitId")], CommonSelectionData, by="Stratum")
+  selectionTable <- merge(selectionUnits, CommonSelectionData, by="Stratum")
   sampleTable <- flatStox[,list(N=as.numeric(NA), n=length(unique(get("SamplingUnitId"))), SelectionMethod="FSWR", FrameDescription=as.character(NA)), by=c("Stratum")]
   sampleTable <- sampleTable[,.SD,.SDcol=c("Stratum", "N", "n", "SelectionMethod", "FrameDescription")]
   stratificationTable <- flatStox[,.SD,.SDcol=c("Stratum", StratificationColumns)]
   stratificationTable <- stratificationTable[!duplicated(stratificationTable$Stratum),]
-
+  
   designParameters <- list()
   designParameters$SampleTable <- sampleTable
   designParameters$SelectionTable <- selectionTable
@@ -220,12 +219,17 @@ computePpsParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Quota
 #'  Compute sampling parameters for Primary Sampling Units in multi-stage sampling.
 #' @details 
 #'  Computes Sampling Design Parameters from data, given some assumptions specified by the 'DefinitionMethod'.
+#'  
+#'  Primary Sampling Units (the argument 'SamplingUnitId') may be identified by any categorical (character, factor) or ordinal (factor, integer) variable in 'StoxBioticData', that are associated with the 'Sample'-table
+#'  or any table above 'Sample' in the StoxBiotic-hierarchy.
 #'   
-#'  If 'DefinitionMethod' is 'AdHocStoxBiotic', equal probability sampling with fixed sample size will be assumed, as well as
+#'  If 'DefinitionMethod' is 'AdHocStoxBiotic', equal probability sampling with fixed sample size will be assumed withing strata, as well as
 #'  selection with replacement and complete response.
 #'  This is a reasonable approximation if within-strata sampling is approximately simple random selections,
 #'  the sample intensitiy is low (only a small fraction of the population is sampled),
-#'  and non-response is believed to be random.
+#'  and non-response is believed to be random. StratificationVariables may be any categorical or ordinal variables in 'StoxBioticData', that are associated with the 'Sample'-table
+#'  or any table above 'Sample' in the StoxBiotic-hierarchy, and strata will be defined as the combination of these variables.
+#'  Primary Sampling Units must be selected withing stratum, so the function will fail there are several strata in one PSU.
 #'  
 #'  If 'DefinitionMethod' is 'ProportionalPoissonSampling', Unstratified (singe stratum) Poission sampling with selection probabilities
 #'  proportional to catch size is assumed. 'SamplingUnitId' must be a variable on the Haul table of 'StoxBioticData' for this option,

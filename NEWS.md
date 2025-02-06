@@ -1,4 +1,5 @@
 # 1.5.0-9004
+* Made stratification options for ComputePsuSamplingParameters more flexible (#171)
 * Fixed a bug with missing error detection when trying to report estimates over several strata (#173)
 * Fixed a bug which would cause duplicate samplingUnitIds in the SelectionTable when running ComputePsuSamplingParameters with the option "adHocStoxBiotic" (#172)
 * Fixed a bug which cause the menu for ExtendAnalyticalSamplingFrameCoverage to not show options for StratificationVariables
