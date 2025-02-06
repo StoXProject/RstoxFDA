@@ -295,6 +295,7 @@ NULL
 #' @concept Data types
 #' @noRd
 is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
+  
   if (!is.list(PSUSamplingParametersData)){
     return(FALSE)
   }
@@ -3076,19 +3077,16 @@ processPropertyFormats <- list(
   stratificationcolumns = list(
     class = "vector", 
     title = "One or more variables to use as stratification columns", 
-    possibleValues = function(StoxBioticData, SamplingUnitId) {
+    possibleValues = function(StoxBioticData) {
       possibleValues <- c()
-      for (n in c("Station", "Haul", "SpeciesCategory", "Sample")){
-        if (SamplingUnitId %in% names(StoxBioticData[[n]])){
+      for (n in c("Cruise", "Station", "Haul", "SpeciesCategory", "Sample")){
           for (nn in names(StoxBioticData[[n]])){
             if (is.character(StoxBioticData[[n]][[nn]]) | is.factor(StoxBioticData[[n]][[nn]]) | is.integer(StoxBioticData[[n]][[nn]])){
               possibleValues <- c(possibleValues, nn)
-            }
           }
         }
       }
       possibleValues <- unique(possibleValues)
-      possibleValues <- possibleValues[possibleValues != SamplingUnitId]
       return(sort(possibleValues))
     }, 
     variableTypes = "character"

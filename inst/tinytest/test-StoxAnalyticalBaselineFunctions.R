@@ -85,7 +85,7 @@ expect_true(length(unique(round(comp$HTsamplingWeight.x / comp$HTsamplingWeight.
 
 #define equal prob fixed-size selection from data
 suppressWarnings(StoxBioticData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic(system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA"))))
-designParamsSB <- RstoxFDA:::ComputePSUSamplingParameters(StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
+designParamsSB <- RstoxFDA:::ComputePSUSamplingParameters(StoxBioticData=StoxBioticData, SamplingUnitId = "Sample", StratificationColumns = c("SpeciesCategoryKey"))
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsSB))
 #compare names of output with stratification variables to output without
 
@@ -95,10 +95,11 @@ expect_true(all(designParamsSB$SampleTable$SelectionMethod=="FSWR"))
 
 expect_true(all(names(designParamsSB$SampleTable) == names(designParams$SampleTable)))
 expect_true(all(names(designParamsSB$SelectionTable) == names(designParams$SelectionTable)))
-expect_equal(nrow(designParamsSB$SelectionTable), 75)
-expect_equal(nrow(designParamsSB$SampleTable), 2)
+
+expect_equal(nrow(designParamsSB$SelectionTable), 14)
+expect_equal(nrow(designParamsSB$SampleTable), 9)
 expect_equal(ncol(designParamsSB$StratificationVariables), 2)
-expect_equal(nrow(designParamsSB$StratificationVariables), 2)
+expect_equal(nrow(designParamsSB$StratificationVariables), 9)
 
 #
 # Prepare dataset with sub-sampled parameters
