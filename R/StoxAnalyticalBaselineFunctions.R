@@ -2510,8 +2510,8 @@ AddLengthGroupStoxBiotic <- function(StoxBioticData, LengthInterval=numeric(), L
   }
   StoxBioticData$Individual[[LengthGroupVariable]] <- as.character(
     cut(StoxBioticData$Individual$IndividualTotalLength, 
-        seq(0, max(StoxBioticData$Individual$IndividualTotalLength)+LengthInterval, LengthInterval), 
+        seq(0, max(StoxBioticData$Individual$IndividualTotalLength,na.rm=T)+LengthInterval, LengthInterval), 
         right=LeftOpen))
-  
+  StoxBioticData$Individual[[LengthGroupVariable]][is.na(StoxBioticData$Individual$IndividualTotalLength)] <- as.character(NA)
   return(StoxBioticData)
 }
