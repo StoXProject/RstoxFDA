@@ -1,5 +1,13 @@
-
-
+#' Halts with error if StoxLandingData is empty
+#' @noRd
+checkLandingsNotEmpty <- function(StoxLandingData){
+  if (!RstoxData::is.StoxLandingData(StoxLandingData)){
+    stop("Malformed StoxLandingData")
+  }
+  if (nrow(StoxLandingData$Landing)==0){
+    stop("StoxLandingData is empty.")
+  }
+}
 
 #' Checks symmetry of Car table
 #' @noRd
@@ -929,6 +937,7 @@ AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
   
   checkMandatory(StoxLandingData, "StoxLandingData")
   checkMandatory(Translation, "Translation")
+  checkLandingsNotEmpty(StoxLandingData)
   
   if (!is.Translation(Translation)){
     stop("Translation is not a valid Translation table.")

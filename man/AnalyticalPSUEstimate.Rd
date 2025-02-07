@@ -45,9 +45,6 @@ with the function \code{\link[RstoxFDA]{ComputeIndividualSamplingParameters}}.
 If any strata are specified in the SampleTable of 'IndividualSamplingParametersData' but are not sampled per the SelectionTable
 all estimates will be provided as NAs for this stratum.
 
-Domains that are not present in a sample are not reported, although their estimated abundance and total is zero. Use the function
-\code{\link[RstoxFDA]{LiftStrata}} to infer zero values for unreported domains, and mark unsampled strata as NA.
-
 In general unbiased estimates rely on known inclusion probabilites, and domain definitions that coincides
 with stratification. When the domain definitions are not aligned
 with the stratification, ratio estimates are provided for which unbiasedness is not guaranteed.

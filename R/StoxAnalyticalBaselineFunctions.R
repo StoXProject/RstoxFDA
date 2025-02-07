@@ -776,9 +776,6 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
 #'  If any strata are specified in the SampleTable of 'IndividualSamplingParametersData' but are not sampled per the SelectionTable
 #'  all estimates will be provided as NAs for this stratum.
 #'  
-#'  Domains that are not present in a sample are not reported, although their estimated abundance and total is zero. Use the function
-#'  \code{\link[RstoxFDA]{LiftStrata}} to infer zero values for unreported domains, and mark unsampled strata as NA.
-#'  
 #'  In general unbiased estimates rely on known inclusion probabilites, and domain definitions that coincides
 #'  with stratification. When the domain definitions are not aligned
 #'  with the stratification, ratio estimates are provided for which unbiasedness is not guaranteed.
@@ -1333,7 +1330,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   
   NestimatesByStrata <- AnalyticalPSUEstimateData$Abundance[,list(estimates=get(".N")),by="Stratum"]
   if (!length(unique(NestimatesByStrata$estimates))==1){
-    stop("Cannot Estimate with heterogeneous lower level stratification. Consider the functions LiftStrata or CollapseStrata.")
+    stop("Cannot Estimate with heterogeneous lower level stratification. Consider the function CollapseStrata.")
   }
   
   LowerLevelStrata <- AnalyticalPSUEstimateData$StratificationVariables[!duplicated(get("Stratum")),.SD, .SDcol=names(AnalyticalPSUEstimateData$StratificationVariables)[names(AnalyticalPSUEstimateData$StratificationVariables)!="SampleId"]]
@@ -1353,8 +1350,8 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   missingMean <- AnalyticalPSUEstimateData$Variables$SampleId[is.na(AnalyticalPSUEstimateData$Variables$Mean) & !is.nan(AnalyticalPSUEstimateData$Variables$Mean)]
   
   if (!MeanOfMeans & (length(missingAbund)>0 | length(missingTotal)>0)){
-    msg <- "Cannot estimate. Estimates are not provided for all samples in 'AnalyticalPSUEstimateData'."
-    if (length(missingFreq)==0 & length(missingMean)==0){
+    msg <- "Cannot estimate. Abundance- or total-estimates are not provided for all samples in 'AnalyticalPSUEstimateData'."
+    if (length(missingFreq)==0 | length(missingMean)==0){
       msg <- paste(msg, "Consider the option MeanOfMeans.")
     }
 
@@ -1364,7 +1361,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   }
 
   if (MeanOfMeans & (length(missingFreq)>0 | length(missingMean)>0)){
-    msg <- "Cannot estimate. Estimates are not provided for all samples in 'AnalyticalPSUEstimateData'."
+    msg <- "Cannot estimate. Frequency- or means-estimates are not provided for all samples in 'AnalyticalPSUEstimateData'."
     missing <- unique(c(missingFreq, missingMean))
     
     msg <- paste(msg, "Missing for SamplingUnitIds:", truncateStringVector(missing))
@@ -1578,6 +1575,7 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
 
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")
+  checkLandingsNotEmpty(StoxLandingData)
   checkMandatory(WeightVariable, "WeightVariable")
   checkOptions(Method, "Method", c("TotalDomainWeight", "MeanDomainWeight"))
   checkMandatory(StratificationVariables, "StratificationVariables")
@@ -1958,6 +1956,7 @@ ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateDa
   
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")
+  checkLandingsNotEmpty(StoxLandingData)
   checkMandatory(StratificationVariables, "StratificationVariables")
   checkOptions(Method, "Method", c("Strict", "SetToStratum"))
   checkMandatory(UnsampledStratum, "UnsampledStratum")
@@ -2342,6 +2341,7 @@ InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateDat
   
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")
+  checkLandingsNotEmpty(StoxLandingData)
   checkOptions(Method, "Method", c("Strict", "StratumMean"))
   if (Method=="StratumMean"){
     checkMandatory(DomainMarginVariables, "DomainMarginVariables")
@@ -2513,8 +2513,8 @@ AddLengthGroupStoxBiotic <- function(StoxBioticData, LengthInterval=numeric(), L
   }
   StoxBioticData$Individual[[LengthGroupVariable]] <- as.character(
     cut(StoxBioticData$Individual$IndividualTotalLength, 
-        seq(0, max(StoxBioticData$Individual$IndividualTotalLength)+LengthInterval, LengthInterval), 
+        seq(0, max(StoxBioticData$Individual$IndividualTotalLength,na.rm=T)+LengthInterval, LengthInterval), 
         right=LeftOpen))
-  
+  StoxBioticData$Individual[[LengthGroupVariable]][is.na(StoxBioticData$Individual$IndividualTotalLength)] <- as.character(NA)
   return(StoxBioticData)
 }
