@@ -1,4 +1,5 @@
 # 1.5.0-9004
+* Added / exposed function for collapsing strata on IndividualSamplingParameters (CollapseStrata)
 * Added documentation for dealing with incomplete biological records (#170)
 * Made stratification options for ComputePsuSamplingParameters more flexible (#171)
 * Fixed a bug with missing error detection when trying to report estimates over several strata (#173)

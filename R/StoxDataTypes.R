@@ -2456,6 +2456,14 @@ stoxFunctionAttributes <- list(
       )
     )
   ),
+  CollapseStrata = list(
+    functionType = "modelData", 
+    functionCategory = "baseline", 
+    functionOutputDataType = "IndividualSamplingParametersData",
+    functionParameterFormat = list(
+      RetainStrata = "collapsestrataretain"
+    )
+  ),
   ComputePSUSamplingParameters = list(
     functionType = "modelData", 
     functionCategory = "baseline", 
@@ -3381,6 +3389,15 @@ processPropertyFormats <- list(
     title = "Strata to retain from aggregation", 
     possibleValues = function(AnalyticalPopulationEstimateData){
       pv <- unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum)
+      return(pv)
+    },
+    variableTypes = "character"
+  ),
+  collapsestrataretain = list(
+    class = "vector",
+    title = "Strata to retain from collapse", 
+    possibleValues = function(IndividualSamplingParametersData){
+      pv <- unique(IndividualSamplingParametersData$StratificationVariables$Stratum)
       return(pv)
     },
     variableTypes = "character"
