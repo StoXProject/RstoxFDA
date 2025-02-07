@@ -273,7 +273,7 @@ stationDesign <- RstoxFDA:::ComputePSUSamplingParameters(StoxBioticData = ss, Sa
 sexStrat <-  RstoxFDA:::ComputeIndividualSamplingParameters(ss, "Stratified", c("IndividualAge"), StratificationColumns = "IndividualSex")
 expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
 psuEst <- RstoxFDA:::LiftStrata(psuEst)
-expect_error(popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst), "Cannot estimate. Estimates are not provided for all samples in 'AnalyticalPSUEstimateData'. Missing for SamplingUnitIds:")
+expect_error(popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst), "Cannot estimate. Abundance- or total-estimates are not provided for all samples in 'AnalyticalPSUEstimateData'. Missing for SamplingUnitIds")
 
 #Test that Abundance and Frequency are NA for unsampled strata (Domain Sex is Unsampled for strata unkown sex)
 unsampled <- merge(psuEst$Abundance, sexStrat$SampleTable[n==0], by=c("SampleId", "Stratum"))

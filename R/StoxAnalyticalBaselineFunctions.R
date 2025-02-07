@@ -1575,6 +1575,7 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
 
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")
+  checkLandingsNotEmpty(StoxLandingData)
   checkMandatory(WeightVariable, "WeightVariable")
   checkOptions(Method, "Method", c("TotalDomainWeight", "MeanDomainWeight"))
   checkMandatory(StratificationVariables, "StratificationVariables")
@@ -1955,6 +1956,7 @@ ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateDa
   
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")
+  checkLandingsNotEmpty(StoxLandingData)
   checkMandatory(StratificationVariables, "StratificationVariables")
   checkOptions(Method, "Method", c("Strict", "SetToStratum"))
   checkMandatory(UnsampledStratum, "UnsampledStratum")
@@ -2339,6 +2341,7 @@ InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateDat
   
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
   checkMandatory(StoxLandingData, "StoxLandingData")
+  checkLandingsNotEmpty(StoxLandingData)
   checkOptions(Method, "Method", c("Strict", "StratumMean"))
   if (Method=="StratumMean"){
     checkMandatory(DomainMarginVariables, "DomainMarginVariables")
