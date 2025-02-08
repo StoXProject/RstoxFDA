@@ -57,6 +57,14 @@ Analytical estimates for a population
   \item{Domain}{A domain, as identified in other tables.}
   \item{DomainVariables}{Columns that relate the domain to data records.}
  }
+ 
+ SampleCount
+ \describe{
+  \item{Stratum}{A stratum, as identified in other tables.}
+  \item{Domain}{A domain, as identified in other tables.}
+  \item{nPSU}{The number of Primary Sampling Units observed for this domain in this stratum}
+  \item{nIndividuals}{The number of individuals observed for this domain in this stratum}
+ }
 }
 \concept{Analytical estimation}
 \concept{Data types}

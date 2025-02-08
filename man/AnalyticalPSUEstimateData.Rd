@@ -46,8 +46,17 @@ Analytical estimates for each PSU
   \item{Stratum}{Identfier of stratum for individuals at PSU. In addition strata are identified by the combination of any additional columns in this table.}
   \item{<StratificationVariables>}{Columns that relate the PSU domains to data records.}
  }
+ 
  The combination of the columns 'Stratum' and 'SampleId' uniquely identifies a row in the table 'StratificationVariables'
  The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum for each 'SamplingId'.
+ 
+ SampleCount
+ \describe{
+  \item{SampleId}{Identifier for Primary Sampling Unit (PSU)}
+  \item{Stratum}{Identfier of stratum for individuals at PSU. In addition strata are identified by the combination of any additional columns in this table.}
+  \item{Domain}{Identifier of domains for individuals. In addition the domain is identified by the combination of any additional columns in this table}
+  \item{nIndividuals}{Number of individuals observed for the domain}
+ }
 }
 \concept{Analytical estimation}
 \concept{Data types}

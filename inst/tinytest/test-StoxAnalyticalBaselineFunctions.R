@@ -183,6 +183,8 @@ indSampling <- RstoxFDA:::ComputeIndividualSamplingParameters(data, "SRS", c("In
 psuSampling <- RstoxFDA::CatchLotterySamplingExample
 
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(data, indSampling, "IndividualRoundWeight")
+
+expect_equal(sum(psuEst$SampleCount$nIndividuals), nrow(indSampling$SelectionTable))
 diffs <- psuEst$Abundance$Abundance*psuEst$Variables$Mean - psuEst$Variables$Total
 expect_true(all(diffs[!is.nan(diffs)] < 1e-6))
 expect_true(sum(!is.nan(diffs)) > 0)
@@ -261,7 +263,9 @@ sexStrat <-  RstoxFDA:::ComputeIndividualSamplingParameters(ss, "Stratified", c(
 expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
 expect_true(sum(is.na(psuEst$Variables$Domain))==0)
 psuEstLifted <- RstoxFDA:::LiftStrata(psuEst)
-
+expect_true(RstoxFDA:::is.AnalyticalPSUEstimateData(psuEstLifted))
+ssnacheck <- merge(psuEstLifted$Abundance, psuEstLifted$SampleCount, by=c("SampleId", "Stratum", "Domain"), all.x=T)
+expect_true(!any(is.na(ssnacheck$nIndividuals)))
 expect_true(nrow(psuEstLifted$Abundance)==nrow(psuEstLifted$Variables))
 expect_true(nrow(psuEstLifted$Abundance)==length(unique(sexStrat$StratificationVariables$Stratum))*length(unique(sexStrat$SampleTable$SampleId))*length(unique(ss$Individual$IndividualSex)))
 expect_true(nrow(psuEstLifted$StratificationVariables)==length(unique(sexStrat$StratificationVariables$Stratum))*length(unique(sexStrat$SampleTable$SampleId)))
@@ -269,6 +273,7 @@ expect_true(nrow(psuEstLifted$StratificationVariables)==length(unique(sexStrat$S
 #
 # Test AnalyticalPopulationEstimate
 #
+
 stationDesign <- RstoxFDA:::ComputePSUSamplingParameters(StoxBioticData = ss, SamplingUnitId = "Haul", StratificationColumns = "Gear")
 sexStrat <-  RstoxFDA:::ComputeIndividualSamplingParameters(ss, "Stratified", c("IndividualAge"), StratificationColumns = "IndividualSex")
 expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
@@ -297,6 +302,8 @@ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualTotalLength"
 psuEst <- RstoxFDA:::LiftStrata(psuEst)
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
+
+expect_equal(sum(popEst$SampleCount$nIndividuals), sum(psuEst$SampleCount$nIndividuals))
 
 zeroAbund <- popEstMeanOfMeans$Abundance[popEstMeanOfMeans$Abundance$Frequency==0]
 NaNMeans <- popEstMeanOfMeans$Variables[is.nan(popEstMeanOfMeans$Variables$Mean)]
@@ -556,7 +563,8 @@ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
 expandedPopEst <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "Strict", "Gear")
-
+expect_equal(sum(expandedPopEst$SampleCount$nPSU), sum(popEst$SampleCount$nPSU))
+expect_equal(sum(expandedPopEst$SampleCount$nIndividuals), sum(popEst$SampleCount$nIndividuals))
 expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
 expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
 expect_equal(nrow(expandedPopEst$AbundanceCovariance), (nrow(popEst$Abundance)*3)*(nrow(popEst$Abundance)*3-1)/2+nrow(popEst$Abundance)*3) #all domain combinations
@@ -566,6 +574,7 @@ expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$Stratific
 expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
 
 eps <- 1e-3
+
 expandedPopEst <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "StratumMean", "Gear", eps)
 expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
 expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
@@ -600,6 +609,8 @@ ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEst, land, "IndividualRoundWei
 expect_equal(nrow(ratioEst$Variables), nrow(popEst$Variables))
 
 expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(popEst, land, "Frame", "Strict", "Unsampled")
+expect_equal(sum(expandedPopEst$SampleCount$nPSU), sum(popEst$SampleCount$nPSU))
+expect_equal(sum(expandedPopEst$SampleCount$nIndividuals), sum(popEst$SampleCount$nIndividuals))
 expect_equal(nrow(expandedPopEst$Abundance), nrow(popEst$Abundance)*2)
 expect_equal(nrow(expandedPopEst$Variables), nrow(popEst$Variables)*2)
 expect_equal(nrow(expandedPopEst$AbundanceCovariance), nrow(popEst$AbundanceCovariance)*2)
@@ -642,8 +653,14 @@ stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "seria
 srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear", "Usage"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
-
 domainExpanded <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "Strict", c("Gear", "Usage"), eps)
+
+ss<-merge(domainExpanded$Abundance, domainExpanded$SampleCount, by=c("Stratum", "Domain"), all.x=T)
+expect_true(!any(is.na(ss$nPSU)))
+expect_true(!any(is.na(ss$nIndividuals)))
+expect_equal(sum(domainExpanded$SampleCount$nPSU), sum(popEst$SampleCount$nPSU))
+expect_equal(sum(domainExpanded$SampleCount$nIndividuals), sum(popEst$SampleCount$nIndividuals))
+
 expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(domainExpanded, land, c("FrameVar1", "FrameVar2"), "Strict", "Unsampled")
 expect_true(nrow(expandedPopEst$Variables)>nrow(popEst$Variables)) 
 expect_true(nrow(expandedPopEst$Abundance)>nrow(popEst$Abundance))
@@ -816,6 +833,9 @@ meanVar <- sum(popEst$VariablesCovariance$MeanCovariance * (popEst$Abundance$Abu
 expect_true(abs(aggregate$VariablesCovariance$MeanCovariance - meanVar)/meanVar < 1e-3)
 totalVar <- sum(popEst$VariablesCovariance$TotalCovariance)
 expect_true(abs(aggregate$VariablesCovariance$TotalCovariance - totalVar)/totalVar < 1e-3)
+
+expect_equal(sum(popEst$SampleCount$nPSU), sum(aggregate$SampleCount$nPSU))
+expect_equal(sum(popEst$SampleCount$nIndividuals), sum(aggregate$SampleCount$nIndividuals))
 
 #
 # check retained
