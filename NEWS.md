@@ -4,6 +4,7 @@
 * Added / exposed function for collapsing strata on IndividualSamplingParameters (CollapseStrata)
 * Added documentation for dealing with incomplete biological records (#170)
 * Made stratification options for ComputePsuSamplingParameters more flexible (#171)
+* Clarified various error messages.
 * Fixed a bug with handling of NA values in AddLengthGroupStoxBiotic
 * Fixed a bug with missing error detection when trying to report estimates over several strata (#173)
 * Fixed a bug which would cause duplicate samplingUnitIds in the SelectionTable when running ComputePsuSamplingParameters with the option "adHocStoxBiotic" (#172)
