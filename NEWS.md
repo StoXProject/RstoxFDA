@@ -1,4 +1,6 @@
 # 1.5.0-9004
+* Added the table SampleCount to AnalyticalPSUEstimateData to keep track of how many observations support estimates in each domain.
+* Added the table SampleCount to AnalyticalPopulationEstimateData to keep track of how many PSUs and how many observations support estimates in each domain.
 * Added / exposed function for collapsing strata on IndividualSamplingParameters (CollapseStrata)
 * Added documentation for dealing with incomplete biological records (#170)
 * Made stratification options for ComputePsuSamplingParameters more flexible (#171)

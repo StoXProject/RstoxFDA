@@ -61,8 +61,17 @@ is.Date <- function(date){
 #'   \item{Stratum}{Identfier of stratum for individuals at PSU. In addition strata are identified by the combination of any additional columns in this table.}
 #'   \item{<StratificationVariables>}{Columns that relate the PSU domains to data records.}
 #'  }
+#'  
 #'  The combination of the columns 'Stratum' and 'SampleId' uniquely identifies a row in the table 'StratificationVariables'
 #'  The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum for each 'SamplingId'.
+#'  
+#'  SampleCount
+#'  \describe{
+#'   \item{SampleId}{Identifier for Primary Sampling Unit (PSU)}
+#'   \item{Stratum}{Identfier of stratum for individuals at PSU. In addition strata are identified by the combination of any additional columns in this table.}
+#'   \item{Domain}{Identifier of domains for individuals. In addition the domain is identified by the combination of any additional columns in this table}
+#'   \item{nIndividuals}{Number of individuals observed for the domain}
+#'  }
 #' 
 #' @name AnalyticalPSUEstimateData
 #' @concept Data types
@@ -76,11 +85,10 @@ NULL
 #' @concept Data types
 #' @noRd
 is.AnalyticalPSUEstimateData <- function(AnalyticalPSUEstimateData){
-  
   if (!is.list(AnalyticalPSUEstimateData)){
     return(FALSE)
   }
-  if (!all(c("Abundance", "Variables", "DomainVariables", "PSUDomainVariables", "StratificationVariables") %in% names(AnalyticalPSUEstimateData))){
+  if (!all(c("Abundance", "Variables", "DomainVariables", "PSUDomainVariables", "StratificationVariables", "SampleCount") %in% names(AnalyticalPSUEstimateData))){
     return(FALSE)
   }
   if (!all(c("SampleId", "Stratum", "Domain", "Abundance", "Frequency") %in% names(AnalyticalPSUEstimateData$Abundance))){
@@ -90,6 +98,9 @@ is.AnalyticalPSUEstimateData <- function(AnalyticalPSUEstimateData){
     return(FALSE)
   }
   if (!all(c("Domain") %in% names(AnalyticalPSUEstimateData$DomainVariables))){
+    return(FALSE)
+  }
+  if (!all(c("SampleId", "Stratum", "Domain", "nIndividuals") %in% names(AnalyticalPSUEstimateData$SampleCount))){
     return(FALSE)
   }
   if (!all(c("SampleId", "Stratum") %in% names(AnalyticalPSUEstimateData$StratificationVariables))){
@@ -171,6 +182,14 @@ is.AnalyticalPSUEstimateData <- function(AnalyticalPSUEstimateData){
 #'   \item{Domain}{A domain, as identified in other tables.}
 #'   \item{DomainVariables}{Columns that relate the domain to data records.}
 #'  }
+#'  
+#'  SampleCount
+#'  \describe{
+#'   \item{Stratum}{A stratum, as identified in other tables.}
+#'   \item{Domain}{A domain, as identified in other tables.}
+#'   \item{nPSU}{The number of Primary Sampling Units observed for this domain in this stratum}
+#'   \item{nIndividuals}{The number of individuals observed for this domain in this stratum}
+#'  }
 #' 
 #' @name AnalyticalPopulationEstimateData
 #' @concept Data types
@@ -188,7 +207,7 @@ is.AnalyticalPopulationEstimateData <- function(AnalyticalPopulationEstimateData
   if (!is.list(AnalyticalPopulationEstimateData)){
     return(FALSE)
   }
-  if (!all(c("Abundance", "Variables", "AbundanceCovariance", "VariablesCovariance", "DomainVariables", "StratificationVariables") %in% names(AnalyticalPopulationEstimateData))){
+  if (!all(c("Abundance", "Variables", "AbundanceCovariance", "VariablesCovariance", "DomainVariables", "StratificationVariables", "SampleCount") %in% names(AnalyticalPopulationEstimateData))){
     return(FALSE)
   }
   if (!all(c("Stratum", "Domain", "Abundance", "Frequency") %in% names(AnalyticalPopulationEstimateData$Abundance))){
@@ -207,6 +226,9 @@ is.AnalyticalPopulationEstimateData <- function(AnalyticalPopulationEstimateData
     return(FALSE)
   }
   if (!all(c("Stratum") %in% names(AnalyticalPopulationEstimateData$StratificationVariables))){
+    return(FALSE)
+  }
+  if (!all(c("Stratum", "Domain", "nPSU", "nIndividuals") %in% names(AnalyticalPopulationEstimateData$SampleCount))){
     return(FALSE)
   }
   domains <- nrow(AnalyticalPopulationEstimateData$DomainVariables) * length(unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum))
@@ -228,6 +250,30 @@ is.AnalyticalPopulationEstimateData <- function(AnalyticalPopulationEstimateData
     }
   }
 
+  #check that strata is reported completely and consistently
+  for (nn in names(AnalyticalPopulationEstimateData)){
+    if ("Stratum" %in% names(AnalyticalPopulationEstimateData[[nn]])){
+      if (!all(AnalyticalPopulationEstimateData[[nn]]$Stratum 
+               %in% AnalyticalPopulationEstimateData$StratificationVariables$Stratum)){
+        return(FALSE)
+      }
+      if (!all(AnalyticalPopulationEstimateData$StratificationVariables$Stratum %in%
+               AnalyticalPopulationEstimateData[[nn]]$Stratum)){
+        return(FALSE)
+      }
+    }
+  }
+  
+  #check that domains are reported consistently
+  for (nn in names(AnalyticalPopulationEstimateData)){
+    if ("Domain" %in% names(AnalyticalPopulationEstimateData[[nn]])){
+      if (!all(AnalyticalPopulationEstimateData[[nn]]$Domain 
+               %in% AnalyticalPopulationEstimateData$DomainVariables$Domain)){
+        return(FALSE)
+      }
+    }
+  }
+  
   return(TRUE)
 }
 

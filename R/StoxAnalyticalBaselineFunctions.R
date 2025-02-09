@@ -1,7 +1,7 @@
 #' Construct design parameters assuming FSWOR, non-finite, equal prob, potentially stratified
 #' @noRd
 assumeDesignParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, StratificationColumns=c()){
-
+  
   flatStox <- RstoxData::MergeStoxBiotic(StoxBioticData, TargetTable = "Sample")
     
   if (!(SamplingUnitId %in% names(flatStox))){
@@ -902,19 +902,29 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
   ind <- ind[,.SD,.SDcol=c("Individual", "Domain", Variables)]
   ind <- merge(ind, IndividualSamplingParametersData$SelectionTable, by.x=c("Individual"), by.y=c("IndividualId"))
   
+  samplecount <- ind[,list(nIndividuals=length(unique(get("Individual")))), by=c("SampleId", "Stratum", "Domain")]
+  
   abundance <- ind[,list(Abundance=sum(1/get("InclusionProbability")), Frequency=sum(get("HTsamplingWeight"))), by=c("SampleId", "Stratum", "Domain")]
 
   #add zero domains
   allDomains <- data.table::CJ(SampleId=IndividualSamplingParametersData$SampleTable$SampleId, Domain=domaintable$Domain, unique = T)
   allDomains <- merge(allDomains, IndividualSamplingParametersData$StratificationVariables[,.SD, .SDcol=c("SampleId", "Stratum")], by="SampleId", allow.cartesian=T)
-  missingDomains <- allDomains[!(paste(get("SampleId"), get("Stratum"), get("Domain")) %in% paste(abundance$SampleId, abundance$Stratum, abundance$Domain)),]
-  missingDomains$Abundance <- 0
-  missingDomains$Frequency <- 0
+  missingDomainsAbundance <- allDomains[!(paste(get("SampleId"), get("Stratum"), get("Domain")) %in% paste(abundance$SampleId, abundance$Stratum, abundance$Domain)),]
+  missingDomainsAbundance$Abundance <- 0
+  missingDomainsAbundance$Frequency <- 0
+  
   #add NAs for non-sampled strata
-  missingDomains$Abundance[!(paste(missingDomains$SampleId, missingDomains$Stratum) %in% paste(IndividualSamplingParametersData$SelectionTable$SampleId, IndividualSamplingParametersData$SelectionTable$Stratum))] <- as.numeric(NA)
-  missingDomains$Frequency[!(paste(missingDomains$SampleId, missingDomains$Stratum) %in% paste(IndividualSamplingParametersData$SelectionTable$SampleId, IndividualSamplingParametersData$SelectionTable$Stratum))] <- as.numeric(NA)
-  missingDomains <- missingDomains[,.SD,.SDcol=names(abundance)]
-  abundance <- rbind(abundance, missingDomains)
+  missingDomainsAbundance$Abundance[!(paste(missingDomainsAbundance$SampleId, missingDomainsAbundance$Stratum) %in% paste(IndividualSamplingParametersData$SelectionTable$SampleId, IndividualSamplingParametersData$SelectionTable$Stratum))] <- as.numeric(NA)
+  missingDomainsAbundance$Frequency[!(paste(missingDomainsAbundance$SampleId, missingDomainsAbundance$Stratum) %in% paste(IndividualSamplingParametersData$SelectionTable$SampleId, IndividualSamplingParametersData$SelectionTable$Stratum))] <- as.numeric(NA)
+  missingDomainsAbundance <- missingDomainsAbundance[,.SD,.SDcol=names(abundance)]
+  abundance <- rbind(abundance, missingDomainsAbundance)
+  
+  #add 0 for all missing domains for samplecount
+  missingDomainsSampleCount <- allDomains[!(paste(get("SampleId"), get("Stratum"), get("Domain")) %in% paste(samplecount$SampleId, samplecount$Stratum, samplecount$Domain)),]
+  missingDomainsSampleCount$nIndividuals <- 0
+  missingDomainsSampleCount <- missingDomainsSampleCount[,.SD,.SDcol=names(samplecount)]
+  samplecount <- rbind(samplecount, missingDomainsSampleCount)
+  
   
   estimates <- NULL
   for (v in Variables){
@@ -942,6 +952,7 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
   output$DomainVariables <- domaintable[order(get("Domain")),]
   output$PSUDomainVariables <- PSUdomains
   output$StratificationVariables <- IndividualSamplingParametersData$StratificationVariables[order(get("SampleId"), get("Stratum")),]
+  output$SampleCount <- samplecount
 
   return(output)
 }
@@ -1007,6 +1018,9 @@ LiftStrata <- function(AnalyticalPSUEstimateData){
   domains <- data.table::CJ(Stratum=AnalyticalPSUEstimateData$StratificationVariables$Stratum, Domain=AnalyticalPSUEstimateData$DomainVariables$Domain, unique = T)
   missingStrataWdomains <- merge(missingStrata, domains, by="Stratum", allow.cartesian = T)
   
+  SampleCountAdditions <- missingStrataWdomains
+  SampleCountAdditions$nIndividuals <- 0
+  
   AbundanceAdditions <- missingStrataWdomains
   AbundanceAdditions$Abundance <- 0
   AbundanceAdditions$Frequency <- 0
@@ -1030,6 +1044,9 @@ LiftStrata <- function(AnalyticalPSUEstimateData){
   AnalyticalPSUEstimateData$Variables <- AnalyticalPSUEstimateData$Variables[order(AnalyticalPSUEstimateData$Variables$SampleId, AnalyticalPSUEstimateData$Variables$Stratum, AnalyticalPSUEstimateData$Variables$Domain),]
   AnalyticalPSUEstimateData$StratificationVariables <- rbind(AnalyticalPSUEstimateData$StratificationVariables, StratVarAdditions)
   AnalyticalPSUEstimateData$StratificationVariables <- AnalyticalPSUEstimateData$StratificationVariables[order(AnalyticalPSUEstimateData$StratificationVariables$SampleId, AnalyticalPSUEstimateData$StratificationVariables$Stratum),]
+  
+  AnalyticalPSUEstimateData$SampleCount <- rbind(AnalyticalPSUEstimateData$SampleCount, SampleCountAdditions)
+  AnalyticalPSUEstimateData$SampleCount <- AnalyticalPSUEstimateData$SampleCount[order(AnalyticalPSUEstimateData$SampleCount$SampleId, AnalyticalPSUEstimateData$SampleCount$Stratum, AnalyticalPSUEstimateData$SampleCount$Domain),]
   
   return(AnalyticalPSUEstimateData)
 }
@@ -1394,6 +1411,15 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   }
   
   #
+  # Tally samples
+  #
+  
+  sampleCount <- merge(PSUSamplingParametersData$SelectionTable, AnalyticalPSUEstimateData$SampleCount, by.x="SamplingUnitId", by.y="SampleId", suffixes = c(".PSU", ".lower"))
+  sampleCount$Stratum <- paste("PSU-stratum:", sampleCount$Stratum.PSU, " Lower-stratum:", sampleCount$Stratum.lower, sep="")
+  sampleCount$Domain <- CombinedDomains$Domain[match(paste(sampleCount$PSUDomain, sampleCount$Domain), paste(CombinedDomains$PSUDomain, CombinedDomains$LowerDomain))]
+  sampleCount <- sampleCount[,list(nPSU=length(unique(get("SamplingUnitId"))), nIndividuals=sum(get("nIndividuals"))), by=c("Stratum", "Domain")]
+  
+  #
   # Estimate abundance
   #
   selAbundance <- merge(PSUSamplingParametersData$SelectionTable, AnalyticalPSUEstimateData$Abundance, by.x="SamplingUnitId", by.y="SampleId", suffixes = c(".PSU", ".lower"))
@@ -1445,10 +1471,19 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   CombinedStrata$LowerStratum <- NULL
   output$StratificationVariables <- CombinedStrata[,.SD,.SDcol=c("Stratum", names(CombinedStrata)[names(CombinedStrata)!="Stratum"])]
   
+  output$SampleCount <- sampleCount
+  
+  #
+  # Fill missing strata
+  #
   missingStrata <- output$StratificationVariables$Stratum[!(output$StratificationVariables$Stratum %in% AbundanceTable$Stratum)]
   if (length(missingStrata)>0){
     strataDomains <- data.table::CJ(Stratum=missingStrata, Domain=output$DomainVariables$Domain, unique = T)
     output$Abundance <- rbind(output$Abundance, merge(output$Abundance, strataDomains, all.y=T))
+    
+    output$SampleCount <- rbind(output$SampleCount, merge(output$SampleCount, strataDomains, all.y=T))
+    output$SampleCount$nPSU[is.na(output$SampleCount$nPSU)]<-0
+    output$SampleCount$nIndividuals[is.na(output$SampleCount$nIndividuals)]<-0
     
     strataDomains <- data.table::CJ(Stratum=missingStrata, Domain1=output$DomainVariables$Domain, Domain2=output$DomainVariables$Domain, unique = T)
     strataDomains <- strataDomains[get("Domain1")>=get("Domain2"),]
@@ -1470,6 +1505,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
   output$VariablesCovariance <- output$VariablesCovariance[order(output$VariablesCovariance$Stratum, output$VariablesCovariance$Domain1, output$VariablesCovariance$Domain2, output$VariablesCovariance$Variable1, output$VariablesCovariance$Variable2),]
   output$DomainVariables <- output$DomainVariables[order(output$DomainVariables$Domain),]
   output$StratificationVariables <- output$StratificationVariables[order(output$StratificationVariables$Stratum),]
+  output$SampleCount <- output$SampleCount[order(output$SampleCount$Stratum, output$SampleCount$Domain),]
   
   return(output)
 }
@@ -1784,7 +1820,12 @@ AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, Retain
   collapsedStrata <- unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum[
     !(AnalyticalPopulationEstimateData$StratificationVariables$Stratum %in% RetainStrata)])
 
+  newSampleCountTable <- AnalyticalPopulationEstimateData$SampleCount
+  newSampleCountTable$Stratum[newSampleCountTable$Stratum %in% collapsedStrata] <- AggregateStratumName
+  newSampleCountTable <- newSampleCountTable[,list(nPSU=sum(get("nPSU")), nIndividuals=sum(get("nIndividuals"))), by=c("Stratum", "Domain")]
+  
   newAbundanceTableOldStratum <- AnalyticalPopulationEstimateData$Abundance[!(get("Stratum") %in% RetainStrata),]
+  
   totalAbundance <- sum(newAbundanceTableOldStratum$Abundance)
   newAbundanceTable <- newAbundanceTableOldStratum
   newAbundanceTable$Stratum[newAbundanceTable$Stratum %in% collapsedStrata] <- AggregateStratumName
@@ -1831,6 +1872,8 @@ AggregateAnalyticalEstimate <- function(AnalyticalPopulationEstimateData, Retain
                                                       newVariablesTable)
   AnalyticalPopulationEstimateData$VariablesCovariance <- rbind(AnalyticalPopulationEstimateData$VariablesCovariance[AnalyticalPopulationEstimateData$VariablesCovariance$Stratum %in% RetainStrata,],
                                                                 newVariablesVariancetable)
+  
+  AnalyticalPopulationEstimateData$SampleCount <- newSampleCountTable
   
   return(AnalyticalPopulationEstimateData)
   
@@ -1995,7 +2038,7 @@ ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateDa
     apply(AnalyticalPopulationEstimateData$StratificationVariables[,.SD,.SDcols=StratificationVariables], 1, paste, collapse="/")
   ),]
 
-  extendedAnalyticalPopulationEstimateData <- AnalyticalPopulationEstimateData
+    extendedAnalyticalPopulationEstimateData <- AnalyticalPopulationEstimateData
   
     landedpart <- StoxLandingData$Landing[,.SD,.SDcol=StratificationVariables]
     landedpart <- landedpart[!duplicated(apply(landedpart, 1, paste, collapse=",")),]
@@ -2003,10 +2046,17 @@ ExtendAnalyticalSamplingFrameCoverage <- function(AnalyticalPopulationEstimateDa
     unsampledpart <- landedpart[!(apply(landedpart, 1, paste, collapse=",") %in% apply(sampleframepart, 1, paste, collapse=",")),]
     unsampledpart$Stratum <- UnsampledStratum
     unsampledpart <- unsampledpart[,.SD,.SDcol=c("Stratum", StratificationVariables)]
-    
+  
     extendedAnalyticalPopulationEstimateData$StratificationVariables <- rbind(extendedAnalyticalPopulationEstimateData$StratificationVariables, 
                                                                       unsampledpart)
-  
+    #set samples in these strata to 0
+    sampleCount <- data.table::CJ(Stratum=unsampledpart$Stratum, Domain=AnalyticalPopulationEstimateData$DomainVariables$Domain, unique = T)
+    sampleCount$nPSU <- 0
+    sampleCount$nIndividuals <- 0
+    
+    extendedAnalyticalPopulationEstimateData$SampleCount <- rbind(extendedAnalyticalPopulationEstimateData$SampleCount, 
+                                                                  sampleCount)
+    
   if (Method == "Strict"){
     return(fillStrict(extendedAnalyticalPopulationEstimateData))
   }
@@ -2066,6 +2116,10 @@ fillDomainStratumMean <- function(zeroDomainEstimate, DomainVariables, epsilon){
   originalEstimate$DomainVariables <- originalEstimate$DomainVariables[originalEstimate$DomainVariables$Domain %in%
                                                                                        nonzeroAbundanceDomains$Domain,]
   
+  originalEstimate$SampleCount <- originalEstimate$SampleCount[paste(originalEstimate$SampleCount$Stratum,
+                                                                     originalEstimate$SampleCount$Domain) %in%
+                                                                 paste(nonzeroAbundanceDomains$Stratum,
+                                                                       nonzeroAbundanceDomains$Domain),]
   
   keepVariables<-names(originalEstimate$DomainVariables)[!(names(originalEstimate$DomainVariables) %in% c("Domain", DomainVariables))]
   
@@ -2105,6 +2159,15 @@ fillDomainStratumMean <- function(zeroDomainEstimate, DomainVariables, epsilon){
                           by.y=c("Stratum", "Domain", "Variable"), 
                           suffixes = c("1", "2"))
   meanCovar <- meanCovarTable[,list(StratumMeanCovariance=sum(get("MeanCovariance")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))]*get("Frequency1")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))]*get("Frequency2")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))])/sum(get("Frequency1")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))]*get("Frequency2")[!is.nan(get("Mean1")) & !is.nan(get("Mean2"))])), by=c("Stratum", "Variable1", "Variable2", paste(keepVariables, "1", sep=""), paste(keepVariables, "2", sep=""))]
+  
+  #
+  # construct new sample count table
+  #
+  newSampleCountTable <- zeroDomainEstimate$SampleCount
+  newDomain <- !(apply(newSampleCountTable[,.SD,.SDcols = c("Stratum", "Domain")], 1, paste, collapse="/") %in%
+                   apply(originalEstimate$SampleCount[,.SD,.SDcols = c("Stratum", "Domain")], 1, paste, collapse="/"))
+  newSampleCountTable$nPSU[newDomain] <- 0
+  newSampleCountTable$nIndividuals[newDomain] <- 0
   
   #
   # construct new abundance table
@@ -2228,6 +2291,7 @@ fillDomainStratumMean <- function(zeroDomainEstimate, DomainVariables, epsilon){
   zeroDomainEstimate$Variables <- newTotalTable
   zeroDomainEstimate$AbundanceCovariance <- newAbundanceVarianceTable
   zeroDomainEstimate$VariablesCovariance <- newVariableVarianceTable
+  zeroDomainEstimate$SampleCount <- newSampleCountTable
   return(zeroDomainEstimate)
 }
 
@@ -2398,6 +2462,14 @@ InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateDat
     # Infer zero domains for sampling frame, same for all methods
     #
     
+    additionalSampleCount <- data.table::CJ(Stratum=unique(extendedAnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
+                                            Domain=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain))
+    additionalSampleCount <- additionalSampleCount[!(paste(additionalSampleCount$Stratum, additionalSampleCount$Domain) 
+                                                 %in% paste(extendedAnalyticalPopulationEstimateData$SampleCount$Stratum, 
+                                                            extendedAnalyticalPopulationEstimateData$SampleCount$Domain)),]
+    additionalSampleCount$nPSU <- 0
+    additionalSampleCount$nIndividuals <- 0
+    
     additionalAbundance <- data.table::CJ(Stratum=unique(extendedAnalyticalPopulationEstimateData$StratificationVariables$Stratum), 
                                           Domain=unique(extendedAnalyticalPopulationEstimateData$DomainVariables$Domain))
     additionalAbundance <- additionalAbundance[!(paste(additionalAbundance$Stratum, additionalAbundance$Domain) 
@@ -2460,7 +2532,8 @@ InterpolateAnalyticalDomainEstimates <- function(AnalyticalPopulationEstimateDat
                                                                           additionalAbundanceCovariance)
     extendedAnalyticalPopulationEstimateData$VariablesCovariance <- rbind(extendedAnalyticalPopulationEstimateData$VariablesCovariance, 
                                                                           additionalVariableCovariance)
-  
+    extendedAnalyticalPopulationEstimateData$SampleCount <- rbind(extendedAnalyticalPopulationEstimateData$SampleCount,
+                                                                  additionalSampleCount)
   if (Method == "Strict"){
     return(extendedAnalyticalPopulationEstimateData)
   }
