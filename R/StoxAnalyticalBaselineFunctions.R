@@ -1627,6 +1627,15 @@ AnalyticalRatioEstimate <- function(AnalyticalPopulationEstimateData, StoxLandin
   }
   landingsPartition <- potentialNames
   
+  if (length(DomainVariables)==0){
+    domainVarsInEst <- names(AnalyticalPopulationEstimateData$DomainVariables)
+    domainVarsInEst <- domainVarsInEst[domainVarsInEst != "Domain"]
+    domainVarsInLandings <- names(StoxLandingData$Landing)
+    domainVarsInLandings <- domainVarsInLandings[domainVarsInLandings %in% domainVarsInEst]
+    if (length(domainVarsInLandings)>0){
+      stoxWarning(paste("No Domain Variables configured, although appropriately named domains are available in Landings", truncateStringVector(domainVarsInLandings)))
+    }
+  }
   
   #
   # coerce character for variables in landings-partition, as all stratification variables and domain variables in estimates ar char

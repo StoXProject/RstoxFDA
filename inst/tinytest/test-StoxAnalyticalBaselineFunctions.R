@@ -402,6 +402,7 @@ psuBySex <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight")
 popBySex <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuBySex)
 ll <- land
 ll$Landing$IndividualSex <- "M"
+
 expect_error(RstoxFDA:::AnalyticalRatioEstimate(popBySex, ll, "IndividualRoundWeight", StratificationVariables = "Sex"), "Some Stratification Variables or Domain Variables could not be matched with landings")
 ll <- land
 ll$Landing$SpeciesCategory <- 1
@@ -424,6 +425,7 @@ expect_true(all(result$StratificationVariables$Year == "2022"))
 
 psuEstNoD <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"))
 popEstNoD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstNoD)
+
 ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstNoD, land, "IndividualRoundWeight",  StratificationVariables = "SpeciesCategory")
 
 #error should be close to zero, since domain coincides with strata
@@ -443,16 +445,19 @@ psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeig
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
 
 #total estimate, disregard matching domain in ratio estimate
-ratioEstTotal <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory")
+expect_warning(ratioEstTotal <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory"))
 comp <- merge(ratioEstTotal$Abundance, popEstDomain$Abundance, by=c("Stratum", "Domain"))
 
 #check that cells with zero landings are inferred to have zero abundance
 landWoG53 <- land
 landWoG53$Landing <- landWoG53$Landing[get("Gear")!=53,]
+
 ratioEst0Landings <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, landWoG53, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory", DomainVariables = "Gear")
+
 tab <- merge(ratioEst0Landings$Abundance, ratioEst0Landings$DomainVariables, by = "Domain")
 expect_equal(sum(tab$Abundance[tab$Gear==53]),0)
 expect_equal(sum(tab$Frequency[tab$Gear==53]),0)
+
 tab <- merge(ratioEst0Landings$Variables, ratioEst0Landings$DomainVariables, by = "Domain")
 expect_equal(sum(tab$Total[tab$Gear==53]),0)
 expect_true(mean(tab$Mean[tab$Gear==53])>0)
