@@ -418,7 +418,6 @@ popEstDomainYear$StratificationVariables$Year <- "2022"
 result <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomainYear, ll, "IndividualRoundWeight",  StratificationVariables = "Year")
 expect_true(all(result$StratificationVariables$Year == "2022"))
 
-
 #
 # Test total catch estimates (no ind domains)
 #
@@ -442,7 +441,30 @@ expect_true(sqrt(ratioEst$VariablesCovariance$TotalCovariance) / ratioEst$Variab
 
 psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge", "Gear"))
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
+
+#total estimate, disregard matching domain in ratio estimate
+ratioEstTotal <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory")
+comp <- merge(ratioEstTotal$Abundance, popEstDomain$Abundance, by=c("Stratum", "Domain"))
+
+#check that cells with zero landings are inferred to have zero abundance
+landWoG53 <- land
+landWoG53$Landing <- landWoG53$Landing[get("Gear")!=53,]
+ratioEst0Landings <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, landWoG53, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory", DomainVariables = "Gear")
+tab <- merge(ratioEst0Landings$Abundance, ratioEst0Landings$DomainVariables, by = "Domain")
+expect_equal(sum(tab$Abundance[tab$Gear==53]),0)
+expect_equal(sum(tab$Frequency[tab$Gear==53]),0)
+tab <- merge(ratioEst0Landings$Variables, ratioEst0Landings$DomainVariables, by = "Domain")
+expect_equal(sum(tab$Total[tab$Gear==53]),0)
+expect_true(mean(tab$Mean[tab$Gear==53])>0)
+
+#everything should be scaled with same factor
+expect_true(var((comp$Abundance.x-comp$Abundance.y)/comp$Abundance.x)<1e-10)
+
 ratioEstMDW <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory", DomainVariables = "Gear")
+comp <- merge(ratioEstMDW$Abundance, popEstDomain$Abundance, by=c("Stratum", "Domain"))
+
+#everything should not be scaled with same factor
+expect_true(var((comp$Abundance.x-comp$Abundance.y)/comp$Abundance.x)>10)
 
 #check that total abundance estimates are in the same ballpark (catch rounding errors etc)
 expect_true(abs(sum(ratioEstMDW$Abundance$Abundance) - sum(popEstDomain$Abundance$Abundance))/sum(ratioEstMDW$Abundance$Abundance) < .2)
