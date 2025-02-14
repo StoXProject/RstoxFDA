@@ -605,9 +605,6 @@ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
 # Test expanding along a single stratification variable
-ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEst, land, "IndividualRoundWeight",  "Frame")
-expect_equal(nrow(ratioEst$Variables), nrow(popEst$Variables))
-
 expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(popEst, land, "Frame", "Strict", "Unsampled")
 expect_equal(sum(expandedPopEst$SampleCount$nPSU), sum(popEst$SampleCount$nPSU))
 expect_equal(sum(expandedPopEst$SampleCount$nIndividuals), sum(popEst$SampleCount$nIndividuals))
@@ -653,6 +650,9 @@ stationDesign <- RstoxFDA::AssignPSUSamplingParameters(stationDesign, ex, "seria
 srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualAge"))
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear", "Usage"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
+
+expect_error(RstoxFDA::AnalyticalRatioEstimate(popEst, land, "IndividualRoundWeight", StratificationVariables = "FrameVar2", DomainVariables = c("Gear", "Usage")), "Estimates missing for some domains in landings. Consider filtering data with")
+
 domainExpanded <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "Strict", c("Gear", "Usage"), eps)
 
 ss<-merge(domainExpanded$Abundance, domainExpanded$SampleCount, by=c("Stratum", "Domain"), all.x=T)
