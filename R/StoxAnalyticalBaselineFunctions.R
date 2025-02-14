@@ -260,7 +260,7 @@ computePpsParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Quota
 #' @param DefinitionMethod 'AdHocStoxBiotic' or 'ProportionalPoissonSampling'
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} Sample data to construct design parameters from
 #' @param SamplingUnitId name of column in 'StoxBioticData' that identifies the Primary Sampling Unit the design is constructed for.
-#' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic')
+#' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic'). See \code{\link[RstoxFDA]{PSUSamplingParametersData}}
 #' @param StratumName name of the stratum sampling parameters are calculated for (for DefinitionMethod 'ProportionalPoissonSampling')
 #' @param Quota expected total catch in sampling frame in kg (for DefinitionMethod 'ProportionalPoissonSampling')
 #' @param ExpectedSampleSize the expected sample size for Possion sampling (for DefinitionMethod 'ProportionalPoissonSampling')
@@ -1519,7 +1519,7 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #'  
 #'  Landings are partitioned and assigned to domains in 'AnalyticalPopulationEstimateData' by matching column names.
 #'  Column names in 'StoxLandingData' that are also either Stratification Columns or Domain Columns in 'AnalyticalPopulationEstimateData'
-#'  can be used to construct the landings partitions that provide total weigths for the ratio estimates.
+#'  can be used to construct the 'landing partitions' that provide total weigths for the ratio estimates.
 #'  
 #'  Ratio estimation of abundance may either improve an estimate of abundance obtained by other means, or provide an estimate of abundance
 #'  when only proportions in domains are known. This requires that landing partitions are not covering more than one strata, although they may cover less.
@@ -1572,8 +1572,8 @@ AnalyticalPopulationEstimate <- function(PSUSamplingParametersData, AnalyticalPS
 #' @param AnalyticalPopulationEstimateData \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with estimates of mean or total weights and frequencies or abundance in domains
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} with census data on total weight in each stratum
 #' @param WeightVariable character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals in grams.
-#' @param StratificationVariables vector of stratification columns to include when matching estimates to landings.
-#' @param DomainVariables vector of domain columns to include when matching estimates to landings. 
+#' @param StratificationVariables vector of stratification columns to include when matching estimates to landings. Variable must exist as Stratification Variable in 'AnalyticalPopulationEstimateData' and in 'StoxLandingData'
+#' @param DomainVariables vector of domain columns to include when matching estimates to landings. Variable must exist as Domain Variable in 'AnalyticalPopulationEstimateData' and in 'StoxLandingData'
 #' @return \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates.
 #' @examples 
 #' 

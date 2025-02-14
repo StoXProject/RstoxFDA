@@ -19,9 +19,9 @@ AnalyticalRatioEstimate(
 
 \item{WeightVariable}{character() name of variable in 'AnalyticalPopulationEstimateData' that represent weight of individuals in grams.}
 
-\item{StratificationVariables}{vector of stratification columns to include when matching estimates to landings.}
+\item{StratificationVariables}{vector of stratification columns to include when matching estimates to landings. Variable must exist as Stratification Variable in 'AnalyticalPopulationEstimateData' and in 'StoxLandingData'}
 
-\item{DomainVariables}{vector of domain columns to include when matching estimates to landings.}
+\item{DomainVariables}{vector of domain columns to include when matching estimates to landings. Variable must exist as Domain Variable in 'AnalyticalPopulationEstimateData' and in 'StoxLandingData'}
 }
 \value{
 \code{\link[RstoxFDA]{AnalyticalPopulationEstimateData}} with ratio estimates.
@@ -35,7 +35,7 @@ Ratio estimation generally incurs some bias in estimation, and analytical expres
 
 Landings are partitioned and assigned to domains in 'AnalyticalPopulationEstimateData' by matching column names.
 Column names in 'StoxLandingData' that are also either Stratification Columns or Domain Columns in 'AnalyticalPopulationEstimateData'
-can be used to construct the landings partitions that provide total weigths for the ratio estimates.
+can be used to construct the 'landing partitions' that provide total weigths for the ratio estimates.
 
 Ratio estimation of abundance may either improve an estimate of abundance obtained by other means, or provide an estimate of abundance
 when only proportions in domains are known. This requires that landing partitions are not covering more than one strata, although they may cover less.

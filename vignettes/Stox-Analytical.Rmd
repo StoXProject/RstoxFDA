@@ -146,7 +146,7 @@ The column 'SamplingUnitId' identifies the data records for selected hauls that 
 head(PSUparameters$SelectionTable[is.na(PSUparameters$SelectionTable$SamplingUnitId),])
 ```
 
-The samples are all selected from the same stratum, called "Nordsjo". Later on, we will need to put this stratum in correspondance with census data (sales-notes). We have therefore added a defining columns to the table 'StratificationVariables':
+The samples are all selected from the same stratum, called "Nordsjo". Later on, we will need to put this stratum in correspondance with census data (sales-notes). We have therefore added columns to the table 'StratificationVariables':
 
 ```{r inspectPSUstratification}
 PSUparameters$StratificationVariables

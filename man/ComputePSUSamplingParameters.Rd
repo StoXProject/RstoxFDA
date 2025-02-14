@@ -21,7 +21,7 @@ ComputePSUSamplingParameters(
 
 \item{SamplingUnitId}{name of column in 'StoxBioticData' that identifies the Primary Sampling Unit the design is constructed for.}
 
-\item{StratificationColumns}{name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic')}
+\item{StratificationColumns}{name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic'). See \code{\link[RstoxFDA]{PSUSamplingParametersData}}}
 
 \item{StratumName}{name of the stratum sampling parameters are calculated for (for DefinitionMethod 'ProportionalPoissonSampling')}
 

@@ -49,6 +49,7 @@ Analytical estimates for a population
   \item{<StratificationVariables>}{Columns that relate the stratum to data records.}
  }
  The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum.
+ The Stratification Variables assist in matching each strata to census data, such as landings. See for instance \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}
  Unlike \code{\link[RstoxFDA]{PSUSamplingParametersData}}, \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}, and, \code{\link[RstoxFDA]{IndividualSamplingParametersData}}, a stratum for 'AnalyticalPopulationEstimateData' 
  can be defined by several rows in the 'StratificationVariables' table.
  
