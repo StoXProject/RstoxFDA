@@ -35,9 +35,9 @@ jobs:
           
 
           - {os: ubuntu-latest,  r: 'next', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
-          - {os: ubuntu-22.04,   r: '4.3',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          - {os: ubuntu-24.04,   r: '4.3',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           # 4.4 is pushed to drat repo on merge to master for ubunutu (except pre-release builds), update script if 4.4 is taken out
-          - {os: ubuntu-22.04,   r: '4.4',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          - {os: ubuntu-24.04,   r: '4.4',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
