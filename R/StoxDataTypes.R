@@ -174,6 +174,7 @@ is.AnalyticalPSUEstimateData <- function(AnalyticalPSUEstimateData){
 #'   \item{<StratificationVariables>}{Columns that relate the stratum to data records.}
 #'  }
 #'  The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum.
+#'  The Stratification Variables assist in matching each strata to census data, such as landings. See for instance \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}
 #'  Unlike \code{\link[RstoxFDA]{PSUSamplingParametersData}}, \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}, and, \code{\link[RstoxFDA]{IndividualSamplingParametersData}}, a stratum for 'AnalyticalPopulationEstimateData' 
 #'  can be defined by several rows in the 'StratificationVariables' table.
 #'  
@@ -311,6 +312,7 @@ is.AnalyticalPopulationEstimateData <- function(AnalyticalPopulationEstimateData
 #'   \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
 #'   \item{<StratificationVariables>}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
 #'  }
+#'  The Stratification Variables assist in matching each strata to census data, such as landings. See for instance \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}
 #'  The column 'Stratum' uniquely identifies a row in the table 'StratificationVariables'
 #' 
 #' Optional columns may be NA.
@@ -440,6 +442,7 @@ is.PSUSamplingParametersData <- function(PSUSamplingParametersData){
 #'   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
 #'   \item{<StratificationVariables>}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
 #'  }
+#'  The Stratification Variables assist in matching each strata to census data, such as landings. See for instance \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}
 #'  The combination of the columns 'Stratum' and 'SampleId' uniquely identifies a row in the table 'StratificationVariables'
 #' 
 #' Optional columns may be NA.

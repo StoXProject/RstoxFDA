@@ -1,4 +1,6 @@
 # 1.5.0-9004
+* Added warning when no Domain Variables are configured in AnalyticalRatioEstimate (#183)
+* Added stricter checks on inputs for AnalyticalRatioEstimate (#183)
 * Added the table SampleCount to AnalyticalPSUEstimateData to keep track of how many observations support estimates in each domain.
 * Added the table SampleCount to AnalyticalPopulationEstimateData to keep track of how many PSUs and how many observations support estimates in each domain.
 * Added / exposed function for collapsing strata on IndividualSamplingParameters (CollapseStrata)

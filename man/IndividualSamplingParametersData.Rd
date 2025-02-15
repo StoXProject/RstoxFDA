@@ -41,6 +41,7 @@ Encodes information about the selection of a sub-sample of observations from ind
   \item{Stratum}{Mandatory, chr: Identifies the within-sample stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
   \item{<StratificationVariables>}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
  }
+ The Stratification Variables assist in matching each strata to census data, such as landings. See for instance \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}
  The combination of the columns 'Stratum' and 'SampleId' uniquely identifies a row in the table 'StratificationVariables'
 
 Optional columns may be NA.
