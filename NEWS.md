@@ -1,3 +1,18 @@
+# 1.5.0-9004
+* Added warning when no Domain Variables are configured in AnalyticalRatioEstimate (#183)
+* Added stricter checks on inputs for AnalyticalRatioEstimate (#183)
+* Added the table SampleCount to AnalyticalPSUEstimateData to keep track of how many observations support estimates in each domain.
+* Added the table SampleCount to AnalyticalPopulationEstimateData to keep track of how many PSUs and how many observations support estimates in each domain.
+* Added / exposed function for collapsing strata on IndividualSamplingParameters (CollapseStrata)
+* Added documentation for dealing with incomplete biological records (#170)
+* Made stratification options for ComputePsuSamplingParameters more flexible (#171)
+* Clarified various error messages.
+* Fixed a bug with handling of NA values in AddLengthGroupStoxBiotic
+* Fixed a bug with missing error detection when trying to report estimates over several strata (#173)
+* Fixed a bug which would cause duplicate samplingUnitIds in the SelectionTable when running ComputePsuSamplingParameters with the option "adHocStoxBiotic" (#172)
+* Fixed a bug which cause the menu for ExtendAnalyticalSamplingFrameCoverage to not show options for StratificationVariables
+* Fixed a bug which caused AssignPSUSamplingParameters to report the wrong records as missing, when data is not provided for all sampled records
+
 # 1.5.0-9003
 * Added function to annotate length groups: AddLengthGroupStoxBiotic (#163), and report total catch by age group: ReportAnalyticalCatchAtLength (#150)
 * Added function to report mean of weight and length by age: ReportAnalyticalLengthAtAge, and ReportAnalyticalWeightAtAge (#150).

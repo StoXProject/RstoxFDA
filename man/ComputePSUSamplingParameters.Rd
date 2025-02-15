@@ -21,7 +21,7 @@ ComputePSUSamplingParameters(
 
 \item{SamplingUnitId}{name of column in 'StoxBioticData' that identifies the Primary Sampling Unit the design is constructed for.}
 
-\item{StratificationColumns}{name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic')}
+\item{StratificationColumns}{name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic'). See \code{\link[RstoxFDA]{PSUSamplingParametersData}}}
 
 \item{StratumName}{name of the stratum sampling parameters are calculated for (for DefinitionMethod 'ProportionalPoissonSampling')}
 
@@ -38,11 +38,16 @@ Compute sampling parameters for Primary Sampling Units in multi-stage sampling.
 \details{
 Computes Sampling Design Parameters from data, given some assumptions specified by the 'DefinitionMethod'.
 
-If 'DefinitionMethod' is 'AdHocStoxBiotic', equal probability sampling with fixed sample size will be assumed, as well as
+Primary Sampling Units (the argument 'SamplingUnitId') may be identified by any categorical (character, factor) or ordinal (factor, integer) variable in 'StoxBioticData', that are associated with the 'Sample'-table
+or any table above 'Sample' in the StoxBiotic-hierarchy.
+
+If 'DefinitionMethod' is 'AdHocStoxBiotic', equal probability sampling with fixed sample size will be assumed withing strata, as well as
 selection with replacement and complete response.
 This is a reasonable approximation if within-strata sampling is approximately simple random selections,
 the sample intensitiy is low (only a small fraction of the population is sampled),
-and non-response is believed to be random.
+and non-response is believed to be random. StratificationVariables may be any categorical or ordinal variables in 'StoxBioticData', that are associated with the 'Sample'-table
+or any table above 'Sample' in the StoxBiotic-hierarchy, and strata will be defined as the combination of these variables.
+Primary Sampling Units must be selected withing stratum, so the function will fail there are several strata in one PSU.
 
 If 'DefinitionMethod' is 'ProportionalPoissonSampling', Unstratified (singe stratum) Poission sampling with selection probabilities
 proportional to catch size is assumed. 'SamplingUnitId' must be a variable on the Haul table of 'StoxBioticData' for this option,

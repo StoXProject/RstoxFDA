@@ -1,3 +1,11 @@
+#' Raise an error if reporting is attempted for estimates with several strata.
+#' @noRd
+checkAggregation <- function(AnalyticalPopulationEstimateData){
+  if (length(unique(AnalyticalPopulationEstimateData$StratificationVariables$Stratum))>1){
+    stop("Report function does not support several strata. Consider aggregating with 'AggregateAnalyticalEstimate'. Specify any desired grouping variables as PSU-domains.")
+  }
+}
+
 #' Redefines age variable as lowest age in age group
 #' Adds plusgroup and puts NA group to 0.
 #' Assumes zero covariance for unkown covariances.
@@ -126,7 +134,10 @@ ReportAnalyticalCatchAtAge <- function(AnalyticalPopulationEstimateData, PlusGro
   AgeDomainVar = "IndividualAge"
   
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
-  stopifnot(is.AnalyticalPopulationEstimateData(AnalyticalPopulationEstimateData))
+  if (!is.AnalyticalPopulationEstimateData(AnalyticalPopulationEstimateData)){
+    stop("Malformed 'AnalyticalPopulationEstimateData'")
+  }
+  checkAggregation(AnalyticalPopulationEstimateData)
   
   if (!(AgeDomainVar %in% names(AnalyticalPopulationEstimateData$DomainVariables))){
     stop(paste("Catch-at-age reporting, requires the StoxBiotic variable 'IndividualAge' to be among the domain variables of 'AnalyticalPopulationEstimateData'."))
@@ -200,7 +211,11 @@ ReportAnalyticalCatchAtAge <- function(AnalyticalPopulationEstimateData, PlusGro
 ReportAnalyticalCatchAtLength <- function(AnalyticalPopulationEstimateData, LengthGroupVariable=character(), IntervalWidth=numeric(), Decimals=integer(), Unit=RstoxData::getUnitOptions("cardinality", conversionRange=c(1,1e12))){
   
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
-  stopifnot(is.AnalyticalPopulationEstimateData(AnalyticalPopulationEstimateData))
+  if (!is.AnalyticalPopulationEstimateData(AnalyticalPopulationEstimateData)){
+    stop("Malformed 'AnalyticalPopulationEstimateData'")
+  }
+  checkAggregation(AnalyticalPopulationEstimateData)
+  
   checkMandatory(LengthGroupVariable, "LengthGroupVariable")
   if (!(LengthGroupVariable %in% names(AnalyticalPopulationEstimateData$DomainVariables))){
     stop(paste("Catch-at-length reporting, requires the StoxBiotic variable identified by 'LengthGroupVariable'", LengthGroupVariable," to be among the domain variables of 'AnalyticalPopulationEstimateData'."))
@@ -322,7 +337,12 @@ ReportAnalyticalWeightAtAge <- function(AnalyticalPopulationEstimateData, PlusGr
   AgeDomainVar = "IndividualAge"
   WeightVar = "IndividualRoundWeight"
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
-  stopifnot(is.AnalyticalPopulationEstimateData(AnalyticalPopulationEstimateData))
+
+  if (!is.AnalyticalPopulationEstimateData(AnalyticalPopulationEstimateData)){
+    stop("Malformed 'AnalyticalPopulationEstimateData'")
+  }
+  checkAggregation(AnalyticalPopulationEstimateData)
+  
   if (!(AgeDomainVar %in% names(AnalyticalPopulationEstimateData$DomainVariables))){
     stop(paste("Weight-at-age reporting, requires the StoxBiotic variable '",AgeDomainVar,"' to be among the domain variables of 'AnalyticalPopulationEstimateData'."))
   }
@@ -379,7 +399,12 @@ ReportAnalyticalLengthAtAge <- function(AnalyticalPopulationEstimateData, PlusGr
   AgeDomainVar = "IndividualAge"
   LengthVar = "IndividualTotalLength"
   checkMandatory(AnalyticalPopulationEstimateData, "AnalyticalPopulationEstimateData")
-  stopifnot(is.AnalyticalPopulationEstimateData(AnalyticalPopulationEstimateData))
+  
+  if (!is.AnalyticalPopulationEstimateData(AnalyticalPopulationEstimateData)){
+    stop("Malformed 'AnalyticalPopulationEstimateData'")
+  }
+  checkAggregation(AnalyticalPopulationEstimateData)
+  
   if (!(AgeDomainVar %in% names(AnalyticalPopulationEstimateData$DomainVariables))){
     stop(paste("Length-at-age reporting, requires the StoxBiotic variable '",AgeDomainVar,"' to be among the domain variables of 'AnalyticalPopulationEstimateData'."))
   }

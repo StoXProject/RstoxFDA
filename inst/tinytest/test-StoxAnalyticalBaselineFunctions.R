@@ -85,7 +85,7 @@ expect_true(length(unique(round(comp$HTsamplingWeight.x / comp$HTsamplingWeight.
 
 #define equal prob fixed-size selection from data
 suppressWarnings(StoxBioticData <- RstoxData::StoxBiotic(RstoxData::ReadBiotic(system.file("testresources", "biotic_v3_example.xml", package="RstoxFDA"))))
-designParamsSB <- RstoxFDA:::ComputePSUSamplingParameters(StoxBioticData=StoxBioticData, SamplingUnitId = "Individual", StratificationColumns = c("SpeciesCategoryKey"))
+designParamsSB <- RstoxFDA:::ComputePSUSamplingParameters(StoxBioticData=StoxBioticData, SamplingUnitId = "Sample", StratificationColumns = c("SpeciesCategoryKey"))
 expect_true(RstoxFDA:::is.PSUSamplingParametersData(designParamsSB))
 #compare names of output with stratification variables to output without
 
@@ -95,10 +95,11 @@ expect_true(all(designParamsSB$SampleTable$SelectionMethod=="FSWR"))
 
 expect_true(all(names(designParamsSB$SampleTable) == names(designParams$SampleTable)))
 expect_true(all(names(designParamsSB$SelectionTable) == names(designParams$SelectionTable)))
-expect_equal(nrow(designParamsSB$SelectionTable), 75)
-expect_equal(nrow(designParamsSB$SampleTable), 2)
+
+expect_equal(nrow(designParamsSB$SelectionTable), 14)
+expect_equal(nrow(designParamsSB$SampleTable), 9)
 expect_equal(ncol(designParamsSB$StratificationVariables), 2)
-expect_equal(nrow(designParamsSB$StratificationVariables), 2)
+expect_equal(nrow(designParamsSB$StratificationVariables), 9)
 
 #
 # Prepare dataset with sub-sampled parameters
@@ -182,6 +183,8 @@ indSampling <- RstoxFDA:::ComputeIndividualSamplingParameters(data, "SRS", c("In
 psuSampling <- RstoxFDA::CatchLotterySamplingExample
 
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(data, indSampling, "IndividualRoundWeight")
+
+expect_equal(sum(psuEst$SampleCount$nIndividuals), nrow(indSampling$SelectionTable))
 diffs <- psuEst$Abundance$Abundance*psuEst$Variables$Mean - psuEst$Variables$Total
 expect_true(all(diffs[!is.nan(diffs)] < 1e-6))
 expect_true(sum(!is.nan(diffs)) > 0)
@@ -260,7 +263,9 @@ sexStrat <-  RstoxFDA:::ComputeIndividualSamplingParameters(ss, "Stratified", c(
 expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
 expect_true(sum(is.na(psuEst$Variables$Domain))==0)
 psuEstLifted <- RstoxFDA:::LiftStrata(psuEst)
-
+expect_true(RstoxFDA:::is.AnalyticalPSUEstimateData(psuEstLifted))
+ssnacheck <- merge(psuEstLifted$Abundance, psuEstLifted$SampleCount, by=c("SampleId", "Stratum", "Domain"), all.x=T)
+expect_true(!any(is.na(ssnacheck$nIndividuals)))
 expect_true(nrow(psuEstLifted$Abundance)==nrow(psuEstLifted$Variables))
 expect_true(nrow(psuEstLifted$Abundance)==length(unique(sexStrat$StratificationVariables$Stratum))*length(unique(sexStrat$SampleTable$SampleId))*length(unique(ss$Individual$IndividualSex)))
 expect_true(nrow(psuEstLifted$StratificationVariables)==length(unique(sexStrat$StratificationVariables$Stratum))*length(unique(sexStrat$SampleTable$SampleId)))
@@ -268,11 +273,12 @@ expect_true(nrow(psuEstLifted$StratificationVariables)==length(unique(sexStrat$S
 #
 # Test AnalyticalPopulationEstimate
 #
+
 stationDesign <- RstoxFDA:::ComputePSUSamplingParameters(StoxBioticData = ss, SamplingUnitId = "Haul", StratificationColumns = "Gear")
 sexStrat <-  RstoxFDA:::ComputeIndividualSamplingParameters(ss, "Stratified", c("IndividualAge"), StratificationColumns = "IndividualSex")
 expect_warning(psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualRoundWeight", c("IndividualSex")), "Not all strata are sampled. Estimates will not be provided for some strata for SampleIds:")
 psuEst <- RstoxFDA:::LiftStrata(psuEst)
-expect_error(popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst), "Cannot estimate. Estimates are not provided for all samples in 'AnalyticalPSUEstimateData'. Missing for SamplingUnitIds:")
+expect_error(popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst), "Cannot estimate. Abundance- or total-estimates are not provided for all samples in 'AnalyticalPSUEstimateData'. Missing for SamplingUnitIds")
 
 #Test that Abundance and Frequency are NA for unsampled strata (Domain Sex is Unsampled for strata unkown sex)
 unsampled <- merge(psuEst$Abundance, sexStrat$SampleTable[n==0], by=c("SampleId", "Stratum"))
@@ -296,6 +302,8 @@ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ss, sexStrat, "IndividualTotalLength"
 psuEst <- RstoxFDA:::LiftStrata(psuEst)
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 popEstMeanOfMeans <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst, MeanOfMeans = T)
+
+expect_equal(sum(popEst$SampleCount$nIndividuals), sum(psuEst$SampleCount$nIndividuals))
 
 zeroAbund <- popEstMeanOfMeans$Abundance[popEstMeanOfMeans$Abundance$Frequency==0]
 NaNMeans <- popEstMeanOfMeans$Variables[is.nan(popEstMeanOfMeans$Variables$Mean)]
@@ -394,6 +402,7 @@ psuBySex <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight")
 popBySex <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuBySex)
 ll <- land
 ll$Landing$IndividualSex <- "M"
+
 expect_error(RstoxFDA:::AnalyticalRatioEstimate(popBySex, ll, "IndividualRoundWeight", StratificationVariables = "Sex"), "Some Stratification Variables or Domain Variables could not be matched with landings")
 ll <- land
 ll$Landing$SpeciesCategory <- 1
@@ -410,13 +419,13 @@ popEstDomainYear$StratificationVariables$Year <- "2022"
 result <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomainYear, ll, "IndividualRoundWeight",  StratificationVariables = "Year")
 expect_true(all(result$StratificationVariables$Year == "2022"))
 
-
 #
 # Test total catch estimates (no ind domains)
 #
 
 psuEstNoD <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"))
 popEstNoD <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstNoD)
+
 ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEstNoD, land, "IndividualRoundWeight",  StratificationVariables = "SpeciesCategory")
 
 #error should be close to zero, since domain coincides with strata
@@ -434,7 +443,33 @@ expect_true(sqrt(ratioEst$VariablesCovariance$TotalCovariance) / ratioEst$Variab
 
 psuEstDomain <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight"), c("IndividualAge", "Gear"))
 popEstDomain <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEstDomain)
+
+#total estimate, disregard matching domain in ratio estimate
+expect_warning(ratioEstTotal <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory"))
+comp <- merge(ratioEstTotal$Abundance, popEstDomain$Abundance, by=c("Stratum", "Domain"))
+
+#check that cells with zero landings are inferred to have zero abundance
+landWoG53 <- land
+landWoG53$Landing <- landWoG53$Landing[get("Gear")!=53,]
+
+ratioEst0Landings <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, landWoG53, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory", DomainVariables = "Gear")
+
+tab <- merge(ratioEst0Landings$Abundance, ratioEst0Landings$DomainVariables, by = "Domain")
+expect_equal(sum(tab$Abundance[tab$Gear==53]),0)
+expect_equal(sum(tab$Frequency[tab$Gear==53]),0)
+
+tab <- merge(ratioEst0Landings$Variables, ratioEst0Landings$DomainVariables, by = "Domain")
+expect_equal(sum(tab$Total[tab$Gear==53]),0)
+expect_true(mean(tab$Mean[tab$Gear==53])>0)
+
+#everything should be scaled with same factor
+expect_true(var((comp$Abundance.x-comp$Abundance.y)/comp$Abundance.x)<1e-10)
+
 ratioEstMDW <- RstoxFDA:::AnalyticalRatioEstimate(popEstDomain, land, "IndividualRoundWeight", StratificationVariables = "SpeciesCategory", DomainVariables = "Gear")
+comp <- merge(ratioEstMDW$Abundance, popEstDomain$Abundance, by=c("Stratum", "Domain"))
+
+#everything should not be scaled with same factor
+expect_true(var((comp$Abundance.x-comp$Abundance.y)/comp$Abundance.x)>10)
 
 #check that total abundance estimates are in the same ballpark (catch rounding errors etc)
 expect_true(abs(sum(ratioEstMDW$Abundance$Abundance) - sum(popEstDomain$Abundance$Abundance))/sum(ratioEstMDW$Abundance$Abundance) < .2)
@@ -555,7 +590,8 @@ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
 expandedPopEst <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "Strict", "Gear")
-
+expect_equal(sum(expandedPopEst$SampleCount$nPSU), sum(popEst$SampleCount$nPSU))
+expect_equal(sum(expandedPopEst$SampleCount$nIndividuals), sum(popEst$SampleCount$nIndividuals))
 expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
 expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
 expect_equal(nrow(expandedPopEst$AbundanceCovariance), (nrow(popEst$Abundance)*3)*(nrow(popEst$Abundance)*3-1)/2+nrow(popEst$Abundance)*3) #all domain combinations
@@ -565,6 +601,7 @@ expect_equal(nrow(expandedPopEst$StratificationVariables), nrow(popEst$Stratific
 expect_equal(sum(expandedPopEst$Abundance$Abundance,na.rm=T), sum(popEst$Abundance$Abundance))
 
 eps <- 1e-3
+
 expandedPopEst <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "StratumMean", "Gear", eps)
 expect_equal(nrow(expandedPopEst$Variables),nrow(popEst$Variables)*3) #added domain for gear 11 and gear 51
 expect_equal(nrow(expandedPopEst$Abundance),nrow(popEst$Abundance)*3)
@@ -595,10 +632,9 @@ psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
 # Test expanding along a single stratification variable
-ratioEst <- RstoxFDA:::AnalyticalRatioEstimate(popEst, land, "IndividualRoundWeight",  "Frame")
-expect_equal(nrow(ratioEst$Variables), nrow(popEst$Variables))
-
 expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(popEst, land, "Frame", "Strict", "Unsampled")
+expect_equal(sum(expandedPopEst$SampleCount$nPSU), sum(popEst$SampleCount$nPSU))
+expect_equal(sum(expandedPopEst$SampleCount$nIndividuals), sum(popEst$SampleCount$nIndividuals))
 expect_equal(nrow(expandedPopEst$Abundance), nrow(popEst$Abundance)*2)
 expect_equal(nrow(expandedPopEst$Variables), nrow(popEst$Variables)*2)
 expect_equal(nrow(expandedPopEst$AbundanceCovariance), nrow(popEst$AbundanceCovariance)*2)
@@ -642,7 +678,16 @@ srs <-  RstoxFDA:::ComputeIndividualSamplingParameters(ex, "SRS", c("IndividualA
 psuEst <- RstoxFDA:::AnalyticalPSUEstimate(ex, srs, c("IndividualRoundWeight", "IndividualTotalLength"), c("IndividualAge"), c("Gear", "Usage"))
 popEst <- RstoxFDA:::AnalyticalPopulationEstimate(stationDesign, psuEst)
 
+expect_error(RstoxFDA::AnalyticalRatioEstimate(popEst, land, "IndividualRoundWeight", StratificationVariables = "FrameVar2", DomainVariables = c("Gear", "Usage")), "Estimates missing for some domains in landings. Consider filtering data with")
+
 domainExpanded <- RstoxFDA:::InterpolateAnalyticalDomainEstimates(popEst, land, "Strict", c("Gear", "Usage"), eps)
+
+ss<-merge(domainExpanded$Abundance, domainExpanded$SampleCount, by=c("Stratum", "Domain"), all.x=T)
+expect_true(!any(is.na(ss$nPSU)))
+expect_true(!any(is.na(ss$nIndividuals)))
+expect_equal(sum(domainExpanded$SampleCount$nPSU), sum(popEst$SampleCount$nPSU))
+expect_equal(sum(domainExpanded$SampleCount$nIndividuals), sum(popEst$SampleCount$nIndividuals))
+
 expandedPopEst <- RstoxFDA:::ExtendAnalyticalSamplingFrameCoverage(domainExpanded, land, c("FrameVar1", "FrameVar2"), "Strict", "Unsampled")
 expect_true(nrow(expandedPopEst$Variables)>nrow(popEst$Variables)) 
 expect_true(nrow(expandedPopEst$Abundance)>nrow(popEst$Abundance))
@@ -815,6 +860,9 @@ meanVar <- sum(popEst$VariablesCovariance$MeanCovariance * (popEst$Abundance$Abu
 expect_true(abs(aggregate$VariablesCovariance$MeanCovariance - meanVar)/meanVar < 1e-3)
 totalVar <- sum(popEst$VariablesCovariance$TotalCovariance)
 expect_true(abs(aggregate$VariablesCovariance$TotalCovariance - totalVar)/totalVar < 1e-3)
+
+expect_equal(sum(popEst$SampleCount$nPSU), sum(aggregate$SampleCount$nPSU))
+expect_equal(sum(popEst$SampleCount$nIndividuals), sum(aggregate$SampleCount$nIndividuals))
 
 #
 # check retained

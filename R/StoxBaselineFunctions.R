@@ -1,5 +1,21 @@
+#' Halts with error if StoxLandingData is empty
+#' @noRd
+checkLandingsNotEmpty <- function(StoxLandingData){
+  if (!RstoxData::is.StoxLandingData(StoxLandingData)){
+    stop("Malformed StoxLandingData")
+  }
+  if (nrow(StoxLandingData$Landing)==0){
+    stop("StoxLandingData is empty.")
+  }
+}
 
-
+#' Halts with error if StoxLandingBioticData is empty at the provided level
+#' @noRd
+checkBioticNotEmpty <- function(StoxBioticData, Level){
+  if (nrow(StoxBioticData[[Level]])==0){
+    stop(paste("The table", Level, "is empty on StoxBioticData"))
+  }
+}
 
 #' Checks symmetry of Car table
 #' @noRd
@@ -804,6 +820,7 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition, ColumnName=c
 #' @md
 AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=character()){
   checkMandatory(StoxLandingData, "StoxLandingData")
+  checkLandingsNotEmpty(StoxLandingData)
   checkMandatory(StratumPolygon, "StratumPolygon")
   
   ColumnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA::stoxFunctionAttributes$AddStratumStoxLanding$functionParameterDefaults$ColumnName)
@@ -853,6 +870,7 @@ AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, ColumnName=char
   
   checkMandatory(StoxBioticData)
   stopifnot("Station" %in% names(StoxBioticData))
+  checkBioticNotEmpty(StoxBioticData, "Station")
   checkMandatory(StratumPolygon)
   
   columnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA:::stoxFunctionAttributes$AddStratumStoxBiotic$functionParameterDefaults$ColumnName)
@@ -929,6 +947,7 @@ AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
   
   checkMandatory(StoxLandingData, "StoxLandingData")
   checkMandatory(Translation, "Translation")
+  checkLandingsNotEmpty(StoxLandingData)
   
   if (!is.Translation(Translation)){
     stop("Translation is not a valid Translation table.")
