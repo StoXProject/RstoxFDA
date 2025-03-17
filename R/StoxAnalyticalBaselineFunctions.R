@@ -260,7 +260,7 @@ computePpsParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Quota
 #' @param DefinitionMethod 'AdHocStoxBiotic' or 'ProportionalPoissonSampling'
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} Sample data to construct design parameters from
 #' @param SamplingUnitId name of column in 'StoxBioticData' that identifies the Primary Sampling Unit the design is constructed for.
-#' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic'). See \code{\link[RstoxFDA]{PSUSamplingParametersData}}
+#' @param StratificationColumns name of columns that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic'). See \code{\link[RstoxFDA]{PSUSamplingParametersData}}
 #' @param StratumName name of the stratum sampling parameters are calculated for (for DefinitionMethod 'ProportionalPoissonSampling')
 #' @param Quota expected total catch in sampling frame in kg (for DefinitionMethod 'ProportionalPoissonSampling')
 #' @param ExpectedSampleSize the expected sample size for Possion sampling (for DefinitionMethod 'ProportionalPoissonSampling')
