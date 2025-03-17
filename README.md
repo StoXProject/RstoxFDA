@@ -63,5 +63,9 @@ Currently the latest release/pre-release of RstoxFDA is being tested for the fol
 
 and is tested with Reca for the following R versions:
 
+<<<<<<< HEAD
 * R 4.3 (linux, windows)
 * R 4.4 (linux, windows)
+=======
+* R 4.3 (linux, windows)
+>>>>>>> master
