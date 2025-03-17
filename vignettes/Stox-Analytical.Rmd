@@ -44,7 +44,7 @@ For testing pre-releases of StoX, obtain the stox packages from the testing repo
 
 ```{r installTestPackages, eval=FALSE}
 install.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"), 
-                 repos = c("https://stoxproject.github.io/testingRepo/"))
+                 repos = c("https://stoxproject.github.io/testingRepo/", getOption("repos")))
 ```
 
 This will install latest pre-release available for your version of R and operating system. Make sure you have R 4.4 or 4.4 if testing on Mac or Windows.
@@ -54,7 +54,7 @@ After you have finished testing, you may want to revert to the production packag
 ```{r installProductionPackages, eval=FALSE}
 remove.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"))
 install.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"), 
-                 repos = c("https://stoxproject.github.io/repo/"))
+                 repos = c("https://stoxproject.github.io/repo/", getOption("repos")))
 ```
 
 ## Sampling parameters
