@@ -728,7 +728,9 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
   records <- PSUSamplingParametersData$SelectionTable$SamplingUnitId[!is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId)]
   if (!all(records %in% StoxBioticData[[level]][[SamplingUnitId]])){
     missing <- records[!(records %in% StoxBioticData[[level]][[SamplingUnitId]])]
-    stop(paste("Records are not found for all sampled PSUs. Missing for the following SamplingUnitIds (", SamplingUnitId,"): ", truncateStringVector(missing), sep=""))
+    stoxWarning(paste("Records are not found for all sampled PSUs. These will be treated as missing. Records missing for the following SamplingUnitIds (", SamplingUnitId,"): ", truncateStringVector(missing), sep=""))
+    PSUSamplingParametersData$SelectionTable$SamplingUnitId[!is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId) &
+                                                              !(PSUSamplingParametersData$SelectionTable$SamplingUnitId %in% StoxBioticData[[level]][[SamplingUnitId]])] <- NA
   }
   
   if (DefinitionMethod == "MissingAtRandom"){
