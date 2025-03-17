@@ -260,7 +260,7 @@ computePpsParametersStoxBiotic <- function(StoxBioticData, SamplingUnitId, Quota
 #' @param DefinitionMethod 'AdHocStoxBiotic' or 'ProportionalPoissonSampling'
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} Sample data to construct design parameters from
 #' @param SamplingUnitId name of column in 'StoxBioticData' that identifies the Primary Sampling Unit the design is constructed for.
-#' @param StratificationColumns name of any column (at the same table as 'SamplingUnitId') that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic'). See \code{\link[RstoxFDA]{PSUSamplingParametersData}}
+#' @param StratificationColumns name of columns that are to be used to define Strata for sampling. (for DefinitionMethod 'AdHocStoxBiotic'). See \code{\link[RstoxFDA]{PSUSamplingParametersData}}
 #' @param StratumName name of the stratum sampling parameters are calculated for (for DefinitionMethod 'ProportionalPoissonSampling')
 #' @param Quota expected total catch in sampling frame in kg (for DefinitionMethod 'ProportionalPoissonSampling')
 #' @param ExpectedSampleSize the expected sample size for Possion sampling (for DefinitionMethod 'ProportionalPoissonSampling')
@@ -728,7 +728,9 @@ AssignPSUSamplingParameters <- function(PSUSamplingParametersData, StoxBioticDat
   records <- PSUSamplingParametersData$SelectionTable$SamplingUnitId[!is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId)]
   if (!all(records %in% StoxBioticData[[level]][[SamplingUnitId]])){
     missing <- records[!(records %in% StoxBioticData[[level]][[SamplingUnitId]])]
-    stop(paste("Records are not found for all sampled PSUs. Missing for the following SamplingUnitIds (", SamplingUnitId,"): ", truncateStringVector(missing), sep=""))
+    stoxWarning(paste("Records are not found for all sampled PSUs. These will be treated as missing. Records missing for the following SamplingUnitIds (", SamplingUnitId,"): ", truncateStringVector(missing), sep=""))
+    PSUSamplingParametersData$SelectionTable$SamplingUnitId[!is.na(PSUSamplingParametersData$SelectionTable$SamplingUnitId) &
+                                                              !(PSUSamplingParametersData$SelectionTable$SamplingUnitId %in% StoxBioticData[[level]][[SamplingUnitId]])] <- NA
   }
   
   if (DefinitionMethod == "MissingAtRandom"){
@@ -833,6 +835,7 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
 
   checkMandatory(StoxBioticData, "StoxBioticData")
   checkMandatory(IndividualSamplingParametersData, "IndividualSamplingParametersData")
+  checkMandatory(Variables, "Variables")
   
   ind <- RstoxData::MergeStoxBiotic(StoxBioticData, "Individual")
   ind <- ind[ind$Individual %in% IndividualSamplingParametersData$SelectionTable$IndividualId,]
