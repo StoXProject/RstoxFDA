@@ -3446,7 +3446,8 @@ processPropertyFormats <- list(
     class = "vector",
     title = "Strata to retain from collapse", 
     possibleValues = function(IndividualSamplingParametersData){
-      pv <- unique(IndividualSamplingParametersData$StratificationVariables$Stratum)
+      pv <- names(IndividualSamplingParametersData$StratificationVariables)
+      pv <- pv[pv!="Stratum"]
       return(pv)
     },
     variableTypes = "character"
