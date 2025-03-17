@@ -835,6 +835,7 @@ AnalyticalPSUEstimate <- function(StoxBioticData, IndividualSamplingParametersDa
 
   checkMandatory(StoxBioticData, "StoxBioticData")
   checkMandatory(IndividualSamplingParametersData, "IndividualSamplingParametersData")
+  checkMandatory(Variables, "Variables")
   
   ind <- RstoxData::MergeStoxBiotic(StoxBioticData, "Individual")
   ind <- ind[ind$Individual %in% IndividualSamplingParametersData$SelectionTable$IndividualId,]
