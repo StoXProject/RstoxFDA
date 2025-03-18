@@ -39,24 +39,6 @@ StoX is composed of several R-packages. Functions will be referred to by their p
 ## Installation
 RstoxFDA is an optional packages in StoX. In order to use the functions introduced in this vignette in the StoX user-interface, make sure RstoxFDA is installed. See installation instructions on [github: StoXProject/RstoxFDA](https://github.com/StoXProject/RstoxFDA). To install the StoX user-interface, see instructions on [github: StoXProject/StoX](https://github.com/StoXProject/StoX).
 
-### Testing (remove before release)
-For testing pre-releases of StoX, obtain the stox packages from the testing repo:
-
-```{r installTestPackages, eval=FALSE}
-install.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"), 
-                 repos = c("https://stoxproject.github.io/testingRepo/", getOption("repos")))
-```
-
-This will install latest pre-release available for your version of R and operating system. Make sure you have R 4.4 or 4.4 if testing on Mac or Windows.
-
-After you have finished testing, you may want to revert to the production packages. This may require explicitly uninstalling the packages first, as they have higher version numbers than production packages:
-
-```{r installProductionPackages, eval=FALSE}
-remove.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"))
-install.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"), 
-                 repos = c("https://stoxproject.github.io/repo/", getOption("repos")))
-```
-
 ## Sampling parameters
 In order to construct StoX projects like the example below, sampling parameters must be obtained from processes outside of StoX and formatted as described in the documentation for _RstoxFDA::ReadPSUSamplingParameters_. Examples provided for testing purposes can be located internally at IMR (https://git.imr.no/pelagic/internal/fangstprovelotteriet/samplingparameters/-/tree/main/formatted_files).
 
