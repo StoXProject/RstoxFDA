@@ -1,6 +1,6 @@
 Package: RstoxFDA
-Version: 1.5.0-9005
-Date: 2025-03-17
+Version: 1.6.0
+Date: 2025-03-18
 Title: Fisheries Dependent Analysis with RstoX
 Authors@R: c(
   person(given = "Edvin", 
