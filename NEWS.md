@@ -1,44 +1,16 @@
-# 1.5.0-9004
-* Added warning when no Domain Variables are configured in AnalyticalRatioEstimate (#183)
-* Added stricter checks on inputs for AnalyticalRatioEstimate (#183)
-* Added the table SampleCount to AnalyticalPSUEstimateData to keep track of how many observations support estimates in each domain.
-* Added the table SampleCount to AnalyticalPopulationEstimateData to keep track of how many PSUs and how many observations support estimates in each domain.
-* Added / exposed function for collapsing strata on IndividualSamplingParameters (CollapseStrata)
-* Added documentation for dealing with incomplete biological records (#170)
-* Made stratification options for ComputePsuSamplingParameters more flexible (#171)
-* Clarified various error messages.
-* Fixed a bug with handling of NA values in AddLengthGroupStoxBiotic
-* Fixed a bug with missing error detection when trying to report estimates over several strata (#173)
-* Fixed a bug which would cause duplicate samplingUnitIds in the SelectionTable when running ComputePsuSamplingParameters with the option "adHocStoxBiotic" (#172)
-* Fixed a bug which cause the menu for ExtendAnalyticalSamplingFrameCoverage to not show options for StratificationVariables
-* Fixed a bug which caused AssignPSUSamplingParameters to report the wrong records as missing, when data is not provided for all sampled records
-
-# 1.5.0-9003
-* Added function to annotate length groups: AddLengthGroupStoxBiotic (#163), and report total catch by age group: ReportAnalyticalCatchAtLength (#150)
-* Added function to report mean of weight and length by age: ReportAnalyticalLengthAtAge, and ReportAnalyticalWeightAtAge (#150).
-* Added function for annotating stratification variables to sampling parameters: AddPsuStratificationVariables (#163)
-* Added function for aggregating estimates over strata: AggregateAnalyticalEstimate (#164)
-* Added option for computing sampling parameters for Proportion Poisson Sampling from data records (option DefinitionMethod='ProportionalPoissonSampling' to ComputePSUSamplingParameters) (#165)
-* Added functions for sampling frame expansion: ExtendAnalyticalSamplingFrameCoverage, and domain interpolation: InterpolateAnalyticalDomainEstimates (#154)
-* AnalyticalRatioEstimate is simplified, and no longer provides the (unreleased) method option. Support for the method "TotalDomainWeight" has been dropped.
-* Changed naming conventions for domains in AnalyticalPopulationEstimateData.
-* Removed the table SampleSummary from the data type AnalyticalPopulationEstimateData.
-* Changed how Stratification variables and Domain variables are matched to landings with AnalyticalRatioEstimate (# 125)
-* Replaced DefinePSUSamplingParameters (processdata) with ComputePSUSamplingParameters (no processdata) and ReadPSUSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006). (#127)
-* Replaced DefineIndividualSamplingParameters (processdata) with ComputeIndividualSamplingParameters (no processdata). This change breaks some pre-release projects (v. v1.3-9006).
-* Added documentation for ECA convergence analsysis (#153)
-* Fixed issue with reporting IndividualAge as SamplingVariable in ReportFdaSampling (#146)
-* Fixed issue with running RunRecaModels with temporal resolution 'month' (#144)
+# RstoxFDA v1.6
 * Fixed issue with plotting with other column variables than 'Area' in PlotFisheriesOverviewSpatial (#147)
-* Fixed naming of age groups in reports from analytical estimates (#145)
-* Fixed documentation for handling NA age groups (#151)
-* Fixed issue with using integer columns in landings as stratification column in ratio estimates (#133)
-* Fixed error message when analytical catch at age reports are attempted without 'IndividualAge' in the domain definition (#126).
-
-# 1.5.0-9002
 * Fixed ordering of age groups in ReportAnalyticalCatchAtAge (#134)
-* Improved Error messages in AnalyticalRatioEstimate (#131)
-* Incorporated some feedback to the vignette Stox-Analytical (#128)
+* Added documentation for ECA convergence analsysis (#153)
+* Added functions for analytical catch at age estimation (ComputePSUSamplingParameters, ComputeIndividualSamplingParameters, AssignPSUSamplingParameters, AnalyticalPSUEstimate, AnalyticalPopulationEstimate, AnalyticalRatioEstimate, ReportAnalyticalCatchAtAge, InterpolateAnalyticalDomainEstimates, ExtendAnalyticalSamplingFrameCoverage, ComputePSUSamplingParameters, AddPsuStratificationVariables, AddLengthGroupStoxBiotic, ReportAnalyticalCatchAtLength, ReportAnalyticalLengthAtAge, ReportAnalyticalWeightAtAge)
+* Converted area code resources from sp SpatialPolygons to sf data.frames, reflecting changes in RstoxBase v 2. Breaks compatibility with RstoxBase < 2.
+* Made definition of coordinates used for appendAreaCodes and DefineAreaPosition stricter (now always centroids)
+* Made appendAreaCodes and DefineAreaPosition look for intersects in mercator projection
+* Changed ReadLandingFDA to use ForceUnique as implemented in RstoxData v 2. Breaks compatibility with RstoxData < 2
+* Changed the signature of mergePolygons to work with sf data.frames rather than sp SpatialPolygons.
+* Changed the definition neighbours in DefineCarNeighbours from polygons touching to polygons within 1 metre distance in mercator projection.
+* Changed areaCodeConversionTable to work with provided area definitions in mercator projection
+
 
 # RstoxFDA v1.4
 * Converted area code resources from sp SpatialPolygons to sf data.frames, reflecting changes in RstoxBase v 2. Breaks compatibility with RstoxBase < 2.
@@ -59,26 +31,11 @@
 * Added guidance to vignettes about how to deal with several hauls assigned the same station when the field 'station' is not correctly filled in NMDbiotic.
 * Added workaround so that the non-linear option for lgamodel can be used with with all version of Reca.
 
-# RstoxFDA v1.3-9006
-* Changed analytical variance estimator of means to a less conservative one.
-
-# RstoxFDA v1.3-9005
-* Added functions for analytical catch at age estimation (DefinePSUSamplingParameters, ComputeIndividualSamplingParameters, AssignPSUSamplingParameters, AnalyticalPSUEstimate, AnalyticalPopulationEstimate, AnalyticalRatioEstimate, ReportAnalyticalCatchAtAge)
-* Converted area code resources from sp SpatialPolygons to sf data.frames, reflecting changes in RstoxBase v 2. Breaks compatibility with RstoxBase < 2.
-* Changed ReadLandingFDA to use ForceUnique as implemented in RstoxData v 2. Breaks compatibility with RstoxData < 2
-* Made definition of coordinates used for appendAreaCodes and DefineAreaPosition stricter (now always centroids)
-* Made appendAreaCodes and DefineAreaPosition look for intersects in mercator projection
-* Changed the signature of mergePolygons to work with sf data.frames rather than sp SpatialPolygons.
-* Changed the definition neighbours in DefineCarNeighbours from polygons touching to polygons within 1 metre distance in mercator projection.
-* Changed areaCodeConversionTable to work with provided area definitions in mercator projection
-
 # RstoxFDA v1.3-9002
 * Fixed issue with PlotMeanWeightAtAge and PlotMeanLengthAtAge that would not plot mean values for configurations with no grouping variables
-
-# RstoxFDA v1.2.1-9001
 * Fixed issue where the DefineCarNeighbours would format column headers differently depending on the chosen DefinitionMethods. The column header 'CarValue' is now consistently written in the singular form, which means that output from the DefinitionMethod 'StratumPolygon' has changed, and the json schema for CarNeighbours has changed.
 * Fixed the behavior of AddStratumStoxLanding so that it assigns area NA, rather than halting with error, when positions cannot be assigned to an area.
-* Fixed the behaviour of ReportFdaSampling to count catches as unique hauls (column Haul on StoxBiotic$Haul), rather than stations. Improved documentation for the same function.
+* Fixed the behavior of ReportFdaSampling to count catches as unique hauls (column Haul on StoxBiotic$Haul), rather than stations. Improved documentation for the same function.
 * Added checking on the validity of IntervalWidths in report functions that report Reca-credible intervals
 * Clarified various warnings and error messages.
 * Made provision of area definition optional in PlotArea, so that the function can be used to examine the spatial distribution of data without providing a spatial coding system, or to just make maps without providing either data or area definitions.

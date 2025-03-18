@@ -44,7 +44,7 @@ For testing pre-releases of StoX, obtain the stox packages from the testing repo
 
 ```{r installTestPackages, eval=FALSE}
 install.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"), 
-                 repos = c("https://stoxproject.github.io/testingRepo/"))
+                 repos = c("https://stoxproject.github.io/testingRepo/", getOption("repos")))
 ```
 
 This will install latest pre-release available for your version of R and operating system. Make sure you have R 4.4 or 4.4 if testing on Mac or Windows.
@@ -54,7 +54,7 @@ After you have finished testing, you may want to revert to the production packag
 ```{r installProductionPackages, eval=FALSE}
 remove.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"))
 install.packages(c("RstoxData", "RstoxBase", "RstoxFramework", "RstoxFDA"), 
-                 repos = c("https://stoxproject.github.io/repo/"))
+                 repos = c("https://stoxproject.github.io/repo/", getOption("repos")))
 ```
 
 ## Sampling parameters
@@ -446,11 +446,11 @@ PlotCatchAtAgeTotals(ReportFdaCatchAtAgeData = ReportFdaCatchAtAgeData)
 
 ## Analytical estimates for incomplete records
 
-Sometimes samples that successfully reach IMR are only partially measured. This could be because they arrived too late, the sample was of poor quality, or because some parameters (e.g. age) was not prioritized for observation due to cost or time constraints. In this situation there may be a mismatch between the PSUs that are listed as sampled PSUs in the file with sampling parameters, and what is made available for estimation in StoX. This situation is indicated by 'AnalyticalPopulationEstimate' complaining that some estimates are not available for all PSUs. For instance: if not all PSUs have age-observations, and estimates are to be provided by age-domain. One would naturally proceed to filter out the PSUs without age-observations, but in that case 'AssignPSUSamplingParameters' will halt with an error, because some of the PSUs in the sampling parameter file are not found in the biological sample records. At this point we must consider if we have a representative sub-sample of the PSUs, and re-configure our estimation.
+Sometimes samples that successfully reach IMR are only partially measured. This could be because they arrived too late, the sample was of poor quality, or because some parameters (e.g. age) was not prioritized for observation due to cost or time constraints. In this situation there may be a mismatch between the PSUs that are listed as sampled PSUs in the file with sampling parameters, and what is made available for estimation in StoX. 'AssignPSUSamplingParameters' will treat these as if they were regular non-response samples, and issue a warning about that. At this point we must consider if we have a representative sub-sample of the PSUs, and re-configure our estimation.
 
-We could opt to solve this problem with approximate sampling parameters computed from the data records. This approximation is not perfect, but can be expected to be fairly good, as long as lottery parameters have been held constant through the sampling period. Considering that we probably have some non-response, and that we at this point are doing some ad-hoc sub-sampling anyway, this pragmatism can usually be justified.
+## Computing sampling parameters
 
-We would read data the usual way, but add some filtering to get rid of incomplete records (e.g. filter explicit serialnumbers, or filter on the variable 'agesamplecount'). In stead of reading in the the sampling parameters, we could approximately compute them from the filtered samples. Below is an example on how to do this for samples from the catch lottery, using the function _RstoxFDA::ComputePSUSamplingParameters_:
+If actual sampling parameters are not available, we could approximately compute them from the filtered samples. Below is an example on how to do this for samples from the catch lottery, using the function _RstoxFDA::ComputePSUSamplingParameters_:
 
 ```{r computeSamplingParameters}
 StoxBioticData <- RstoxFDA::CatchLotteryExample
@@ -479,4 +479,4 @@ PSUparameters <- RstoxFDA::AddPsuStratificationVariables(PSUSamplingParametersDa
                                                           )
 ```
 
-The estimation can then proceed as usual. We have only made to small modifications to the usual workflow. We have removed the function _RstoxFDA::ReadPSUSamplingParameters_, and replaced it with the functions: _RstoxFDA::ComputePSUSamplingParameters_ and _RstoxFDA::AddPsuStratificationVariables_.
+The estimation can then proceed as usual. We have only made two small modifications to the usual workflow. We have removed the function _RstoxFDA::ReadPSUSamplingParameters_, and replaced it with the functions: _RstoxFDA::ComputePSUSamplingParameters_ and _RstoxFDA::AddPsuStratificationVariables_.
