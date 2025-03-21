@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,8 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Stox-Analytical.html">StoX-Analytical-Estimates</a></li>
+    <li><a class="dropdown-item" href="../articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a></li>
     <li><a class="dropdown-item" href="../articles/Stox-FDA-overview.html">StoX Fisheries overview (report)</a></li>
     <li><a class="dropdown-item" href="../articles/stox-reca.html">StoX-Reca (analysis)</a></li>
   </ul></li>
@@ -92,11 +93,13 @@
 </dl><p>The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):</p><dl><dt>Stratum</dt>
 <dd><p>Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.</p></dd>
 
-  <dt>...</dt>
+  <dt>&lt;StratificationVariables&gt;</dt>
 <dd><p>Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.</p></dd>
 
 
-</dl><p>Optional columns may be NA.</p>
+</dl><p>The Stratification Variables assist in matching each strata to census data, such as landings. See for instance <code><a href="AnalyticalRatioEstimate.html">AnalyticalRatioEstimate</a></code>
+ The column 'Stratum' uniquely identifies a row in the table 'StratificationVariables'</p>
+<p>Optional columns may be NA.</p>
 <p>The selection methods available for 'SelectionMethod' are explained here:</p><dl><dt>Poission</dt>
 <dd><p>Poission sampling. Selection is performed randomly without replacement, and each selection is performed individually. Sample size is not fixed, and 'n' represents the expected sample size.</p></dd>
 

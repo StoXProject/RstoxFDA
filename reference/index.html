@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,8 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Stox-Analytical.html">StoX-Analytical-Estimates</a></li>
+    <li><a class="dropdown-item" href="../articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a></li>
     <li><a class="dropdown-item" href="../articles/Stox-FDA-overview.html">StoX Fisheries overview (report)</a></li>
     <li><a class="dropdown-item" href="../articles/stox-reca.html">StoX-Reca (analysis)</a></li>
   </ul></li>
@@ -80,6 +81,12 @@
         <dd>Add Period to StoxLandingData</dd>
       </dl><dl><dt>
 
+          <code><a href="AddPsuStratificationVariables.html">AddPsuStratificationVariables()</a></code>
+
+        </dt>
+        <dd>Add Stratification columns to 'PSUSamplingParametersData'</dd>
+      </dl><dl><dt>
+
           <code><a href="AddStratumStoxBiotic.html">AddStratumStoxBiotic()</a></code>
 
         </dt>
@@ -90,6 +97,24 @@
 
         </dt>
         <dd>Adds Strata to StoxLandingData</dd>
+      </dl><dl><dt>
+
+          <code><a href="AssignPSUSamplingParameters.html">AssignPSUSamplingParameters()</a></code>
+
+        </dt>
+        <dd>Assign PSU Sampling Parameters</dd>
+      </dl><dl><dt>
+
+          <code><a href="ComputeIndividualSamplingParameters.html">ComputeIndividualSamplingParameters()</a></code>
+
+        </dt>
+        <dd>Compute Sampling Parameters for Individuals</dd>
+      </dl><dl><dt>
+
+          <code><a href="ComputePSUSamplingParameters.html">ComputePSUSamplingParameters()</a></code>
+
+        </dt>
+        <dd>Compute PSU Sampling Design Parameters</dd>
       </dl><dl><dt>
 
           <code><a href="ConvertLengthBiotic.html">ConvertLengthBiotic()</a></code>
@@ -240,6 +265,36 @@
 
         </dt>
         <dd>Read landing files</dd>
+      </dl><dl><dt>
+
+          <code><a href="ReadPSUSamplingParameters.html">ReadPSUSamplingParameters()</a></code>
+
+        </dt>
+        <dd>Read PSU Sampling Design Parameters</dd>
+      </dl><dl><dt>
+
+          <code><a href="ReportAnalyticalCatchAtAge.html">ReportAnalyticalCatchAtAge()</a></code>
+
+        </dt>
+        <dd>Report catch at age</dd>
+      </dl><dl><dt>
+
+          <code><a href="ReportAnalyticalCatchAtLength.html">ReportAnalyticalCatchAtLength()</a></code>
+
+        </dt>
+        <dd>Report catch at length</dd>
+      </dl><dl><dt>
+
+          <code><a href="ReportAnalyticalLengthAtAge.html">ReportAnalyticalLengthAtAge()</a></code>
+
+        </dt>
+        <dd>Report mean length at age</dd>
+      </dl><dl><dt>
+
+          <code><a href="ReportAnalyticalWeightAtAge.html">ReportAnalyticalWeightAtAge()</a></code>
+
+        </dt>
+        <dd>Report mean weight at age</dd>
       </dl><dl><dt>
 
           <code><a href="ReportFdaLandings.html">ReportFdaLandings()</a></code>
@@ -1089,6 +1144,30 @@
         <dd>Saithe landings 2021.</dd>
       </dl><dl><dt>
 
+          <code><a href="ReportAnalyticalCatchAtAge.html">ReportAnalyticalCatchAtAge()</a></code>
+
+        </dt>
+        <dd>Report catch at age</dd>
+      </dl><dl><dt>
+
+          <code><a href="ReportAnalyticalCatchAtLength.html">ReportAnalyticalCatchAtLength()</a></code>
+
+        </dt>
+        <dd>Report catch at length</dd>
+      </dl><dl><dt>
+
+          <code><a href="ReportAnalyticalLengthAtAge.html">ReportAnalyticalLengthAtAge()</a></code>
+
+        </dt>
+        <dd>Report mean length at age</dd>
+      </dl><dl><dt>
+
+          <code><a href="ReportAnalyticalWeightAtAge.html">ReportAnalyticalWeightAtAge()</a></code>
+
+        </dt>
+        <dd>Report mean weight at age</dd>
+      </dl><dl><dt>
+
           <code><a href="ReportRecaCatchAtAge.html">ReportRecaCatchAtAge()</a></code>
 
         </dt>
@@ -1320,10 +1399,28 @@
         <dd>Append position to landings data</dd>
       </dl><dl><dt>
 
+          <code><a href="AddLengthGroupStoxBiotic.html">AddLengthGroupStoxBiotic()</a></code>
+
+        </dt>
+        <dd>Add length group to StoxBioticData</dd>
+      </dl><dl><dt>
+
           <code><a href="AddStratumStoxBiotic.html">AddStratumStoxBiotic()</a></code>
 
         </dt>
         <dd>Adds Stratum to StoxBioticData</dd>
+      </dl><dl><dt>
+
+          <code><a href="AggregateAnalyticalEstimate.html">AggregateAnalyticalEstimate()</a></code>
+
+        </dt>
+        <dd>Aggregate Analytical Estimate across strata</dd>
+      </dl><dl><dt>
+
+          <code><a href="AnalyticalPSUEstimate.html">AnalyticalPSUEstimate()</a></code>
+
+        </dt>
+        <dd>Estimate parameters for each Primary Sampling Unit</dd>
       </dl><dl><dt>
 
           <code><a href="AnalyticalPSUEstimateData.html">AnalyticalPSUEstimateData</a></code>
@@ -1332,10 +1429,22 @@
         <dd>Analytical PSU Estimate Data</dd>
       </dl><dl><dt>
 
+          <code><a href="AnalyticalPopulationEstimate.html">AnalyticalPopulationEstimate()</a></code>
+
+        </dt>
+        <dd>Analytical estimate of population parameters</dd>
+      </dl><dl><dt>
+
           <code><a href="AnalyticalPopulationEstimateData.html">AnalyticalPopulationEstimateData</a></code>
 
         </dt>
         <dd>Analytical Population Estimate Data</dd>
+      </dl><dl><dt>
+
+          <code><a href="AnalyticalRatioEstimate.html">AnalyticalRatioEstimate()</a></code>
+
+        </dt>
+        <dd>Ratio estimate to census landings</dd>
       </dl><dl><dt>
 
           <code><a href="CatchLotteryExample.html">CatchLotteryExample</a></code>
@@ -1354,6 +1463,12 @@
 
         </dt>
         <dd>Sampling parameters from the Norwegian catch lottery sampling program.</dd>
+      </dl><dl><dt>
+
+          <code><a href="CollapseStrata.html">CollapseStrata()</a></code>
+
+        </dt>
+        <dd>Collapse strata in sampling design</dd>
       </dl><dl><dt>
 
           <code><a href="ConvertLengthBiotic.html">ConvertLengthBiotic()</a></code>
@@ -1380,6 +1495,12 @@
         <dd>Define CAR neighbours</dd>
       </dl><dl><dt>
 
+          <code><a href="ExtendAnalyticalSamplingFrameCoverage.html">ExtendAnalyticalSamplingFrameCoverage()</a></code>
+
+        </dt>
+        <dd>Extends estimate beyond sampling frame</dd>
+      </dl><dl><dt>
+
           <code><a href="FilterAgeLengthOutliersStoxBiotic.html">FilterAgeLengthOutliersStoxBiotic()</a></code>
 
         </dt>
@@ -1396,6 +1517,18 @@
 
         </dt>
         <dd>Individual Sub-Sampling Design Parameters</dd>
+      </dl><dl><dt>
+
+          <code><a href="InterpolateAnalyticalDomainEstimates.html">InterpolateAnalyticalDomainEstimates()</a></code>
+
+        </dt>
+        <dd>Interpolate means and frequencies for zero-abundance domains</dd>
+      </dl><dl><dt>
+
+          <code><a href="LiftStrata.html">LiftStrata()</a></code>
+
+        </dt>
+        <dd>Unify strata for AnalyticalPSUEstimateData</dd>
       </dl><dl><dt>
 
           <code><a href="LoadFdaStratumPolygon.html">LoadFdaStratumPolygon()</a></code>

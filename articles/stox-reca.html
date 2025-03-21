@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,7 +33,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a></li>
+<li><a class="dropdown-item" href="../articles/Stox-Analytical.html">StoX-Analytical-Estimates</a></li>
+    <li><a class="dropdown-item" href="../articles/StoX-data-preparation.html">StoX FDA data preparation (baseline)</a></li>
     <li><a class="dropdown-item" href="../articles/Stox-FDA-overview.html">StoX Fisheries overview (report)</a></li>
     <li><a class="dropdown-item" href="../articles/stox-reca.html">StoX-Reca (analysis)</a></li>
   </ul>
@@ -122,9 +123,10 @@ configurable in Reca, so that not all the model effects described by
 Rognebakke et al. have to be included, and other effects may be included
 in addition or instead. The effects <em>season</em>, <em>gear</em>,
 <em>region</em>, and <em>boat</em>, as described by Rognebakke et
-al. should be considered examples of fixed effects (<em>season</em> and
-<em>gear</em>), random effects (<em>boat</em>), and a conditional
-autoregressive variable (<em>region</em>).</p>
+al. should be considered examples of fixed or random cell effects
+(<em>season</em> and <em>gear</em>), random effects that are not part of
+the cell definition (<em>boat</em>), and a conditional autoregressive
+variable (<em>region</em>).</p>
 <p>This vignette introduces some concepts in the Reca-package in order
 to guide practitioners in configuring estimation using StoX. For a
 thorough introduction, please consult the references cited above and
@@ -134,18 +136,22 @@ user-interface, it is also possible to use Reca directly in R,
 independent of both the StoX user-interface and the package RstoxFDA.
 For such use of Reca, consult the function documentation in Reca,
 particularly the functions: <em>Reca::eca.estimate</em> and
-<em>Reca::eca.predict</em>.</p>
+<em>Reca::eca.predict</em>. Be advised that checks on data-formatting
+and data-availability are handled by RstoxFDA, and are not availavle in
+the Reca-package. When using Reca directly, you may experience that it
+crashes with segmentation fault, if it is handed non-computable
+configurations.</p>
 <div class="section level3">
 <h3 id="bayesian-estimation">Bayesian estimation<a class="anchor" aria-label="anchor" href="#bayesian-estimation"></a>
 </h3>
 <p>Bayesian inference assigns a probability to all possible values of a
 parameter of interest, such as the total number of fish caught in a
-certain age group, so that a statistical distribution (<em>posterior
+certain age group. so that a statistical distribution (<em>posterior
 distribution</em>) is estimated for each parameter. If it is of interest
 to quantify the parameter as a single number, those can be deduced from
 that distribution. For instance the total number of fish caught in a
 certain age group is typically reported as the mean of the distribution.
-Similarly, an interval can be reported for the estimate which capture a
+Similarly, an interval can be reported for the estimate, which capture a
 range of values which the parameter is likely to be. So when StoX
 reports the total catch at age for age 8, its standard deviation, and an
 interval; that is actually the mean, standard deviation, and interval of
@@ -329,7 +335,7 @@ of the cell definition may be configured as fixed effects, so each cell
 correspond to one unique level of each of the fixed effect
 covariates.</p>
 <p>For random effects, the different levels (e.g. ‘gillnet’, ‘trawl’ and
-‘seine’) are represented as terms drawn from the same distribution, but
+‘seine’) are represented by terms drawn from the same distribution, but
 with variance / precision that is specific to each level. So the
 parameterisation determines the likely mean of this distribution, and
 the values for the specific precisions. This formulation only requires a
@@ -342,7 +348,7 @@ parameterisation of other levels. When the errors are different between
 different levels, and when only few of the levels are sampled, the
 implicit inference to unobserved values is dubious. Random-effect
 modelling for covariates with few possible values are best motivated
-when the sampling is efficient, that is when the values that are
+when the sampling is efficient, that is when the levels that are
 unsampled or poorly sampled, also are the ones corresponding to low
 fishing activity and low landing-volumes. Otherwise random-effect
 modelling is a good way to capture clustering (which may for instance be
@@ -639,6 +645,20 @@ used in Reca may cause sequential iterations to not be entirely
 independent of each other. This shows up in traceplots as
 autocorrelations. A pragmatic way to address this is to use the ‘Thin’
 parameter in <em>RstoxFDA::ParameterizeRecaModels</em>.</p>
+<p>Another way to detect lack of convergence is to run Reca several
+times, and inspect if results vary. StoX allows configuration of several
+instances of <em>RstoxFDA::ParameterizeRecaModels</em>,
+<em>RstoxFDA::RunRecaModels</em>, and report functions like
+<em>RstoxFDA::ReportRecaCatchAtAge</em> or
+<em>RstoxFDA::ReportRecaWeightAtAge</em>. Since the report functions
+allows configuration of units and decimals, and even abundance
+thresholds for excluding low-abundance estimates, it is possible to
+configure reports at exactly the resolution one is interested in. If
+three such reports are generated for independent Reca-simulations, and
+they are all equal, one can be confident that any remaining convergence
+issues are unlikely to affect interpretation of results. This approach
+to convergence analysis is rather laboursome, but it is also very easy
+to interpret.</p>
 </div>
 <div class="section level4">
 <h4 id="parameter-convergence">Parameter convergence<a class="anchor" aria-label="anchor" href="#parameter-convergence"></a>

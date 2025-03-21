@@ -2,7 +2,8 @@ pandoc: 3.1.11
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
+  Stox-Analytical: Stox-Analytical.html
   StoX-data-preparation: StoX-data-preparation.html
   Stox-FDA-overview: Stox-FDA-overview.html
   stox-reca: stox-reca.html
-last_built: 2024-12-29T23:21Z
+last_built: 2025-03-21T14:06Z
