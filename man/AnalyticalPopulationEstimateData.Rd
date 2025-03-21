@@ -6,15 +6,6 @@
 \description{
 Analytical estimates for a population
  
- SampleSummary
- \describe{
-  \item{Stratum}{Stratum that summary is provided for.}
-  \item{PSUDomain}{PSU domain that summary is provided for.}
-  \item{Samples}{The number of PSUs sampled in the domain.}
-  \item{PSUDomainSize}{The estimated number of PSUs in the domain.}
-  \item{PSURelativeDomainSize}{The estimated fraction of PSUs in the domain, relative to the number of PSUs in the stratum.}
- }
- 
  Abundance
  \describe{
    \item{Stratum}{Stratum that abundance is provided for.}
@@ -35,8 +26,8 @@ Analytical estimates for a population
  AbundanceCovariance
  \describe{
    \item{Stratum}{The stratum that covariances are provided for.}
-   \item{Domain1}{A domain that covariances are provided for.}
-   \item{Domain2}{A domain that covariances are provided for.}
+   \item{Domain1}{A domain that covariances are provided for. Unique, given Stratum}
+   \item{Domain2}{A domain that covariances are provided for. Unique, given Stratum and Domain 1.}
    \item{AbundanceCovariance}{The estimated covariance of abundance between Domain1 and Domain2.}
    \item{FrequencyCovariance}{The estimated covariance of frequency between Domain1 and Domain2.}
  }
@@ -44,10 +35,10 @@ Analytical estimates for a population
  VariableCovariance
  \describe{
    \item{Stratum}{The stratum that covariances are provied for.}
-   \item{Domain1}{A domain that covariances are provided for.}
-   \item{Domain2}{A domain that covariances are provided for.}
-   \item{Variable1}{A variable that covariances are provided for.}
-   \item{Variable2}{A variable that covariances are provided for.}
+   \item{Domain1}{A domain that covariances are provided for. Unique, given Stratum}
+   \item{Domain2}{A domain that covariances are provided for. Unique, given Stratum and Domain 1.}
+   \item{Variable1}{A variable that covariances are provided for. Unique, given Stratum and domains.}
+   \item{Variable2}{A variable that covariances are provided for. Unique, given Stratum, domains and Variable1.}
    \item{TotalCovariance}{The estimated covariance of total value of Variable1 in Domain1 and Variable2 in Domain2}
    \item{MeanCovariance}{The estimated covariance of the mean value of Variable1 in Domain1 and Variable2 in Domain2}
  }
@@ -55,13 +46,25 @@ Analytical estimates for a population
  StratificationVariables
  \describe{
   \item{Stratum}{A stratum, as identified in other tables.}
-  \item{StratificationVariables}{Columns that relate the stratum to data records.}
+  \item{<StratificationVariables>}{Columns that relate the stratum to data records.}
  }
+ The columns <StratificationVariables> are optional, but if present; their combination must identify a stratum.
+ The Stratification Variables assist in matching each strata to census data, such as landings. See for instance \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}
+ Unlike \code{\link[RstoxFDA]{PSUSamplingParametersData}}, \code{\link[RstoxFDA]{AnalyticalPSUEstimateData}}, and, \code{\link[RstoxFDA]{IndividualSamplingParametersData}}, a stratum for 'AnalyticalPopulationEstimateData' 
+ can be defined by several rows in the 'StratificationVariables' table.
  
  DomainVariables
  \describe{
   \item{Domain}{A domain, as identified in other tables.}
   \item{DomainVariables}{Columns that relate the domain to data records.}
+ }
+ 
+ SampleCount
+ \describe{
+  \item{Stratum}{A stratum, as identified in other tables.}
+  \item{Domain}{A domain, as identified in other tables.}
+  \item{nPSU}{The number of Primary Sampling Units observed for this domain in this stratum}
+  \item{nIndividuals}{The number of individuals observed for this domain in this stratum}
  }
 }
 \concept{Analytical estimation}

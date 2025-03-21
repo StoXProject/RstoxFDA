@@ -1,5 +1,21 @@
+#' Halts with error if StoxLandingData is empty
+#' @noRd
+checkLandingsNotEmpty <- function(StoxLandingData){
+  if (!RstoxData::is.StoxLandingData(StoxLandingData)){
+    stop("Malformed StoxLandingData")
+  }
+  if (nrow(StoxLandingData$Landing)==0){
+    stop("StoxLandingData is empty.")
+  }
+}
 
-
+#' Halts with error if StoxLandingBioticData is empty at the provided level
+#' @noRd
+checkBioticNotEmpty <- function(StoxBioticData, Level){
+  if (nrow(StoxBioticData[[Level]])==0){
+    stop(paste("The table", Level, "is empty on StoxBioticData"))
+  }
+}
 
 #' Checks symmetry of Car table
 #' @noRd
@@ -799,10 +815,12 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition, ColumnName=c
 #' @concept spatial coding functions
 #' @concept StoX-Reca functions
 #' @concept StoX-functions
+#' @import RstoxBase
 #' @export
 #' @md
 AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=character()){
   checkMandatory(StoxLandingData, "StoxLandingData")
+  checkLandingsNotEmpty(StoxLandingData)
   checkMandatory(StratumPolygon, "StratumPolygon")
   
   ColumnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA::stoxFunctionAttributes$AddStratumStoxLanding$functionParameterDefaults$ColumnName)
@@ -845,12 +863,14 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=ch
 #'  and \code{\link[RstoxFDA]{ReportFdaSampling}} for use of 'Stratum' as an aggregation variable when comparing sampling with landed volume.
 #' @concept spatial coding functions
 #' @concept StoX-functions
+#' @import RstoxBase
 #' @export
 #' @md
 AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, ColumnName=character()){
   
   checkMandatory(StoxBioticData)
   stopifnot("Station" %in% names(StoxBioticData))
+  checkBioticNotEmpty(StoxBioticData, "Station")
   checkMandatory(StratumPolygon)
   
   columnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA:::stoxFunctionAttributes$AddStratumStoxBiotic$functionParameterDefaults$ColumnName)
@@ -920,12 +940,14 @@ appendGear <- function(table, gearcolumn, gearDefinition, colName){
 #' @concept gear coding functions
 #' @concept StoX-functions
 #' @importFrom data.table .SD
+#' @import methods
 #' @export
 #' @md
 AddGearGroupStoxLanding <- function(StoxLandingData, Translation){
   
   checkMandatory(StoxLandingData, "StoxLandingData")
   checkMandatory(Translation, "Translation")
+  checkLandingsNotEmpty(StoxLandingData)
   
   if (!is.Translation(Translation)){
     stop("Translation is not a valid Translation table.")
@@ -1327,6 +1349,7 @@ DefinePeriod <- function(processData, TemporalCategory=c("Quarter", "Month", "Cu
 #' @seealso \code{\link[RstoxFDA]{SetAreaPositionsBiotic}} and \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to data.
 #' @concept spatial coding functions
 #' @concept StoX-functions
+#' @import RstoxBase
 #' @export
 #' @md
 DefineAreaPosition <- function(processData, DefinitionMethod=c("ResourceFile", "StratumPolygon"), FileName=character(), StratumPolygon, UseProcessData=F){
@@ -1444,6 +1467,7 @@ calculateCarNeighbours <- function(StratumPolygon, tolerance=1){
 #' @seealso \code{\link[RstoxFDA]{PrepareRecaEstimate}} for use of the definition in Reca-estimates, and \code{\link[RstoxBase]{DefineStratumPolygon}} for how to define a spatial variable from a strata-definition.
 #' @concept spatial coding functions
 #' @concept StoX-functions
+#' @import RstoxBase
 #' @export
 #' @md
 DefineCarNeighbours <- function(processData,
@@ -2003,6 +2027,7 @@ FilterWeightLengthOutliersStoxBiotic <- function(StoxBioticData,
 #' @return \code{\link[RstoxBase]{StratumPolygon}} with the desired strata definition.
 #' @concept spatial coding functions
 #' @concept StoX-functions
+#' @import RstoxBase
 #' @export
 #' @md
 LoadFdaStratumPolygon <- function(processData, StrataSystem=c("FDIR.2017", "FDIR.2018", "ICES.2018", "ICES.SubArea.2018", "ICES.Division.2018", "ICES.SubDivision.2018", "ICES.Unit.2018", "ICES.Rectangles.2018", "NAFO", "NAFO.FDIR.2017", "NAFO.FDIR.2018"), UseProcessData=F){

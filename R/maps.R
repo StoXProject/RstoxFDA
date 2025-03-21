@@ -44,6 +44,7 @@
 #'           +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m +no_defs")
 #' @concept spatial coding functions
 #' @importFrom ggplot2 .data
+#' @import rnaturalearthdata
 #' @export
 plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef=NULL, areaNameCol="StratumName", areaLabels=is.null(data), xlim=NULL, ylim=NULL, areaLabelSize=2, pointColor="darkred", pointShape=23, pointSize=1, title="", projection=NULL, polygonColor="blue"){
 
@@ -169,6 +170,7 @@ plotArea <- function(data=NULL, latCol=NULL, lonCol=NULL, groupCol=NULL, areaDef
 #'                     areaLabels2 = TRUE, 
 #'                     title="Comparing Fdir main area definitions, before and as of 2018")
 #' @concept spatial coding functions
+#' @import rnaturalearthdata
 #' @export
 plotAreaComparison <- function(areaDef1, areaDef2, areaNameCol1="StratumName", areaNameCol2=areaNameCol1, areaLabels1=F, areaLabels2=F, xlim=NULL, ylim=NULL, areaLabelSize=2, title="", projection=NULL, polygonColor1="blue", polygonColor2="red", linetype1="solid", linetype2="dotdash"){
   if (is.null(projection)) {
@@ -252,6 +254,7 @@ plotAreaComparison <- function(areaDef1, areaDef2, areaNameCol1="StratumName", a
 #'        areaDef = ICESareas, areaNameCol = "Area_Full",
 #'        bubbleSize = 20, title="Landings on ICES areas")
 #' @concept landings functions
+#' @import rnaturalearthdata
 #' @export
 plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="StratumName", legendTitle=quantityCol, areaLabels=T, xlim=NULL, ylim=NULL, areaLabelSize=2, bubbleColor="darkred", bubbleSize=10, bubbleShape=21, title="", projection=NULL){
   requireNamespace("rnaturalearth")
@@ -343,6 +346,7 @@ plotBubbleMap <- function(data, areaCol, quantityCol, areaDef, areaNameCol="Stra
 #' @param output filename to save output to
 #' @param namecol name of column in 'shape' that are to be used as strata names. Defaults to 'StratumName' pr the definition of \code{\link[RstoxBase]{StratumPolygon}}
 #' @concept spatial coding functions
+#' @import RstoxBase
 #' @export
 writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
   
@@ -390,6 +394,7 @@ writeSpDataFrameAsWKT <- function(shape, output, namecol="StratumName"){
 #'   #compare original area definition with merged
 #'   RstoxFDA::plotAreaComparison(RstoxFDA::ICESareas, merged, ylim=c(30,80), areaLabels2 = TRUE)
 #' @concept spatial coding functions
+#' @import RstoxBase
 #' @export
 mergePolygons <- function(shape, mergeCol, tolerance=0, snapProjection = "EPSG:3857"){
   shape <- sf::st_as_sf(shape)

@@ -7,7 +7,7 @@ Fisheries Dependent Analysis with Rstox. Documentation can be found at: https://
 
 1. Install the latest release:
     ```r
-    install.packages("RstoxFDA", repos = c("https://stoxproject.github.io/repo", "https://cloud.r-project.org"))
+    install.packages("RstoxFDA", repos = c("https://stoxproject.github.io/repo", getOption("repos")))
     ```
 
 2. Install the latest version from GitHub:
@@ -49,7 +49,7 @@ Special considerations may have to be made for managed systems, as Reca needs to
 * uninstall Reca with _remove.packages()_
 * close R
 * open R as administrator
-* install Reca, e.g.: _install.packages("Reca", repos=c("https://stoxproject.github.io/repo/"))_
+* install Reca, e.g.: _install.packages("Reca", repos=c("https://stoxproject.github.io/repo/",getOption("repos")))_
 * close R.
 
 
@@ -59,7 +59,13 @@ We are still in the process of developing a policy for exactly which versions of
 Currently the latest release/pre-release of RstoxFDA is being tested for the following R versions:
 
 * R 4.3 (mac, linux, windows)
+* R 4.4 (mac, linux, windows)
 
 and is tested with Reca for the following R versions:
 
+<<<<<<< HEAD
 * R 4.3 (linux, windows)
+* R 4.4 (linux, windows)
+=======
+* R 4.3 (linux, windows)
+>>>>>>> master

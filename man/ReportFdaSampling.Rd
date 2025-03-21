@@ -62,5 +62,8 @@ The units considered valid for weights are those listed for quantity 'mass' in \
       RstoxFDA::StoxLandingDataExample, GroupingVariables = c("GearGroup"), Unit = "ton")
   samplingreport$FisheriesSampling
 }
+\seealso{
+\code{\link[RstoxFDA]{PlotSamplingOverviewCell}}, \code{\link[RstoxFDA]{PlotSamplingCoverage}}, \code{\link[RstoxFDA]{PlotSamplingVariables}}
+}
 \concept{StoX-functions}
 \concept{landings functions}

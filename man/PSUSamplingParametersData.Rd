@@ -34,9 +34,10 @@ Encodes information about the selection of Primary Sampling Units in multi-stage
  The StratificationVariables table encodes information about which columns in the sampleTable are stratification variables (if any):
  \describe{
   \item{Stratum}{Mandatory, chr: Identifies the stratum. In addition the Stratum is identified by the combination of all other columns on this table.}
-  \item{...}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
+  \item{<StratificationVariables>}{Mandatory if present (may not contain NAs), chr: Additional columns in the sampleTable that are stratification variables.}
  }
- 
+ The Stratification Variables assist in matching each strata to census data, such as landings. See for instance \code{\link[RstoxFDA]{AnalyticalRatioEstimate}}
+ The column 'Stratum' uniquely identifies a row in the table 'StratificationVariables'
 
 Optional columns may be NA.
 
