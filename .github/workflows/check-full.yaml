@@ -23,21 +23,21 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        # for windows and mac all builds are pushed to drat repo on merge to master (except pre-release builds), except 'next'
-        
-        #  - {os: macOS-latest,   r: 'next', pkgext: '.tgz'} # will be tested without suggests
-          - {os: macOS-latest,   r: '4.3', pkgext: '.tgz'} # will be tested without suggests
-          - {os: macOS-latest,   r: '4.4', pkgext: '.tgz'} # will be tested without suggests
+        # Latest macOS will use the big-sur-arm64 folder when deploying to the drat repo:
+          - {os: macOS-latest,   r: 'release', pkgext: '.tgz'}
+          - {os: macOS-latest,   r: 'oldrel',  pkgext: '.tgz'}
           
-        #  - {os: windows-latest, r: 'next', pkgext: '.zip'} 
-          - {os: windows-latest, r: '4.3', pkgext: '.zip'}
-          - {os: windows-latest, r: '4.4', pkgext: '.zip'}
+          # macOS-13 will use the big-sur-x86_64 folder when deploying to the drat repo:
+          - {os: macOS-13,   r: 'release', pkgext: '.tgz'}
+          - {os: macOS-13,   r: 'oldrel',  pkgext: '.tgz'}
           
-
-        #  - {os: ubuntu-latest,  r: 'next', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
-          - {os: ubuntu-22.04,   r: '4.3',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
-          # 4.3 is pushed to drat repo on merge to master for ubunutu (except pre-release builds), update script if 4.3 is taken out
-          - {os: ubuntu-22.04,   r: '4.4',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          - {os: windows-latest, r: 'release', pkgext: '.zip'}
+          - {os: windows-latest, r: 'oldrel',  pkgext: '.zip'}
+          
+          # ubuntu-latest is 24 as of 2024-10-31. Should we use it?
+          - {os: ubuntu-22.04,  r: 'release', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          - {os: ubuntu-22.04,   r: 'oldrel',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          - {os: ubuntu-22.04,   r: 'oldrel-1',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
