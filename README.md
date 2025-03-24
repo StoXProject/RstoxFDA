@@ -58,14 +58,5 @@ We are still in the process of developing a policy for exactly which versions of
 
 Currently the latest release/pre-release of RstoxFDA is being tested for the following R versions:
 
-* R 4.3 (mac, linux, windows)
-* R 4.4 (mac, linux, windows)
-
-and is tested with Reca for the following R versions:
-
-<<<<<<< HEAD
 * R 4.3 (linux, windows)
 * R 4.4 (linux, windows)
-=======
-* R 4.3 (linux, windows)
->>>>>>> master
