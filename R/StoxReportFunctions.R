@@ -38,8 +38,8 @@ check_intervalWidth <- function(intervalwidth){
 #'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 #'  and approriate columns added for identifying corresponding samples
 #' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. If not provided, a single row for all landings will be produced.
-#' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportFdaSampling$functionParameterDefaults$Decimals`.
-#' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportFdaSampling$functionParameterDefaults$Unit`
+#' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportFdaSampling$functionParameterDefaults$Decimals`.
+#' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportFdaSampling$functionParameterDefaults$Unit`
 #' @param SamplingVariables Columns of 'StoxBioticData' identifying sampling variables to be use to partition the report. See details.
 #' @return \code{\link[RstoxFDA]{ReportFdaSamplingData}}
 #' @concept landings functions
@@ -186,8 +186,8 @@ ReportFdaSampling <- function(StoxBioticData, StoxLandingData, GroupingVariables
 #'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 #'  and approriate columns added for identifying corresponding samples
 #' @param GroupingVariables Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. If not provided, a single row for all landings will be produced.
-#' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportFdaLandings$functionParameterDefaults$Decimals`.
-#' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportFdaLandings$functionParameterDefaults$Unit`. 
+#' @param Decimals integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportFdaLandings$functionParameterDefaults$Decimals`.
+#' @param Unit unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportFdaLandings$functionParameterDefaults$Unit`. 
 #' @return \code{\link[RstoxFDA]{ReportFdaLandingData}}
 #' @concept landings functions
 #' @concept StoX-functions
@@ -440,8 +440,8 @@ setLengthGroup <- function(LengthReport, interval){
 #'  The units considered valid for catch at age in numbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
-#' @param IntervalWidth The width of the reported credible interval. A value of 0.9 gives 90 per cent credible intervals. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchAtAge$functionParameterDefaults$IntervalWidth`
-#' @param Decimals integer specifying the number of decimals to report for 'CatchAtAge', 'SD', 'Low' and 'High'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchAtAge$functionParameterDefaults$Decimals`.
+#' @param IntervalWidth The width of the reported credible interval. A value of 0.9 gives 90 per cent credible intervals. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtAge$functionParameterDefaults$IntervalWidth`
+#' @param Decimals integer specifying the number of decimals to report for 'CatchAtAge', 'SD', 'Low' and 'High'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtAge$functionParameterDefaults$Decimals`.
 #' @param Unit unit for 'CatchAtAge', 'SD', 'Low' and 'High'
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length composition.
@@ -518,7 +518,7 @@ ReportRecaCatchAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalWi
 #'  The units considered valid for catch at age in numbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
 #' @param PlusGroup If given, ages 'PlusGroup' or older are included in a plus group.
-#' @param Decimals integer specifying the number of decimals to report for 'Covariance'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchAtAgeCovariance$functionParameterDefaults$Decimals`.
+#' @param Decimals integer specifying the number of decimals to report for 'Covariance'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtAgeCovariance$functionParameterDefaults$Decimals`.
 #' @param Unit unit for 'CatchAtAge'. Covariance will be provided as the square of this unit.
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtAgeCovarianceData}}
 #' @seealso \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis and \code{\link[RstoxFDA]{ReportRecaCatchAtLength}} for reporting length composition.
@@ -599,8 +599,8 @@ ReportRecaCatchAtAgeCovariance <- function(RecaCatchAtAge, PlusGroup=integer(), 
 #'  
 #'  The units considered valid for catch at length in numbers are those listed for quantity 'cardinaltiy' in \code{\link[RstoxData]{StoxUnits}}
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
-#' @param IntervalWidth The width of the reported credible interval. A value of 0.9 gives 90 per cent credible intervals. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchAtLength$functionParameterDefaults$IntervalWidth`.
-#' @param Decimals integer specifying the number of decimals to report for 'CatchAtLength', 'SD', 'Low' and 'High'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchAtLength$functionParameterDefaults$Decimals`.
+#' @param IntervalWidth The width of the reported credible interval. A value of 0.9 gives 90 per cent credible intervals. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtLength$functionParameterDefaults$IntervalWidth`.
+#' @param Decimals integer specifying the number of decimals to report for 'CatchAtLength', 'SD', 'Low' and 'High'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtLength$functionParameterDefaults$Decimals`.
 #' @param Unit unit for 'CatchAtLength', 'SD', 'Low' and 'High'
 #' @param LengthInterval width of length bins in cm. If not provided, the interval in 'RecaCatchAtAge' will be used.
 #' @return \code{\link[RstoxFDA]{ReportFdaCatchAtLengthData}}
@@ -987,18 +987,18 @@ ReportRecaLengthAtAge <- function(RecaCatchAtAge, PlusGroup=integer(), IntervalW
 #'  Rounding of numbers according to the argument 'Decimals' is done with \code{\link[base]{round}},
 #'  so that negative numbers specify rounding to powers of ten, and rounding of the digit 5 is towards the even digit.
 #' @param RecaCatchAtAge Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).
-#' @param IntervalWidth The width of the reported credible interval. A value to 0.9 gives 90 per cent credible intervals. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$IntervalWidth`.
+#' @param IntervalWidth The width of the reported credible interval. A value to 0.9 gives 90 per cent credible intervals. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$IntervalWidth`.
 #' @param UseDefaultDecimalOptions logical determining whether to use default decimal options.
-#' @param DecimalTotalNumber integer specifying the number of decimals to report for 'TotalNumber', and the corresponding 'SD', 'Low' and 'High'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalTotalNumber`.
-#' @param DecimalTotalWeight integer specifying the number of decimals to report for 'TotalWeightDefaults', and the corresponding 'SD', 'Low' and 'High'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalTotalWeight`.
-#' @param DecimalMeanAge integer specifying the number of decimals to report for 'MeanIndividualAge', and the corresponding 'SD', 'Low' and 'High'. `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalMeanAge`.
-#' @param DecimalMeanWeight integer specifying the number of decimals to report for 'MeanIndividualWeight', and the corresponding 'SD', 'Low' and 'High'. `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalMeanWeight`.
-#' @param DecimalMeanLength integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'.`r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalMeanLength`.
+#' @param DecimalTotalNumber integer specifying the number of decimals to report for 'TotalNumber', and the corresponding 'SD', 'Low' and 'High'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalTotalNumber`.
+#' @param DecimalTotalWeight integer specifying the number of decimals to report for 'TotalWeightDefaults', and the corresponding 'SD', 'Low' and 'High'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalTotalWeight`.
+#' @param DecimalMeanAge integer specifying the number of decimals to report for 'MeanIndividualAge', and the corresponding 'SD', 'Low' and 'High'. `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalMeanAge`.
+#' @param DecimalMeanWeight integer specifying the number of decimals to report for 'MeanIndividualWeight', and the corresponding 'SD', 'Low' and 'High'. `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalMeanWeight`.
+#' @param DecimalMeanLength integer specifying the number of decimals to report for 'MeanIndividualLength', and the corresponding 'SD', 'Low' and 'High'.`r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$DecimalMeanLength`.
 #' @param UseDefaultUnitOptions logical determining whether to use default unit options.
-#' @param UnitTotalNumber unit for total catch in numbers. `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$UnitTotalNumber`.
-#' @param UnitTotalWeight unit for weight of total catch. `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$UnitTotalWeight`.
-#' @param UnitMeanWeight unit for mean weight. `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$UnitMeanWeight`.
-#' @param UnitMeanLength unit for mean length. `r RstoxFDA:::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$UnitMeanLength`.
+#' @param UnitTotalNumber unit for total catch in numbers. `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$UnitTotalNumber`.
+#' @param UnitTotalWeight unit for weight of total catch. `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$UnitTotalWeight`.
+#' @param UnitMeanWeight unit for mean weight. `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$UnitMeanWeight`.
+#' @param UnitMeanLength unit for mean length. `r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchStatistics$functionParameterDefaults$UnitMeanLength`.
 #' @return \code{\link[RstoxFDA]{ReportFdaSummaryData}}
 #' @seealso 
 #'  \code{\link[RstoxFDA]{RunRecaModels}} for running Reca-analysis
@@ -1173,8 +1173,8 @@ ReportRecaCatchStatistics <- function(RecaCatchAtAge, IntervalWidth=numeric(),
 #' @param StoxLandingData
 #'  \code{\link[RstoxData]{StoxLandingData}} data with landings from fisheries
 #' @param GroupingVariables Columns of 'StoxLandingData' that partitions the landings into groups SOP tests should be reported for.
-#' @param DecimalWeight integer specifying the number of decimals to report for weights: 'TotalWeightEstimated', 'LandedWeight', and 'Difference'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportFdaSOP$functionParameterDefaults$DecimalWeight`.
-#' @param DecimalFraction integer specifying the number of decimals to report for 'RelativeDifference'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportFdaSOP$functionParameterDefaults$DecimalFraction`.
+#' @param DecimalWeight integer specifying the number of decimals to report for weights: 'TotalWeightEstimated', 'LandedWeight', and 'Difference'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportFdaSOP$functionParameterDefaults$DecimalWeight`.
+#' @param DecimalFraction integer specifying the number of decimals to report for 'RelativeDifference'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportFdaSOP$functionParameterDefaults$DecimalFraction`.
 #' @param UnitFraction unit for the RelativeDifference. E.g. '0.' for decimal notation or '\%' for percent.
 #' @return \code{\link[RstoxFDA]{ReportFdaSopData}}
 #' @seealso 
@@ -1506,8 +1506,8 @@ crossChainConvergence <- function(modelSummary, iterations, tolerance){
 #'  In the report InterVariance correspond to their B/n and
 #'  IntraVariance correspond to their W.
 #' @param ParameterizationSummaryData summary statistics for Reca parameters
-#' @param Tolerance threshold for reporting parameters. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportParameterConvergence$functionParameterDefaults$Tolerance`. See details
-#' @param Decimals integer specifying the number of decimals to report for 'GelmanRubinR'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportParameterConvergence$functionParameterDefaults$Decimals`.
+#' @param Tolerance threshold for reporting parameters. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportParameterConvergence$functionParameterDefaults$Tolerance`. See details
+#' @param Decimals integer specifying the number of decimals to report for 'GelmanRubinR'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportParameterConvergence$functionParameterDefaults$Decimals`.
 #' @return \code{\link[RstoxFDA]{ParameterConvergenceData}}
 #' @export
 #' @concept StoX-functions

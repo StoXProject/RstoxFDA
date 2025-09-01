@@ -23,13 +23,13 @@ ParameterizeRecaModels(
 
 \item{Burnin}{number of MCMC samples run and discarded by \code{\link[Reca]{eca.estimate}} before any samples are saved. See documentation for \code{\link[Reca]{eca.estimate}}.}
 
-\item{Thin}{controls how many iterations are run between each samples saved. Defaults to 0. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}}
+\item{Thin}{controls how many iterations are run between each samples saved. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Thin}. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}}
 
 \item{ResultDirectory}{a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. See details.}
 
-\item{Lgamodel}{The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}. Defaults to log-linear}
+\item{Lgamodel}{The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Lgamodel}}
 
-\item{Delta.age}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to 0.001.}
+\item{Delta.age}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Delta.age}.}
 
 \item{Seed}{see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.}
 

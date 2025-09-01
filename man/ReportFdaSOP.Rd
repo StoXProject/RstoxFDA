@@ -23,9 +23,9 @@ ReportFdaSOP(
 
 \item{GroupingVariables}{Columns of 'StoxLandingData' that partitions the landings into groups SOP tests should be reported for.}
 
-\item{DecimalWeight}{integer specifying the number of decimals to report for weights: 'TotalWeightEstimated', 'LandedWeight', and 'Difference'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportFdaSOP$functionParameterDefaults$DecimalWeight`.}
+\item{DecimalWeight}{integer specifying the number of decimals to report for weights: 'TotalWeightEstimated', 'LandedWeight', and 'Difference'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportFdaSOP$functionParameterDefaults$DecimalWeight`.}
 
-\item{DecimalFraction}{integer specifying the number of decimals to report for 'RelativeDifference'. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ReportFdaSOP$functionParameterDefaults$DecimalFraction`.}
+\item{DecimalFraction}{integer specifying the number of decimals to report for 'RelativeDifference'. Defaults to `r RstoxFDA::stoxFunctionAttributes$ReportFdaSOP$functionParameterDefaults$DecimalFraction`.}
 
 \item{UnitFraction}{unit for the RelativeDifference. E.g. '0.' for decimal notation or '\%' for percent.}
 }
