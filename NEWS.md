@@ -1,3 +1,8 @@
+# RstoxFDA v1.7.0-9001
+* Temporary removing Reca as suggests due to failure to compile on macOS and Windows.
+* Pre-generated help HTLM pages using the latest RstoxBuild.
+
+
 # RstoxFDA v1.6
 * Fixed issue with plotting with other column variables than 'Area' in PlotFisheriesOverviewSpatial (#147)
 * Fixed ordering of age groups in ReportAnalyticalCatchAtAge (#134)

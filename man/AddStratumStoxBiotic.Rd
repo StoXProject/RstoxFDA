@@ -11,7 +11,7 @@ AddStratumStoxBiotic(StoxBioticData, StratumPolygon, ColumnName = character())
 
 \item{StratumPolygon}{Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}}
 
-\item{ColumnName}{specifies which column the area should be added to. Defaults to Stratum.}
+\item{ColumnName}{specifies which column the area should be added to. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$AddStratumStoxBiotic$functionParameterDefaults$ColumnName}.}
 }
 \value{
 StoxBioticData with column appended to data.table 'Station'. See \code{\link[RstoxData]{StoxBioticData}}.

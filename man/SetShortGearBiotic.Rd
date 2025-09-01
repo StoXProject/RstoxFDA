@@ -26,7 +26,7 @@ Set the column 'gear' on the table 'fishstation' in \code{\link[RstoxData]{Bioti
  For bioticdata that does not conform to this, no modifications are done.
 }
 \seealso{
-\code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
+\code{\link[RstoxData]{StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
 }
 \concept{StoX-functions}
 \concept{gear coding functions}

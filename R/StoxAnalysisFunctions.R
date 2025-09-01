@@ -214,7 +214,7 @@ warnMissingLandings <- function(StoxBiotic, StoxLanding, effects){
 #'  \code{\link[RstoxFDA]{CarNeighbours}}, mandatory if 'carEffect' is given.
 #'  Identifies which values of the carEffect are to be considered as neighbours.
 #' @param CellEffect
-#'  Configures the cell effect. Defaults to `r RstoxFDA:::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$CellEffect`. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
+#'  Configures the cell effect. Defaults to `r RstoxFDA::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$CellEffect`. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
 #'  Any CAR-effect is always included in the cell effect. 
 #' @param UseAgingError 
 #'  If TRUE, aging, error parameters will be incorporated in the models.
@@ -240,7 +240,7 @@ warnMissingLandings <- function(StoxBiotic, StoxLanding, effects){
 #'  optional, resolution for length measurements in cm.
 #'  If not provided modal value from data is used.
 #' @param HatchDay
-#'  defaults to Defaults to `r RstoxFDA:::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$HatchDay`.
+#'  defaults to Defaults to `r RstoxFDA::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$HatchDay`.
 #'  encoding the day of the year when fish is consider to transition from one age to the next. 1 represents Jan 1st.
 #' @return \code{\link[RstoxFDA]{RecaData}} Data prepared for running Reca.
 #' @seealso 
@@ -564,10 +564,10 @@ RunRecaEstimate <- function(RecaData, Nsamples=integer(), Burnin=integer(), Thin
 #' @param RecaData \code{\link[RstoxFDA]{RecaData}} as returned from \code{\link[RstoxFDA]{PrepareRecaEstimate}}
 #' @param Nsamples number of MCMC samples that will be made available for \code{\link[Reca]{eca.predict}}. See documentation for \code{\link[Reca]{eca.estimate}},
 #' @param Burnin number of MCMC samples run and discarded by \code{\link[Reca]{eca.estimate}} before any samples are saved. See documentation for \code{\link[Reca]{eca.estimate}}.
-#' @param Lgamodel The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Lgamodel`
+#' @param Lgamodel The length age relationship to use for length-age fits (options: "log-linear", "non-linear": Schnute-Richards model). See documentation for \code{\link[Reca]{eca.estimate}}. Defaults to `r RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Lgamodel`
 #' @param ResultDirectory a directory where Reca may store temp-files \code{\link[Reca]{eca.estimate}} and \code{\link[Reca]{eca.predict}}. See details.
-#' @param Thin controls how many iterations are run between each samples saved. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Thin`. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
-#' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to `r RstoxFDA:::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Delta.age`.
+#' @param Thin controls how many iterations are run between each samples saved. Defaults to `r RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Thin`. This may be set to account for autocorrelation introduced by Metropolis-Hastings simulation. see documentation for \code{\link[Reca]{eca.estimate}}
+#' @param Delta.age see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to `r RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Delta.age`.
 #' @param Seed see documentation for \code{\link[Reca]{eca.estimate}}. Defaults to random seed.
 #' @param UseCachedData if TRUE Parameterization is not run, but any previous runs for exactly the same arguments are returned.
 #' @return \code{\link[RstoxFDA]{RecaParameterData}} results from Reca Model Parameterization.
@@ -738,10 +738,10 @@ getLandingsFromStoxLandings <- function(RecaParameterData, StoxLandingData, Temp
 #' @param StoxLandingData Landings data (\code{\link[RstoxData]{StoxLandingData}}).
 #' @param GroupingVariables character vector identifying columns in 'StoxLandingData' that results should be provided for.
 #' @param TemporalResolution
-#'  Code for temporal resolution in landings: "Month" or "Quarter". Defaults to `r RstoxFDA:::stoxFunctionAttributes$RunRecaModels$functionParameterDefaults$TemporalResolution`.
+#'  Code for temporal resolution in landings: "Month" or "Quarter". Defaults to `r RstoxFDA::stoxFunctionAttributes$RunRecaModels$functionParameterDefaults$TemporalResolution`.
 #'  Regulates temporal resolution for calculating fractional ages of fish.
 #'  Not to be confused with any temporal covariate.
-#' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to `r RstoxFDA:::stoxFunctionAttributes$RunRecaModels$functionParameterDefaults$Caa.burnin`.
+#' @param Caa.burnin see documentation for \code{\link[Reca]{eca.predict}}. Defaults to `r RstoxFDA::stoxFunctionAttributes$RunRecaModels$functionParameterDefaults$Caa.burnin`.
 #' @param CollapseLength indicates whether length groups should be collapsed in result. Defaults to TRUE. See details.
 #' @return \code{\link[RstoxFDA]{RecaCatchAtAge}}
 #' @seealso \code{\link[RstoxFDA]{ParameterizeRecaModels}} for model parameterisation,

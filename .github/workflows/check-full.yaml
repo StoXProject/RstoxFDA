@@ -139,7 +139,7 @@ jobs:
           rm -f '/usr/local/bin/python3.11'
           rm -f '/usr/local/bin/python3-config'
           rm -f '/usr/local/bin/python3.11-config'
-          export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=false # This prevents Homebrew from re-installing R, which will lead to .Platform$pkgType = "source".
+          export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK= # This (the value should actually be empty...) prevents Homebrew from re-installing R, which will lead to .Platform$pkgType = "source".
           brew install gdal
         shell: bash
 
@@ -255,7 +255,7 @@ jobs:
       #### 5. Deploy to the drat repos: ####
       ######################################
       
-      ## 5a. Upload to the official (DRAT) repo, but only from the master branch:
+      ## 5a. Upload to the official (DRAT) repo, but only from the master branch, and only for pre-releases, which are those ending with -900x as identified in the script checktag-actions.sh and routed through this yaml to the script deploy-actions.sh (in the folder https://github.com/StoXProject/unstableRepo/blob/main/scripts/):
       - name: Upload to the official (DRAT) repo
         if: ( (runner.os == 'Windows') || (runner.os == 'macOS') || (runner.os == 'Linux' && matrix.config.r == 'release') ) && github.event_name == 'push' && github.ref_name == 'master'
         env:
@@ -265,7 +265,7 @@ jobs:
         shell: bash
 
 
-      ## 5b. Upload to the (DRAT) testingRepo, but only from the testing branch:
+      ## 5b. Upload to the (DRAT) testingRepo, but only from the testing branch, and only for pre-releases, which are those ending with -900x as identified in the script checktag-actions.sh and routed through this yaml to the script deploy-actions.sh (in the folder https://github.com/StoXProject/unstableRepo/blob/main/scripts/):
       - name: Upload to the testing (DRAT) repo
         if: ( (runner.os == 'Windows') || (runner.os == 'macOS') || (runner.os == 'Linux' && matrix.config.r == 'release') ) && github.event_name == 'push' && github.ref_name == 'testing'
         env:
@@ -275,7 +275,7 @@ jobs:
         shell: bash
 
 
-      ## 5c. Upload to the (DRAT) unstableRepo, but only from the develop branch:
+      ## 5c. Upload to the (DRAT) unstableRepo, but only from the develop branch, and only for pre-releases, which are those ending with -900x as identified in the script checktag-actions.sh and routed through this yaml to the script deploy-actions.sh (in the folder https://github.com/StoXProject/unstableRepo/blob/main/scripts/):
       - name: Upload to the unstable (DRAT) repo
         if: ( (runner.os == 'Windows') || (runner.os == 'macOS') || (runner.os == 'Linux' && matrix.config.r == 'release') ) && github.event_name == 'push' && github.ref_name == 'develop'
         env:

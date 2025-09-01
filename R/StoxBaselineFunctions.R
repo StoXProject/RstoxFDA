@@ -715,7 +715,7 @@ appendTemporal <- function(table, temporalColumn, temporalDefinition, datecolumn
 #'  two choices are offered for the name of the added column (see argument 'ColumnName').
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated.
 #' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.
-#' @param ColumnName Name of the added column. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddPeriodStoxLanding$functionParameterDefaults$ColumnName`.
+#' @param ColumnName Name of the added column. Defaults to `r RstoxFDA::stoxFunctionAttributes$AddPeriodStoxLanding$functionParameterDefaults$ColumnName`.
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @seealso 
 #'  \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
@@ -756,7 +756,7 @@ AddPeriodStoxLanding <- function(StoxLandingData, TemporalDefinition, ColumnName
 #'  \code{\link[RstoxFDA]{DefinePeriod}}
 #' @param StoxBioticData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated with period.
 #' @param TemporalDefinition \code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.
-#' @param ColumnName specifies which column the area should be added to. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddPeriodStoxBiotic$functionParameterDefaults$ColumnName`.
+#' @param ColumnName specifies which column the area should be added to. Defaults to `r RstoxFDA::stoxFunctionAttributes$AddPeriodStoxBiotic$functionParameterDefaults$ColumnName`.
 #' @return StoxBioticData with column appended. See \code{\link[RstoxData]{StoxBioticData}}.
 #'  \code{\link[RstoxFDA]{DefinePeriod}} for configuring the temporal definition,
 #'  \code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data, 
@@ -804,7 +804,7 @@ AddPeriodStoxBiotic <- function(StoxBioticData, TemporalDefinition, ColumnName=c
 #'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} may be used to append positions, based on area codes.
 #' @param StoxLandingData \code{\link[RstoxData]{StoxLandingData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
-#' @param ColumnName specifies which column the area should be added to. See details. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddStratumStoxLanding$functionParameterDefaults$ColumnName`.
+#' @param ColumnName specifies which column the area should be added to. See details. Defaults to `r RstoxFDA::stoxFunctionAttributes$AddStratumStoxLanding$functionParameterDefaults$ColumnName`.
 #' @return StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.
 #' @seealso \code{\link[RstoxBase]{DefineStratumPolygon}} for configuring stratum definitions.
 #'  \code{\link[RstoxFDA]{AddAreaPositionStoxLanding}} for adding positions to landings,
@@ -854,7 +854,7 @@ AddStratumStoxLanding <- function(StoxLandingData, StratumPolygon, ColumnName=ch
 #'  The strata are added to the new column 'Stratum'.
 #' @param StoxBioticData \code{\link[RstoxData]{StoxBioticData}} data which will be annotated. Needs postions appended. See details.
 #' @param StratumPolygon Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}
-#' @param ColumnName specifies which column the area should be added to. Defaults to `r RstoxFDA:::stoxFunctionAttributes$AddStratumStoxBiotic$functionParameterDefaults$ColumnName`.
+#' @param ColumnName specifies which column the area should be added to. Defaults to `r RstoxFDA::stoxFunctionAttributes$AddStratumStoxBiotic$functionParameterDefaults$ColumnName`.
 #' @return StoxBioticData with column appended to data.table 'Station'. See \code{\link[RstoxData]{StoxBioticData}}.
 #' @seealso \code{\link[RstoxBase]{DefineStratumPolygon}} for configuring stratum definitions.
 #'  \code{\link[RstoxFDA]{AddStratumStoxLanding}} for similar function for landing data, 
@@ -873,7 +873,7 @@ AddStratumStoxBiotic <- function(StoxBioticData, StratumPolygon, ColumnName=char
   checkBioticNotEmpty(StoxBioticData, "Station")
   checkMandatory(StratumPolygon)
   
-  columnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA:::stoxFunctionAttributes$AddStratumStoxBiotic$functionParameterDefaults$ColumnName)
+  columnName <- getDefault(ColumnName, "ColumnName", F, RstoxFDA::stoxFunctionAttributes$AddStratumStoxBiotic$functionParameterDefaults$ColumnName)
   
   missing <- StoxBioticData$Station[is.na(StoxBioticData$Station$Latitude) | is.na(StoxBioticData$Station$Longitude),]
   if (nrow(missing) > 0){
@@ -1080,7 +1080,7 @@ SetTimeBiotic <- function(BioticData, Time=character(), Overwrite=F){
 #'  
 #' @param BioticData \code{\link[RstoxData]{BioticData}} data for which short gear codes should be set
 #' @return \code{\link[RstoxData]{BioticData}}
-#' @seealso \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
+#' @seealso \code{\link[RstoxData]{StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
 #' @concept nmdbiotic functions
 #' @concept gear coding functions
 #' @concept StoX-functions
