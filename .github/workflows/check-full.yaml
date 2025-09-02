@@ -2,13 +2,13 @@ on:
   push:
     branches:
       - master
-      - develop
       - testing
+      - develop
   pull_request:
     branches:
       - master
-      - develop
       - testing
+      - develop
 
 name: R-CMD-check
 
@@ -38,7 +38,7 @@ jobs:
           # ubuntu-latest is 24 as of 2024-10-31. Should we use it?
           - {os: ubuntu-22.04,  r: 'release', pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
           - {os: ubuntu-22.04,   r: 'oldrel',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
-          - {os: ubuntu-22.04,   r: 'oldrel-1',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"}
+          # - {os: ubuntu-22.04,   r: 'oldrel-2',  pkgext: '.tar.gz', rspm: "https://cloud.r-project.org"} # Skipping the oldrel-2, as we need equal requirements across platforms
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -53,7 +53,7 @@ jobs:
       
       - uses: actions/checkout@v4
 
-      - name: Do autorelease increment, tagging, and environment setup
+      - name: Prepare for deployment at push
         if: github.event_name == 'push'
         run: |
           curl "https://raw.githubusercontent.com/StoXProject/unstableRepo/main/scripts/checktag-actions.sh" --output unstableRepo_checktag.sh
@@ -91,36 +91,12 @@ jobs:
 
       
       
-      
       #############################################################################
       #### 2. R package installation (with system and R package dependencies): ####
       #############################################################################
       
-      #- name: Query dependencies
-      #  run: |
-      #    install.packages('remotes')
-      #    saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-      #    writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-      #  shell: Rscript {0}
-      
-      #- name: Cache R packages
-      #  if: runner.os != 'Windows'
-      #  uses: actions/cache@v4
-      #  with:
-      #    path: ${{ env.R_LIBS_USER }}
-      #    key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-      #    restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
-      
-      # We don't use the code below using remotes::system_requirements anymore, since we do not have control over that function and should rather hard code the dependencies, which also lists the dependencies explicitely:
-      #- name: Install system dependencies
-      #  if: runner.os == 'Linux'
-      #  run: |
-      #    while read -r cmd
-      #    do
-      #      eval sudo $cmd
-      #    done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
-
-      - name: Install MacOS system dependencies
+      ## 2a. System dependencies:
+      - name: Install system dependencies on macOS
         if: runner.os == 'macOS'
         run: |
           # gfortran may not exist in a period after a new R minor release:
@@ -128,7 +104,6 @@ jobs:
           if [ -f "$gfortranFile" ] ; then
             rm "$gfortranFile"
           fi
-          rm -f '/usr/local/bin/gfortran'
           rm -f '/usr/local/bin/2to3'
           rm -f '/usr/local/bin/2to3-3.11'
           rm -f '/usr/local/bin/idle3'
@@ -139,6 +114,7 @@ jobs:
           rm -f '/usr/local/bin/python3.11'
           rm -f '/usr/local/bin/python3-config'
           rm -f '/usr/local/bin/python3.11-config'
+          rm -f '/usr/local/bin/gfortran'
           export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK= # This (the value should actually be empty...) prevents Homebrew from re-installing R, which will lead to .Platform$pkgType = "source".
           brew install gdal
         shell: bash
@@ -154,34 +130,100 @@ jobs:
         shell: bash
       
       
-      ## 2c. R packages needed for this yaml script (not related to the Rstox package itself):
+      ## 2b. R packages needed for this yaml script (not related to the Rstox package itself):
       - name: Install CRANdependencies
         run: |
-          install.packages(c("rcmdcheck", "git2r", "sessioninfo", "knitr", "remotes", "drat"))
+          install.packages(c("rcmdcheck", "git2r", "sessioninfo", "knitr", "drat"))
         shell: Rscript {0}
         
       
-      ## 2d. Rstox packages and dependencies (the complicated if condition is needed since the reference to branch name is not consistent across event names). There is the issue that R sorts packge versions alphabetically, while StoX uses semantic versioning. Consequently a pre-release such as 1.2.3-9001 will be considered as newer than the official release 1.2.3 by R. We have solved this by separating the pre-releases and official releases into different repos "unstableRepo" and "testingRepo" for pre-releases and "repo" of official releases). This potentially breaks with remotes::install_deps() as it silently appends the Additional_repositories from the DESCRIPTION file to the repos, but since this would only be a problem if a pre-release is ranked as newer than the official release it will not be a problem when installing dependencies from the "repo" since the Additional_repositories points to that same repo:
+      ## 2c. Rstox packages and dependencies (the complicated if condition is needed since the reference to branch name is not consistent across event names). There is the issue that R sorts packge versions alphabetically, while StoX uses semantic versioning. Consequently a pre-release such as 1.2.3-9001 will be considered as newer than the official release 1.2.3 by R. We have solved this by separating the pre-releases and official releases into different repos "unstableRepo" and "testingRepo" for pre-releases and "repo" of official releases). This potentially breaks with remotes::install_deps() as it silently appends the Additional_repositories from the DESCRIPTION file to the repos, but since this would only be a problem if a pre-release is ranked as newer than the official release it will not be a problem when installing dependencies from the "repo" since the Additional_repositories points to that same repo:
       - name: Install R package dependencies from the unstableRepo
         if: (github.event_name == 'push' && github.ref_name == 'develop') || (github.event_name == 'pull_request' && github.base_ref == 'develop')
         run: |
-          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/unstableRepo/", "https://cloud.r-project.org/"))
+          # We hard code the list of top level dependencies, since the behavior of remotes::install_deps() that we used before is very unclear (e.g. how is the Additional_repositories included in the list of repos?):
+          topLevelDeps <- c(
+            # Imports: 
+            "data.table",
+            "ggplot2",
+            "gridExtra",
+            "methods",
+            "RColorBrewer",
+            "rnaturalearth",
+            "rnaturalearthdata",
+            "RstoxData",
+            "RstoxBase",
+            "sf",
+            # Suggests: 
+            "knitr",
+            "rmarkdown",
+            "tinytest"
+          )
+          install.packages(
+            topLevelDeps, 
+            dependencies = TRUE, 
+            repos = c("https://stoxproject.github.io/unstableRepo/", "https://cloud.r-project.org/")
+          )
         shell: Rscript {0}
 
       - name: Install R package dependencies from the testingRepo
         if: (github.event_name == 'push' && github.ref_name == 'testing') || (github.event_name == 'pull_request' && github.base_ref == 'testing')
         run: |
-          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/testingRepo/", "https://cloud.r-project.org/"))
+          # We hard code the list of top level dependencies, since the behavior of remotes::install_deps() that we used before is very unclear (e.g. how is the Additional_repositories included in the list of repos?):
+          topLevelDeps <- c(
+            # Imports: 
+            "data.table",
+            "ggplot2",
+            "gridExtra",
+            "methods",
+            "RColorBrewer",
+            "rnaturalearth",
+            "rnaturalearthdata",
+            "RstoxData",
+            "RstoxBase",
+            "sf",
+            # Suggests: 
+            "knitr",
+            "rmarkdown",
+            "tinytest"
+          )
+          install.packages(
+            topLevelDeps, 
+            dependencies = TRUE, 
+            repos = c("https://stoxproject.github.io/unstableRepo/", "https://cloud.r-project.org/")
+          )
         shell: Rscript {0}
 
       - name: Install R package dependencies from the official repo
         if: (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'pull_request' && github.base_ref == 'master')
         run: |
-          remotes::install_deps(dependencies = TRUE, repos = c("https://stoxproject.github.io/repo/", "https://cloud.r-project.org/"))
+          # We hard code the list of top level dependencies, since the behavior of remotes::install_deps() that we used before is very unclear (e.g. how is the Additional_repositories included in the list of repos?):
+          topLevelDeps <- c(
+            # Imports: 
+            "data.table",
+            "ggplot2",
+            "gridExtra",
+            "methods",
+            "RColorBrewer",
+            "rnaturalearth",
+            "rnaturalearthdata",
+            "RstoxData",
+            "RstoxBase",
+            "sf",
+            # Suggests: 
+            "knitr",
+            "rmarkdown",
+            "tinytest"
+          )
+          install.packages(
+            topLevelDeps, 
+            dependencies = TRUE, 
+            repos = c("https://stoxproject.github.io/unstableRepo/", "https://cloud.r-project.org/")
+          )
         shell: Rscript {0}
 
 
-      ## 2e. Session info:
+      ## 2d. Session info:
       - name: Session info
         run: |
           options(width = 100)
@@ -225,13 +267,12 @@ jobs:
 
 
 
-
       #######################################################
       #### 4. Build the package source and binary files: ####
       #######################################################
       
-      - name: Build package source archive from branches develop, testing and master
-        if: runner.os == 'Linux' && matrix.config.r == '4.3' && github.event_name == 'push' && (github.ref_name == 'master' || github.ref_name == 'testing' || github.ref_name == 'develop')
+      - name: Build package source archive from branches develop, testing and master (on Linux for some reason)
+        if: runner.os == 'Linux' && matrix.config.r == 'release' && github.event_name == 'push' && (github.ref_name == 'master' || github.ref_name == 'testing' || github.ref_name == 'develop')
         run: |
           pkgbuild::build(".", dest_path = ".", binary = FALSE)
           system(paste0("PKG_FREL=", Sys.getenv("PKG_FILE"), " >> ", Sys.getenv("GITHUB_ENV")))
@@ -250,12 +291,11 @@ jobs:
 
       
       
-      
       ######################################
       #### 5. Deploy to the drat repos: ####
       ######################################
       
-      ## 5a. Upload to the official (DRAT) repo, but only from the master branch, and only for pre-releases, which are those ending with -900x as identified in the script checktag-actions.sh and routed through this yaml to the script deploy-actions.sh (in the folder https://github.com/StoXProject/unstableRepo/blob/main/scripts/):
+      ## 5a. Upload to the official (DRAT) repo, but only from the master branch:
       - name: Upload to the official (DRAT) repo
         if: ( (runner.os == 'Windows') || (runner.os == 'macOS') || (runner.os == 'Linux' && matrix.config.r == 'release') ) && github.event_name == 'push' && github.ref_name == 'master'
         env:
@@ -265,7 +305,7 @@ jobs:
         shell: bash
 
 
-      ## 5b. Upload to the (DRAT) testingRepo, but only from the testing branch, and only for pre-releases, which are those ending with -900x as identified in the script checktag-actions.sh and routed through this yaml to the script deploy-actions.sh (in the folder https://github.com/StoXProject/unstableRepo/blob/main/scripts/):
+      ## 5b. Upload to the (DRAT) testingRepo, but only from the testing branch:
       - name: Upload to the testing (DRAT) repo
         if: ( (runner.os == 'Windows') || (runner.os == 'macOS') || (runner.os == 'Linux' && matrix.config.r == 'release') ) && github.event_name == 'push' && github.ref_name == 'testing'
         env:
@@ -275,7 +315,7 @@ jobs:
         shell: bash
 
 
-      ## 5c. Upload to the (DRAT) unstableRepo, but only from the develop branch, and only for pre-releases, which are those ending with -900x as identified in the script checktag-actions.sh and routed through this yaml to the script deploy-actions.sh (in the folder https://github.com/StoXProject/unstableRepo/blob/main/scripts/):
+      ## 5c. Upload to the (DRAT) unstableRepo, but only from the develop branch:
       - name: Upload to the unstable (DRAT) repo
         if: ( (runner.os == 'Windows') || (runner.os == 'macOS') || (runner.os == 'Linux' && matrix.config.r == 'release') ) && github.event_name == 'push' && github.ref_name == 'develop'
         env:
@@ -291,7 +331,7 @@ jobs:
       ###############################
       
       - name: Create release on GitHub and upload files for testing branch
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.3') ) && github.event_name == 'push' && github.ref_name == 'testing'
+        if: ( (runner.os == 'Windows') || (runner.os == 'macOS') || (runner.os == 'Linux' && matrix.config.r == 'release') ) && github.event_name == 'push' && github.ref_name == 'testing'
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
@@ -302,7 +342,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create release on GitHub and upload files for master branch
-        if: ( (runner.os == 'Windows' && matrix.config.r != 'next') || (runner.os == 'macOS' && matrix.config.r != 'next') || (runner.os == 'Linux' && matrix.config.r == '4.3') ) && github.event_name == 'push' && github.ref_name == 'master'
+        if: ( (runner.os == 'Windows') || (runner.os == 'macOS') || (runner.os == 'Linux' && matrix.config.r == 'release') ) && github.event_name == 'push' && github.ref_name == 'master'
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
