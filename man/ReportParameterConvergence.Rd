@@ -13,9 +13,9 @@ ReportParameterConvergence(
 \arguments{
 \item{ParameterizationSummaryData}{summary statistics for Reca parameters}
 
-\item{Tolerance}{threshold for reporting parameters. Defaults to 0.1. See details}
+\item{Tolerance}{threshold for reporting parameters. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$ReportParameterConvergence$functionParameterDefaults$Tolerance}. See details}
 
-\item{Decimals}{integer specifying the number of decimals to report for 'GelmanRubinR'. Defaults to 2.}
+\item{Decimals}{integer specifying the number of decimals to report for 'GelmanRubinR'. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$ReportParameterConvergence$functionParameterDefaults$Decimals}.}
 }
 \value{
 \code{\link[RstoxFDA]{ParameterConvergenceData}}
