@@ -11,7 +11,7 @@ ParameterizeRecaModels."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">RstoxFDA</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0-9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -132,7 +132,7 @@ mandatory if UseAgingError is TRUE.</p></dd>
 
 
 <dt id="arg-celleffect">CellEffect<a class="anchor" aria-label="anchor" href="#arg-celleffect"></a></dt>
-<dd><p>Configures the cell effect. Defaults to Off. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
+<dd><p>Configures the cell effect. Defaults to <code>r RstoxFDA::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$CellEffect</code>. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
 Any CAR-effect is always included in the cell effect.</p></dd>
 
 
@@ -157,7 +157,7 @@ If not provided modal value from data is used.</p></dd>
 
 
 <dt id="arg-hatchday">HatchDay<a class="anchor" aria-label="anchor" href="#arg-hatchday"></a></dt>
-<dd><p>defaults to Defaults to 1.
+<dd><p>defaults to Defaults to <code>r RstoxFDA::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$HatchDay</code>.
 encoding the day of the year when fish is consider to transition from one age to the next. 1 represents Jan 1st.</p></dd>
 
 </dl></div>
@@ -236,7 +236,7 @@ and <code><a href="https://rdrr.io/pkg/RstoxData/man/AddToStoxBiotic.html" class
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
