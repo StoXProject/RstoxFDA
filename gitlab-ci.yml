@@ -1,0 +1,3 @@
+include:
+  - project: r_provisioning/ci_helper
+    file: templates/r-package.yml
