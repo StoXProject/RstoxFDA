@@ -25,25 +25,25 @@ PlotSamplingOverviewCell(
 
 \item{ColumnVariable}{The grouping variable in 'ReportFdaSamplingData' that should be used for columns in the cell plot}
 
-\item{Measurement}{The kind of fish measurement that should be used to determine the color of a cell. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$Measurement}.}
+\item{Measurement}{The kind of fish measurement that should be used to determine the color of a cell. Defaults to AgeReadings.}
 
 \item{UseDefaultColorSettings}{Logical, whether to use default color settings or the value specified for the function parameters MinVessels, MinCatches, MinMeasurements, ColorNoSamples, ColorFewCatches, ColorFewVessels, ColorGoodSampling}
 
-\item{MinVessels}{The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinVessels}.}
+\item{MinVessels}{The minimum number of vessels sampled for a quality "Good" coloring of a cell. Defaults to 2.}
 
-\item{MinCatches}{The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinCatches}.}
+\item{MinCatches}{The minimum number of catches sampled for quality "Good" or "Few vessels" coloring of a cell. Defaults to 2.}
 
-\item{MinMeasurements}{The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$MinMeasurements}.}
+\item{MinMeasurements}{The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.}
 
-\item{ColorNoSamples}{Color to use for cells not sampled. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorNoSamples}.}
+\item{ColorNoSamples}{Color to use for cells not sampled. Defaults to #ffffcc.}
 
-\item{ColorFewMeasurements}{Color to use for cells with few measurements. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewMeasurements}.}
+\item{ColorFewMeasurements}{Color to use for cells with few measurements. Defaults to #c2e699.}
 
-\item{ColorFewCatches}{Color to use for cells with Few Catches. See details. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewCatches}.}
+\item{ColorFewCatches}{Color to use for cells with Few Catches. See details. Defaults to #78c679.}
 
-\item{ColorFewVessels}{Color to use for cells with Few Vessels See details. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorFewVessels}.}
+\item{ColorFewVessels}{Color to use for cells with Few Vessels See details. Defaults to #31a354.}
 
-\item{ColorGoodSampling}{Color to use for cells with Good sampling. See details. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingOverviewCell$functionParameterDefaults$ColorGoodSampling}.}
+\item{ColorGoodSampling}{Color to use for cells with Good sampling. See details. Defaults to #006837.}
 
 \item{TextSize}{size of text in cellplot. If not provided, a suitable size will be calculated.}
 }

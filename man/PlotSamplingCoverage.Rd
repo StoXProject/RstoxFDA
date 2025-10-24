@@ -32,9 +32,9 @@ PlotSamplingCoverage(
 
 \item{OtherPercentage}{Controls how many bars are shown. The smallest 'OtherPercentage' \% bars are combined into one bar.}
 
-\item{ColorScheme}{'CellPlot' or 'Gradient'. See details. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorScheme}.}
+\item{ColorScheme}{'CellPlot' or 'Gradient'. See details. Defaults to CellPlot.}
 
-\item{Measurement}{The kind of fish measurement that should be used to determine the color of a cell. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$Measurement}.}
+\item{Measurement}{The kind of fish measurement that should be used to determine the color of a cell. Defaults to AgeReadings.}
 
 \item{UseDefaultColorSettings}{Logical, whether to use default color settings or the values specified in other arguments to this function.}
 
@@ -44,23 +44,23 @@ PlotSamplingCoverage(
 
 \item{MinMeasurements}{color scheme "CellPlot". The minimum number of measurements (parameter 'Measurement') for quality "Good", "Few vessels" or "Few catches" coloring of a cell. Defaults to 100.}
 
-\item{ColorNoSamples}{Color to use for cells not sampled. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorNoSamples}.}
+\item{ColorNoSamples}{Color to use for cells not sampled. Defaults to #ffffcc.}
 
-\item{ColorFewMeasurements}{Color to use for cells with few measurements. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewMeasurements}.}
+\item{ColorFewMeasurements}{Color to use for cells with few measurements. Defaults to #c2e699.}
 
-\item{ColorFewCatches}{Color to use for cells with Few Catches. See details. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewCatches}.}
+\item{ColorFewCatches}{Color to use for cells with Few Catches. See details. Defaults to #78c679.}
 
-\item{ColorFewVessels}{Color to use for cells with Few Vessels See details. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorFewVessels}.}
+\item{ColorFewVessels}{Color to use for cells with Few Vessels See details. Defaults to #31a354.}
 
-\item{ColorGoodSampling}{Color to use for cells with Good sampling. See details. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$ColorGoodSampling}.}
+\item{ColorGoodSampling}{Color to use for cells with Good sampling. See details. Defaults to #006837.}
 
 \item{SamplingUnit}{color scheme "Gradient". The sampling unit used: "Vessels","Catches", or "Measurement"}
 
-\item{GradientLowColor}{Color to use for low end of color gradient. See details. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientLowColor}.}
+\item{GradientLowColor}{Color to use for low end of color gradient. See details. Defaults to #ffffcc.}
 
-\item{GradientMidColor}{Color to use for middle of color gradient. See details. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientMidColor}.}
+\item{GradientMidColor}{Color to use for middle of color gradient. See details. Defaults to #c2e699.}
 
-\item{GradientHighColor}{Color to use for high end of color gradient. See details. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotSamplingCoverage$functionParameterDefaults$GradientHighColor}.}
+\item{GradientHighColor}{Color to use for high end of color gradient. See details. Defaults to #006837.}
 }
 \value{
 \code{\link[RstoxFDA]{PlotSamplingCoverageData}}
