@@ -2,8 +2,7 @@ Package: RstoxFDA
 Version: 1.7.0-9999
 Date: 2025-09-01
 Title: Fisheries Dependent Analysis with RstoX
-Authors@R: c(
-person(given = "Abe", 
+Authors@R: c(person(given = "Abe", 
     family = "Solberg", 
     role = c("cre", "aut"), 
     email = "abesolberg@hi.no"),
@@ -40,4 +39,4 @@ Suggests:
     tinytest
 Additional_repositories: 
     https://stoxproject.github.io/repo
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
