@@ -22,7 +22,7 @@ PlotPosteriorTraces(
 \arguments{
 \item{RecaCatchAtAge}{Results from MCMC simulations (\code{\link[RstoxFDA]{RecaCatchAtAge}}).}
 
-\item{Parameter}{which parameter plot traceplots for "TotalCatch", "MeanLength", or "MeanWeight", Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$TotalCatch}}
+\item{Parameter}{which parameter plot traceplots for "TotalCatch", "MeanLength", or "MeanWeight", Defaults to}
 
 \item{PlusGroup}{If given, ages 'PlusGroup' or older are included in a plus group.}
 
@@ -30,17 +30,17 @@ PlotPosteriorTraces(
 
 \item{UseDefaultPlotSettings}{if TRUE default plot settings are used, rather than the values provided by Nclust, Iter.max, Nstart, LowerQuant, UpperQuant, CatLimit, and Legend}
 
-\item{Nclust}{the number of plots to distribute the ages and plus group on. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Nclust}.}
+\item{Nclust}{the number of plots to distribute the ages and plus group on. Defaults to 4.}
 
-\item{Iter.max}{maximal number of iterations for k-means clustering deciding which ages are plotted in same plot. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Iter.max}.}
+\item{Iter.max}{maximal number of iterations for k-means clustering deciding which ages are plotted in same plot. Defaults to 20.}
 
-\item{Nstart}{the number of random sets chosen for the k-means clustering. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$Nstart}.}
+\item{Nstart}{the number of random sets chosen for the k-means clustering. Defaults to 10.}
 
-\item{LowerQuant}{lower quantile in each age group to plot as points. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$LowerLuant}.}
+\item{LowerQuant}{lower quantile in each age group to plot as points. Defaults to .}
 
-\item{UpperQuant}{upper quantile in each age group to plot as points. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$UpperQuant}.}
+\item{UpperQuant}{upper quantile in each age group to plot as points. Defaults to 0.95.}
 
-\item{CatLimit}{the upper limit for number of ages in a plot using categorical coloring. Plots with more than this number of age greoups will use a gradient coloring scheme. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PlotPosteriorTraces$functionParameterDefaults$CatLimit}.}
+\item{CatLimit}{the upper limit for number of ages in a plot using categorical coloring. Plots with more than this number of age greoups will use a gradient coloring scheme. Defaults to 30.}
 
 \item{Legend}{If true legend will be plotted.}
 }

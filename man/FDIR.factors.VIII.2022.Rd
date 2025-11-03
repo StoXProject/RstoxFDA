@@ -18,7 +18,7 @@ Codes for converting from gutted fish without head, round cut (GWOH),
 and from gutted fish with head (GWH) are provided for selected species.
 }
 \details{
-ProductTypes and species codes are encoded as in NMDBiotic v3. That is code 3 for GWH and 4 for GWOH,
+ProductTypes and species codes are encoded as in NMDBiotic v3. That is code 3 for GWOH and 4 for GWH,
 IMR-species codes (usually identical to ITIS tsn number)
 }
 \concept{parameter conversion functions}

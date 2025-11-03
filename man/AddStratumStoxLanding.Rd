@@ -15,7 +15,7 @@ AddStratumStoxLanding(
 
 \item{StratumPolygon}{Definition of spatial strata. See \code{\link[RstoxBase]{StratumPolygon}}}
 
-\item{ColumnName}{specifies which column the area should be added to. See details. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$AddStratumStoxLanding$functionParameterDefaults$ColumnName}.}
+\item{ColumnName}{specifies which column the area should be added to. See details. Defaults to Stratum.}
 }
 \value{
 StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.

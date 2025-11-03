@@ -1,15 +1,18 @@
 Package: RstoxFDA
-Version: 1.7.0-9001
+Version: 1.7.0-9999
 Date: 2025-09-01
 Title: Fisheries Dependent Analysis with RstoX
-Authors@R: c(
+Authors@R: c(person(given = "Abe", 
+    family = "Solberg", 
+    role = c("cre", "aut"), 
+    email = "abesolberg@hi.no"),
   person(given = "Edvin", 
     family = "Fuglebakk", 
-    role = c("cre", "aut"), 
-    email = "arnejh@hi.no"), 
+    role = c("aut")), 
   person(given = "Arne Johannes", 
     family = "Holmin", 
-    role = "aut"))
+    role = "aut" ,
+    email = "arnejh@hi.no"))
 Depends: R (>= 4.4)
 Description: Fisheries dependent analysis, including running the Estimated Catch at Age
   model through the Reca package developed by the Norwegian Computing Center.
@@ -36,4 +39,4 @@ Suggests:
     tinytest
 Additional_repositories: 
     https://stoxproject.github.io/repo
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
