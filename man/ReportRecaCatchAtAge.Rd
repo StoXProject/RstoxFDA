@@ -17,9 +17,9 @@ ReportRecaCatchAtAge(
 
 \item{PlusGroup}{If given, ages 'PlusGroup' or older are included in a plus group.}
 
-\item{IntervalWidth}{The width of the reported credible interval. A value of 0.9 gives 90 per cent credible intervals. Defaults to 0.9}
+\item{IntervalWidth}{The width of the reported credible interval. A value of 0.9 gives 90 per cent credible intervals. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtAge$functionParameterDefaults$IntervalWidth}}
 
-\item{Decimals}{integer specifying the number of decimals to report for 'CatchAtAge', 'SD', 'Low' and 'High'. Defaults to 0.}
+\item{Decimals}{integer specifying the number of decimals to report for 'CatchAtAge', 'SD', 'Low' and 'High'. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$ReportRecaCatchAtAge$functionParameterDefaults$Decimals}.}
 
 \item{Unit}{unit for 'CatchAtAge', 'SD', 'Low' and 'High'}
 }

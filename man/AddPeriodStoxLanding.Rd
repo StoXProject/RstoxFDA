@@ -15,7 +15,7 @@ AddPeriodStoxLanding(
 
 \item{TemporalDefinition}{\code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.}
 
-\item{ColumnName}{Name of the added column. Defaults to Period.}
+\item{ColumnName}{Name of the added column. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$AddPeriodStoxLanding$functionParameterDefaults$ColumnName}.}
 }
 \value{
 StoxLandingData with column appended. See \code{\link[RstoxData]{StoxLandingData}}.

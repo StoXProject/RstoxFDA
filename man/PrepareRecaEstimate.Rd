@@ -55,7 +55,7 @@ mandatory if UseAgingError is TRUE.}
 
 \item{StockSplittingParameters}{Parameters for stock splitting. Mandatory if 'UseStockSplitting' is TRUE. May be obtained with \code{\link[RstoxFDA]{DefineStockSplittingParameters}}.}
 
-\item{CellEffect}{Configures the cell effect. Defaults to Off. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
+\item{CellEffect}{Configures the cell effect. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$CellEffect}. If 'All', an interaction term will be added with all covariates that in the cell (whether they are fixed or random effects).
 Any CAR-effect is always included in the cell effect.}
 
 \item{MinAge}{optional, must match dimensions of any 'AgeErrorMatrix'.
@@ -70,7 +70,7 @@ If not provided it will be derived from data.}
 \item{LengthResolution}{optional, resolution for length measurements in cm.
 If not provided modal value from data is used.}
 
-\item{HatchDay}{defaults to Defaults to 1.
+\item{HatchDay}{defaults to Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$PrepareRecaEstimate$functionParameterDefaults$HatchDay}.
 encoding the day of the year when fish is consider to transition from one age to the next. 1 represents Jan 1st.}
 }
 \value{

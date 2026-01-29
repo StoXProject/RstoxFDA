@@ -35,7 +35,7 @@ Useful links:
 Authors:
 \itemize{
   \item Edvin Fuglebakk
-  \item Arne Johannes Holmin \email{arnejh@hi.no}
+  \item Arne Johannes Holmin
 }
 
 }

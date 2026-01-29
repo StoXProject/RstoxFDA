@@ -15,7 +15,7 @@ AddPeriodStoxBiotic(
 
 \item{TemporalDefinition}{\code{\link[RstoxFDA]{TemporalDefinition}} definition of temporal category.}
 
-\item{ColumnName}{specifies which column the area should be added to. Defaults to Period.}
+\item{ColumnName}{specifies which column the area should be added to. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$AddPeriodStoxBiotic$functionParameterDefaults$ColumnName}.}
 }
 \value{
 StoxBioticData with column appended. See \code{\link[RstoxData]{StoxBioticData}}.
