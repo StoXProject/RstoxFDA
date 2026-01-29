@@ -1117,7 +1117,7 @@ SetShortGearBiotic <- function(BioticData){
 #' @param BioticData \code{\link[RstoxData]{BioticData}} data for which time should be set
 #' @param Overwrite if True any existing values in stationstartdate will be overwritten.
 #' @return \code{\link[RstoxData]{BioticData}}
-#' @seealso \code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
+#' @seealso \code{\link[RstoxData]{StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
 #' @concept nmdbiotic functions
 #' @concept temporal coding functions
 #' @concept StoX-functions

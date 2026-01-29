@@ -22,9 +22,9 @@ and approriate columns added for identifying corresponding samples}
 
 \item{GroupingVariables}{Columns of 'StoxBioticData' and 'StoxLandingData' that partitions the fisheries. If not provided, a single row for all landings will be produced.}
 
-\item{Decimals}{integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to 0.}
+\item{Decimals}{integer specifying the number of decimals to report for 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$ReportFdaSampling$functionParameterDefaults$Decimals}.}
 
-\item{Unit}{unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to kg}
+\item{Unit}{unit for the weights 'LandedRoundWeight' and 'WeightOfSampledCatches'. Defaults to \verb{r RstoxFDA::stoxFunctionAttributes$ReportFdaSampling$functionParameterDefaults$Unit}}
 
 \item{SamplingVariables}{Columns of 'StoxBioticData' identifying sampling variables to be use to partition the report. See details.}
 }
