@@ -1,0 +1,102 @@
+# Make area code conversion table
+
+Make conversion table from area code-definitions.
+
+Conversion tables are constructed based on geometric principles (based
+on centroid positions, or overlap). Whether this produces a complete and
+correct mapping between area codes depends on their shape and size. For
+instance, the centroid may be outside an area for odd shapes, areas in
+different definitions may be partly overlapping, and areas of one
+definition may subdivide those of another definition. This is best
+evaluated by visual inspection of the area definitions.
+
+The conversion table can be constructed with the following methods
+(argument: 'method'):
+
+- overlap:
+
+  Each area in areaDef1 is mapped to the area in areaDef2 with the
+  largest overlap.
+
+- centroids:
+
+  Eac area in areaDef1 is mapped to the area in areaDef2 which contains
+  its centroid.
+
+Centroids may be preferred for performance reasons, but depending on the
+shape of areas, the centroid may not always be a good representation.
+
+Areas in areaDef1 that has no corresponding area in areaDef2 will be
+omitted from results.
+
+## Usage
+
+``` r
+areaCodeConversionTable(
+  areaDef1,
+  areaDef2,
+  areaName1 = "StratumName",
+  areaName2 = areaName1,
+  method = c("overlap", "centroids"),
+  dTolerance = 1
+)
+```
+
+## Arguments
+
+- areaDef1:
+
+  [`sf`](https://r-spatial.github.io/sf/reference/sf.html) data.frame
+  defining area codes
+
+- areaDef2:
+
+  [`sf`](https://r-spatial.github.io/sf/reference/sf.html) data frame
+  defining area codes
+
+- areaName1:
+
+  column in areaDef1 identifying the name of areas
+
+- areaName2:
+
+  column in areaDef2 identifying the name of areas
+
+- method:
+
+  method for mapping area codes. See details.
+
+- dTolerance:
+
+  tolerance parameter passed to
+  [`st_simplify`](https://r-spatial.github.io/sf/reference/geos_unary.html)
+  when method is 'overlap'.
+
+## Value
+
+a list mapping area codes in areaDef1 to those in areaDef2
+
+## See also
+
+[`plotAreaComparison`](plotAreaComparison.md) for visual inspection of
+how different area definitions correspond.
+
+## Examples
+
+``` r
+ # map fdir areas to ICES areas by overlap
+ fdir.ICES.map <- areaCodeConversionTable(RstoxFDA::mainareaFdir2018, RstoxFDA::ICESareas)
+ 
+ # map fdir locations to ICES statistical rectangles, by centroids
+ loc.rectangles.map <- areaCodeConversionTable(RstoxFDA::locationsFdir2018, 
+        RstoxFDA::ICESrectangles, method="centroids")
+#> Warning: StoX: Overlapping polygons: Some centroids are in several polygons, area code is arbitrarily chosen.
+ 
+ # map selected statistical rectangles to ICES areas by overlap
+ data(catchsamples)
+ selectedRects <- RstoxFDA::ICESrectangles[
+             RstoxFDA::ICESrectangles$StratumName %in% catchsamples$LEstatRect,]
+ catchsamples$LEarea <- RstoxFDA::convertCodes(catchsamples$LEstatRect, 
+             areaCodeConversionTable(selectedRects, 
+             RstoxFDA::ICESareas))
+```

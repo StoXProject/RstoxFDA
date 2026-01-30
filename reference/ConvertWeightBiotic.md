@@ -1,0 +1,89 @@
+# Convert weights Biotic
+
+Convert weights to approximate weight for desired product type.
+Appropriate when BioticData is read from NMDbiotic.
+
+## Usage
+
+``` r
+ConvertWeightBiotic(
+  BioticData,
+  ConversionType = c("All", "CatchWeights", "IndividualWeight"),
+  WeightConversionTable,
+  TargetProductType = character()
+)
+```
+
+## Arguments
+
+- BioticData:
+
+  [`BioticData`](https://rdrr.io/pkg/RstoxData/man/BioticData.html) for
+  which weights should be converted
+
+- ConversionType:
+
+  defines which weights to convert, may be 'All', 'CacthWeight',
+  'SampleWeight', 'IndividualWeight'
+
+- WeightConversionTable:
+
+  [`WeightConversionTable`](WeightConversionTable.md) with parameters
+  for converting weights to 'TargetProductType'.
+
+- TargetProductType:
+
+  The desired producttype. Typically the code for Round fish.
+
+## Value
+
+[`BioticData`](https://rdrr.io/pkg/RstoxData/man/BioticData.html) with
+converted weights.
+
+## Details
+
+Different products of fish may be measured and round weight (live
+weight) or some other product type may be approximated by multiplying
+with a scalar conversion factor.
+
+For records where the variable 'catchcategory' on the table
+'catchsample' matches the 'Species' variable in 'WeightConversionTable'
+this function converts weights to desired product type
+('TargetProductType') by matching 'producttype'-variables to
+'ProductType' in 'WeightConversionTable'. The following weights may be
+converted, depending on the parameter 'ConversionType':
+
+- 'All' or 'CatchWeights':
+
+  'catchweight' on the table 'catchsample' is converted based on
+  'catchproducttype'
+
+- 'All' or 'CatchWeights':
+
+  'lengthsampleweight' on the table 'catchsample' is converted based on
+  'sampleproducttype'
+
+- 'All' or 'IndividualWeight':
+
+  'individualweight' is converted based on 'individualproducttype' both
+  on the table 'individual'
+
+After conversion the 'producttype'-variables will be changed to reflect
+the converted weight. That is they will be set to 'TargetProductType'.
+
+If 'WeightConversionTable' contains NAs for 'WeightFactor', converted
+weights will be NA. This may be useful for dealing with species whoose
+weights are not needed in subsequent analysis.
+
+The variables 'catchvolume', 'lengthsamplevolume', and
+'individualvolume' are also dependent on product type. These are set to
+NA as weight is converted.
+
+These variables are on these tables in data originating from NMDBiotic
+(http://www.imr.no/formats/nmdbiotic/). For bioticdata that does not
+conform to this, no modifications are done.
+
+## See also
+
+[`DefineWeightConversionFactor`](DefineWeightConversionFactor.md) for
+configuration of weight conversion parameters.

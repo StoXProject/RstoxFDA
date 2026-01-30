@@ -1,0 +1,124 @@
+# Parameterize Reca.
+
+Runs estimation of parameters for Reca models. Invokes `eca.estimate`.
+
+## Usage
+
+``` r
+ParameterizeRecaModels(
+  RecaData,
+  Nsamples = integer(),
+  Burnin = integer(),
+  Thin = integer(),
+  ResultDirectory = character(),
+  Lgamodel = c("log-linear", "non-linear"),
+  Delta.age = numeric(),
+  Seed = numeric(),
+  UseCachedData = FALSE
+)
+```
+
+## Arguments
+
+- RecaData:
+
+  [`RecaData`](RecaData.md) as returned from
+  [`PrepareRecaEstimate`](PrepareRecaEstimate.md)
+
+- Nsamples:
+
+  number of MCMC samples that will be made available for `eca.predict`.
+  See documentation for `eca.estimate`,
+
+- Burnin:
+
+  number of MCMC samples run and discarded by `eca.estimate` before any
+  samples are saved. See documentation for `eca.estimate`.
+
+- Thin:
+
+  controls how many iterations are run between each samples saved.
+  Defaults to
+  `r RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Thin`.
+  This may be set to account for autocorrelation introduced by
+  Metropolis-Hastings simulation. see documentation for `eca.estimate`
+
+- ResultDirectory:
+
+  a directory where Reca may store temp-files `eca.estimate` and
+  `eca.predict`. See details.
+
+- Lgamodel:
+
+  The length age relationship to use for length-age fits (options:
+  "log-linear", "non-linear": Schnute-Richards model). See documentation
+  for `eca.estimate`. Defaults to
+  `r RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Lgamodel`
+
+- Delta.age:
+
+  see documentation for `eca.estimate`. Defaults to
+  `r RstoxFDA::stoxFunctionAttributes$ParameterizeRecaModels$functionParameterDefaults$Delta.age`.
+
+- Seed:
+
+  see documentation for `eca.estimate`. Defaults to random seed.
+
+- UseCachedData:
+
+  if TRUE Parameterization is not run, but any previous runs for exactly
+  the same arguments are returned.
+
+## Value
+
+[`RecaParameterData`](RecaParameterData.md) results from Reca Model
+Parameterization.
+
+## Details
+
+`eca.estimate` performs Markov-chain Monte Carlo (MCMC) simulations to
+determine maximum likelihood of parameters for the given samples. This
+is computationally intensive and run time may be noticable. For a given
+model configuration running time is mainly determined by the parameters
+'Nsample', 'Burnin' and 'Thin'.
+
+### Seed
+
+If 'Seed' is not provided a random seed is chosen. This is stored in the
+returned data (RecaParameterData\$GlobalVariables\$Seed). This seed is
+passed to Reca, but not all versions of Reca has provided exact
+reproducability for a given seed, so the behaviour is dependent on the
+installed Reca-version.
+
+### Caching
+
+The argument 'UseCachedData' allows previously computed parameterization
+to be returned in stead of parameterizing again. If no previous run is
+located in the 'ResultDirectory', or the arguments or data that are
+passed to Reca differs from the previous run, execution will halt with
+an error when 'UseCachedData'. In this respect it may also be useful to
+note a counter intuitive aspect of the argument 'Seed'. If 'Seed' was
+not provided for the previous run, the arguments will be considered
+equal if the seed is set to the value returned on the previous run
+(RecaParameterData\$GlobalVariables\$Seed).
+
+### ResultDirectory files:
+
+Various report functions may use output of this function with the
+function `eca.predict` which samples the posterior distributions of
+parameters. Communication between `eca.estimate` and `eca.predict` is
+managed by writing and reading files, and a directory for storing
+intermediate calculations must be provided with the parameter
+'ResultDirectory'. For multi-chain analysis, a different directory
+should be provided for each chain. The result directory will be created
+if it does not exist.
+
+Be aware that this breaks with the general design of StoX and somewhat
+limits the transferrability of StoX projects between computers.
+
+## See also
+
+[`PrepareRecaEstimate`](PrepareRecaEstimate.md) for model configuration,
+and data preparation for this function, and
+[`RunRecaModels`](RunRecaModels.md) for obtaining predictions /
+estimates from the Reca-models.

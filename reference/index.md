@@ -1,0 +1,678 @@
+# Package index
+
+## StoX-functions
+
+Functions that are available in the StoX user interface. These are
+otherwise identified by their names starting with a capital letter
+
+- [`AddAreaPositionStoxLanding()`](AddAreaPositionStoxLanding.md) :
+  Append position to landings data
+- [`AddGearGroupStoxBiotic()`](AddGearGroupStoxBiotic.md) : Add Gear
+  group to StoxBioticData
+- [`AddGearGroupStoxLanding()`](AddGearGroupStoxLanding.md) : Add Gear
+  group to StoxLandingData
+- [`AddPeriodStoxBiotic()`](AddPeriodStoxBiotic.md) : Add Period to
+  StoxBioticData
+- [`AddPeriodStoxLanding()`](AddPeriodStoxLanding.md) : Add Period to
+  StoxLandingData
+- [`AddPsuStratificationVariables()`](AddPsuStratificationVariables.md)
+  : Add Stratification columns to 'PSUSamplingParametersData'
+- [`AddStratumStoxBiotic()`](AddStratumStoxBiotic.md) : Adds Stratum to
+  StoxBioticData
+- [`AddStratumStoxLanding()`](AddStratumStoxLanding.md) : Adds Strata to
+  StoxLandingData
+- [`AssignPSUSamplingParameters()`](AssignPSUSamplingParameters.md) :
+  Assign PSU Sampling Parameters
+- [`ComputeIndividualSamplingParameters()`](ComputeIndividualSamplingParameters.md)
+  : Compute Sampling Parameters for Individuals
+- [`ComputePSUSamplingParameters()`](ComputePSUSamplingParameters.md) :
+  Compute PSU Sampling Design Parameters
+- [`ConvertLengthBiotic()`](ConvertLengthBiotic.md) : Convert lengths
+  Biotic
+- [`ConvertWeightBiotic()`](ConvertWeightBiotic.md) : Convert weights
+  Biotic
+- [`DefineAgeErrorMatrix()`](DefineAgeErrorMatrix.md) : Define Age Error
+  Matrix
+- [`DefineAreaPosition()`](DefineAreaPosition.md) : Define Area Code
+  Positions
+- [`DefineCarNeighbours()`](DefineCarNeighbours.md) : Define CAR
+  neighbours
+- [`DefineLengthConversionParameters()`](DefineLengthConversionParameters.md)
+  : Define Length Conversion Parameters
+- [`DefinePeriod()`](DefinePeriod.md) : Define Periods
+- [`DefineStockSplittingParameters()`](DefineStockSplittingParameters.md)
+  : Define Stock Splitting Parameters
+- [`DefineWeightConversionFactor()`](DefineWeightConversionFactor.md) :
+  Define Weight Conversion Factors
+- [`FilterAgeLengthOutliersStoxBiotic()`](FilterAgeLengthOutliersStoxBiotic.md)
+  : Filter outliers
+- [`FilterWeightLengthOutliersStoxBiotic()`](FilterWeightLengthOutliersStoxBiotic.md)
+  : Filter length-weight outliers
+- [`ListBioticDifference()`](ListBioticDifference.md) : List Difference
+- [`LoadFdaStratumPolygon()`](LoadFdaStratumPolygon.md) : Load common
+  area definitions
+- [`ParameterizeRecaModels()`](ParameterizeRecaModels.md) : Parameterize
+  Reca.
+- [`PlotCatchAtAgeTotals()`](PlotCatchAtAgeTotals.md) : Plot Catch At
+  Age
+- [`PlotFisheriesOverviewSpatial()`](PlotFisheriesOverviewSpatial.md) :
+  Plot spatial distribution of fisheries
+- [`PlotFisheriesOverviewTemporal()`](PlotFisheriesOverviewTemporal.md)
+  : Plot landings
+- [`PlotMeanLengthAtAge()`](PlotMeanLengthAtAge.md) : Plot length at age
+- [`PlotMeanWeightAtAge()`](PlotMeanWeightAtAge.md) : Plot weight at age
+- [`PlotPosteriorTraces()`](PlotPosteriorTraces.md) : Reca Traceplots
+- [`PlotSamplingCoverage()`](PlotSamplingCoverage.md) : Coverage plot
+- [`PlotSamplingOverviewCell()`](PlotSamplingOverviewCell.md) : Cell
+  plot
+- [`PlotSamplingVariables()`](PlotSamplingVariables.md) : Plot sampling
+  variables
+- [`PrepareRecaEstimate()`](PrepareRecaEstimate.md) : Prepare data for
+  Reca.
+- [`ReadLandingFDA()`](ReadLandingFDA.md) : Read landing files
+- [`ReadPSUSamplingParameters()`](ReadPSUSamplingParameters.md) : Read
+  PSU Sampling Design Parameters
+- [`ReportAnalyticalCatchAtAge()`](ReportAnalyticalCatchAtAge.md) :
+  Report catch at age
+- [`ReportAnalyticalCatchAtLength()`](ReportAnalyticalCatchAtLength.md)
+  : Report catch at length
+- [`ReportAnalyticalLengthAtAge()`](ReportAnalyticalLengthAtAge.md) :
+  Report mean length at age
+- [`ReportAnalyticalWeightAtAge()`](ReportAnalyticalWeightAtAge.md) :
+  Report mean weight at age
+- [`ReportFdaLandings()`](ReportFdaLandings.md) : Report FDA landings
+- [`ReportFdaSOP()`](ReportFdaSOP.md) : Report SOP test
+- [`ReportFdaSampling()`](ReportFdaSampling.md) : Report FDA sampling
+- [`ReportParameterConvergence()`](ReportParameterConvergence.md) :
+  Report convergence Statistics for parameter simulations
+- [`ReportRecaCatchAtAge()`](ReportRecaCatchAtAge.md) : Report catch at
+  age
+- [`ReportRecaCatchAtAgeCovariance()`](ReportRecaCatchAtAgeCovariance.md)
+  : Report covariance of catch at age
+- [`ReportRecaCatchAtLength()`](ReportRecaCatchAtLength.md) : Report
+  catch at length
+- [`ReportRecaCatchAtLengthAndAge()`](ReportRecaCatchAtLengthAndAge.md)
+  : Report catch at length and age
+- [`ReportRecaCatchStatistics()`](ReportRecaCatchStatistics.md) : Report
+  catch statistics
+- [`ReportRecaLengthAtAge()`](ReportRecaLengthAtAge.md) : Report length
+  at age
+- [`ReportRecaParameterStatistics()`](ReportRecaParameterStatistics.md)
+  : Report summary statistics for Reca paramters
+- [`ReportRecaWeightAtAge()`](ReportRecaWeightAtAge.md) : Report weight
+  at age
+- [`RunRecaModels()`](RunRecaModels.md) : Run Reca Models
+- [`SetAreaPositionsBiotic()`](SetAreaPositionsBiotic.md) : Set position
+  Biotic
+- [`SetShortGearBiotic()`](SetShortGearBiotic.md) : Set short gear codes
+  biotic
+- [`SetStartDateBiotic()`](SetStartDateBiotic.md) : Set startdate Biotic
+
+## Spatial coding functions
+
+Functions for encoding and re-coding spatial information
+
+- [`AddAreaPositionStoxLanding()`](AddAreaPositionStoxLanding.md) :
+  Append position to landings data
+- [`AddStratumStoxBiotic()`](AddStratumStoxBiotic.md) : Adds Stratum to
+  StoxBioticData
+- [`AddStratumStoxLanding()`](AddStratumStoxLanding.md) : Adds Strata to
+  StoxLandingData
+- [`DefineAreaPosition()`](DefineAreaPosition.md) : Define Area Code
+  Positions
+- [`DefineCarNeighbours()`](DefineCarNeighbours.md) : Define CAR
+  neighbours
+- [`LoadFdaStratumPolygon()`](LoadFdaStratumPolygon.md) : Load common
+  area definitions
+- [`SetAreaPositionsBiotic()`](SetAreaPositionsBiotic.md) : Set position
+  Biotic
+- [`appendAreaCode()`](appendAreaCode.md) : Append area code
+- [`appendPosition()`](appendPosition.md) : Append positions
+- [`areaCodeConversionTable()`](areaCodeConversionTable.md) : Make area
+  code conversion table
+- [`convertCodes()`](convertCodes.md) : Convert codes.
+- [`mergePolygons()`](mergePolygons.md) : Merges polygons
+- [`plotArea()`](plotArea.md) : Plot area definitions on a map
+- [`plotAreaComparison()`](plotAreaComparison.md) : Compare area
+  definitions
+- [`writeSpDataFrameAsWKT()`](writeSpDataFrameAsWKT.md) : Writes shape
+  files as WKT files
+
+## Spatial coding systems
+
+Polygons defining area coding systems
+
+- [`GSAsubArea`](GSAsubArea.md) : GFCM sub areas (mixed area codes)
+- [`ICESareas`](ICESareas.md) : ICES areas (mixed area codes from 2018)
+- [`ICESdivision`](ICESdivision.md) : ICES Divisions (area codes from
+  2018)
+- [`ICESrectangles`](ICESrectangles.md) : ICES rectangles
+- [`ICESsubArea`](ICESsubArea.md) : ICES sub-areas (area codes from
+  2018)
+- [`ICESsubDivision`](ICESsubDivision.md) : ICES sub-divisions (area
+  codes from 2018)
+- [`ICESunit`](ICESunit.md) : ICES units (area codes)
+- [`NAFOareas`](NAFOareas.md) : NAFO areas
+- [`kommuner2022`](kommuner2022.md) : Norwegian municipalities (kommune)
+- [`locationsFdir2017`](locationsFdir2017.md) : Location codes (FDIR to
+  2017 incl.)
+- [`locationsFdir2018`](locationsFdir2018.md) : Location codes (FDIR
+  from 2018 incl.)
+- [`mainareaFdir2017`](mainareaFdir2017.md) : Main areas (FDIR to 2017
+  incl.)
+- [`mainareaFdir2018`](mainareaFdir2018.md) : Main areas (FDIR from 2018
+  incl.)
+- [`portcodes2020`](portcodes2020.md) : UN Location codes for ports
+
+## Temporal coding functions
+
+Functions for encoding and re-coding temporal information
+
+- [`AddPeriodStoxBiotic()`](AddPeriodStoxBiotic.md) : Add Period to
+  StoxBioticData
+- [`AddPeriodStoxLanding()`](AddPeriodStoxLanding.md) : Add Period to
+  StoxLandingData
+- [`DefinePeriod()`](DefinePeriod.md) : Define Periods
+- [`SetStartDateBiotic()`](SetStartDateBiotic.md) : Set startdate Biotic
+- [`categoriseDate()`](categoriseDate.md) : Get temporal categories
+- [`convertCodes()`](convertCodes.md) : Convert codes.
+
+## Gear coding functions
+
+Functions and example data for encoding and re-coding gear information
+
+- [`AddGearGroupStoxBiotic()`](AddGearGroupStoxBiotic.md) : Add Gear
+  group to StoxBioticData
+- [`AddGearGroupStoxLanding()`](AddGearGroupStoxLanding.md) : Add Gear
+  group to StoxLandingData
+- [`GearGroupFdirTable`](GearGroupFdirTable.md) : Gear groups
+- [`SetShortGearBiotic()`](SetShortGearBiotic.md) : Set short gear codes
+  biotic
+- [`appendMetier()`](appendMetier.md) : Annotate metier
+- [`convertCodes()`](convertCodes.md) : Convert codes.
+- [`metier4table`](metier4table.md) : MetierTable lvl 4 example
+- [`metier5table`](metier5table.md) : MetierTable lvl 5 example
+- [`metier6table`](metier6table.md) : MetierTable lvl 6 example
+- [`readMetierTable()`](readMetierTable.md) : Read metier table
+
+## Parameter conversion functions
+
+Functions and data for converting bilogical parameters
+
+- [`ConvertLengthBiotic()`](ConvertLengthBiotic.md) : Convert lengths
+  Biotic
+- [`ConvertWeightBiotic()`](ConvertWeightBiotic.md) : Convert weights
+  Biotic
+- [`DefineLengthConversionParameters()`](DefineLengthConversionParameters.md)
+  : Define Length Conversion Parameters
+- [`DefineWeightConversionFactor()`](DefineWeightConversionFactor.md) :
+  Define Weight Conversion Factors
+- [`FDIR.factors.VIII.2022`](FDIR.factors.VIII.2022.md) : Weigh
+  conversion Factors (FDIR VIII, 2022)
+
+## Landing functions
+
+Functions and example data for handling landings data (sales-notes etc.)
+
+- [`PlotFisheriesOverviewSpatial()`](PlotFisheriesOverviewSpatial.md) :
+  Plot spatial distribution of fisheries
+- [`PlotFisheriesOverviewTemporal()`](PlotFisheriesOverviewTemporal.md)
+  : Plot landings
+- [`PlotSamplingCoverage()`](PlotSamplingCoverage.md) : Coverage plot
+- [`PlotSamplingOverviewCell()`](PlotSamplingOverviewCell.md) : Cell
+  plot
+- [`PlotSamplingVariables()`](PlotSamplingVariables.md) : Plot sampling
+  variables
+- [`ReadLandingFDA()`](ReadLandingFDA.md) : Read landing files
+- [`ReportFdaLandings()`](ReportFdaLandings.md) : Report FDA landings
+- [`ReportFdaSampling()`](ReportFdaSampling.md) : Report FDA sampling
+- [`addLogbookColumns()`](addLogbookColumns.md) : Add columns from
+  logbooks
+- [`appendTripIdLandings()`](appendTripIdLandings.md) : Assign trip IDs
+- [`imputeCatchesLandings()`](imputeCatchesLandings.md) : Impute catches
+  to landings
+- [`landings`](landings.md) : Landings of Haddock
+- [`logbookAdjustment()`](logbookAdjustment.md) : Adjust landings by
+  logbooks
+- [`makeTripIds()`](makeTripIds.md) : Make trip IDs
+- [`plotBubbleMap()`](plotBubbleMap.md) : Plots bubble plot on map
+- [`sourceLogbookColumns()`](sourceLogbookColumns.md) : Fill in values
+  from logbooks
+- [`tabulateFisheries()`](tabulateFisheries.md) : Tabulate fisheries
+
+## Logbook functions
+
+Functions and example data for handling logbook data from fisheries
+
+- [`activityCensus`](activityCensus.md) : Activity census
+- [`addLogbookColumns()`](addLogbookColumns.md) : Add columns from
+  logbooks
+- [`appendTripIdLandings()`](appendTripIdLandings.md) : Assign trip IDs
+- [`appendTripIdLogbooks()`](appendTripIdLogbooks.md) : Assing trip ID
+  to logbooks
+- [`calculateLogbookPartitionByTrip()`](calculateLogbookPartitionByTrip.md)
+  : Calcualte catch partition
+- [`convertToErsData()`](convertToErsData.md) : Convert logbook data
+- [`imputeCatchesLandings()`](imputeCatchesLandings.md) : Impute catches
+  to landings
+- [`logbookAdjustment()`](logbookAdjustment.md) : Adjust landings by
+  logbooks
+- [`makeTripIds()`](makeTripIds.md) : Make trip IDs
+- [`readLstFile()`](readLstFile.md) : Parses logbooks (lst)
+- [`sourceLogbookColumns()`](sourceLogbookColumns.md) : Fill in values
+  from logbooks
+
+## IO functions
+
+Functions for reading or writing data files, or converting data formats
+
+- [`ReadLandingFDA()`](ReadLandingFDA.md) : Read landing files
+- [`convertToErsData()`](convertToErsData.md) : Convert logbook data
+- [`readFdirLandingsArchive()`](readFdirLandingsArchive.md) : Reads
+  landings archive
+- [`readLstFile()`](readLstFile.md) : Parses logbooks (lst)
+
+## NMDbiotic functions
+
+Functions for Biotic-data in StoX that assumes NMDbiotic as data source
+
+- [`ConvertLengthBiotic()`](ConvertLengthBiotic.md) : Convert lengths
+  Biotic
+- [`ConvertWeightBiotic()`](ConvertWeightBiotic.md) : Convert weights
+  Biotic
+- [`ListBioticDifference()`](ListBioticDifference.md) : List Difference
+- [`SetAreaPositionsBiotic()`](SetAreaPositionsBiotic.md) : Set position
+  Biotic
+- [`SetShortGearBiotic()`](SetShortGearBiotic.md) : Set short gear codes
+  biotic
+- [`SetStartDateBiotic()`](SetStartDateBiotic.md) : Set startdate Biotic
+
+## Data QA functions
+
+Functions for quality checking data
+
+- [`FilterAgeLengthOutliersStoxBiotic()`](FilterAgeLengthOutliersStoxBiotic.md)
+  : Filter outliers
+- [`FilterWeightLengthOutliersStoxBiotic()`](FilterWeightLengthOutliersStoxBiotic.md)
+  : Filter length-weight outliers
+- [`ListBioticDifference()`](ListBioticDifference.md) : List Difference
+- [`ReportFdaSOP()`](ReportFdaSOP.md) : Report SOP test
+- [`filterLogLinear()`](filterLogLinear.md) : Filter length-weight
+  outliers
+- [`filterVonBsigma()`](filterVonBsigma.md) : Filter length-age outliers
+
+## StoX-Reca functions
+
+StoX-functions preparing data for and running Reca
+
+- [`AddStratumStoxLanding()`](AddStratumStoxLanding.md) : Adds Strata to
+  StoxLandingData
+- [`DefineAgeErrorMatrix()`](DefineAgeErrorMatrix.md) : Define Age Error
+  Matrix
+- [`DefineStockSplittingParameters()`](DefineStockSplittingParameters.md)
+  : Define Stock Splitting Parameters
+- [`ParameterizeRecaModels()`](ParameterizeRecaModels.md) : Parameterize
+  Reca.
+- [`PlotFisheriesOverviewSpatial()`](PlotFisheriesOverviewSpatial.md) :
+  Plot spatial distribution of fisheries
+- [`PlotFisheriesOverviewTemporal()`](PlotFisheriesOverviewTemporal.md)
+  : Plot landings
+- [`PlotSamplingCoverage()`](PlotSamplingCoverage.md) : Coverage plot
+- [`PlotSamplingOverviewCell()`](PlotSamplingOverviewCell.md) : Cell
+  plot
+- [`PlotSamplingVariables()`](PlotSamplingVariables.md) : Plot sampling
+  variables
+- [`PrepareRecaEstimate()`](PrepareRecaEstimate.md) : Prepare data for
+  Reca.
+- [`RecaCatchAtAgeExample`](RecaCatchAtAgeExample.md) : Saithe landings
+  2021.
+- [`ReportAnalyticalCatchAtAge()`](ReportAnalyticalCatchAtAge.md) :
+  Report catch at age
+- [`ReportAnalyticalCatchAtLength()`](ReportAnalyticalCatchAtLength.md)
+  : Report catch at length
+- [`ReportAnalyticalLengthAtAge()`](ReportAnalyticalLengthAtAge.md) :
+  Report mean length at age
+- [`ReportAnalyticalWeightAtAge()`](ReportAnalyticalWeightAtAge.md) :
+  Report mean weight at age
+- [`ReportRecaCatchAtAge()`](ReportRecaCatchAtAge.md) : Report catch at
+  age
+- [`ReportRecaCatchAtAgeCovariance()`](ReportRecaCatchAtAgeCovariance.md)
+  : Report covariance of catch at age
+- [`ReportRecaCatchAtLength()`](ReportRecaCatchAtLength.md) : Report
+  catch at length
+- [`ReportRecaCatchAtLengthAndAge()`](ReportRecaCatchAtLengthAndAge.md)
+  : Report catch at length and age
+- [`ReportRecaCatchStatistics()`](ReportRecaCatchStatistics.md) : Report
+  catch statistics
+- [`ReportRecaLengthAtAge()`](ReportRecaLengthAtAge.md) : Report length
+  at age
+- [`ReportRecaParameterStatistics()`](ReportRecaParameterStatistics.md)
+  : Report summary statistics for Reca paramters
+- [`ReportRecaWeightAtAge()`](ReportRecaWeightAtAge.md) : Report weight
+  at age
+- [`RunRecaModels()`](RunRecaModels.md) : Run Reca Models
+- [`StoxBioticDataExample`](StoxBioticDataExample.md) : Data from
+  Norwegian port sampling program.
+- [`StoxLandingDataExample`](StoxLandingDataExample.md) : Saithe
+  landings 2021.
+
+## Convergence check functions
+
+Functions for checking convergence of Reca models.
+
+- [`PlotMeanLengthAtAge()`](PlotMeanLengthAtAge.md) : Plot length at age
+- [`PlotMeanWeightAtAge()`](PlotMeanWeightAtAge.md) : Plot weight at age
+- [`PlotPosteriorTraces()`](PlotPosteriorTraces.md) : Reca Traceplots
+- [`ReportParameterConvergence()`](ReportParameterConvergence.md) :
+  Report convergence Statistics for parameter simulations
+- [`ReportRecaParameterStatistics()`](ReportRecaParameterStatistics.md)
+  : Report summary statistics for Reca paramters
+
+## Reca support functions
+
+Support functions and example data for adapting Reca to other workflows
+than StoX
+
+- [`catchsamples`](catchsamples.md) : Data from Norwegian port sampling
+  program.
+- [`convertRecaData()`](convertRecaData.md) : Convert RecaData
+- [`getCovariateMap()`](getCovariateMap.md) : Make Covariate Map
+- [`getLandings()`](getLandings.md) : Formats landings for R-ECA.
+- [`landings`](landings.md) : Landings of Haddock
+- [`makeAgeTracesRECA()`](makeAgeTracesRECA.md) : Catch at age traces
+- [`makeResultTableRECA()`](makeResultTableRECA.md) : Catch at Age
+  result table
+- [`plotAgeTraces()`](plotAgeTraces.md) : Traceplot
+- [`plotCatchAtAge()`](plotCatchAtAge.md) : Catch at Age plot
+- [`prepRECA()`](prepRECA.md) : Prepare data for R-ECA
+- [`rEcaDataReport()`](rEcaDataReport.md) : Data report for R-ECA
+  preparation
+- [`recaDataExample`](recaDataExample.md) : Example data for Reca
+- [`recaPrediction`](recaPrediction.md) : Example result from Reca
+- [`runRECA()`](runRECA.md) : Run R-ECA
+- [`sanitizeRecaInput()`](sanitizeRecaInput.md) : Input sanitation for
+  Reca
+- [`tabulateFisheries()`](tabulateFisheries.md) : Tabulate fisheries
+
+## Other functions and data
+
+RstoxFDA functions and data not mentioned elsewhere
+
+- [`AddAreaPositionStoxLanding()`](AddAreaPositionStoxLanding.md) :
+  Append position to landings data
+- [`AddLengthGroupStoxBiotic()`](AddLengthGroupStoxBiotic.md) : Add
+  length group to StoxBioticData
+- [`AddStratumStoxBiotic()`](AddStratumStoxBiotic.md) : Adds Stratum to
+  StoxBioticData
+- [`AggregateAnalyticalEstimate()`](AggregateAnalyticalEstimate.md) :
+  Aggregate Analytical Estimate across strata
+- [`AnalyticalPSUEstimate()`](AnalyticalPSUEstimate.md) : Estimate
+  parameters for each Primary Sampling Unit
+- [`AnalyticalPSUEstimateData`](AnalyticalPSUEstimateData.md) :
+  Analytical PSU Estimate Data
+- [`AnalyticalPopulationEstimate()`](AnalyticalPopulationEstimate.md) :
+  Analytical estimate of population parameters
+- [`AnalyticalPopulationEstimateData`](AnalyticalPopulationEstimateData.md)
+  : Analytical Population Estimate Data
+- [`AnalyticalRatioEstimate()`](AnalyticalRatioEstimate.md) : Ratio
+  estimate to census landings
+- [`CatchLotteryExample`](CatchLotteryExample.md) : Data from the
+  Norwegian catch lottery sampling program.
+- [`CatchLotteryLandingExample`](CatchLotteryLandingExample.md) :
+  Landings for the Norwegian North Sea Herring fisheries in 2022.
+- [`CatchLotterySamplingExample`](CatchLotterySamplingExample.md) :
+  Sampling parameters from the Norwegian catch lottery sampling program.
+- [`CollapseStrata()`](CollapseStrata.md) : Collapse strata in sampling
+  design
+- [`ConvertLengthBiotic()`](ConvertLengthBiotic.md) : Convert lengths
+  Biotic
+- [`ConvertWeightBiotic()`](ConvertWeightBiotic.md) : Convert weights
+  Biotic
+- [`DefineAreaPosition()`](DefineAreaPosition.md) : Define Area Code
+  Positions
+- [`DefineCarNeighbours()`](DefineCarNeighbours.md) : Define CAR
+  neighbours
+- [`ExtendAnalyticalSamplingFrameCoverage()`](ExtendAnalyticalSamplingFrameCoverage.md)
+  : Extends estimate beyond sampling frame
+- [`FilterAgeLengthOutliersStoxBiotic()`](FilterAgeLengthOutliersStoxBiotic.md)
+  : Filter outliers
+- [`FilterWeightLengthOutliersStoxBiotic()`](FilterWeightLengthOutliersStoxBiotic.md)
+  : Filter length-weight outliers
+- [`IndividualSamplingParametersData`](IndividualSamplingParametersData.md)
+  : Individual Sub-Sampling Design Parameters
+- [`InterpolateAnalyticalDomainEstimates()`](InterpolateAnalyticalDomainEstimates.md)
+  : Interpolate means and frequencies for zero-abundance domains
+- [`LiftStrata()`](LiftStrata.md) : Unify strata for
+  AnalyticalPSUEstimateData
+- [`LoadFdaStratumPolygon()`](LoadFdaStratumPolygon.md) : Load common
+  area definitions
+- [`PSUSamplingParametersData`](PSUSamplingParametersData.md) : PSU
+  Sampling Design Parameters
+- [`PlotFisheriesOverviewSpatial()`](PlotFisheriesOverviewSpatial.md) :
+  Plot spatial distribution of fisheries
+- [`PlotFisheriesOverviewTemporal()`](PlotFisheriesOverviewTemporal.md)
+  : Plot landings
+- [`PlotMeanLengthAtAge()`](PlotMeanLengthAtAge.md) : Plot length at age
+- [`PlotMeanWeightAtAge()`](PlotMeanWeightAtAge.md) : Plot weight at age
+- [`PlotPosteriorTraces()`](PlotPosteriorTraces.md) : Reca Traceplots
+- [`PlotSamplingCoverage()`](PlotSamplingCoverage.md) : Coverage plot
+- [`PlotSamplingOverviewCell()`](PlotSamplingOverviewCell.md) : Cell
+  plot
+- [`PlotSamplingVariables()`](PlotSamplingVariables.md) : Plot sampling
+  variables
+- [`ReadLandingFDA()`](ReadLandingFDA.md) : Read landing files
+- [`ReportFdaLandings()`](ReportFdaLandings.md) : Report FDA landings
+- [`ReportFdaSOP()`](ReportFdaSOP.md) : Report SOP test
+- [`ReportFdaSampling()`](ReportFdaSampling.md) : Report FDA sampling
+- [`ReportParameterConvergence()`](ReportParameterConvergence.md) :
+  Report convergence Statistics for parameter simulations
+- [`ReportRecaParameterStatistics()`](ReportRecaParameterStatistics.md)
+  : Report summary statistics for Reca paramters
+- [`RstoxFDA`](RstoxFDA.md) : Fisheries Dependent Analysis with RstoX
+- [`SetStartDateBiotic()`](SetStartDateBiotic.md) : Set startdate Biotic
+- [`convertToErsData()`](convertToErsData.md) : Convert logbook data
+- [`landings`](landings.md) : Landings of Haddock
+- [`processPropertyFormats`](processPropertyFormats.md) : Define the
+  process property formats for inclusion in stox UI
+- [`readLstFile()`](readLstFile.md) : Parses logbooks (lst)
+- [`stoxFunctionAttributes`](stoxFunctionAttributes.md) : Function
+  specification for inclusion in StoX UI
+- [`tabulateFisheries()`](tabulateFisheries.md) : Tabulate fisheries
+
+## Data types
+
+Data types and functions for asserting the validity of data types
+
+- [`AgeErrorMatrix`](AgeErrorMatrix.md) : Age Error Matrix
+  (AgeErrorMatrix)
+
+- [`AnalyticalPSUEstimateData`](AnalyticalPSUEstimateData.md) :
+  Analytical PSU Estimate Data
+
+- [`AnalyticalPopulationEstimateData`](AnalyticalPopulationEstimateData.md)
+  : Analytical Population Estimate Data
+
+- [`AreaPosition`](AreaPosition.md) : Area Code Positions (AreaPosition)
+
+- [`CarNeighbours`](CarNeighbours.md) : Area Neighbour Definition
+  (CarNeighbours)
+
+- [`IndividualSamplingParametersData`](IndividualSamplingParametersData.md)
+  : Individual Sub-Sampling Design Parameters
+
+- [`KommunePolygons`](KommunePolygons.md) : Kommune polygons
+
+- [`LandingData`](LandingData.md) : Landing data (LandingData)
+
+- [`LandingsArchiveData`](LandingsArchiveData.md) : Landings archive
+  (LandingsArchiveData)
+
+- [`LengthConversionTable`](LengthConversionTable.md) : Length
+  Conversion Table (LengthConversionTable)
+
+- [`LocodeTable`](LocodeTable.md) : LOCODE table (LocodeTable)
+
+- [`LstLogbookData`](LstLogbookData.md) : Logbooks (LstLogbookData)
+
+- [`MetierTable`](MetierTable.md) : Metier table
+
+- [`PSUSamplingParametersData`](PSUSamplingParametersData.md) : PSU
+  Sampling Design Parameters
+
+- [`ParameterConvergenceData`](ParameterConvergenceData.md) :
+  Convergence Report for simulated parameters (ParameterConvergenceData)
+
+- [`ParameterizationSummaryData`](ParameterizationSummaryData.md) :
+  Summary statistics for simulated parameters
+  (ParameterizationSummaryData)
+
+- [`PlotCatchAtAgeTotalsData`](PlotCatchAtAgeTotalsData.md) : Total
+  catch by age plot (PlotCatchAtAgeTotalsData)
+
+- [`PlotFisheriesOverviewSpatialData`](PlotFisheriesOverviewSpatialData.md)
+  : Spatial landings overview data (PlotFisheriesOverviewSpatialData)
+
+- [`PlotFisheriesOverviewTemporalData`](PlotFisheriesOverviewTemporalData.md)
+  : Temporal landings overview data (PlotFisheriesOverviewTemporalData)
+
+- [`PlotMeanLengthAtAgeData`](PlotMeanLengthAtAgeData.md) : Mean length
+  at age plot (PlotMeanLengthAtAgeData)
+
+- [`PlotMeanWeightAtAgeData`](PlotMeanWeightAtAgeData.md) : Mean weight
+  at age plot (PlotMeanWeightAtAgeData)
+
+- [`PlotPosteriorTracesData`](PlotPosteriorTracesData.md) : Trace plot
+  (PlotPosteriorTracesData)
+
+- [`PlotSamplingCoverageData`](PlotSamplingCoverageData.md) : Sampling
+  variables plot data (PlotSamplingCoverageData)
+
+- [`PlotSamplingOverviewCellData`](PlotSamplingOverviewCellData.md) :
+  Sampling Overview cell-plot data (PlotSamplingOverviewCellData)
+
+- [`PlotSamplingVariablesData`](PlotSamplingVariablesData.md) : Sampling
+  variables plot data (PlotSamplingVariablesData)
+
+- [`RecaCatchAtAge`](RecaCatchAtAge.md) : Reca Results (RecaCatchAtAge)
+
+- [`RecaData`](RecaData.md) : Reca Data (RecaData)
+
+- [`RecaParameterData`](RecaParameterData.md) : Reca Parameter Data
+  (RecaParameterData)
+
+- [`RecaResult`](RecaResult.md) : Reca Results (RecaResult)
+
+- [`ReportFdaCatchAtAgeCovarianceData`](ReportFdaCatchAtAgeCovarianceData.md)
+  : Fisheries dependent Catch At Age Covariance Report
+  (ReportFdaCatchAtAgeCovarianceData)
+
+- [`ReportFdaCatchAtAgeData`](ReportFdaCatchAtAgeData.md) : Fisheries
+  dependent Catch At Age Report (ReportFdaCatchAtAgeData)
+
+- [`ReportFdaCatchAtLengthAndAgeData`](ReportFdaCatchAtLengthAndAgeData.md)
+  : Fisheries dependent Catch At Age Report
+  (ReportFdaCatchAtLengthAndAgeData)
+
+- [`ReportFdaCatchAtLengthData`](ReportFdaCatchAtLengthData.md) :
+  Fisheries dependent Catch At Age Report (ReportFdaCatchAtLengthData)
+
+- [`ReportFdaData`](ReportFdaData.md) : Age group statistics
+  (ReportFdaData)
+
+- [`ReportFdaLandingData`](ReportFdaLandingData.md) : Landings Report
+  data (ReportFdaLandingData)
+
+- [`ReportFdaLengthAtAgeData`](ReportFdaLengthAtAgeData.md) : Fisheries
+  dependent Length At Age Report (ReportFdaLengthAtAgeData)
+
+- [`ReportFdaSamplingData`](ReportFdaSamplingData.md) : Sampling Report
+  data (ReportFdaSamplingData)
+
+- [`ReportFdaSopData`](ReportFdaSopData.md) : Sum of Products report
+  (ReportFdaSopData)
+
+- [`ReportFdaSummaryData`](ReportFdaSummaryData.md) : Total catch
+  statistics (ReportFdaSummaryData)
+
+- [`ReportFdaWeightAtAgeData`](ReportFdaWeightAtAgeData.md) : Reca
+  Weight At Age Report (ReportFdaWeightAtAgeData)
+
+- [`StockSplittingParameters`](StockSplittingParameters.md) : Stock
+  splitting parameters (StockSplittingParameters)
+
+- [`TemporalDefinition`](TemporalDefinition.md) : Temporal Categories
+  (TemporalDefinition)
+
+- [`TripPartition`](TripPartition.md) : Trip Partition
+
+- [`WeightConversionTable`](WeightConversionTable.md) : Weight
+  Conversion Table (WeightConversionTable)
+
+- [`is.AgeErrorMatrix()`](is.AgeErrorMatrix.md) : Check if argument is
+  AgeErrorMatrix
+
+- [`is.AreaPosition()`](is.AreaPosition.md) : Check if argument is
+  AreaPosition
+
+- [`is.CarNeighbours()`](is.CarNeighbours.md) : Check if argument is
+  CarNeighbours
+
+- [`is.LengthConversionTable()`](is.LengthConversionTable.md) : Check if
+  argument is LengthConversionTable
+
+- [`is.ParameterConvergenceData()`](is.ParameterConvergenceData.md) :
+
+  Checks if argument is
+  [`ParameterConvergenceData`](https://rdrr.io/pkg/RstoxFDA/man/ParameterConvergenceData.html)
+
+- [`is.ParameterizationSummaryData()`](is.ParameterizationSummaryData.md)
+  :
+
+  Checks if argument is
+  [`ParameterizationSummaryData`](https://rdrr.io/pkg/RstoxFDA/man/ParameterizationSummaryData.html)
+
+- [`is.RecaCatchAtAge()`](is.RecaCatchAtAge.md) : Check if argument is
+  RecaCatchAtAge
+
+- [`is.RecaData()`](is.RecaData.md) : Check if argument is RecaData
+
+- [`is.RecaParameterData()`](is.RecaParameterData.md) : Check if
+  argument is RecaParameterData
+
+- [`is.RecaResult()`](is.RecaResult.md) : Check if argument is
+  RecaResult
+
+- [`is.ReportFdaData()`](is.ReportFdaData.md) :
+
+  Checks if argument is
+  [`ReportFdaData`](https://rdrr.io/pkg/RstoxFDA/man/ReportFdaData.html)
+
+- [`is.ReportFdaSOP()`](is.ReportFdaSOP.md) :
+
+  Checks if argument is
+  [`ReportFdaSOP`](https://rdrr.io/pkg/RstoxFDA/man/ReportFdaSOP.html)
+
+- [`is.ReportFdaSamplingData()`](is.ReportFdaSamplingData.md) : Check if
+  argument is ReportFdaSamplingData
+
+- [`is.StockSplittingParameters()`](is.StockSplittingParameters.md) :
+  Check if argument is StockSplittingParameters
+
+- [`is.TemporalDefinition()`](is.TemporalDefinition.md) : Check if
+  argument is TemporalDefinition
+
+- [`is.Translation()`](is.Translation.md) :
+
+  Checks if argument is
+  [`Translation`](https://rdrr.io/pkg/RstoxData/man/Translation.html)
+
+- [`is.WeightConversionTable()`](is.WeightConversionTable.md) : Check if
+  argument is WeightConversionTable
+
+## Deprecated functions
+
+Functions that are candidates for removal from RstoxData in future
+releases. Their help pages suggest alterntive functions to use in stead.
+
+- [`RunRecaEstimate()`](RunRecaEstimate.md) : Run Reca.
+- [`SetTimeBiotic()`](SetTimeBiotic.md) : Set time Biotic
