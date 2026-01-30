@@ -245,7 +245,7 @@ expect_true(all(BioticDataPost$biotic_v3_producttypes.xml$individual$individualp
 
 #check official conversion factors
 fdirtab <- RstoxFDA::DefineWeightConversionFactor(DefinitionMethod = "FDIR.VIII.2022")
-expect_true(all(fdirtab$WeightFactor[fdirtab$ProductType==3] < fdirtab$WeightFactor[fdirtab$ProductType==4]))
+expect_true(all(fdirtab$WeightFactor[fdirtab$ProductType==3] > fdirtab$WeightFactor[fdirtab$ProductType==4]))
 expect_equal(sum(duplicated(fdirtab$Species)), nrow(fdirtab)/2)
 
 #

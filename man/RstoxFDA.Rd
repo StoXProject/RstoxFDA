@@ -30,10 +30,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Edvin Fuglebakk \email{arnejh@hi.no}
+\strong{Maintainer}: Abe Solberg \email{abesolberg@hi.no}
 
 Authors:
 \itemize{
+  \item Edvin Fuglebakk
   \item Arne Johannes Holmin
 }
 

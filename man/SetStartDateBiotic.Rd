@@ -29,7 +29,7 @@ These columns are on the table 'fishstation' in data originating from NMDBiotic 
 For bioticdata that does not conform to this, no modifications are done.
 }
 \seealso{
-\code{\link{RstoxData}{RstoxData::StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
+\code{\link[RstoxData]{StoxBiotic}} For converting \code{\link[RstoxData]{BioticData}} to \code{\link[RstoxData]{StoxBioticData}}.
 }
 \concept{StoX-functions}
 \concept{nmdbiotic functions}
